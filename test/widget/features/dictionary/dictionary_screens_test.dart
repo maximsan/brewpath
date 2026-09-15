@@ -107,14 +107,16 @@ Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
 
 void main() {
   group('dictionary home', () {
-    testWidgets('leads with the kicker and the name, not a bar title', (
+    testWidgets('leads with the name and nothing above it, not a bar title', (
       tester,
     ) async {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
       await tester.pumpAndSettle();
 
       expect(find.text('Coffee Dictionary'), findsOneWidget);
-      expect(find.text('REFERENCE · 2 TERMS'), findsOneWidget);
+      // No eyebrow: the term total is the sum of the category counts listed
+      // directly below the title, so a line stating it restated the page.
+      expect(find.textContaining('REFERENCE ·'), findsNothing);
       // The shelf is about one subject, and says so — it read `Dictionary`.
       expect(find.text('Dictionary'), findsNothing);
       expect(find.widgetWithText(AppBar, 'Coffee Dictionary'), findsNothing);
@@ -347,8 +349,19 @@ void main() {
       expect(find.text('Arabica'), findsWidgets);
     });
 
-    testWidgets('a source with an address shows it', (tester) async {
+    testWidgets('a source with an address shows it once Sources is opened', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
+      await tester.pumpAndSettle();
+
+      // Shut by default: provenance costs one line until asked for.
+      expect(find.text('SOURCES'), findsOneWidget);
+      expect(find.text('https://sca.coffee/research'), findsNothing);
+
+      // The section closes the entry, below the fold of a short viewport.
+      await tester.ensureVisible(find.text('SOURCES'));
+      await tester.tap(find.text('SOURCES'));
       await tester.pumpAndSettle();
 
       expect(find.text('https://sca.coffee/research'), findsOneWidget);
@@ -410,9 +423,8 @@ void main() {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen(), view: free));
       await tester.pumpAndSettle();
 
-      // One reference term in the fixture, and it is gone from the kicker,
-      // the filter counts and the category index alike — absent, not locked.
-      expect(find.text('REFERENCE · 1 TERMS'), findsOneWidget);
+      // One reference term in the fixture, and it is gone from the filter
+      // counts and the category index alike — absent, not locked.
       expect(find.text('All 1'), findsOneWidget);
       expect(find.text('Beans and Botany'), findsOneWidget);
       expect(find.text('Coffee Trade'), findsNothing);

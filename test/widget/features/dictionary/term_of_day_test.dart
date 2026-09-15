@@ -168,6 +168,23 @@ void main() {
       expect(find.text(term.shortExplanation), findsOneWidget);
     });
 
+    testWidgets('says nothing about the term but the term', (tester) async {
+      final term = await _expectedTerm(tester, hasCourse: true);
+      await _pumpScreen(tester, hasCourse: true);
+
+      // The category changes nothing the learner can do here, and the full
+      // entry — one tap away, behind the only primary button — states it.
+      final categories = await tester.runAsync(
+        () => DictionaryRepository().getCategories(),
+      );
+      final category = categories!.firstWhere(
+        (each) => each.id == term.categoryId,
+      );
+
+      expect(find.text(category.label), findsNothing);
+      expect(find.text(category.label.toUpperCase()), findsNothing);
+    });
+
     testWidgets('the short explanation is what it offers, never the full one', (
       tester,
     ) async {

@@ -119,7 +119,7 @@ void main() {
     await _seed(tester, ['t:arabica']);
     await pumpWithProviders(tester, _wrap());
 
-    expect(find.text(_terms), findsOneWidget);
+    expect(find.textContaining(_terms), findsOneWidget);
     expect(find.text('Arabica'), findsOneWidget);
   });
 
@@ -127,7 +127,7 @@ void main() {
     await _seed(tester, ['l:m1l1']);
     await pumpWithProviders(tester, _wrap());
 
-    expect(find.text(_lessons), findsOneWidget);
+    expect(find.textContaining(_lessons), findsOneWidget);
     expect(find.text('What coffee actually is'), findsOneWidget);
     expect(find.text('MODULE 1 · BEANS'), findsOneWidget);
   });
@@ -148,9 +148,9 @@ void main() {
     await _seed(tester, ['t:arabica']);
     await pumpWithProviders(tester, _wrap());
 
-    expect(find.text(_lessons), findsNothing);
+    expect(find.textContaining(_lessons), findsNothing);
     expect(
-      find.text(_guides),
+      find.textContaining(_guides),
       findsNothing,
       reason: 'no guide is saved, and none is earned either',
     );
@@ -160,8 +160,8 @@ void main() {
     await _seed(tester, ['l:m1l1', 't:arabica']);
     await pumpWithProviders(tester, _wrap());
 
-    final terms = tester.getTopLeft(find.text(_terms)).dy;
-    final lessons = tester.getTopLeft(find.text(_lessons)).dy;
+    final terms = tester.getTopLeft(find.textContaining(_terms)).dy;
+    final lessons = tester.getTopLeft(find.textContaining(_lessons)).dy;
     expect(
       terms,
       lessThan(lessons),
@@ -174,12 +174,12 @@ void main() {
   ) async {
     await _seed(tester, ['t:arabica']);
     await pumpWithProviders(tester, _wrap());
-    expect(find.text(_terms), findsOneWidget);
+    expect(find.textContaining(_terms), findsOneWidget);
 
     await tester.tap(findMark(AppIcon.bookmark, active: true));
     await settleLoaders(tester);
 
-    expect(find.text(_terms), findsNothing);
+    expect(find.textContaining(_terms), findsNothing);
     expect(find.byType(SavedEmptyView), findsOneWidget);
   });
 
@@ -190,7 +190,7 @@ void main() {
     await pumpWithProviders(tester, _wrap());
 
     expect(find.text('Arabica'), findsOneWidget);
-    expect(find.text(_lessons), findsNothing);
+    expect(find.textContaining(_lessons), findsNothing);
     expect(find.textContaining('no-such'), findsNothing);
   });
 
@@ -205,16 +205,24 @@ void main() {
     );
   });
 
-  testWidgets('each group says how many it holds', (tester) async {
+  testWidgets('each group carries its count inside the label', (tester) async {
     await _seed(tester, ['t:arabica', 't:robusta']);
     await pumpWithProviders(tester, _wrap());
 
     expect(
       find.descendant(
         of: find.byType(SavedGroupSection),
-        matching: find.text('2'),
+        matching: find.text('$_terms · 2'),
       ),
       findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(SavedGroupSection),
+        matching: find.text('2'),
+      ),
+      findsNothing,
+      reason: 'the count is in the label, not a loose digit beside it',
     );
   });
 
@@ -226,7 +234,7 @@ void main() {
       await _seed(tester, ['g:roast']);
       await _pumpWithGuides(tester, [roast]);
 
-      expect(find.text(_guides), findsOneWidget);
+      expect(find.textContaining(_guides), findsOneWidget);
       expect(find.text('Roast Levels'), findsOneWidget);
     });
 
@@ -238,7 +246,7 @@ void main() {
       await _seed(tester, ['g:roast']);
       await _pumpWithGuides(tester, const []);
 
-      expect(find.text(_guides), findsNothing);
+      expect(find.textContaining(_guides), findsNothing);
       expect(find.text('Roast Levels'), findsNothing);
       expect(find.byType(SavedEmptyView), findsOneWidget);
     });
@@ -268,9 +276,9 @@ void main() {
       await _seed(tester, ['g:roast', 't:arabica', 'l:m1l1']);
       await _pumpWithGuides(tester, [roast]);
 
-      final terms = tester.getTopLeft(find.text(_terms)).dy;
-      final lessons = tester.getTopLeft(find.text(_lessons)).dy;
-      final guides = tester.getTopLeft(find.text(_guides)).dy;
+      final terms = tester.getTopLeft(find.textContaining(_terms)).dy;
+      final lessons = tester.getTopLeft(find.textContaining(_lessons)).dy;
+      final guides = tester.getTopLeft(find.textContaining(_guides)).dy;
       expect(terms, lessThan(lessons));
       expect(lessons, lessThan(guides));
     });
@@ -285,13 +293,14 @@ void main() {
     expect(find.text('2 of 5 saved'), findsOneWidget);
   });
 
-  testWidgets('a Plus shelf is not shown a limit that does not apply', (
-    tester,
-  ) async {
+  testWidgets('an owner gets no count line under the title', (tester) async {
     await _seed(tester, ['t:arabica']);
     await _pumpAsPlus(tester);
 
-    expect(find.text('1 item to revisit'), findsOneWidget);
+    // The total restated the per-group counts beside each header, so it was
+    // dropped; only the free cap earns a line.
+    expect(find.textContaining('to revisit'), findsNothing);
+    expect(find.textContaining('of 5 saved'), findsNothing);
     expect(find.byType(SavedUpgradeRow), findsNothing);
   });
 

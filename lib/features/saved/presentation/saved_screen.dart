@@ -31,11 +31,10 @@ const double _shelfScrollThreshold = 72;
 
 /// Everything the learner has bookmarked, in three groups.
 ///
-/// **Named "Saved", once.** The prototype calls this screen both "Saved" and
-/// "Favorites"; "Favourites" was the word for the card-favouriting feature
-/// deleted in `8fd7e6e`, and reusing it re-imports a confusion the design docs
-/// keep having to correct. The stored field keeps its own name — renaming that
-/// would be a schema change for a cosmetic reason.
+/// Named "Saved", once: the design calls it both "Saved" and "Favorites", and
+/// "Favourites" was the word for a card-favouriting feature since deleted. The
+/// stored field keeps its own name — renaming it would be a schema change for
+/// a cosmetic reason.
 class SavedScreen extends ConsumerWidget {
   /// Creates a [SavedScreen].
   const SavedScreen({super.key});
@@ -139,18 +138,21 @@ class _Shelf extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = savedShelfCount(groups);
+    final countLine = savedCountLine(count: count, isPlus: isPlus);
 
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
       children: [
         const PageLargeTitle(SavedScreen.title),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          savedCountLine(count: count, isPlus: isPlus),
-          style: Theme.of(
-            context,
-          ).textTheme.labelMedium?.copyWith(color: context.mood.inkMute),
-        ),
+        if (countLine != null) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            countLine,
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(color: context.mood.inkMute),
+          ),
+        ],
         // The offer belongs where the limit is felt.
         if (savedShelfIsFull(count: count, isPlus: isPlus)) ...[
           const SizedBox(height: AppSpacing.md),
@@ -158,11 +160,15 @@ class _Shelf extends StatelessWidget {
         ],
         const SizedBox(height: AppSpacing.lg),
         for (final group in groups) ...[
-          SavedGroupSection(group: group, onOpen: onOpen),
-          if (group.kind == SavedKind.term) ...[
-            const SizedBox(height: AppSpacing.sm),
-            const SavedStudyRow(),
-          ],
+          SavedGroupSection(
+            group: group,
+            onOpen: onOpen,
+            // The deck is built from saved terms only, so the route belongs
+            // on that group's header rather than over the whole page.
+            trailing: group.kind == SavedKind.term
+                ? const SavedStudyRow()
+                : null,
+          ),
           const SizedBox(height: AppSpacing.lg),
         ],
       ],

@@ -176,6 +176,27 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Screens stop repeating what they already show.** Four surfaces were
+  saying the same thing twice. The dictionary's `Reference · 73 terms`
+  eyebrow is gone — the number was the sum of the category counts listed
+  right below it — and so is the one over a category, which the back chevron
+  already answers. The Saved shelf drops its total for owners, keeping only
+  the free `3 of 5 saved`, which is stated nowhere else. Term of the Day
+  drops its category line, and its date is now framed by the app's own
+  hairline turned sideways. Saved's group headings carry their count inside
+  the label — `DICTIONARY TERMS · 6` — instead of trailing a loose digit.
+
+- **The flashcards route sits on the group it belongs to.** The full-width
+  accent banner over the saved terms is now a small accent pill on the
+  *Dictionary terms* heading, set at type weight rather than object weight:
+  the deck is built from saved terms only, so beside the page title it read
+  as covering lessons and guides too. The heading already carries the count,
+  so the route only names where it goes.
+
+- **A term's sources fold away.** Provenance is what makes an entry quotable
+  and also the block nobody reads on the way through, so it now costs one
+  line until asked for.
+
 - **Owning the course can now stop.** What you own used to be settled once
   when the app opened, which was right for a purchase you keep forever and
   wrong for a subscription: a plan that lapses, is refunded, or fails to renew

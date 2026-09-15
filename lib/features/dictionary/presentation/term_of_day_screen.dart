@@ -4,7 +4,6 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
-import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
@@ -14,7 +13,6 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
@@ -35,8 +33,13 @@ const double _companionSize = 120;
 /// `padding-top: 84`, shorter because it opens on a kicker rather than a run.
 const double _designScrollPad = 84;
 
-/// The design's `CatGlyph size={15}` in the category kicker.
-const double _kickerGlyphSize = 15;
+/// The design's `width: 28` rule either side of the dateline.
+const double _datelineRuleWidth = 28;
+
+/// The design's `44px` above Roasty and `34px` below, which is what makes the
+/// mascot read as its own beat rather than a badge on the heading.
+const double _companionSpaceAbove = 44;
+const double _companionSpaceBelow = 34;
 
 /// Today's term, on a page of its own.
 ///
@@ -121,19 +124,10 @@ class _TermOfDay extends StatelessWidget {
               children: [
                 SmallcapsLabel(TermOfDayCopy.title, color: mood.accent),
                 const SizedBox(height: AppSpacing.xs),
-                SmallcapsLabel(longDate(view.date)),
-                const SizedBox(height: AppSpacing.base),
+                _Dateline(date: view.date),
+                const SizedBox(height: _companionSpaceAbove),
                 const Roasty(state: RoastyState.correct, size: _companionSize),
-                const SizedBox(height: AppSpacing.xs),
-                CategoryKicker(
-                  category: DictionaryCategoryMark(
-                    label: view.categoryLabel ?? '',
-                    mark: moduleMark(term.categoryId),
-                  ),
-                  size: _kickerGlyphSize,
-                  color: mood.inkMute,
-                ),
-                const SizedBox(height: AppSpacing.sm),
+                const SizedBox(height: _companionSpaceBelow),
                 Text(
                   term.term,
                   textAlign: TextAlign.center,
@@ -141,10 +135,7 @@ class _TermOfDay extends StatelessWidget {
                 ),
                 if (term.pronunciation != null) ...[
                   const SizedBox(height: AppSpacing.base),
-                  SpeakButton(
-                    word: term.term,
-                    respelling: term.pronunciation!,
-                  ),
+                  SpeakButton(word: term.term, respelling: term.pronunciation!),
                 ],
                 const SizedBox(height: AppSpacing.lg),
                 Text(
@@ -181,6 +172,37 @@ class _TermOfDay extends StatelessWidget {
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+/// The date, framed by the app's own hairline turned sideways.
+///
+/// It gives the composition a top edge without adding a new treatment: the
+/// rule is the separator every other screen already uses, at a different angle.
+class _Dateline extends StatelessWidget {
+  const _Dateline({required this.date});
+
+  final DateTime date;
+
+  @override
+  Widget build(BuildContext context) {
+    final rule = SizedBox(
+      width: _datelineRuleWidth,
+      child: Divider(height: 1, thickness: 1, color: context.mood.rule),
+    );
+
+    // The rules are the design's fixed 28; the date is what gives when a long
+    // weekday and month meet a narrow screen.
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        rule,
+        const SizedBox(width: AppSpacing.sm),
+        Flexible(child: SmallcapsLabel(longDate(date))),
+        const SizedBox(width: AppSpacing.sm),
+        rule,
       ],
     );
   }

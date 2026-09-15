@@ -6,6 +6,7 @@ import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
+import 'package:brew_path/features/dictionary/presentation/term_sources_section.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -21,20 +22,12 @@ const _referenceNote =
     "No lesson covers this one — it's here for when you meet it on a bag or a "
     'menu.';
 
-/// A term's entry: pronunciation, explanations, example, self-check, related
-/// terms, sources, and where on the path it sits.
+/// A term's entry, shared by the full screen and the peek sheet.
 ///
-/// Shared by the full screen and the peek sheet.
-///
-/// **What it renders depends on the tier** (`docs/decisions.md` §12). With
-/// the course, everything the term carries. Without it, the entry stops at
-/// the short explanation and a gated row stands where the deep explanation,
-/// the example, the self-check and the sources would be — none of which is
-/// built, so none of which can leak. Pronunciation, related terms and the
-/// path block are not course content and stay on both sides.
-///
-/// A term carrying only a short explanation simply renders fewer blocks; the
-/// model still allows one, and a brief entry is not a gap to advertise.
+/// What it renders depends on the tier (`docs/decisions.md` §12): without the
+/// course the entry stops at the short explanation and a gated row stands
+/// where the rest would be, so none of it is built and none can leak.
+/// Pronunciation, related terms and the path block stay on both sides.
 class TermEntryBody extends ConsumerWidget {
   /// Creates a [TermEntryBody].
   const TermEntryBody({
@@ -74,10 +67,7 @@ class TermEntryBody extends ConsumerWidget {
         // The **display** face at the heading rung, not
         // body copy: the short explanation is the entry's answer, and setting
         // it in the reading face made it a first paragraph of the deep one.
-        Text(
-          term.shortExplanation,
-          style: AppText.heading(mood: mood),
-        ),
+        Text(term.shortExplanation, style: AppText.heading(mood: mood)),
         // The gate stands only where something stands behind it: a term the
         // course adds nothing to has no full entry to promise.
         if (!view.hasCourse && term.hasFullEntry) ...[
@@ -126,10 +116,7 @@ class TermEntryBody extends ConsumerWidget {
         _PathBlock(status: status, lessonId: term.lessonId),
         if (view.hasCourse && term.sources.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
-          _Block(
-            label: 'Sources',
-            child: _Sources(sources: term.sources),
-          ),
+          TermSourcesSection(sources: term.sources),
         ],
       ],
     );
@@ -159,47 +146,6 @@ class _RelatedChips extends StatelessWidget {
   }
 }
 
-/// The works a term's explanation draws on, each with its address when it has
-/// one, so the learner can go to the original.
-class _Sources extends StatelessWidget {
-  const _Sources({required this.sources});
-
-  final List<DictionarySource> sources;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final text = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final source in sources)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  source.label,
-                  style: text.bodySmall?.copyWith(color: mood.inkMute),
-                ),
-                // Shown as text, not a link: opening one needs a URL-launching
-                // dependency, which is a platform decision this work did not
-                // take on — the same call the spec made for text-to-speech.
-                if (source.url != null)
-                  SelectableText(
-                    source.url!,
-                    style: text.bodySmall?.copyWith(color: mood.water),
-                  ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 /// Where on the path this term is taught — or that nothing teaches it.
 class _PathBlock extends ConsumerWidget {
   const _PathBlock({required this.status, required this.lessonId});
@@ -215,10 +161,7 @@ class _PathBlock extends ConsumerWidget {
     if (status == DictionaryStatus.reference) {
       return _Block(
         label: status.pathLabel,
-        child: Text(
-          _referenceNote,
-          style: body?.copyWith(color: mood.inkMute),
-        ),
+        child: Text(_referenceNote, style: body?.copyWith(color: mood.inkMute)),
       );
     }
 

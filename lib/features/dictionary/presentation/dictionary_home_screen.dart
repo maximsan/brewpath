@@ -37,10 +37,6 @@ class DictionaryHomeScreen extends ConsumerWidget {
   /// and the shelf says so.
   static const title = 'Coffee Dictionary';
 
-  /// The kicker over it, which carries how many terms the shelf holds — the
-  /// count is the part that makes it inform rather than decorate.
-  static String kickerFor(int terms) => 'Reference · $terms terms';
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final view = ref.watch(dictionaryViewProvider);
@@ -156,7 +152,6 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
             sliver: SliverList.list(
               children: [
                 DictionaryMasthead(
-                  terms: widget.view.terms.length,
                   category: _category,
                   onClear: () => setState(() => _category = null),
                 ),
@@ -168,14 +163,10 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                   counts: widget.view.counts,
                   onSelected: (filter) => setState(() => _filter = filter),
                 ),
-                // The practice chips: under the filters, over the list. The
-                // design puts practice between *narrowing the shelf* and
-                // *reading it*, because drilling is a third thing to do here
-                // rather than a way of browsing.
-                //
-                // Here only once the learner has started narrowing. On the
-                // index they sit under Term of the Day instead — which is
-                // where the design has both of them.
+                // The practice chips sit between narrowing the shelf and
+                // reading it: drilling is a third thing to do here rather
+                // than a way of browsing. Only once the learner has started
+                // narrowing — on the index they sit under Term of the Day.
                 if (!_onIndex) ...[
                   const Padding(
                     padding: _chipPadding,

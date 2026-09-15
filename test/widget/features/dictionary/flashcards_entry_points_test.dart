@@ -140,15 +140,23 @@ void main() {
     });
   });
 
-  group("the shelf's study row", () {
+  group("the shelf's flashcards route", () {
     testWidgets('offers the deck it can actually deal', (tester) async {
       await _seedDeckOfOne();
       await _openSaved(tester);
 
       expect(find.byType(SavedScreen), findsOneWidget);
-      expect(find.text(FlashcardsCopy.studyRow(1)), findsOneWidget);
+      // The pill names only its destination; the deck size is what it
+      // announces, because the group header beside it carries the count.
+      expect(find.byType(SavedStudyRow), findsOneWidget);
+      final handle = tester.ensureSemantics();
+      expect(
+        tester.getSemantics(find.byType(SavedStudyRow)).label,
+        FlashcardsCopy.studyRow(1),
+      );
+      handle.dispose();
 
-      await tester.tap(find.text(FlashcardsCopy.studyRow(1)));
+      await tester.tap(find.byType(SavedStudyRow));
       await settleLoaders(tester);
 
       expect(find.byType(FlashcardsScreen), findsOneWidget);
@@ -158,20 +166,31 @@ void main() {
       tester,
     ) async {
       // Saved, but no free lesson names it — so the shelf has a terms group
-      // and the deck has nothing in it (ADR-0014). The row is the learner's
-      // way to find out why, so it must not vanish; it drops the count rather
-      // than offering to study none.
+      // and the deck has nothing in it (ADR-0014). The route is the learner's
+      // way to find out why, so it must not vanish; it announces the drill by
+      // name rather than offering to study none.
       await _seed([_geisha]);
       await _openSaved(tester);
 
       expect(find.byType(SavedStudyRow), findsOneWidget);
-      expect(find.text(FlashcardsCopy.studyRow(0)), findsNothing);
-      expect(find.text(FlashcardsCopy.title), findsOneWidget);
+      final handle = tester.ensureSemantics();
+      expect(
+        tester.getSemantics(find.byType(SavedStudyRow)).label,
+        FlashcardsCopy.title,
+      );
+      handle.dispose();
 
       await tester.tap(find.byType(SavedStudyRow));
       await settleLoaders(tester);
 
       expect(find.byType(FlashcardsEmptyView), findsOneWidget);
+    });
+
+    testWidgets('the terms group header carries the count', (tester) async {
+      await _seedDeckOfOne();
+      await _openSaved(tester);
+
+      expect(find.text('DICTIONARY TERMS · 1'), findsOneWidget);
     });
 
     testWidgets('is absent when the shelf holds no terms at all', (
@@ -227,7 +246,7 @@ void main() {
     await _seedDeckOfOne();
     await _openSaved(tester);
 
-    await tester.tap(find.text(FlashcardsCopy.studyRow(1)));
+    await tester.tap(find.byType(SavedStudyRow));
     await settleLoaders(tester);
     expect(find.byType(FlashcardsScreen), findsOneWidget);
 

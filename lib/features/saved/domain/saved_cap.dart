@@ -1,7 +1,6 @@
 /// The free shelf's soft cap, and what a save attempt does about it.
 library;
 
-import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:flutter/foundation.dart';
 
 /// How many things a free learner may keep.
@@ -76,20 +75,10 @@ class SaveGateRaised extends SaveOutcome {
 
 /// What toggling [key] should do, given the shelf and the learner's tier.
 ///
-/// **The cap is checked on the add path only.** That is what makes "removal is
-/// always allowed" true by construction rather than by review: there is no
-/// branch where a full shelf can refuse to give something back, so a capped
-/// learner can always curate.
-///
-/// [visible] is how many rows the shelf would actually draw — **not** how many
-/// keys are stored. The two differ when a saved key does not resolve here: a
-/// guide earned on another device and synced to this one, or content an update
-/// removed. Counting the stored keys instead would refuse a save while the
-/// shelf said `3 of 5`, which is the contradiction this parameter exists to
-/// prevent. A learner is held to the number they are shown.
-///
-/// The cost is that the cap is per-device in that rare case, which the design
-/// already accepts by calling this a **soft** cap.
+/// The cap is checked on the add path only, so no branch can refuse to give
+/// something back and a capped learner can always curate. [visible] is how
+/// many rows the shelf draws, not how many keys are stored: counting the keys
+/// would refuse a save while the shelf still said `3 of 5`.
 SaveOutcome attemptSave({
   required String key,
   required Set<String> keys,
@@ -103,20 +92,16 @@ SaveOutcome attemptSave({
   return SaveOutcome.saved({...keys, key});
 }
 
-/// The line under the shelf's title.
+/// The line under the shelf's title, or null where the page already says it.
 ///
-/// A free learner sees their shelf **against the cap**, because the number
-/// that matters to them is how much room is left. A Plus learner sees a plain
-/// count, because a limit that does not apply to them is noise.
-///
-/// [count] is the number of rows the shelf draws — the same number
-/// [attemptSave] judges, so what a learner is shown is what they are held to.
-///
-/// The over-cap wording exists for a shelf that was filled on Plus and is now
-/// being read without it: the cap refuses new saves, it never takes anything
-/// away.
-String savedCountLine({required int count, required bool isPlus}) {
-  if (isPlus) return '${savedItemCount(count)} to revisit';
+/// Only the free cap earns a line. An owner's total restated the per-group
+/// counts beside each group header; the free limit is stated nowhere else,
+/// and the upgrade prompt below it depends on that context. [count] is what
+/// [attemptSave] judges, so a learner is held to the number they are shown.
+String? savedCountLine({required int count, required bool isPlus}) {
+  if (isPlus) return null;
+  // A shelf filled on Plus and now read without it: the cap refuses new
+  // saves, it never takes anything away.
   if (count > savedFreeMax) return '$count saved · free limit $savedFreeMax';
   return '$count of $savedFreeMax saved';
 }
