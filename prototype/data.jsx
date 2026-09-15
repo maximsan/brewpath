@@ -1,5 +1,13 @@
 // Sample content for the BrewPath prototype.
 
+// THE prototype's today. One frozen date, exported once: the Learn header, the
+// Term of the Day dateline and the term-of-day SELECTION all read it. Three
+// screens used to hard-code their own (May 8 in the header, June 18 in the
+// dictionary), so the app said one date and the dictionary another one tap
+// away — and the dateline was a hand-kept copy of the selection seed, so
+// changing either made the date disagree with the term it named.
+window.PROTO_TODAY = new Date(2026, 4, 8); // Fri 8 May 2026
+
 const MODULES = [
   {
     id: 'm1', n: 1, label: 'BEANS', title: 'Beans', glyph: 'beans', art: 'assets/modules/m1-beans.png', artPos: '50% 42%',
@@ -2816,36 +2824,58 @@ const COLLECTIBLES = [
   { id: 'c-m5l6', earned: false, unlock: { lesson: 'm5l6' }, kind: 'firstcup' },
 ];
 
+// Catalog order IS reveal order — the grid numbers cards by position ("CARD 21
+// / 37"), so a card's number has to mean "where this sits in the set" on the
+// day you earn it. The array above grew by append across authoring passes, so
+// Module 1's lesson-4 card sat at index 20 and announced itself as CARD 21 the
+// moment Module 1 was finished, with cards 05–20 still locked. Sort once at
+// load: by module, by lesson within the module, each module's own reward card
+// closing its run. Ids are untouched — only display order changes.
+(function orderCollection() {
+  const modIdx = {}, lesMod = {}, lesIdx = {};
+  MODULES.forEach((m, mi) => {
+    modIdx[m.id] = mi;
+    m.lessons.forEach((l, li) => { lesMod[l.id] = mi; lesIdx[l.id] = li; });
+  });
+  const rank = (c) => {
+    const u = c.unlock || {};
+    // 998 parks a module reward after every lesson card in that module.
+    if (u.module) return [modIdx[u.module] != null ? modIdx[u.module] : 99, 998];
+    return [lesMod[u.lesson] != null ? lesMod[u.lesson] : 99, lesIdx[u.lesson] != null ? lesIdx[u.lesson] : 997];
+  };
+  COLLECTIBLES.sort((a, b) => { const x = rank(a), y = rank(b); return (x[0] - y[0]) || (x[1] - y[1]); });
+})();
+
 // Module reward cards — granted when a module is completed.
 const MODULE_REWARDS = {
   m1: {
     title: 'Beans Field Guide',
-    summary: 'You can read a bag of coffee and know what you\u2019re holding.',
-    fact: 'A barista who can name the species, origin, and processing can predict the cup before the first sip.',
+    summary: 'Arabica or Robusta, where it grew, how it was processed.',
+    fact: 'That coffee bag isn\u2019t just labels anymore — you know what they mean.',
     badge: 'BEANS · COMPLETE',
   },
   m2: {
     title: 'Processing Field Guide',
     summary: 'You can tell washed from natural by taste alone — eventually.',
-    fact: 'Processing changes a coffee more than the roast does. Same bean, three different cups.',
+    fact: 'Washed, natural, honey — now you know why they matter.',
     badge: 'PROCESSING · COMPLETE',
   },
   m3: {
     title: 'Roasting Field Guide',
-    summary: 'You can read a roast level and a roast date, and know what they mean.',
-    fact: 'Roast trades origin acidity for body and roast flavour — and freshness beats fame.',
+    summary: 'You can read a roast date and know how fresh is fresh enough.',
+    fact: 'Light, medium, dark — now you know what the roast is telling you.',
     badge: 'ROASTING · COMPLETE',
   },
   m4: {
     title: 'Grind Field Guide',
     summary: 'You know why grind size and grinder type quietly control the cup.',
-    fact: 'Grind is the speed dial for extraction — and an even grind is what lets you use it.',
+    fact: 'Coarse, medium, fine — now you know which way to turn the dial.',
     badge: 'GRIND · COMPLETE',
   },
   m5: {
     title: 'Brew Field Guide',
     summary: 'You can set a ratio, fix your water, taste your way to a better cup \u2014 and read an espresso.',
-    fact: 'Ratio sets strength, water sets the speed, sour-vs-bitter tells you what to change, and pressure is what makes espresso a different drink.',
+    fact: 'You\u2019re not just making coffee anymore — you know what changes the cup.',
     badge: 'BREW · COMPLETE',
   },
 };
@@ -2928,17 +2958,19 @@ window.MODULES = MODULES;
 // (can this lesson open?) and screens.jsx's gameIsFree (is the lesson that
 // teaches this game free?). Never re-derive it from a module id at a call
 // site — that is how the prototype and the app came to disagree (#175).
-// Today it is Module 1 entire; narrowing it to specific lessons is an edit to
-// FREE_MODULE_IDS or to this list, and every gate follows.
-const FREE_MODULE_IDS = ['m1'];
-window.FREE_LESSON_IDS = new Set(
-  MODULES.filter(m => FREE_MODULE_IDS.includes(m.id)).flatMap(m => m.lessons.map(l => l.id))
-);
-if (!window.FREE_LESSON_IDS.size) {
-  // An empty free tier locks every free user out of everything, silently.
-  // Fail loudly instead: it can only mean FREE_MODULE_IDS names a module that
-  // no longer exists, or MODULES changed shape.
-  console.error('[BrewPath] FREE_LESSON_IDS is empty — FREE_MODULE_IDS', FREE_MODULE_IDS, 'matched no module in MODULES. Every game and lesson will read as locked.');
+// Today it is the FIRST THREE lessons of Module 1 — written out rather than
+// derived from a module id, because the tier is no longer "a module": deriving
+// it would silently widen the free set the moment a lesson is added to m1.
+const FREE_LESSON_ID_LIST = ['m1l1', 'm1l2', 'm1l3'];
+window.FREE_LESSON_IDS = new Set(FREE_LESSON_ID_LIST);
+// Validate EACH id, not just that the set is non-empty: a typo'd or renamed id
+// leaves a non-empty set that quietly locks the lesson it was meant to open.
+{
+  const known = new Set(MODULES.flatMap(m => m.lessons.map(l => l.id)));
+  const missing = FREE_LESSON_ID_LIST.filter(id => !known.has(id));
+  if (missing.length) {
+    console.error('[BrewPath] FREE_LESSON_IDS names ' + missing.length + ' lesson(s) that do not exist in MODULES:', missing, '— each will read as locked for free users.');
+  }
 }
 window.LESSONS = LESSONS;
 window.COLLECTIBLES = COLLECTIBLES;

@@ -760,7 +760,9 @@ function dictTermOfDay(date, pool) {
   // no pool at all means every full entry.
   if (pool && !pool.length) return null;
   const full = (pool && pool.length) ? pool : DICT_TERMS.filter(t => t.check); // full entries only
-  const d = date || new Date(2026, 5, 18); // frozen demo date
+  // Defaults to the app-wide frozen today (window.PROTO_TODAY, data.jsx) so the
+  // pick can never disagree with the date any screen prints beside it.
+  const d = date || (typeof window !== 'undefined' && window.PROTO_TODAY) || new Date();
   const dayNum = Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
   return full[((dayNum % full.length) + full.length) % full.length];
 }

@@ -40,3 +40,50 @@ stages, origin → flavour signature, label claim → what it guarantees, decaf
 method → mechanism. Each item has exactly one true partner, and padding them
 means inventing a fact or adding a contestable one. Leave those bijective. The
 rule is never to fabricate a pair for the sake of an uneven split.
+
+## Design system & notes discipline
+
+**Every design change is recorded in two places.** A new component, style, colour,
+icon or interaction pattern is documented in the Design System (`ds-content.js`,
+rendered by `Design System.html`) — and gets a short pointer note in
+`Migration Notes.md`. The DS carries the rules; the notes carry the history.
+
+**Superseded notes are deleted, not edited.** When a decision replaces an earlier
+one, remove the old note and append the new one at the END of `Migration Notes.md`.
+Never leave two versions of one rule in the file, and never rewrite history in
+place — the order of the file is the order the decisions happened.
+
+**A rule that changed must change everywhere it is stated.** Copy, comments, DS
+tables and the audit docs all count. A stale statement of a live rule is how the
+prototype and the app came to disagree (#175).
+
+## Authoring traps in this codebase
+
+Recorded because each of these has cost real time more than once.
+
+**JSX comments.** In JSX *children*, only a brace-star comment works. A
+double-slash comment there renders as literal text on the page. And a brace-star
+comment is illegal in *expression* position — directly inside `x = ( … )`, or
+between `cond && (` and the element — where the brace parses as an object
+literal and the file stops compiling, which blanks the whole app because Babel
+drops every component in that file. A comment must also never quote a comment
+terminator inside its own text: it ends early and spills the rest onto the page.
+When in doubt put the comment on a plain line ABOVE the statement.
+
+**`ds-content.js` stores em-dashes and apostrophes as literal `\u2014` /
+`\u2019` escape sequences.** A find-and-replace written with the real
+characters matches nothing and fails silently. Check the log of every scripted
+edit to that file rather than assuming it landed.
+
+**Verify each scripted edit actually matched.** Several edits this session were
+silent no-ops. Log a boolean per replacement.
+
+**The preview harness does not advance time-based animation.** WAAPI and CSS
+transitions both report `playState: running` with `currentTime: 0` and never
+move, while `requestAnimationFrame` ticks normally. Motion looks identical to
+"frozen, then teleports" here. Never rewrite animation code on sampling evidence
+from the preview alone — see Migration Notes §20.
+
+**Sticky offsets resolve against the scroll container's padding box.** Adding
+the header height to a container that already pads for the header double-counts
+it. Derive the value (`window.STICKY_SECTION_TOP`) instead of picking one.

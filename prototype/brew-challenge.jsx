@@ -161,7 +161,9 @@ function BrewStamp({ size = 96, done = true, press = false }) {
 window.BrewStamp = BrewStamp;
 
 // Compact "tried it for real" seal — sits beside the card title in the sheet.
-// A quiet check-ring chip, not the full postmark.
+// A quiet chip, not the full postmark — but the SAME mark as the Collection
+// grid's corner badge (window.CupRingGlyph, screens.jsx). One fact, one glyph:
+// a checkmark here put a second, unrelated mark one tap from the card.
 function TriedSeal() {
   return (
     <span className="ff-mono" aria-label="Challenge tried" style={{
@@ -171,9 +173,7 @@ function TriedSeal() {
       color: 'var(--accent)', fontSize: 'var(--t-micro)', letterSpacing: '0.14em',
       transform: 'rotate(-3deg)',
     }}>
-      <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-        <path d="M3.6 7.4 L6.1 9.8 L10.6 4.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      {window.CupRingGlyph ? <window.CupRingGlyph size={14}/> : null}
       TRIED
     </span>
   );
@@ -216,11 +216,52 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
   // Small mono metadata sits on a tinted card at 11px — pull it toward --ink so it
   // clears 4.5:1 in both moods rather than resting at the muted default.
   const metaInk = 'color-mix(in oklab, var(--ink-mute) 62%, var(--ink))';
-  // Postpone: slide the card away immediately (no confirm ceremony), then hand
-  // off to onSkip which parks it under For Later.
+  // Postpone is a GESTURE, not a control: slide the card aside and it parks
+  // under For Later. Every button treatment we tried either said nothing on its
+  // own (icon-only), wrapped the title (pill in the title row), or added a
+  // second stacked action under the CTA. Dragging the card is the thing it
+  // means — and the destination names itself on the track revealed behind.
+  // Keyboard/AT get a real button (below), revealed on focus.
   const [parking, setParking] = React.useState(false);
-  React.useEffect(() => { setParking(false); }, [challenge && challenge.id]);
-  const onPostpone = () => { if (parking) return; setParking(true); setTimeout(() => { onSkip && onSkip(); setParking(false); }, 240); };
+  const [kbd, setKbd] = React.useState(false);    // postpone button has focus
+  // Only the KEYBOARD path drives a distance from React; the gesture's own
+  // flight belongs to the hook (exitDistance below).
+  const [parkDx, setParkDx] = React.useState(0);
+  const PARK_AT = 104;                            // past this, it parks on release
+  // Set by the LABEL, not by feel: 104 past a 12px track inset uncovers 92px of
+  // an ~84px FOR LATER label, so the destination reads WHOLE at the moment of
+  // release. At the earlier 92/20 it clipped its last glyphs exactly as the
+  // user was deciding to let go.
+  //
+  // The gesture, the first-run hint and the used-flag all come from swipe.jsx.
+  // This card kept its own copy of the pointer arithmetic and paid for it
+  // twice: every race fixed in useSwipeX had to be found again here, and the
+  // park swipe stayed broken after the hook was already sound. One
+  // implementation — otherwise the Design System documents an intention.
+  const brewHint = window.useSwipeHint
+    ? window.useSwipeHint({ storageKey: 'cq-brew-swipe-used', enabled: mode === 'active' && !!challenge, nudge: 38 })
+    : { hint: false, hintDx: 0, used: false, markUsed: () => {} };
+  const hint = brewHint.hint, used = brewHint.used;
+  // The card is off-screen by the time this runs (flown by the hook, or slid by
+  // the button), so it holds its space invisibly just long enough for the
+  // parent to take the challenge off Today.
+  const park = (delay) => {
+    if (parking) return;
+    brewHint.markUsed();
+    setParking(true);
+    setTimeout(() => { onSkip && onSkip(); setParking(false); setParkDx(0); }, delay);
+  };
+  const onPostpone = () => { if (parking) return; setParkDx(340); park(240); };
+  const parkSwipe = window.useSwipeX ? window.useSwipeX({
+    // RIGHT sets aside — the app-wide direction contract. Left has nowhere to
+    // go, so it damps rather than moving, and is clamped out of the transform.
+    canNext: false, canPrev: true,
+    commitThreshold: PARK_AT, maxDragDistance: 190,
+    exitDistance: 340, exitDurationMs: 240,
+    onPrev: () => park(120),
+  }) : { dragX: 0, isDragging: false, isExiting: false, bind: {}, motion: {} };
+  React.useEffect(() => { setParking(false); setParkDx(0); }, [challenge && challenge.id]);
+  const dx = Math.max(0, parkSwipe.dragX || 0) || parkDx || brewHint.hintDx;
 
   if (mode === 'completed') {
     const card = challenge.cardId && window.findCard && window.findCard(challenge.cardId);
@@ -270,23 +311,58 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
   // mode === 'active'
   return (
     <div className="px-24" style={{ paddingTop: 28 }}>
-      <div className="smallcaps" style={{ marginBottom: 28, color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <BrewCup size={15} color="var(--accent)" aria-hidden="true"/> OPTIONAL COFFEE CHALLENGE
+      <div className="smallcaps" style={{ marginBottom: 28, color: 'var(--accent-text)' }}>
+        OPTIONAL COFFEE CHALLENGE
       </div>
-      <div className="card" role="group" aria-label={'Optional coffee challenge: ' + challenge.title} style={{ background: accentTint, borderColor: accentRule, position: 'relative', opacity: parking ? 0 : 1, transform: parking ? 'translateX(28px)' : 'none', transition: 'opacity 220ms ease, transform 220ms ease' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'start', gap: 12 }}>
-          {/* One step below the lesson title: the challenge stays optional. */}
-          <h2 className="ff-display" style={{ fontSize: 'var(--t-subtitle)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h2>
-          {/* Postpone control (settled in review): clock in the app's round hairline
-              button chrome (same as FavButton) so it reads as tappable. Tap slides
-              the card away immediately; it lands under For Later, it is not deleted.
-              Never the bookmark (that glyph = Favorites, a different destination). */}
-          <button onClick={onPostpone} aria-label={'Save “' + challenge.title + '” for later'} style={{
-            appearance: 'none', cursor: 'pointer', width: 38, height: 38, margin: '-8px -6px -8px 0', padding: 0,
-            display: 'grid', placeItems: 'center', borderRadius: 999,
-            border: '1px solid ' + accentRule, background: 'var(--surface)', color: 'var(--ink-mute)',
-          }}><LaterClock size={18}/></button>
+      <div style={{ position: 'relative' }}>
+        {/* The track behind the card: a quiet backdrop for the destination
+            label, uncovered as the card slides. At rest it is invisible — the
+            accent strip is what stands. */}
+        <div aria-hidden="true" style={{
+          position: 'absolute', top: 0, bottom: 0, right: 0, left: 0, borderRadius: 'var(--r)',
+          background: 'color-mix(in oklab, var(--accent) 9%, var(--surface))',
+          border: '1px dashed ' + accentRule,
+          display: 'flex', alignItems: 'center', paddingLeft: 12,
+          opacity: Math.min(1, dx / 60), transition: parkSwipe.isDragging ? 'none' : 'opacity 220ms ease',
+          color: 'var(--accent-text)',
+        }}>
+          {/* Left-aligned and a size up: the card parks after ~104px, so only
+              the strip nearest the left edge is ever uncovered — a centred label
+              stays hidden under the card for the whole gesture. */}
+          <span className="smallcaps" style={{ color: 'inherit', fontSize: 'var(--t-support)' }}>FOR LATER</span>
         </div>
+      <div className="card" role="group" aria-label={'Optional coffee challenge: ' + challenge.title}
+        {...parkSwipe.bind} draggable={false}
+        style={{ background: accentTint, borderColor: accentRule, position: 'relative', touchAction: 'pan-y',
+          // A drag beginning on the title would start a native text selection
+          // and cancel the pointer stream — no swipe surface is selectable.
+          userSelect: 'none', WebkitUserSelect: 'none',
+          opacity: parking ? 0 : 1, transform: dx ? 'translateX(' + dx + 'px)' : 'none',
+          transition: (parkSwipe.isDragging || parkSwipe.isExiting) ? 'opacity 220ms ease' : 'opacity 220ms ease, transform 220ms cubic-bezier(0.22,0.61,0.36,1)' }}>
+        {/* The standing affordance: a double chevron at the right edge, pointing
+            the way the card goes. Directional, so it says "push me" rather than
+            just "something is here". A CHILD of the card, not a sibling behind
+            it — as a preceding sibling at z-index auto it was painted over by
+            the opaque card and invisible in the app while the DS showed it.
+            It does NOT retire: a Coffee Challenge surfaces once per module, so
+            by the next one the gesture has been forgotten and nothing on screen
+            recalls it. It only steps back — bright under the hint, 0.7 until the
+            gesture has been used, a quiet 0.35 reminder ever after. (An accent
+            strip poking out of the left edge was tried and dropped — a 6px bar
+            with a straight right edge read as a separate object, not a layer.) */}
+        <div aria-hidden="true" style={{
+          position: 'absolute', top: '50%', right: 9, transform: 'translateY(-50%)',
+          display: 'flex', alignItems: 'center', color: 'var(--accent-text)',
+          opacity: hint ? 1 : (used ? 0.35 : 0.7), transition: 'opacity 260ms ease',
+        }}>
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+            <path d="M4.2 3.6 8.6 8l-4.4 4.4M8.8 3.6 13.2 8l-4.4 4.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        {/* One step below the lesson title: the challenge stays optional. Full
+            card width — the postpone control used to sit in a trailing grid
+            column here, which capped the title at ~130px and wrapped it. */}
+        <h2 className="ff-display" style={{ fontSize: 'var(--t-subtitle)', fontWeight: 400, lineHeight: 1.15, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)' }}>{challenge.title}</h2>
         <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.5, color: 'var(--ink-mute)', margin: '10px 0 0', textWrap: 'pretty' }}>{challenge.instruction}</p>
         {/* Same geometry as the Continue Learning card: one mono meta line on the
             left rail, full-width CTA below — not a stacked meta + right-hung button. */}
@@ -305,8 +381,31 @@ function ActiveBrewCard({ challenge, mode, onLog, onSkip, onDismiss, onOpenCard,
             orange action; the challenge is optional, so it takes the outlined rank. */}
         <button className="btn btn-primary" onClick={onLog} aria-label={'Log result for “' + challenge.title + '”'} style={{
           width: '100%', marginTop: 18, padding: '14px 24px',
+          // touch-action applies to the element the touch STARTS on, not to an
+          // ancestor: without these the browser owns a drag begun on the CTA.
+          touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none',
           ...(lessonPending ? { background: 'transparent', color: 'var(--accent-text)', boxShadow: 'inset 0 0 0 1.5px var(--accent)' } : null),
         }}>Log result</button>
+        {/* The gesture's keyboard equivalent. Invisible until focused, so the
+            card keeps no standing control while staying operable without a
+            pointer. Parked, never deleted — and never the bookmark glyph, which
+            means Favorites, a different destination. */}
+        <button onClick={onPostpone} onFocus={() => setKbd(true)} onBlur={() => setKbd(false)}
+          style={{
+            appearance: 'none', cursor: 'pointer', font: 'inherit', display: 'block',
+            border: kbd ? '1px solid ' + accentRule : 0, background: 'none',
+            color: 'var(--accent-text)', fontSize: 'var(--t-support)', borderRadius: 999,
+            width: kbd ? '100%' : 1, height: kbd ? 40 : 1, marginTop: kbd ? 10 : 0,
+            padding: 0, overflow: 'hidden', opacity: kbd ? 1 : 0,
+            touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none',
+          }}>Save for later</button>
+      </div>
+      {/* The caption rides with the nudge and leaves with it — transient by
+          design, so the card is left with the chevron as its standing
+          affordance. window.SwipeHintCaption, shared with the decks. */}
+      {window.SwipeHintCaption
+        ? <window.SwipeHintCaption show={hint} direction={1} label="Slide the card aside to save it for later"/>
+        : null}
       </div>
     </div>
   );
@@ -543,12 +642,15 @@ window.PathChallengeNode = PathChallengeNode;
 // ───────────────────────────────────────────────────────────
 // TODAY · FOR LATER — the queue of challenges parked with "Save for later".
 // Collapsed to a single "For Later · n" row by default so it never competes
-// with today's lesson; taps open it. Excludes the currently active one and any
-// already completed. Starting one from here makes it the single active
+// with today's lesson; taps open it. Excludes only the currently active one:
+// a COMPLETED challenge parked again is a replay you intend to brew, and it
+// belongs here — parking it and watching it vanish was the gesture lying about
+// where the card went. Its row says "Brew again" so the list never implies the
+// challenge is unfinished. Starting one from here makes it the single active
 // challenge (the current active one moves back into this list).
 // ───────────────────────────────────────────────────────────
 function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
-  const ids = saved ? [...saved].filter(id => id !== activeId && !(completed && completed.has(id))) : [];
+  const ids = saved ? [...saved].filter(id => id !== activeId) : [];
   if (ids.length === 0) return null;
   // Only surface a saved challenge once its source lesson has actually been
   // reached — never advertise one tied to a lesson still ahead on the path.
@@ -569,12 +671,14 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
     <div className="px-24" style={{ paddingTop: 24 }}>
       <window.Disclosure headerPad="4px 0" headerStyle={{ minHeight: 44 }}
         ariaLabel={'For later, ' + items.length + ' challenge' + (items.length === 1 ? '' : 's')}
-        header={<span className="smallcaps" aria-hidden="true" style={{ color: 'var(--accent-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <LaterClock size={15} color="var(--accent)"/> FOR LATER · {items.length}
+        header={<span className="smallcaps" aria-hidden="true" style={{ color: 'var(--accent-text)' }}>
+          FOR LATER · {items.length}
         </span>}
         panelStyle={{ paddingTop: 12 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {items.map(ch => (
+        {items.map(ch => {
+          const done = !!(completed && completed.has(ch.id));
+          return (
           // No cup glyph per row — the section header already carries the mark.
           <div key={ch.id} style={{
             display: 'grid', gridTemplateColumns: '1fr auto auto', alignItems: 'center', gap: 12,
@@ -584,10 +688,10 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
               <div style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.2, textWrap: 'pretty' }}>{ch.title}</div>
               <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: metaInk, marginTop: 4 }}>{ch.effort}</div>
             </div>
-            <button onClick={() => onStart && onStart(ch)} className="ff-ui" aria-label={'Start “' + ch.title + '”'} style={{
+            <button onClick={() => onStart && onStart(ch)} className="ff-ui" aria-label={(done ? 'Brew “' : 'Start “') + ch.title + (done ? '” again' : '”')} style={{
               appearance: 'none', border: '1.5px solid var(--accent)', cursor: 'pointer', background: 'transparent', color: 'var(--accent-text)',
-              borderRadius: 12, padding: '0 14px', minHeight: 44, fontSize: 'var(--t-support)', fontWeight: 500,
-            }}>Start</button>
+              borderRadius: 12, padding: '0 14px', minHeight: 44, fontSize: 'var(--t-support)', fontWeight: 500, whiteSpace: 'nowrap',
+            }}>{done ? 'Brew again' : 'Start'}</button>
             <button onClick={() => onRemove && onRemove(ch.id)} aria-label={'Remove ' + ch.title} style={{
               appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer',
               color: 'var(--ink-mute)', width: 44, height: 44, display: 'grid', placeItems: 'center', padding: 0,
@@ -595,7 +699,8 @@ function SavedBrewList({ saved, activeId, completed, onStart, onRemove }) {
               <svg width="14" height="14" viewBox="0 0 15 15" aria-hidden="true"><path d="M3 3l9 9M12 3l-9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             </button>
           </div>
-        ))}
+          );
+        })}
       </div>
       </window.Disclosure>
     </div>

@@ -398,7 +398,7 @@ function App() {
     // Removing is always allowed, so a capped free user can still curate.
     if (isSavedKey(key) && !favorites.has(key) && !isPlus
         && [...favorites].filter(isSavedKey).length >= SAVED_FREE_MAX) {
-      setGateFeature('saved');
+      openGate('saved');
       return;
     }
     setFavorites(prev => {
@@ -557,8 +557,9 @@ function App() {
   };
 
   // ── The course lock ──
-  // Free tier plays ALL of Module 1 (Beans) — complete lessons, its challenges
-  // and its module test; Modules 2–5 are the one-time purchase, and everything
+  // Free tier plays the first three lessons of Module 1 (Beans) — and their
+  // challenges, since a challenge hangs off a lesson; the rest of Module 1 and
+  // Modules 2–5 are the one-time purchase, and everything
   // derived (dictionary terms, challenges, tree growth) inherits from lesson
   // access. Progress locks (finish X to unlock) still apply on top for owners.
   // Which lessons are free is declared once in data.jsx (window.FREE_LESSON_IDS)
@@ -570,6 +571,7 @@ function App() {
   const [gateFeature, setGateFeature] = useStateA(_route && _route.gate ? _route.gate : null); // key → PlusGateSheet open
   const [gateGame, setGateGame]       = useStateA(null); // the locked game behind a 'games' gate → module-targeted sheet
   const [adFeature, setAdFeature]     = useStateA(_route && _route.adFeature ? _route.adFeature : 'dictionary');
+  const [paywallCtx, setPaywallCtx]   = useStateA(null); // what the user tapped to reach the paywall
 
   // What each feature key actually does once it's open.
   const runFeature = (key) => {
@@ -582,7 +584,18 @@ function App() {
   // Single funnel: open the feature if allowed, otherwise raise the gate sheet.
   // The Dictionary is NOT routed through this — it opens for everyone and
   // limits itself inside (free = terms from played lessons, short entries).
-  const requestFeature = (key) => { if (featureUnlocked(key)) runFeature(key); else setGateFeature(key); };
+  const requestFeature = (key) => { if (featureUnlocked(key)) runFeature(key); else openGate(key); };
+
+  // The gate sheet only earns a step when it offers a BRANCH — the rewarded-ad
+  // preview. Without one it is the paywall's own CTA shown twice, so hand
+  // straight off and carry the targeting (gateContext) onto the paywall.
+  const gateHasBranch = (key) => !isV1 && key !== 'course' && key !== 'games';
+  const openGate = (key, game) => {
+    if (gateHasBranch(key)) { setGateGame(game || null); setGateFeature(key); return; }
+    setGateFeature(null); setGateGame(null);
+    setPaywallCtx({ ...(window.gateContext ? window.gateContext(key, game) : {}), fromGate: true });
+    setView('paywall');
+  };
 
   const openCustomize = () => setView('studio');
 
@@ -757,11 +770,13 @@ function App() {
       return { ...prev, activeId: id, startedAt: Date.now(), saved };
     });
   };
-  // "Save for later": park the active challenge into the saved queue (unless it's
-  // already completed — replays don't re-queue) and clear it off Today.
+  // "Save for later": park the active challenge into the saved queue and clear
+  // it off Today. A COMPLETED challenge queues too: you only see it here because
+  // you chose to brew it again, so "later" is a real intent. Dropping it
+  // silently made the park gesture lie about where the card went.
   const skipBrew = () => setBrew(prev => {
     const saved = new Set(prev.saved);
-    if (prev.activeId && !prev.completed.has(prev.activeId)) saved.add(prev.activeId);
+    if (prev.activeId) saved.add(prev.activeId);
     return { ...prev, activeId: null, startedAt: null, saved };
   });
   // Explicit save without starting (from the lesson-complete suggestion).
@@ -780,7 +795,6 @@ function App() {
   const saveBrew = (id) => {
     if (!id || !brewReached(id)) return;
     setBrew(prev => {
-      if (prev.completed.has(id)) return prev;
       const saved = new Set(prev.saved);
       saved.add(id);
       return { ...prev, saved };
@@ -871,7 +885,7 @@ function App() {
   // a tap raises the purchase gate instead of the player. Completed lessons go
   // through a review-confirm sheet (no new points); fresh lessons start immediately.
   const openLesson = (id) => {
-    if (!lessonAccessible(id)) { setGateFeature('course'); return; }
+    if (!lessonAccessible(id)) { openGate('course'); return; }
     if (isLessonComplete(id)) setReviewLessonId(id);
     else startLesson(id);
   };
@@ -983,7 +997,10 @@ function App() {
       completed.add(id);
       return { ...p, prevPoints: p.points, points: nextPoints, completed };
     });
-    // Route into the right reward screen.
+    // Route into the right reward screen. The module-closing lesson goes
+    // straight to the module moment — the two screens repeat each other's points,
+    // tree and freeze beats, so they are alternatives, never a sequence. The
+    // lesson's own card is revealed there alongside the Field Guide.
     if (ctx && ctx.isLastInModule) {
       setView('module-complete');
     } else {
@@ -1001,7 +1018,7 @@ function App() {
     if (courseComplete && !courseAck) { setView('course-complete'); return; }
     const nextId = window.findNextLessonId(completedLesson.id);
     const playable = !!(nextId && window.LESSONS && window.LESSONS[nextId]);
-    if (playable && !lessonAccessible(nextId)) { setView('app'); setTab('path'); setGateFeature('course'); return; }
+    if (playable && !lessonAccessible(nextId)) { setView('app'); setTab('path'); openGate('course'); return; }
     if (playable) startLesson(nextId);
     else { setView('app'); setTab('path'); }
   };
@@ -1028,7 +1045,7 @@ function App() {
     // now reads as complete and its module challenge is available.
     const nextId = window.findNextModuleFirstLesson(completedLesson.id);
     const playable = !!(nextId && window.LESSONS && window.LESSONS[nextId]);
-    if (playable && !lessonAccessible(nextId)) { setView('app'); setTab('path'); setGateFeature('course'); return; }
+    if (playable && !lessonAccessible(nextId)) { setView('app'); setTab('path'); openGate('course'); return; }
     if (playable) startLesson(nextId);
     else { setView('app'); setTab('path'); }
   };
@@ -1320,7 +1337,7 @@ function App() {
       brewChallengeState: moduleChallenge ? (_route && _route.view === 'module-complete' ? null : brewActiveId === moduleChallenge.id ? 'active' : brew.completed.has(moduleChallenge.id) ? 'completed' : brew.saved.has(moduleChallenge.id) ? 'saved' : null) : null,
       onStartChallenge: () => { if (moduleChallenge) startBrew(moduleChallenge.id); if (courseComplete && !courseAck) setView('course-complete'); else { setView('app'); setTab('learn'); } },
     };
-    const shared = { module: mod, reward, hasNext: ctx && !ctx.isLastModule, onContinue: advanceAfterModule, onBack: backToPath, ...challengeProps };
+    const shared = { module: mod, reward, lessonReward: completedLesson.reward, hasNext: ctx && !ctx.isLastModule, onContinue: advanceAfterModule, onBack: backToPath, ...challengeProps };
     const _newCore = window.coreDoneCount(effectiveCompleted);
     body = <ModuleCompleteScreen {...shared}
       startFlipped={!!(_route && _route.startFlipped)}
@@ -1352,7 +1369,7 @@ function App() {
   } else if (view === 'dictionary') {
     body = <DictionaryHome
       full={hasCourse}
-      onUnlock={() => setGateFeature('dictionary')}
+      onUnlock={() => openGate('dictionary')}
       learnedSet={learnedSet}
       favorites={favorites}
       savedTermCount={savedTermCount}
@@ -1381,7 +1398,7 @@ function App() {
     body = <TermOfDayScreen
       pool={todPool}
       full={hasCourse}
-      onUnlock={() => setGateFeature('dictionary')}
+      onUnlock={() => openGate('dictionary')}
       isFav={tod ? favorites.has('t:' + tod.id) : false}
       onToggleFav={() => tod && toggleFavorite('t:' + tod.id)}
       onOpenFull={openTermFull}
@@ -1481,7 +1498,8 @@ function App() {
       onPurchase={(planId) => { setIsPlus(true); setEntPlanId(planId || 'lifetime'); setPlusFrom('app'); setView('plus-welcome'); }}
       restoreOutcome={t.restoreOutcome}
       onRestored={() => setIsPlus(true)}
-      onClose={() => { setTab('profile'); setView('app'); }}
+      context={paywallCtx}
+      onClose={() => { const g = paywallCtx && paywallCtx.fromGate; setPaywallCtx(null); if (!g) setTab('profile'); setView('app'); }}
     />;
   } else if (view === 'plus-welcome') {
     body = <PlusWelcomeScreen
@@ -1581,7 +1599,7 @@ function App() {
                                         flashEmpty={savedTermCount === 0}
                                         isCourseLocked={(id) => !lessonAccessible(id)}
                                         gamesLocked={!hasCourse}
-                                        onGame={(g) => { if (hasCourse || window.FREE_GAME_IDS.includes(g.id)) { setActiveGame(g); setView('game-intro'); } else { setGateGame(g); setGateFeature('games'); } }}
+                                        onGame={(g) => { if (hasCourse || window.FREE_GAME_IDS.includes(g.id)) { setActiveGame(g); setView('game-intro'); } else { openGate('games', g); } }}
                                         onFlashcards={() => { setFlashBack('learn'); setView('flashcards'); }}
                                         onVocabGame={() => { setFlashBack('learn'); setView('vocab-game'); }}
                                         onOpenDuel={() => requestFeature('duel')}
@@ -1602,7 +1620,7 @@ function App() {
                                         onBrewAction={(ch, st) => { if (st === 'completed') { setBrewRecap(ch); return; } startBrew(ch.id); setTab('learn'); setView('app'); }} state={state}/>}
         {tab === 'path'    && <PathTab  onLesson={openLesson}
                                         purchaseLocked={(id) => !lessonAccessible(id)}
-                                        onPurchaseTap={() => setGateFeature('course')}
+                                        onPurchaseTap={() => openGate('course')}
                                         onOpenGuide={openCardSheet}
                                         brewCompleted={brew.completed}
                                         brewActiveId={brewActiveId}
@@ -1621,7 +1639,7 @@ function App() {
                                         onOpenPassport={openPassport}
                                         onToggleFav={atlasToggleFav} onMarkTasted={atlasMarkTasted}/>
                                 : <window.FeatureLock featureKey="atlas" style={t.lockStyle} showAd={!isV1}
-                                        onUnlock={() => setGateFeature('atlas')}
+                                        onUnlock={() => openGate('atlas')}
                                         preview={t.lockStyle === 'hard' ? null : (
                                           <AtlasMapScreen
                                             states={atlasData.states} favs={atlasData.favs} styleMode={t.atlasMapStyle}
@@ -1684,7 +1702,7 @@ function App() {
           open={!!gateFeature}
           showAd={!isV1 && gateFeature !== 'course' && gateFeature !== 'games'}
           onClose={() => { setGateFeature(null); setGateGame(null); }}
-          onUpgrade={() => { setGateFeature(null); setView('paywall'); }}
+          onUpgrade={() => { setPaywallCtx({ ...(window.gateContext ? window.gateContext(gateFeature, gateGame) : {}), fromGate: true }); setGateFeature(null); setView('paywall'); }}
           onWatchAd={() => { const feature = gateFeature; setGateFeature(null); setAdFeature(feature); setView('rewarded-ad'); }}/>
       )}
       {window.StampPressOverlay && stampAward && (
@@ -1777,6 +1795,20 @@ function App() {
             { value: 'all-unlocked', label: 'All modules unlocked' },
           ]}
           onChange={(v) => setTweak('progress', v)}/>
+
+        <TweakSection label="First-run hints"/>
+        <TweakButton label="Replay swipe hints" secondary={true}
+          onClick={() => {
+            // Clearing the keys alone would not re-fire it: the hint effect keys
+            // off the challenge id, so the card needs telling to run it again.
+            try {
+              window.localStorage.removeItem('cq-brew-swipe-used');
+              window.localStorage.removeItem('cq-flash-swipe-used');
+              window.localStorage.removeItem('cq-dict-swipe-used');
+            } catch (e) {}
+            window.dispatchEvent(new Event('cq-replay-swipe-hint'));
+            setTab('learn'); setView('app');
+          }}/>
 
         <TweakSection label="Streak"/>
         <TweakToggle label="Freeze covered Thursday" value={frozenDays.length > 0}

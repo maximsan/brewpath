@@ -4,15 +4,16 @@
 // drill chrome: a lesson-topbar with the roasting-bean counter — the same
 // pattern MiniGamePlayer uses — and a Roasty results screen at the end.
 
-const { useState: useStateX, useEffect: useEffectX, useRef: useRefX } = React;
+const { useState: useStateX, useEffect: useEffectX } = React;
 
 // ════════════════════════════════════════════════════════════
 // TERM OF THE DAY
 // ════════════════════════════════════════════════════════════
 function TermOfDayScreen({ pool, full = true, onUnlock, onOpenFull, isFav, onToggleFav, onClose }) {
   const term = window.dictTermOfDay ? window.dictTermOfDay(null, pool) : null;
-  const cat = term ? (window.DICT_CAT_BY_ID || {})[term.cat] : null;
-  const today = new Date(2026, 5, 18);
+  // The same frozen today the term was PICKED from (data.jsx) — never a second
+  // copy of the seed, or the dateline names a different day than the term.
+  const today = window.PROTO_TODAY || new Date();
   const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
   // Transparent at rest, header chrome once anything moves — the scroller is
   // full-bleed to y=0, so a long term would otherwise scroll under the close
@@ -24,20 +25,27 @@ function TermOfDayScreen({ pool, full = true, onUnlock, onOpenFull, isFav, onTog
       <window.FloatTopbar scrolled={scrolled} onBack={onClose}
         right={window.TopBarFav ? <window.TopBarFav active={!!isFav} onClick={onToggleFav} label="Save term"/> : null}/>
       <div className="scroll" ref={scrollRef} onScroll={onScroll} style={{ paddingTop: 84, display: 'flex', flexDirection: 'column' }}>
-        <div className="px-24" style={{ textAlign: 'center' }}>
-          <div className="smallcaps" style={{ color: 'var(--accent)' }}>TERM OF THE DAY</div>
-          <div className="ff-mono" style={{ fontSize: 'var(--t-label)', color: 'var(--ink-mute)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 8 }}>{dateStr}</div>
+        {/* Matched spacers above and below centre the whole card — dateline to
+            definition — between the topbar and the sticky footer. They collapse
+            first when the content is tall enough to need the room. */}
+        <div style={{ flex: 1, minHeight: 8 }}></div>
+        {/* Dateline: the app's own hairline, used horizontally either side of the
+            date. It frames the composition without decorating the term. */}
+        <div className="px-24" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <span aria-hidden="true" style={{ width: 28, height: 1, background: 'var(--rule)' }}></span>
+          <span className="ff-mono" style={{ fontSize: 'var(--t-label)', color: 'var(--ink-mute)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{dateStr}</span>
+          <span aria-hidden="true" style={{ width: 28, height: 1, background: 'var(--rule)' }}></span>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '14px 0 4px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '44px 0 34px' }}>
           {window.Roasty && <Roasty state="correct" size={120}/>}
         </div>
 
         <div className="px-24" style={{ textAlign: 'center', paddingTop: 6 }}>
-          <span className="smallcaps" style={{ color: 'var(--ink-mute)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <CatGlyph cat={term.cat} size={15} color="var(--ink-mute)"/>{cat ? cat.label : ''}
-          </span>
-          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.02, letterSpacing: '-0.03em', margin: '10px 0 0', color: 'var(--ink)' }}>{term.term}</h1>
+          {/* No category line: this screen is one term and its definition, and
+              the category changes nothing you can do here. The full entry states
+              it. Date above, term, pronunciation, definition — nothing else. */}
+          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.02, letterSpacing: '-0.03em', margin: 0, color: 'var(--ink)' }}>{term.term}</h1>
           {term.pron && <div style={{ marginTop: 14, display: 'flex', justifyContent: 'center' }}><SpeakButton word={term.term} pron={term.pron}/></div>}
         </div>
 
@@ -134,6 +142,28 @@ function FlashcardsScreen({ favorites, pool, full = true, onOpenTerm, onBrowse, 
   }, [allDeck.length]);
 
   const total = allDeck.length;
+  // Gesture, standing stack and first-run hint all come from swipe.jsx, so this
+  // deck and the module reward carousel cannot drift apart.
+  const deckHint = window.useSwipeHint
+    ? window.useSwipeHint({ storageKey: 'cq-flash-swipe-used', enabled: total > 0 })
+    : { hint: false, hintDx: 0, markUsed: () => {} };
+  const hint = deckHint.hint, hintDx = deckHint.hintDx, markSwipeUsed = deckHint.markUsed;
+  // Swipe the deck. Declared BEFORE the empty/done early returns — a hook after
+  // a conditional return changes hook order between renders. The advance logic
+  // is inlined rather than calling go(), which is defined further down.
+  const deckSwipe = window.useSwipeX ? window.useSwipeX({
+    canNext: total > 0,
+    canPrev: pos > 0,
+    // The committed card FLIES OFF the screen with a tilt before the next one
+    // appears. Snapping back to centre with new content inside read as a jump
+    // cut — the swipe was hard to see happening at all.
+    exitDistance: 460,
+    exitDurationMs: 260,
+    tiltDegreesPer100px: 7,
+    onNext: () => { markSwipeUsed(); setFlipped(false); if (pos >= total - 1) setDone(true); else setPos(p => Math.min(total - 1, p + 1)); },
+    onPrev: () => { markSwipeUsed(); setFlipped(false); setPos(p => Math.max(0, p - 1)); },
+  }) : { dragX: 0, isDragging: false, isExiting: false, bind: {}, motion: {} };
+  const [kbd, setKbd] = useStateX(false); // keyboard Next has focus
   const shuffle = () => {
     const arr = allDeck.map((_, i) => i);
     for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
@@ -227,9 +257,32 @@ function FlashcardsScreen({ favorites, pool, full = true, onOpenTerm, onBrowse, 
 
         {/* the card — real 3D flip */}
         <div className="px-24" style={{ paddingTop: 16, flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <button onClick={() => setFlipped(f => !f)} aria-label={flipped ? 'Show term' : 'Reveal definition'} style={{
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative', transform: hintDx ? 'translateX(' + hintDx + 'px)' : 'none', transition: 'transform 420ms cubic-bezier(0.22,0.61,0.36,1)' }}>
+          {/* The cards behind — window.DeckStack, shared with the reward
+              carousel. Visible at rest as stacked edges: that is the standing
+              affordance, a deck that looks like a deck needs no button row to
+              say it can be moved through. Each side is absent when there is
+              nothing that way: no left card on card 1, no right card on the last
+              (Finish appears instead). */}
+          {window.DeckStack ? <window.DeckStack swipe={deckSwipe} canPrev={pos > 0} canNext={pos < total - 1}
+            radius={20} style={{ bottom: 'auto', minHeight: 380, height: '100%' }}/> : null}
+          <button onClick={() => setFlipped(f => !f)} aria-label={flipped ? 'Show term' : 'Reveal definition'} {...deckSwipe.bind}
+            onKeyDown={(e) => {
+              // POINT-AT-TARGET, deliberately NOT the drag model: there is no
+              // card following a finger here, so Right means forward as it does
+              // in every carousel and OS. Mapping keys to the gesture's own
+              // direction recreated the collision the buttons had.
+              if (e.key === 'ArrowRight') { e.preventDefault(); markSwipeUsed(); go(1); }
+              else if (e.key === 'ArrowLeft') { e.preventDefault(); markSwipeUsed(); go(-1); }
+            }}
+            style={{
             appearance: 'none', border: 'none', background: 'transparent', padding: 0, cursor: 'pointer',
             display: 'block', width: '100%', flex: 1, minHeight: 380, perspective: '1400px', textAlign: 'left',
+            position: 'relative',
+            // A drag starting on the card's own text would begin a text
+            // selection and cancel the pointer stream mid-gesture.
+            userSelect: 'none', WebkitUserSelect: 'none',
+            ...deckSwipe.motion,
           }}>
             <div style={{
               position: 'relative', width: '100%', height: '100%', minHeight: 380,
@@ -256,6 +309,13 @@ function FlashcardsScreen({ favorites, pool, full = true, onOpenTerm, onBrowse, 
               </div>
             </div>
           </button>
+          </div>
+
+          {/* Transient: it rides with the nudge and leaves with it, so the deck
+              is left with the stacked card as its standing affordance. */}
+          {window.SwipeHintCaption
+            ? <window.SwipeHintCaption show={hint} label="Swipe the card left for the next term"/>
+            : null}
 
           {/* The entry link is the card's continuation, not deck chrome: it sits
               directly under the card and only exists once the definition is
@@ -265,9 +325,35 @@ function FlashcardsScreen({ favorites, pool, full = true, onOpenTerm, onBrowse, 
             <button className="btn btn-link" tabIndex={flipped ? 0 : -1} onClick={() => onOpenTerm(term.id)}>{full ? 'View full entry →' : 'View entry →'}</button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'stretch', gap: 10, paddingTop: 8 }}>
-            <button className="btn btn-ghost" style={{ width: 'auto', flex: 1, padding: '16px 24px' }} disabled={pos === 0} onClick={() => go(-1)}>‹ Prev</button>
-            <button className="btn btn-primary" style={{ width: 'auto', flex: 1 }} onClick={() => go(1)}>{pos >= total - 1 ? 'Finish' : 'Next ›'}</button>
+          {/* Prev/Next are GONE: they used the opposite direction model to the
+              gesture — a left chevron meaning "back" sat 40px under a card whose
+              left drag means "next" — and the stacked card behind now says the
+              deck can be moved through. What survives is one focus-revealed
+              control per direction (the peek slivers are aria-hidden, so a lone
+              Next left AT users with no announced way back) and Finish in place
+              of Next on the last card — completing the deck is the one state a
+              swipe cannot announce. */}
+          <div style={{ display: 'flex', gap: 10, paddingTop: 8 }}>
+            {pos > 0 && (
+              <button onClick={() => { markSwipeUsed(); go(-1); }} onFocus={() => setKbd(true)} onBlur={() => setKbd(false)} style={{
+                appearance: 'none', cursor: 'pointer', font: 'inherit', display: 'block',
+                border: kbd ? '1px solid color-mix(in oklab, var(--accent) 34%, var(--rule))' : 0,
+                background: 'none', color: 'var(--accent-text)', fontSize: 'var(--t-support)', borderRadius: 999,
+                width: kbd ? '100%' : 1, height: kbd ? 44 : 1, padding: 0, overflow: 'hidden', opacity: kbd ? 1 : 0,
+                flex: kbd ? 1 : '0 0 1px',
+              }}>Previous card</button>
+            )}
+            {pos >= total - 1 ? (
+              <button className="btn btn-primary" onClick={() => go(1)}>Finish</button>
+            ) : (
+              <button onClick={() => { markSwipeUsed(); go(1); }} onFocus={() => setKbd(true)} onBlur={() => setKbd(false)} style={{
+                appearance: 'none', cursor: 'pointer', font: 'inherit', display: 'block',
+                border: kbd ? '1px solid color-mix(in oklab, var(--accent) 34%, var(--rule))' : 0,
+                background: 'none', color: 'var(--accent-text)', fontSize: 'var(--t-support)', borderRadius: 999,
+                width: kbd ? '100%' : 1, height: kbd ? 44 : 1, padding: 0, overflow: 'hidden', opacity: kbd ? 1 : 0,
+                flex: kbd ? 1 : '0 0 1px',
+              }}>Next card</button>
+            )}
           </div>
         </div>
       </div>

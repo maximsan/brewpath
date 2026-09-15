@@ -3,7 +3,7 @@
 // Loaded after library.jsx (needs Bookmark / FavButton / FlavorWheel / FormRow),
 // before app.jsx.
 
-const { useState: useStateD, useEffect: useEffectD, useRef: useRefD, useMemo: useMemoD } = React;
+const { useState: useStateD, useEffect: useEffectD, useRef: useRefD } = React;
 
 // ── Pronunciation ────────────────────────────────────────────
 function speakTerm(text) {
@@ -196,10 +196,12 @@ function DictSearchBar({ value, onChange, onClear, autoFocus, placeholder }) {
 }
 
 // ── Filter segmented control (All / Learned / Locked) ────────
-function DictFilter({ value, onChange}) {
+function DictFilter({ value, onChange }) {
   const opts = [['all', 'All'], ['learned', 'Learned'], ['locked', 'To learn']];
   return (
-    <div style={{ display: 'flex', gap: 0, border: '1px solid var(--rule)', borderRadius: 999, overflow: 'hidden', background: 'var(--surface)' }}>
+    // Radius 12, matching DictSearchBar directly above it. A 999 pill under a
+    // 12px field, both full width and stacked, read as two unrelated controls.
+    <div style={{ display: 'flex', gap: 0, border: '1px solid var(--rule)', borderRadius: 12, overflow: 'hidden', background: 'var(--surface)' }}>
       {opts.map(([k, l]) => {
         const on = value === k;
         return (
@@ -220,12 +222,60 @@ function DictFilter({ value, onChange}) {
 }
 
 // ── A term row in a list ─────────────────────────────────────
-function DictTermRow({ term, learned, isFav, onOpen, onToggleFav, snippet }) {
+function DictTermRow({ term, learned, isFav, onOpen, onToggleFav, snippet, nudge = 0 }) {
   const cat = (window.DICT_CAT_BY_ID || {})[term.cat];
+  // Swipe RIGHT to save, matching the direction contract: right sets aside.
+  // Save-only, never un-save — losing a curated list to a stray 70px drag is
+  // the destructive case the contract keeps off gestures. An already-saved row
+  // damps instead, and its track reads SAVED so the resistance is explained.
+  const saveSwipe = window.useSwipeX ? window.useSwipeX({
+    canNext: false, canPrev: !isFav, commitThreshold: 64, maxDragDistance: 120,
+    onPrev: () => onToggleFav && onToggleFav(),
+  }) : { dragX: 0, rawDragX: 0, isDragging: false, bind: {}, motion: {} };
+  // A row never flies off — it is still in the list afterwards, saved.
+  const rowOffsetX = Math.max(0, saveSwipe.dragX || 0) || nudge;
+  // The track fades in on the UNDAMPED gesture, not on how far the row moved.
+  // A saved row moves 22% of the drag, so keying the label to rowOffsetX left a
+  // 60px swipe showing 13px of travel at 0.3 opacity — no motion and no reason
+  // given, which is exactly how "already saved" came to look like a dead list.
+  const trackIntentX = Math.max(0, saveSwipe.rawDragX || 0) || rowOffsetX;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: '1px solid var(--rule)' }}>
-      <button onClick={() => onOpen(term.id)} style={{
-        flex: 1, minWidth: 0, appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', padding: 0,
+    <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <div aria-hidden="true" style={{
+        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', paddingLeft: 12,
+        opacity: Math.min(1, trackIntentX / 30), transition: saveSwipe.isDragging ? 'none' : 'opacity 200ms ease',
+      }}>
+        <span className="smallcaps" style={{ color: isFav ? 'var(--ink-mute)' : 'var(--accent-text)' }}>{isFav ? 'ALREADY SAVED' : 'SAVE'}</span>
+      </div>
+    {/* THE WHOLE ROW is the target — both the tap and the drag — but the row
+        itself is NOT the button. It used to wrap its content in an inner button
+        sized to the text, so the padding, the bookmark column and the gaps
+        answered neither gesture: a press beginning there hit the container and
+        did nothing, which is most of the row. Making the row role="button"
+        fixed that and broke something quieter: role="button" takes
+        presentational children, so a screen reader may prune the bookmark
+        inside it — and the bookmark is the ONLY way to un-save, since the
+        gesture is deliberately save-only. So the row stays a plain div with the
+        gesture on it, and the tap target is a stretched button behind the
+        content, with the bookmark above it in z-order. No control inside a
+        control, every pixel still drags.
+        userSelect none is on the row and inherited by its text: a drag starting
+        on a selectable word begins a native selection and cancels the pointer
+        stream, which is why the gesture once only worked over the glyph. */}
+    <div {...saveSwipe.bind} style={{ position: 'relative',
+      display: 'flex', alignItems: 'center', gap: 12, padding: '13px 0', borderBottom: '1px solid var(--rule)',
+      background: 'var(--bg)', textAlign: 'left',
+      touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none',
+      transform: rowOffsetX ? 'translateX(' + rowOffsetX + 'px)' : 'none',
+      transition: saveSwipe.isDragging ? 'none' : 'transform 380ms cubic-bezier(0.22,0.61,0.36,1)' }}>
+      <button onClick={() => onOpen(term.id)} aria-label={'Open “' + term.term + '”'} draggable={false}
+        style={{
+          position: 'absolute', inset: 0, zIndex: 0, appearance: 'none', border: 'none',
+          background: 'transparent', cursor: 'pointer', padding: 0, margin: 0,
+          touchAction: 'pan-y', userSelect: 'none', WebkitUserSelect: 'none',
+        }}/>
+      <div style={{
+        flex: 1, minWidth: 0, position: 'relative', zIndex: 1, pointerEvents: 'none',
         display: 'grid', gridTemplateColumns: '22px 1fr', alignItems: 'center', gap: 13,
       }}>
         <StatusGlyph learned={learned} reference={!term.lesson}/>
@@ -238,8 +288,29 @@ function DictTermRow({ term, learned, isFav, onOpen, onToggleFav, snippet }) {
             {snippet ? term.short : (cat ? cat.label : '')}
           </span>
         </span>
-      </button>
-      <FavButton size={32} active={!!isFav} onClick={onToggleFav}/>
+      </div>
+      {/* Shown only when saved — no column of empty toggles on unsaved rows,
+          which is what made the old per-row FavButton the heaviest thing on the
+          screen. But it IS a control: the save-only rule belongs to the GESTURE
+          (a stray drag must never empty a curated list), not to the button.
+          Extending it to the button too left adding at one flick and removing
+          at two navigations, an asymmetry nothing justified. The slot is
+          reserved in both states so rows align whether saved or not. */}
+      <span style={{ flex: '0 0 18px', display: 'grid', placeItems: 'center', position: 'relative', zIndex: 2 }}>
+        {isFav && (
+          <button onClick={(e) => { e.stopPropagation(); onToggleFav && onToggleFav(); }}
+            aria-label={'Remove “' + term.term + '” from saved'} aria-pressed="true"
+            style={{
+              appearance: 'none', border: 'none', background: 'transparent', cursor: 'pointer',
+              width: 44, height: 44, margin: -13, padding: 0, display: 'grid', placeItems: 'center',
+            }}>
+            <svg width="13" height="16" viewBox="0 0 13 16" aria-hidden="true">
+              <path d="M1.4 1.6h10.2v12.8L6.5 10.9 1.4 14.4z" fill="var(--accent)"/>
+            </svg>
+          </button>
+        )}
+      </span>
+    </div>
     </div>
   );
 }
@@ -319,6 +390,15 @@ function DictionaryHome({ name = 'Coffee Dictionary', full = true, onUnlock, lea
   const tod = window.dictTermOfDay ? window.dictTermOfDay(null, full ? null : terms) : null;
   const isLearned = (t) => learnedSet && learnedSet.has(t.id);
   const isFav = (id) => favorites && favorites.has('t:' + id);
+  // First-run hint for swipe-to-save: window.useSwipeHint, the same three
+  // pieces the flashcard deck and the challenge card use. The nudge timings,
+  // the used-flag, the replay event and the reduced-motion branch all live in
+  // swipe.jsx — a screen that re-implements any of them drifts within a
+  // session, which is how this list ended up with its own copy.
+  const saveHint = window.useSwipeHint
+    ? window.useSwipeHint({ storageKey: 'cq-dict-swipe-used', nudge: 40 })
+    : { hint: false, hintDx: 0, used: false, markUsed: () => {} };
+  const hint = saveHint.hint, hintDx = saveHint.hintDx;
   // Reference-only terms have no lesson, so they can never leave the unlearned
   // set — keeping them in the To-learn bucket would advertise a lesson that
   // does not exist. They show under All only.
@@ -333,24 +413,32 @@ function DictionaryHome({ name = 'Coffee Dictionary', full = true, onUnlock, lea
       }).filter(passFilter)
     : null;
 
-  const filterCounts = (list) => ({
-    all: list.length,
-    learned: list.filter(isLearned).length,
-    locked: list.filter(isToLearn).length,
-  });
-
   const SubHeader = window.SubScreenHeader;
   const topbar = SubHeader
     ? <SubHeader scrolled={scrolled} title={compactTitle} onBack={() => (cat ? setCat(null) : onClose())}/>
     : null;
 
   // ── Term list (used by search, category, A–Z) ──
+  // Roughly how many rows fit above the fold on a phone. The nudge must land on
+  // a row that is BOTH unsaved (a saved row damps and does nothing) and on
+  // screen — "first unsaved anywhere in the list" put the demonstration ~250px
+  // below the fold while its caption sat in plain view, so the user was told to
+  // swipe and every row they could reach was inert.
+  const ROWS_ABOVE_FOLD = 5;
+  const firstReachableUnsavedId = (list) => {
+    const reachable = list.slice(0, ROWS_ABOVE_FOLD).find(term => !isFav(term.id));
+    return reachable ? reachable.id : null;
+  };
   const renderList = (list, opts) => (
     <div>
-      {list.map(t => (
+      {/* Nudge the first unsaved row ABOVE THE FOLD — see firstReachableUnsavedId.
+          If every reachable row is already saved there is nothing to demonstrate,
+          so nothing nudges and the caption does not render either. */}
+      {list.map((t, i) => (
         <DictTermRow key={t.id} term={t} learned={isLearned(t)} isFav={isFav(t.id)}
           snippet={!!q || !!(opts && opts.snippet)}
-          onOpen={onOpenTerm} onToggleFav={() => onToggleFav('t:' + t.id)}/>
+          nudge={opts && opts.hintFirst && opts.firstUnsavedId && t.id === opts.firstUnsavedId ? hintDx : 0}
+          onOpen={onOpenTerm} onToggleFav={() => { saveHint.markUsed(); onToggleFav('t:' + t.id); }}/>
       ))}
     </div>
   );
@@ -358,12 +446,8 @@ function DictionaryHome({ name = 'Coffee Dictionary', full = true, onUnlock, lea
   // ── SEARCH MODE ──
   let body;
   if (q) {
-    const fc = filterCounts(terms.filter(t => {
-      const hay = (t.term + ' ' + (t.aliases || []).join(' ') + ' ' + t.short).toLowerCase();
-      return hay.indexOf(q) >= 0;
-    }));
     body = (
-      <div className="px-24" style={{ paddingTop: 18 }}>
+      <div className="px-24">
         {full && <DictFilter value={filter} onChange={setFilter}/>}
         <div className="ff-mono" style={{ fontSize: 'var(--t-label)', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-mute)', margin: '18px 0 4px' }}>
           {searchResults.length} {searchResults.length === 1 ? 'RESULT' : 'RESULTS'}
@@ -377,37 +461,40 @@ function DictionaryHome({ name = 'Coffee Dictionary', full = true, onUnlock, lea
     );
   } else if (cat) {
     // ── CATEGORY DRILL-DOWN ──
-    const meta = (window.DICT_CAT_BY_ID || {})[cat];
+    // No category banner here: inside a category the PAGE TITLE names the
+    // category (see the header block below), so a second heading restating it
+    // three rows further down was the same label twice.
     const list = terms.filter(t => t.cat === cat).filter(passFilter);
-    const fc = filterCounts(terms.filter(t => t.cat === cat));
     body = (
-      <div className="px-24" style={{ paddingTop: 4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-          <span style={{ width: 40, height: 40, borderRadius: 12, display: 'grid', placeItems: 'center', background: 'color-mix(in oklab, var(--accent) 10%, var(--surface))' }}>
-            <CatGlyph cat={cat} size={22} color="var(--accent)"/>
-          </span>
-          <div>
-            <h2 className="ff-display" style={{ fontSize: 'var(--t-title)', fontWeight: 400, letterSpacing: '-0.01em', margin: 0, color: 'var(--ink)', lineHeight: 1.05 }}>{meta.label}</h2>
-            <div style={{ fontSize: 'var(--t-support)', color: 'var(--ink-mute)', marginTop: 3 }}>{meta.short}</div>
-          </div>
-        </div>
-        <DictFilter value={filter} onChange={setFilter}/>
-        <div style={{ marginTop: 14 }}>{renderList(list, { snippet: true })}</div>
+      <div className="px-24">
+        {/* Free tier lists only terms a lesson has already taught, so every row
+            is Learned by definition and the filter has nothing to sort. Search
+            hid it on that reasoning; the category list did not. */}
+        {full && <DictFilter value={filter} onChange={setFilter}/>}
+        {/* Transient: rides with the nudge on the first row and leaves with it.
+            Only the browse list is nudged — a search result list moves under the
+            user as they type, and a row sliding there reads as a glitch. */}
+        {window.SwipeHintCaption
+          ? <window.SwipeHintCaption show={!!(hint && firstReachableUnsavedId(list))} direction={1}
+              label="Swipe a term right to save it"/>
+          : null}
+        <div style={{ marginTop: 14 }}>{renderList(list, { snippet: true, hintFirst: true, firstUnsavedId: firstReachableUnsavedId(list) })}</div>
       </div>
     );
   } else {
     // ── DISCOVER ──
     body = (
-      <div className="px-24" style={{ paddingTop: 6 }}>
+      <div className="px-24">
         <TermOfDayBanner term={tod} onOpen={onTermOfDay}/>
+        {/* Chips sit 16 below the banner, matching the gap above it. */}
         {(full || terms.length > 0) && (
-        <div style={{ marginTop: tod ? 24 : 0 }}>
+        <div style={{ marginTop: tod ? 16 : 0 }}>
           <DictQuickChips savedTermCount={savedTermCount} onFlashcards={onFlashcards} onVocabGame={onVocabGame}/>
         </div>
         )}
         {(!full && terms.length === 0) && (
           <p style={{ fontSize: 'var(--t-body)', lineHeight: 1.55, color: 'var(--ink-mute)', margin: '4px 0 0', textWrap: 'pretty' }}>
-            Your glossary starts in lessons — every term you meet is collected here, short explanation included.
+            Nothing here yet — start a lesson and every term you meet lands here.
           </p>
         )}
         {terms.length > 0 && (<>
@@ -443,20 +530,46 @@ function DictionaryHome({ name = 'Coffee Dictionary', full = true, onUnlock, lea
     );
   }
 
+  // Inside a category the h1 is the CATEGORY, not "Coffee Dictionary" — the
+  // back chevron already says where you came from.
+  const headerCat = cat ? (window.DICT_CAT_BY_ID || {})[cat] : null;
+  const headerTitle = headerCat ? headerCat.label : name;
+  // NO EYEBROW. Every title block in the app is now the same shape: the title
+  // first, then at most one muted support line, and only where that line says
+  // something the page does not already show — the form Favorites settled on.
+  //   lesson glossary → what the glossary is limited to (scope, not a count)
+  //   full dictionary → nothing: "73 terms" is the sum of the per-category
+  //                     counts listed directly below it (§16's argument)
+  //   category        → nothing: the description belongs on the category ROW,
+  //                     where it helps you choose. Repeating it after you have
+  //                     chosen recaps a decision already made.
+  const headerSupport = headerCat ? null
+    : (full ? null : 'Only the terms your lessons have covered so far.');
+
   return (
     <div className="screen" data-screen-label="Dictionary" style={{ background: 'var(--bg)' }}>
       {topbar}
       <div ref={scrollRef} className="scroll" onScroll={onScroll} style={{ paddingTop: 108, paddingBottom: 120 }}>
         <div className="px-24">
-          <div className="smallcaps" style={{ marginBottom: 10, color: 'var(--accent)' }}>{full ? `REFERENCE · ${terms.length} TERMS` : `FROM YOUR LESSONS · ${terms.length} ${terms.length === 1 ? 'TERM' : 'TERMS'}`}</div>
-          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>{name}</h1>
+          <h1 className="ff-display" style={{ fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em', margin: 0, color: 'var(--ink)' }}>{headerTitle}</h1>
+          {headerSupport && (
+            <p style={{ margin: '8px 0 0', fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)', textWrap: 'pretty' }}>{headerSupport}</p>
+          )}
         </div>
+        {/* ONE gap below the search field, owned by the body wrapper further
+            down. Each branch used to add its own paddingTop on top of it, so
+            the distance under the field was 24 in search results, 16 in a
+            category and 12 on discover. Branches now contribute nothing.
+            NOTE: a bare double-slash comment here renders as literal text —
+            JSX children accept only brace-star comments, and such a comment
+            must never quote its own closing marker, which ends it early and
+            spills the rest onto the page. */}
         {(full || terms.length > 0) && (
-        <div className="px-24" style={{ paddingTop: 18 }}>
+        <div className="px-24" style={{ paddingTop: 16 }}>
           <DictSearchBar value={query} onChange={setQuery} onClear={() => setQuery('')} autoFocus={!!focusSearch || !!initialQuery}/>
         </div>
         )}
-        <div style={{ paddingTop: 6 }}>{body}</div>
+        <div style={{ paddingTop: 16 }}>{body}</div>
       </div>
     </div>
   );
@@ -536,7 +649,12 @@ function LessonRefCard({ lessonId, onLesson }) {
   );
   const style = {
     width: '100%', display: 'grid', gridTemplateColumns: '28px 1fr auto', alignItems: 'center', gap: 14,
-    background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 12, padding: '14px 16px', textAlign: 'left',
+    // Hairline row, not a filled card. The entry page was carrying three
+    // container treatments (this card, the knowledge-check card, the in-practice
+    // left rule) plus chips; the check is the only block that earns a box,
+    // because it is the only one you interact with inside itself.
+    borderTop: '1px solid var(--rule)', borderBottom: '1px solid var(--rule)',
+    padding: '14px 0', textAlign: 'left', background: 'transparent',
   };
   if (!playable) return <div style={{ ...style, opacity: 0.75 }}>{inner}</div>;
   return <button onClick={() => onLesson(lessonId)} style={{ ...style, appearance: 'none', cursor: 'pointer' }}>{inner}</button>;
@@ -544,9 +662,8 @@ function LessonRefCard({ lessonId, onLesson }) {
 
 function SourcesList({ sources }) {
   if (!sources || !sources.length) return null;
-  return (
+  const rows = (
     <div>
-      <div className="smallcaps" style={{ marginBottom: 10 }}>SOURCES</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {sources.map((s, i) => {
           const row = (
@@ -575,6 +692,17 @@ function SourcesList({ sources }) {
       </div>
     </div>
   );
+  // Collapsed by default: provenance is what makes the entry quotable, but it is
+  // the one block nobody reads on the way through — open, it is four mono rows
+  // of apparatus at the end of a page already carrying five blocks.
+  // headerPad keeps the toggle at 44px (18px label + 13px top and bottom); the
+  // component default of 16px would read as a doubled block gap here.
+  return window.Disclosure ? (
+    <window.Disclosure header={<span className="smallcaps">SOURCES</span>}
+      headerPad="13px 0" panelStyle={{ paddingTop: 2 }} ariaLabel="Sources">
+      {rows}
+    </window.Disclosure>
+  ) : rows;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -670,7 +798,7 @@ function TermDetail({ termId, full = true, learned, learnedSet, isFav, onToggleF
           {teaching}
         </div>
         )}
-        <div className="px-24" style={{ paddingTop: teaching ? 40 : 34, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="px-24" style={{ paddingTop: teaching ? 40 : 34, display: 'flex', flexDirection: 'column', gap: 26 }}>
           {reference}
         </div>
       </div>
