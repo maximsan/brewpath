@@ -320,6 +320,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The five Module Reward cards say what the course now says.** Their
+  keepsake line and fact were written afresh in the design, but the content
+  banks were never rebuilt from it, so every module you finished handed over a
+  card carrying the previous wording. The banks are rebuilt, and the test that
+  compares them against a fresh extraction is green again.
+
 - **Finishing a lesson lands in one write.** The completion, the card it
   hands over, the Coffee Tree's new stage and — on a module's last lesson —
   the Module Reward card used to reach the store as three or four separate
