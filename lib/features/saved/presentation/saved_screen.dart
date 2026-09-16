@@ -40,16 +40,15 @@ const double _groupGap = 26;
 
 /// Everything the learner has bookmarked, in three groups.
 ///
-/// Named "Saved", once: the design calls it both "Saved" and "Favorites", and
-/// "Favourites" was the word for a card-favouriting feature since deleted. The
-/// stored field keeps its own name — renaming it would be a schema change for
-/// a cosmetic reason.
+/// Titled *Favorites*, as the design titles it. The feature keeps its own
+/// name — the bookmark says *Save*, the Profile card and the stored field say
+/// *saved* — because the title names the place and the verb names the act.
 class SavedScreen extends ConsumerWidget {
   /// Creates a [SavedScreen].
   const SavedScreen({super.key});
 
-  /// What this screen is called, everywhere it is named.
-  static const title = 'Saved';
+  /// The page's title, and what the header button that opens it announces.
+  static const title = 'Favorites';
 
   Future<void> _open(
     BuildContext context,

@@ -193,6 +193,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   lessons and guides too. The heading already carries the count, so the route
   only names where it goes.
 
+- **The shelf is titled *Favorites*, as the design titles it**, on the page
+  and in the bar once scrolled; saving is still *Save*, and the Profile card
+  still says *saved*.
+
 - **Saved rows read like the design's.** Each row leads with its mark — a
   term's category glyph, the empty bean for a lesson, the guide mark for a
   guide — sets its category in small mono over the title, ends in the ringed
