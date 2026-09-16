@@ -162,7 +162,8 @@ void main() {
       final term = await _expectedTerm(tester, hasCourse: false);
       await _pumpScreen(tester, hasCourse: false);
 
-      expect(find.text(TermOfDayCopy.title.toUpperCase()), findsOneWidget);
+      // No kicker: the screen is the term, and the bar's close is its exit.
+      expect(find.text(TermOfDayCopy.title.toUpperCase()), findsNothing);
       expect(find.text(longDate(_pinnedDay).toUpperCase()), findsOneWidget);
       expect(find.text(term.term), findsOneWidget);
       expect(find.text(term.shortExplanation), findsOneWidget);

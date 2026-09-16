@@ -28,14 +28,10 @@ Future<bool> isKeySaved(Ref ref, String key) async =>
 
 /// Puts [key] on the shelf, takes it off, or refuses — and says which.
 ///
-/// Returns the outcome rather than swallowing it, because a refusal is a thing
-/// the caller owes the learner an explanation for. A write happens only when
-/// something actually moved.
-///
-/// A read-modify-write over the whole snapshot, as every other progress write
-/// is: the snapshot **is** the record, so there is no partial write to get
-/// wrong. Stamping it is what lets a peer that still holds the key lose to
-/// this removal rather than resurrect it.
+/// Returns the outcome because a refusal is something the caller owes the
+/// learner an explanation for; a write happens only when something moved. A
+/// read-modify-write over the whole snapshot, stamped so a peer that still
+/// holds the key loses to this removal rather than resurrecting it.
 Future<SaveOutcome> toggleSaved(
   SnapshotRepository repository, {
   required String key,
@@ -91,7 +87,7 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
 
   final dictionary = await view;
   final categories = {
-    for (final category in dictionary.categories) category.id: category.label,
+    for (final category in dictionary.categories) category.id: category,
   };
 
   final modules = await content.getModules();
@@ -106,7 +102,8 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
         (
           id: term.id,
           title: term.term,
-          subtitle: categories[term.categoryId] ?? 'Term',
+          subtitle: categories[term.categoryId]?.label ?? 'Term',
+          glyph: categories[term.categoryId]?.glyph,
         ),
     ],
     // Course order comes from the modules, not from the lesson bank: the
@@ -118,6 +115,7 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
             id: lesson.id,
             title: lesson.title,
             subtitle: 'Module ${module.n} · ${module.label}',
+            glyph: null,
           ),
     ],
     guides: [
@@ -126,6 +124,7 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
           id: guide.subject,
           title: guide.title,
           subtitle: 'Visual guide · ${guide.label}',
+          glyph: null,
         ),
     ],
   );

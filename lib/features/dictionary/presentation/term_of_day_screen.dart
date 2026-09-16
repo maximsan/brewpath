@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
@@ -6,10 +7,10 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
+import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
-import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day_providers.dart';
@@ -30,7 +31,7 @@ import 'package:go_router/go_router.dart';
 const double _companionSize = 120;
 
 /// Where the design opens this page, measured from the top of the screen —
-/// `padding-top: 84`, shorter because it opens on a kicker rather than a run.
+/// `padding-top: 84`, shorter because nothing runs under the bar.
 const double _designScrollPad = 84;
 
 /// The design's `width: 28` rule either side of the dateline.
@@ -40,6 +41,12 @@ const double _datelineRuleWidth = 28;
 /// mascot read as its own beat rather than a badge on the heading.
 const double _companionSpaceAbove = 44;
 const double _companionSpaceBelow = 34;
+
+/// The design's `paddingTop: 20` before the definition.
+const double _definitionGap = 20;
+
+/// The design's `marginTop: 10` between the two footer buttons.
+const double _footerGap = 10;
 
 /// Today's term, on a page of its own.
 ///
@@ -91,6 +98,8 @@ class TermOfDayScreen extends ConsumerWidget {
   }
 }
 
+/// The term, and nothing about the term: dateline, Roasty, word, how to say
+/// it, what it means — centred between the bar and the footer.
 class _TermOfDay extends StatelessWidget {
   const _TermOfDay({required this.view});
 
@@ -108,50 +117,35 @@ class _TermOfDay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
-    final term = view.term;
-
     return Column(
       children: [
         Expanded(
-          child: SingleChildScrollView(
-            padding: FloatTopbar.scrollPadding(
-              context,
-              designScrollPad: _designScrollPad,
-              inset: AppSpacing.gutter,
-            ),
-            child: Column(
-              children: [
-                SmallcapsLabel(TermOfDayCopy.title, color: mood.accent),
-                const SizedBox(height: AppSpacing.xs),
-                _Dateline(date: view.date),
-                const SizedBox(height: _companionSpaceAbove),
-                const Roasty(state: RoastyState.correct, size: _companionSize),
-                const SizedBox(height: _companionSpaceBelow),
-                Text(
-                  term.term,
-                  textAlign: TextAlign.center,
-                  style: AppText.display(mood: mood),
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final padding = FloatTopbar.scrollPadding(
+                context,
+                designScrollPad: _designScrollPad,
+                inset: AppSpacing.gutter,
+              );
+              // Centred while it fits, scrolling once it does not: the
+              // design's matched flex spacers collapse first when the content
+              // is tall enough to need the room.
+              return SingleChildScrollView(
+                padding: padding,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: math.max(0, box.maxHeight - padding.vertical),
+                  ),
+                  child: _Composition(view: view),
                 ),
-                if (term.pronunciation != null) ...[
-                  const SizedBox(height: AppSpacing.base),
-                  SpeakButton(word: term.term, respelling: term.pronunciation!),
-                ],
-                const SizedBox(height: AppSpacing.lg),
-                Text(
-                  term.shortExplanation,
-                  textAlign: TextAlign.center,
-                  style: AppText.lead(mood: mood),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-              ],
-            ),
+              );
+            },
           ),
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
             AppSpacing.gutter,
-            0,
+            AppSpacing.md,
             AppSpacing.gutter,
             AppSpacing.lg,
           ),
@@ -161,17 +155,51 @@ class _TermOfDay extends StatelessWidget {
                 label: TermOfDayCopy.readFullEntry,
                 onPressed: () => unawaited(_readFullEntry(context)),
               ),
-              const SizedBox(height: AppSpacing.xs),
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: context.pop,
-                  child: const Text(TermOfDayCopy.back),
-                ),
-              ),
+              const SizedBox(height: _footerGap),
+              // A dismiss under a primary is a ghost, never a bare link.
+              GhostButton(label: TermOfDayCopy.back, onPressed: context.pop),
             ],
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _Composition extends StatelessWidget {
+  const _Composition({required this.view});
+
+  final TermOfDayView view;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+    final term = view.term;
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const SizedBox(height: AppSpacing.xs),
+        _Dateline(date: view.date),
+        const SizedBox(height: _companionSpaceAbove),
+        const Roasty(state: RoastyState.correct, size: _companionSize),
+        const SizedBox(height: _companionSpaceBelow),
+        Text(
+          term.term,
+          textAlign: TextAlign.center,
+          style: AppText.display(mood: mood),
+        ),
+        if (term.pronunciation != null) ...[
+          const SizedBox(height: AppSpacing.base),
+          SpeakButton(word: term.term, respelling: term.pronunciation!),
+        ],
+        const SizedBox(height: _definitionGap),
+        Text(
+          term.shortExplanation,
+          textAlign: TextAlign.center,
+          style: AppText.lead(mood: mood),
+        ),
+        const SizedBox(height: AppSpacing.lg),
       ],
     );
   }
@@ -188,19 +216,34 @@ class _Dateline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
     final rule = SizedBox(
       width: _datelineRuleWidth,
-      child: Divider(height: 1, thickness: 1, color: context.mood.rule),
+      child: Divider(height: 1, thickness: 1, color: mood.rule),
     );
 
     // The rules are the design's fixed 28; the date is what gives when a long
-    // weekday and month meet a narrow screen.
+    // weekday and month meet a narrow screen. Mono at `letterSpacing: 0.1em`,
+    // uppercase by rule and announced as written.
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         rule,
         const SizedBox(width: AppSpacing.sm),
-        Flexible(child: SmallcapsLabel(longDate(date))),
+        Flexible(
+          child: Semantics(
+            label: longDate(date),
+            excludeSemantics: true,
+            child: Text(
+              longDate(date).toUpperCase(),
+              style: AppText.label(
+                mood: mood,
+                face: AppFace.mono,
+                tracking: AppTracking.tag,
+              ),
+            ),
+          ),
+        ),
         const SizedBox(width: AppSpacing.sm),
         rule,
       ],

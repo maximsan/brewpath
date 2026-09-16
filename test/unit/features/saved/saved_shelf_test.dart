@@ -4,17 +4,27 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Candidates arrive in content order; the derivation must preserve it.
 const _terms = <SavedCandidate>[
-  (id: 'arabica', title: 'Arabica', subtitle: 'BEANS AND BOTANY'),
-  (id: 'bloom', title: 'Bloom', subtitle: 'BREWING'),
-  (id: 'crema', title: 'Crema', subtitle: 'BREWING'),
+  (id: 'arabica', title: 'Arabica', subtitle: 'BEANS AND BOTANY', glyph: null),
+  (id: 'bloom', title: 'Bloom', subtitle: 'BREWING', glyph: null),
+  (id: 'crema', title: 'Crema', subtitle: 'BREWING', glyph: null),
 ];
 const _lessons = <SavedCandidate>[
-  (id: 'm1l1', title: 'What coffee actually is', subtitle: 'MODULE 1 · BEANS'),
-  (id: 'm2l1', title: 'Washed and natural', subtitle: 'MODULE 2 · PROCESSING'),
+  (
+    id: 'm1l1',
+    title: 'What coffee actually is',
+    subtitle: 'MODULE 1 · BEANS',
+    glyph: null,
+  ),
+  (
+    id: 'm2l1',
+    title: 'Washed and natural',
+    subtitle: 'MODULE 2 · PROCESSING',
+    glyph: null,
+  ),
 ];
 const _guides = <SavedCandidate>[
-  (id: 'roast', title: 'Roast Levels', subtitle: 'VISUAL GUIDE'),
-  (id: 'grind', title: 'Grind Size', subtitle: 'VISUAL GUIDE'),
+  (id: 'roast', title: 'Roast Levels', subtitle: 'VISUAL GUIDE', glyph: null),
+  (id: 'grind', title: 'Grind Size', subtitle: 'VISUAL GUIDE', glyph: null),
 ];
 
 List<SavedGroup> shelf(Set<String> keys) => deriveSavedShelf(

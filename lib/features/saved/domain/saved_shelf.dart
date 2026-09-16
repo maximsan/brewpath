@@ -9,7 +9,12 @@ import 'package:flutter/foundation.dart';
 /// Deliberately not a content model: the derivation takes titles and
 /// subtitles, never lessons and terms, so grouping stays testable with plain
 /// records and gains no reason to change when a content model does.
-typedef SavedCandidate = ({String id, String title, String subtitle});
+typedef SavedCandidate = ({
+  String id,
+  String title,
+  String subtitle,
+  String? glyph,
+});
 
 /// One row on the shelf.
 @immutable
@@ -21,6 +26,7 @@ class SavedItem {
     required this.id,
     required this.title,
     required this.subtitle,
+    this.glyph,
   });
 
   /// The stored key, which is what unsaving this row writes.
@@ -37,6 +43,9 @@ class SavedItem {
 
   /// The line above it: a category, a module, or the guide label.
   final String subtitle;
+
+  /// The category glyph a term row draws; null for a lesson or a guide.
+  final String? glyph;
 }
 
 /// One heading and the rows beneath it.
@@ -75,15 +84,10 @@ const Map<SavedKind, String> _labels = {
 
 /// The shelf: [keys] resolved against the content, grouped and ordered.
 ///
-/// Each candidate list arrives **in content order** and that order is
-/// preserved, so the shelf reads like the course rather than like a log of
-/// when things were saved.
-///
-/// A key nothing resolves is **skipped**, not rendered broken: content moves,
-/// and a shelf that shows a row it cannot open is worse than one that quietly
-/// holds fewer. That is also why [savedShelfCount] counts the result rather
-/// than the stored set — the badge must never promise a row the shelf cannot
-/// draw.
+/// Each candidate list arrives in content order and keeps it, so the shelf
+/// reads like the course rather than a log of when things were saved. A key
+/// nothing resolves is skipped, not drawn broken — which is why
+/// [savedShelfCount] counts the result: the badge must never promise a row.
 List<SavedGroup> deriveSavedShelf({
   required Set<String> keys,
   required List<SavedCandidate> terms,
@@ -109,6 +113,7 @@ List<SavedGroup> deriveSavedShelf({
           id: candidate.id,
           title: candidate.title,
           subtitle: candidate.subtitle,
+          glyph: candidate.glyph,
         ),
       );
     }

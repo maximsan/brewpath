@@ -7,7 +7,6 @@ import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart'
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
-import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,11 +21,20 @@ class SavedStudyRow extends ConsumerWidget {
   /// Creates a [SavedStudyRow].
   const SavedStudyRow({super.key});
 
-  /// The design's `padding: 6px 4px` — a tap target without visible mass.
-  static const EdgeInsets _tapPadding = EdgeInsets.symmetric(
-    horizontal: AppSpacing.xs,
-    vertical: AppSpacing.xs,
+  /// The design's `padding: 10px 0 10px 14px` — a tap target without visible
+  /// mass, sized so the header stays the height its label alone would give.
+  static const EdgeInsets _tapPadding = EdgeInsets.fromLTRB(
+    _tapInsetLeft,
+    _tapInsetVertical,
+    0,
+    _tapInsetVertical,
   );
+  static const double _tapInsetLeft = 14;
+  static const double _tapInsetVertical = 10;
+
+  /// The design's `gap: 7` before a `13×9` arrow.
+  static const double _arrowGap = 7;
+  static const double _arrowSize = 13;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,8 +65,8 @@ class SavedStudyRow extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SmallcapsLabel(FlashcardsCopy.title, color: mood.accentText),
-              const SizedBox(width: AppSpacing.xs),
-              IconMark(AppIcon.chevron, color: mood.accentText),
+              const SizedBox(width: _arrowGap),
+              IconMark(AppIcon.arrow, size: _arrowSize, color: mood.accentText),
             ],
           ),
         ),

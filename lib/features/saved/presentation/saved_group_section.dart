@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_row.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// One heading and its rows.
@@ -37,11 +38,15 @@ class SavedGroupSection extends StatelessWidget {
           textBaseline: TextBaseline.alphabetic,
           children: [
             // The label takes the room and gives first: a fixed-width pill
-            // opposite it must never push the row past its edge.
+            // opposite it must never push the row past its edge. Its padding
+            // is the design's `paddingTop: 12, paddingBottom: 12` header.
             Expanded(
-              child: SmallcapsLabel(
-                '${group.label} · ${group.items.length}',
-                isHeader: true,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: SmallcapsLabel(
+                  '${group.label} · ${group.items.length}',
+                  isHeader: true,
+                ),
               ),
             ),
             ?trailing,

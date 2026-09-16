@@ -187,11 +187,22 @@ You can always edit this file by hand instead — the helpers just save effort.
   the label — `DICTIONARY TERMS · 6` — instead of trailing a loose digit.
 
 - **The flashcards route sits on the group it belongs to.** The full-width
-  accent banner over the saved terms is now a small accent pill on the
-  *Dictionary terms* heading, set at type weight rather than object weight:
-  the deck is built from saved terms only, so beside the page title it read
-  as covering lessons and guides too. The heading already carries the count,
-  so the route only names where it goes.
+  accent banner over the saved terms is now `FLASHCARDS →` on the *Dictionary
+  terms* heading, set at type weight rather than object weight: the deck is
+  built from saved terms only, so beside the page title it read as covering
+  lessons and guides too. The heading already carries the count, so the route
+  only names where it goes.
+
+- **Saved rows read like the design's.** Each row leads with its mark — a
+  term's category glyph, the empty bean for a lesson, the guide mark for a
+  guide — sets its category in small mono over the title, ends in the ringed
+  bookmark that takes it off the shelf, and closes with a hairline. The title
+  no longer sits a gutter too low under the back chevron.
+
+- **Term of the Day is the term, centred.** The `TERM OF THE DAY` kicker is
+  gone, the dateline, Roasty, word and definition sit centred between the bar
+  and the footer, and *Back* is the outlined ghost button every other bottom
+  stack uses rather than a bare accent link.
 
 - **A term's sources fold away.** Provenance is what makes an entry quotable
   and also the block nobody reads on the way through, so it now costs one

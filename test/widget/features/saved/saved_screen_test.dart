@@ -290,7 +290,7 @@ void main() {
     await _seed(tester, ['t:arabica', 't:robusta', 't:no-such-term']);
     await pumpWithProviders(tester, _wrap());
 
-    expect(find.text('2 of 5 saved'), findsOneWidget);
+    expect(find.text('2 OF 5 SAVED'), findsOneWidget);
   });
 
   testWidgets('an owner gets no count line under the title', (tester) async {
@@ -300,7 +300,7 @@ void main() {
     // The total restated the per-group counts beside each header, so it was
     // dropped; only the free cap earns a line.
     expect(find.textContaining('to revisit'), findsNothing);
-    expect(find.textContaining('of 5 saved'), findsNothing);
+    expect(find.textContaining('OF 5 SAVED'), findsNothing);
     expect(find.byType(SavedUpgradeRow), findsNothing);
   });
 
@@ -318,7 +318,7 @@ void main() {
       await _seed(tester, five);
       await pumpWithProviders(tester, _wrap());
 
-      expect(find.text('5 of 5 saved'), findsOneWidget);
+      expect(find.text('5 OF 5 SAVED'), findsOneWidget);
       expect(find.text(SavedUpgradeRow.message), findsOneWidget);
     });
 
@@ -337,7 +337,7 @@ void main() {
       await tester.tap(findMark(AppIcon.bookmark, active: true).first);
       await settleLoaders(tester);
 
-      expect(find.text('4 of 5 saved'), findsOneWidget);
+      expect(find.text('4 OF 5 SAVED'), findsOneWidget);
       expect(find.byType(SavedUpgradeRow), findsNothing);
     });
   });
