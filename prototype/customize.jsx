@@ -571,6 +571,31 @@ function RoastyStudio({ roastyCfg, onApply, onClose, onMoodPlayer, showMoodPlaye
   );
 }
 
+// ── Roasty's spoken lines (the art lives in roasty.jsx) ──
+// An id is assigned once and kept when the text is edited: that is what
+// holds a translation onto its line through a re-authoring.
+window.ROASTY_LINES = [
+  { id: 'rl-nice-brew',        occasion: 'lessonComplete',    text: 'Nice brew! Lesson done.' },
+  { id: 'rl-steeping-nicely',  occasion: 'lessonComplete',    text: "You're steeping nicely." },
+  { id: 'rl-good-stuff',       occasion: 'lessonComplete',    text: "That's the good stuff — keep going." },
+  { id: 'rl-smooth-pour',      occasion: 'lessonComplete',    text: 'Smooth pour. On to the next.' },
+  { id: 'rl-whole-module',     occasion: 'moduleComplete',    text: 'Whole module brewed. Proud of you!' },
+  { id: 'rl-full-pot',         occasion: 'moduleComplete',    text: "Full pot finished — that's mastery." },
+  { id: 'rl-roasted-module',   occasion: 'moduleComplete',    text: 'You roasted the whole module. Bravo!' },
+  { id: 'rl-beans-to-brew',    occasion: 'courseComplete',    text: 'Beans to brew — you did the whole thing.' },
+  { id: 'rl-streak-safe',      occasion: 'keepSharpComplete', text: "That's today's practice — streak safe." },
+  { id: 'rl-sharp-as-ever',    occasion: 'keepSharpComplete', text: 'Done for today. Sharp as ever.' },
+  { id: 'rl-see-you-tomorrow', occasion: 'keepSharpComplete', text: 'Practice complete. See you tomorrow!' },
+  { id: 'rl-actually-brewed',  occasion: 'challengeComplete', text: 'You actually brewed it. That is the whole point.' },
+  { id: 'rl-palate-did-work',  occasion: 'challengeComplete', text: 'Logged. Your palate did the work today.' },
+  { id: 'rl-cup-taught-you',   occasion: 'challengeComplete', text: 'That cup taught you something no lesson could.' },
+  { id: 'rl-one-cup-at-a-time',occasion: 'challengeComplete', text: 'Nice one. Coffee is learned one cup at a time.' },
+  { id: 'rl-day-after-day',    occasion: 'streakMilestone',   text: "Day after day — that's how flavour builds." },
+  { id: 'rl-worth-brewing',    occasion: 'streakMilestone',   text: 'A streak worth brewing about!' },
+  { id: 'rl-showing-up',       occasion: 'streakMilestone',   text: 'Showing up is the secret ingredient.' },
+];
+
+
 // ───────────────────────────────────────────────────────────
 // MOOD PLAYER — Roasty centered; tap an emotion to see them react.
 // ───────────────────────────────────────────────────────────
