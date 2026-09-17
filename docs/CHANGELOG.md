@@ -48,6 +48,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **A half-translated language folder is refused, not shown.** The fallback to
+  English reaches every depth of an entry, so a folder can translate one of a
+  lesson's cards or one of a help entry's steps and leave the rest in English.
+  What it cannot do is quietly stand in for English text: a list with fewer
+  items than the master's, a field the master has no slot for, or one id
+  translated twice would each drop text rather than fall back, so each is
+  refused at load and names the entry to redraft.
+
 ---
 
 ## [1.2.0+5] — 2026-09-16
@@ -66,14 +74,6 @@ You can always edit this file by hand instead — the helpers just save effort.
   Apple's own subscriptions page, the only place a plan can be changed. Which
   plan you hold is asked of the store rather than remembered, so it is still
   right after a restart, a refund, or a change made outside the app.
-
-- **A half-translated language folder is refused, not shown.** The fallback to
-  English reaches every depth of an entry, so a folder can translate one of a
-  lesson's cards or one of a help entry's steps and leave the rest in English.
-  What it cannot do is quietly stand in for English text: a list with fewer
-  items than the master's, a field the master has no slot for, or one id
-  translated twice would each drop text rather than fall back, so each is
-  refused at load and names the entry to redraft.
 
 - **The app can be taught a second language without being rewritten.** A
   language is now a folder laid over the English master, entry by entry and
