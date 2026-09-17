@@ -158,6 +158,22 @@ Break-glass only — forces a full re-download (minutes).
 ./tool/reset_ios_spm.sh --build   # clean, then flutter build ios
 ```
 
+### `tool/clean_build_caches.sh` — reclaim disk
+
+Run when the machine is low on space. Reports what a build has accumulated —
+Xcode's DerivedData and device symbols, and the `build/` each worktree grows —
+and deletes nothing without `--apply`. All of it is rebuilt on demand; source,
+Archives and package caches are refused by an allow-list.
+
+```bash
+./tool/clean_build_caches.sh                     # report only
+./tool/clean_build_caches.sh --apply             # Xcode caches, dead simulators
+./tool/clean_build_caches.sh --apply --worktrees # also every build/
+```
+
+`--worktrees` forces a full rebuild for anyone working in one; leave it off
+while another session is mid-build.
+
 ### `tool/extract_content.js` — regenerate bundled content
 
 Node script (no dependencies). Run after the design prototype's (`prototype/`)

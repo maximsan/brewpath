@@ -69,25 +69,33 @@ later costs another release rather than a dashboard change
 
 **Code:**
 
+Written in [#602](https://github.com/maximsan/brewpath/pull/602), and none of
+it has met a real store — the sandbox box below is what verifies the rest.
+
+- [x] Add `purchases_flutter`, and write `RevenueCatPaymentsService`
+- [x] Return a real `currentOffering()` from RevenueCat's offerings. It must be
+      **stable per learner** — an arm that changes between sessions is not an
+      experiment. RevenueCat's current offering names the arm; `offeringArms`
+      maps it, and an offering nobody recognises falls back to the baseline
+- [x] Make entitlement expirable. `courseEntitlement` watches the store's own
+      change stream, so a lapse locks the course with no restart
+- [x] Answer an entitlement check with no network, from the last cached answer
+- [x] Show the store's own price on the paywall and the gate sheet. This needed
+      no work: `paywallViewProvider` already fetches the products and
+      `paywall_view.dart` already substitutes `{price}` and `{perMonth}` — the
+      rows drew blank only because the no-op store returns nothing
+- [x] Add the Profile entry into the paywall, and a link out to Apple's
+      manage-subscriptions screen
+- [x] Ask the store which plan an owner holds, rather than remembering what
+      this session bought, so it survives a restart or a change made elsewhere
 - [ ] Enable the In-App Purchase capability — Xcode → Runner → Signing &
       Capabilities. `ios/Runner/Runner.entitlements` carries only
       associated-domains today
-- [ ] Add `purchases_flutter`, and write `RevenueCatPaymentsService`
-- [ ] Return a real `currentOffering()` from RevenueCat's offerings. It must be
-      **stable per learner** — an arm that changes between sessions is not an
-      experiment
-- [ ] Make entitlement expirable. `courseEntitlement` answers once and stays
-      answered, which a subscription that lapses, is refunded or fails to renew
-      makes wrong. Every gate reads it, so this is the careful part
-- [ ] Answer an entitlement check with no network, from the last cached answer
-- [ ] Show the store's own price on the paywall and the gate sheet. Both carry
-      `{price}` placeholders today and nothing fills them
-- [ ] Add the Profile entry into the paywall, and a link out to Apple's
-      manage-subscriptions screen
 - [ ] Sandbox-test each arm: buy, restore on a fresh install, cancel, and let a
       subscription lapse
-- [ ] Handle the edges: purchase interrupted, store unavailable, already
-      purchased
+- [ ] Handle the edges: a purchase interrupted mid-flight, and one already made
+      on this Apple Account. A store that cannot be reached is handled; the
+      other two are only reachable in the sandbox
 
 **Before submission:**
 
@@ -98,6 +106,9 @@ later costs another release rather than a dashboard change
 
 ## Status
 
-Scaffolding and all three paywalls exist and are driven by the no-op store.
-Nothing can take money yet. The remaining work is the checklist above, owned by
-[#421](https://github.com/maximsan/brewpath/issues/421).
+The code is written and merged. What is left is an account, an Xcode
+capability, and a sandbox that proves any of it works — the unticked boxes
+above, owned by [#421](https://github.com/maximsan/brewpath/issues/421).
+
+A build with no `REVENUECAT_KEY` still runs the no-op store, so the app is
+free by construction until a key is passed.
