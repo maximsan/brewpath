@@ -56,8 +56,12 @@ function Disclosure({
     <React.Fragment>
       <div style={{ display: 'flex', alignItems: headerAlign, justifyContent: 'space-between', gap: 12, width: '100%' }}>
         {header || <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)' }}>{label}</span>}
+        {/* alignSelf centers the glyph on the header row even when the row is
+            baseline-aligned (Path modules): baseline-aligning an inline-flex box
+            hangs it off its content's bottom edge, drifting the caret ~2px
+            against the lock icons on neighbouring rows. */}
         {(trailing || collapsible) && (
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: trailingGap, flexShrink: 0 }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', alignSelf: 'center', gap: trailingGap, flexShrink: 0 }}>
             {trailing}
             {collapsible && <DisclosureGlyph glyph={glyph} open={open} size={glyphSize} color={glyphColor} duration={duration}/>}
           </span>

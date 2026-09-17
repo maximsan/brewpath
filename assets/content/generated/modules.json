@@ -66,8 +66,8 @@
       ],
       "reward": {
         "title": "Beans Field Guide",
-        "summary": "You can read a bag of coffee and know what you’re holding.",
-        "fact": "A barista who can name the species, origin, and processing can predict the cup before the first sip.",
+        "summary": "Arabica or Robusta, where it grew, how it was processed.",
+        "fact": "That coffee bag isn’t just labels anymore — you know what they mean.",
         "badge": "BEANS · COMPLETE"
       }
     },
@@ -127,7 +127,7 @@
       "reward": {
         "title": "Processing Field Guide",
         "summary": "You can tell washed from natural by taste alone — eventually.",
-        "fact": "Processing changes a coffee more than the roast does. Same bean, three different cups.",
+        "fact": "Washed, natural, honey — now you know why they matter.",
         "badge": "PROCESSING · COMPLETE"
       }
     },
@@ -186,8 +186,8 @@
       ],
       "reward": {
         "title": "Roasting Field Guide",
-        "summary": "You can read a roast level and a roast date, and know what they mean.",
-        "fact": "Roast trades origin acidity for body and roast flavour — and freshness beats fame.",
+        "summary": "You can read a roast date and know how fresh is fresh enough.",
+        "fact": "Light, medium, dark — now you know what the roast is telling you.",
         "badge": "ROASTING · COMPLETE"
       }
     },
@@ -247,7 +247,7 @@
       "reward": {
         "title": "Grind Field Guide",
         "summary": "You know why grind size and grinder type quietly control the cup.",
-        "fact": "Grind is the speed dial for extraction — and an even grind is what lets you use it.",
+        "fact": "Coarse, medium, fine — now you know which way to turn the dial.",
         "badge": "GRIND · COMPLETE"
       }
     },
@@ -314,7 +314,7 @@
       "reward": {
         "title": "Brew Field Guide",
         "summary": "You can set a ratio, fix your water, taste your way to a better cup — and read an espresso.",
-        "fact": "Ratio sets strength, water sets the speed, sour-vs-bitter tells you what to change, and pressure is what makes espresso a different drink.",
+        "fact": "You’re not just making coffee anymore — you know what changes the cup.",
         "badge": "BREW · COMPLETE"
       }
     }

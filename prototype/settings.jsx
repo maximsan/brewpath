@@ -236,6 +236,7 @@ function NavRow({ label, sub, value, accent, dim, external, onClick, pending, pe
 // containers can't drift out of sync with the bar's height.
 const HEADER_H = 96;                 // subscreen bar height
 const HEADER_PAD = 108;              // matching scroll paddingTop
+const HEADER_FADE_H = 22;            // the bar's gradient fade, painted BELOW it
 const HEADER_FILL = 'color-mix(in oklab, var(--bg) 94%, transparent)';
 const HEADER_BLUR = 'blur(16px) saturate(1.3)';
 
@@ -274,7 +275,7 @@ function FloatTopbar({ scrolled, onBack, back = false, label, right = null }) {
       transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
     }}>
       <div aria-hidden="true" style={{
-        position: 'absolute', top: '100%', left: 0, right: 0, height: 22, pointerEvents: 'none',
+        position: 'absolute', top: '100%', left: 0, right: 0, height: HEADER_FADE_H, pointerEvents: 'none',
         background: 'linear-gradient(to bottom, color-mix(in oklab, var(--bg) 88%, transparent), transparent)',
         opacity: scrolled ? 1 : 0, transition: 'opacity 260ms ease',
       }}/>
@@ -299,7 +300,7 @@ function StickyHeaderChrome({ scrolled, height = HEADER_H, children }) {
       transition: 'background 260ms ease, backdrop-filter 260ms ease, border-color 260ms ease',
     }}>
       <div aria-hidden="true" style={{
-        position: 'absolute', top: '100%', left: 0, right: 0, height: 22, pointerEvents: 'none',
+        position: 'absolute', top: '100%', left: 0, right: 0, height: HEADER_FADE_H, pointerEvents: 'none',
         background: 'linear-gradient(to bottom, color-mix(in oklab, var(--bg) 88%, transparent), transparent)',
         opacity: scrolled ? 1 : 0, transition: 'opacity 260ms ease',
       }}/>
@@ -540,7 +541,7 @@ function PurchasesScreen({ owned, planId = 'lifetime', purchased = '8 May 2026',
         ) : (
           <div className="px-24" style={{ paddingTop: 26 }}>
             <div className="smallcaps" style={{ marginBottom: 4 }}>FREE</div>
-            <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', padding: '16px 0' }}>All of Module 1, True or false, Match the facts and Name the origin, Flashcards and Guess the Term, and a Saved shelf of 5.</div>
+            <div style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', padding: '16px 0' }}>The first three lessons of Module 1, True or false, Match the facts and Name the origin, Flashcards and Guess the Term, and a Saved shelf of 5.</div>
           </div>
         )}
 
@@ -612,7 +613,7 @@ function PurchasesScreen({ owned, planId = 'lifetime', purchased = '8 May 2026',
 const FAQ_ITEMS = () => [
   { q: 'How does my streak work?', a: 'Finish at least one lesson a day to keep it alive. Every 7 days in a row you earn a streak freeze — you hold one at a time, and if you miss a day it\u2019s spent automatically, so your streak survives and that day shows as covered in your week. Nothing to switch on.' },
   { q: 'How does my tree grow?', a: 'Your tree tracks the core course only — it moves up a stage as you complete core lessons, through ten stages from bare seed to full harvest. Points from practice and reviews don’t grow it, and it never shrinks unless you reset your progress.' },
-  { q: 'What does Foundations include?', a: 'Modules 2–5, the five premium practice formats, the complete Dictionary, unlimited Saved and the Studio. All of Module 1, True or false, Match the facts, Name the origin, Flashcards, Guess the Term and your streak are free. ' + window.getMonetization().faq },
+  { q: 'What does Foundations include?', a: 'Modules 2–5, the five premium practice formats, the complete Dictionary, unlimited Saved and the Studio. The first three lessons of Module 1, True or false, Match the facts, Name the origin, Flashcards, Guess the Term and your streak are free. ' + window.getMonetization().faq },
   { q: 'Can I learn offline?', a: 'Yes — modules you\u2019ve opened are kept on your phone. Progress syncs the next time you\u2019re online.' },
 ];
 
@@ -673,6 +674,17 @@ window.FLOAT_PAD = FLOAT_PAD;
 window.HeaderCompactTitle = HeaderCompactTitle;
 window.HEADER_H = HEADER_H;
 window.HEADER_PAD = HEADER_PAD;
+window.HEADER_FADE_H = HEADER_FADE_H;
+// Where a sticky section header must pin: flush under the bar AND its fade.
+// Sticky offsets resolve against the scroll container's PADDING box, so the
+// offset is (bar + fade) − the container's own paddingTop. Derived, never
+// hand-picked — every guess so far has either sat inside the fade (dimmed) or
+// past it (a clean slice of the scrolling row stranded above the header).
+// Flush under the BAR, not under its fade. Including the fade left it as dead
+// space above the pinned header — 30px of air over the label against 6 below.
+// The header paints its own solid background (and covers the fade with an
+// upward shadow), so the fade needs no clearance.
+window.STICKY_SECTION_TOP = HEADER_H - HEADER_PAD;
 window.useScrollFlag = useScrollFlag;
 window.NavRow = NavRow;
 window.ConfirmSheet = ConfirmSheet;

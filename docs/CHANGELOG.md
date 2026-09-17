@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+---
+
+## [1.2.0+5] — 2026-09-16
+
+### Added
+
 - **The app can take money.** Purchases are made through RevenueCat, which
   holds what you own, prices the plans in your own storefront's currency, and
   decides which of the three paywalls you see (ADR-0024 supersedes ADR-0003).
@@ -327,6 +337,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   which is what makes a third launch safe.
 
 ### Fixed
+
+- **The five Module Reward cards say what the course now says.** Their
+  keepsake line and fact were written afresh in the design, but the content
+  banks were never rebuilt from it, so every module you finished handed over a
+  card carrying the previous wording. The banks are rebuilt, and the test that
+  compares them against a fresh extraction is green again.
 
 - **Finishing a lesson lands in one write.** The completion, the card it
   hands over, the Coffee Tree's new stage and — on a module's last lesson —

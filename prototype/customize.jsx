@@ -130,7 +130,7 @@ function StudioTopbar({ onBack, kind = 'close' }) {
 // picker — a picker of one is dead UI; several render selectable plan rows.
 // Restore + legal stay per store review rules whatever the model.
 // ───────────────────────────────────────────────────────────
-function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestored }) {
+function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestored, context = null }) {
   const mon = window.getMonetization();
   const [planId, setPlanId] = useStateC(mon.defaultPlan);
   const [tbScrolled, onTbScroll] = window.useScrollFlag();
@@ -186,6 +186,16 @@ function PaywallScreen({ onPurchase, onClose, restoreOutcome = 'owned', onRestor
         </div>
 
         <div className="px-24" style={{ textAlign: 'center', paddingTop: 4 }}>
+          {/* Why you're here. Gates with no branch to offer hand straight off to
+              this screen instead of showing a sheet with the same CTA, so the
+              thing you actually tapped is named here — named, not explained:
+              "X is part of Foundations" only restated the lock they just hit. */}
+          {context && context.label && (
+            <div style={{ marginBottom: 12 }}>
+              {context.eyebrow && <div className="smallcaps" style={{ color: 'var(--ink-mute)' }}>{context.eyebrow}</div>}
+              <div style={{ fontSize: 'var(--t-body)', fontWeight: 500, color: 'var(--ink)', marginTop: 3, textWrap: 'pretty' }}>{context.label}</div>
+            </div>
+          )}
           <div className="smallcaps" style={{ color: 'var(--accent)' }}>FOUNDATIONS · {mon.eyebrow}</div>
           <h1 className="ff-display" style={{
             fontSize: 'var(--t-display)', fontWeight: 400, lineHeight: 1.05, letterSpacing: '-0.02em',

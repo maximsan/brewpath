@@ -858,7 +858,7 @@ function SavedHeaderButton({ onClick, locked = false, count = 0 }) {
 // ───────────────────────────────────────────────────────────
 const APP_HEADER_TITLES = {
   learn: (() => {
-    const d = new Date(2026, 4, 8); // Fri May 8 — frozen for the prototype
+    const d = window.PROTO_TODAY || new Date(); // the app-wide frozen today (data.jsx)
     return { eyebrow: 'TODAY', title: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) };
   })(),
   path:  { eyebrow: 'YOUR PATH', title: 'Beginner Foundations' },
@@ -920,7 +920,7 @@ const KEEP_SHARP_TYPES = [
 function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDismissFreeze, onLesson, keepSharp = false, flashEmpty = false, isCourseLocked, onGame, gamesLocked = false, onFlashcards, onVocabGame, onOpenDuel, showDuel = true, isLocked, state, brewChallenge, brewMode, brewAutoHide = true, brewPointsAwarded = true, onBrewLog, onBrewSkip, onBrewDismiss, onBrewCard, brewCompleted, brewActiveId, brewSaved, onBrewUnsave, onBrewAction }) {
   const lock = isLocked || (() => false);
   const [ksSignal, setKsSignal] = React.useState({}); // Keep Sharp → open a Practice Again group
-  const today = new Date(2026, 4, 8); // Friday May 8 (frozen for prototype)
+  const today = window.PROTO_TODAY || new Date(); // the app-wide frozen today (data.jsx)
   const dayName = today.toLocaleDateString('en-US', { weekday: 'short' });
   const monthDay = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
@@ -938,8 +938,9 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
   const nextLesson = curMod.lessons[curIdx + 1] || null; // next, still-locked lesson IN this module
   const lessonNum = curIdx + 1;
   const modTotal = curMod.lessons.length;
-  // Past free Module 1 the next lesson is part of the purchase: the card
-  // says so up front — the button must never read "Begin" and then gate.
+  // Past the free lessons the next one is part of the purchase — the wall falls
+  // inside Module 1, not at its end. The card says so up front: the button must
+  // never read "Begin" and then gate.
   const curLocked = !allCaughtUp && !!(isCourseLocked && isCourseLocked(curLesson.id));
   // What the locked card counts: not the cursor's position in one module
   // (meaningless once the eyebrow is the wall), but what the purchase opens —
@@ -1155,9 +1156,11 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
           });
           const lessonCount = completed.length;
           // Dictionary drills — always free; they lead, ahead of the game catalog.
+          // sub is the TOPIC on every other row, so it is the source here too:
+          // "FLIP AND RECALL" restated the title's own mechanic.
           const drills = [
-            { id: 'f-flash', kind: 'flash', title: 'Flashcards', sub: 'FLIP AND RECALL', go: onFlashcards },
-            { id: 'f-vocab', kind: 'vocab', title: 'Guess the term', sub: 'FROM THE DEFINITION', go: onVocabGame },
+            { id: 'f-flash', kind: 'flash', title: 'Flashcards', sub: 'DICTIONARY', go: onFlashcards },
+            { id: 'f-vocab', kind: 'vocab', title: 'Guess the term', sub: 'DICTIONARY', go: onVocabGame },
           ];
           // THE GAME CATALOG — one group per kind: kind glyph + kind name on the
           // header (never per row), its games under it. Order and positions are
@@ -1172,10 +1175,13 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
               {lessonCount > 0 && (
               <PracticeGroup label="Lessons" count={lessonCount} defaultOpen={false} openSignal={ksSignal.lessons}>
                 {lessonMods.map(g => (
-                  <SubGroup key={g.id} label={`MODULE ${g.mod.n} · ${g.mod.label}`} count={g.items.length} defaultOpen={lessonMods.length === 1}
+                  <SubGroup key={g.id} label={g.mod.label} count={g.items.length} defaultOpen={lessonMods.length === 1}
                             icon={window.CatGlyph ? <window.CatGlyph cat={g.mod.glyph} size={18} color="var(--ink-mute)"/> : <ReplayIcon kind="lesson" size={18}/>}>
                     {g.items.map(l => (
-                      <ReplayRow key={l.id} title={l.title} meta={`~${l.time} MIN`} onClick={() => onLesson(l.id)}/>
+                      // No duration here either: the confirm sheet states
+                      // "~N min, N cards" before anything starts, and 3–6 min
+                      // is too narrow a spread to pick a lesson on.
+                      <ReplayRow key={l.id} title={l.title} onClick={() => onLesson(l.id)}/>
                     ))}
                   </SubGroup>
                 ))}
@@ -1183,7 +1189,7 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
               )}
               <PracticeGroup label="Games" count={drills.length + MINI_GAMES.length} defaultOpen={false} openSignal={ksSignal.games} last={true}>
                 {drills.map(it => (
-                  <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={it.title} sub={it.sub} go={true} meta={gamesLocked ? 'FREE' : '~2 MIN'} onClick={() => it.go && it.go()}/>
+                  <ReplayRow key={it.id} icon={<ReplayIcon kind={it.kind}/>} title={it.title} sub={it.sub} go={true} onClick={() => it.go && it.go()}/>
                 ))}
                 {kindGroups.map(k => (
                   <SubGroup key={k.kind} label={k.label} count={k.games.length}
@@ -1192,8 +1198,10 @@ function LearnTab({ freezeSaved = false, freezesHeld = 0, nextFreezeIn = 7, onDi
                     {k.games.map(m => {
                       const locked = gamesLocked && !gameIsFree(m);
                       return (
+                        // No duration on the row: 11 of 13 games are "~2 MIN",
+                        // so it repeats a constant. The intro screen carries it
+                        // next to the round count, where it can be acted on.
                         <ReplayRow key={m.id} title={m.title} sub={m.sub} locked={locked} go={true}
-                                   meta={gamesLocked && !locked ? 'FREE' : m.meta}
                                    onClick={() => onGame(m)}/>
                       );
                     })}
@@ -1228,11 +1236,17 @@ function FormRow({ label, value }) {
 
 function PracticeGroup({ label, count, defaultOpen, openSignal, last = false, children }) {
   // openSignal: Keep Sharp's Start opens the matching group from the card above.
+  // Count reads as part of the label — "LESSONS · 1" — the same smallcaps
+  // construction as For Later's header, not a loose digit at the trailing edge.
+  // Label takes --ink so it outranks the --ink-mute PRACTICE eyebrow above it;
+  // only the count stays muted. Not accent-text: For Later earns accent by
+  // being an accent-tinted section, these are neutral list headers.
   return (
     <window.Disclosure divider={!last} defaultOpen={defaultOpen} openSignal={openSignal}
-      header={<span style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-        <span style={{ fontSize: 'var(--t-body)', color: 'var(--ink)', fontWeight: 500 }}>{label}</span>
-        <span className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)' }}>{count}</span>
+      ariaLabel={`${label}. ${count} item${count === 1 ? '' : 's'}.`}
+      glyphSize={16}
+      header={<span className="smallcaps" aria-hidden="true" style={{ color: 'var(--ink)' }}>
+        {label} <span style={{ color: 'var(--ink-mute)', fontWeight: 400 }}>· {count}</span>
       </span>}
       panelStyle={{ paddingBottom: 6 }}>
       {children}
@@ -1249,10 +1263,7 @@ function SubGroup({ icon, label, count, defaultOpen = false, locked = false, chi
         <span aria-hidden="true" style={{ display: 'grid', placeItems: 'center', width: 20, color: 'var(--ink-mute)' }}>{icon}</span>
         <span className="smallcaps" style={{ flex: 1, opacity: locked ? 0.55 : 1 }}>{label}</span>
       </span>}
-      trailing={<React.Fragment>
-        <span className="ff-mono" aria-hidden="true" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.12em', color: 'var(--ink-mute)' }}>{count}</span>
-        {locked && <IconLock/>}
-      </React.Fragment>}
+      trailing={locked ? <IconLock/> : null}
       panelStyle={{ paddingLeft: 34, paddingBottom: 4 }}>
       {children}
     </window.Disclosure>
@@ -1611,7 +1622,10 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
   // Expanded modules survive tab switches / navigation (start a challenge,
   // come back, the module is still open). Session-scoped, not persisted.
   const [expandedMods, setExpandedMods] = React.useState(() => window.__pathExpandedMods || {});
-  const toggleMod = (id) => setExpandedMods(m => { const next = { ...m, [id]: !m[id] }; window.__pathExpandedMods = next; return next; });
+  // cur: the row's current open state, passed in because defaults differ per
+  // module (active opens, completed collapses) and `!m[id]` on an untouched
+  // default-open row would just re-open it.
+  const toggleMod = (id, cur) => setExpandedMods(m => { const next = { ...m, [id]: cur === undefined ? !m[id] : !cur }; window.__pathExpandedMods = next; return next; });
   useEffect(() => {
     const host = listRef.current;
     if (!host) return;
@@ -1676,14 +1690,17 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
             else if (allDone) challengeState = 'available';
             if (brewPathMode && brewPathMode !== 'auto' && mod.id === 'm1') challengeState = brewPathMode;
           }
-          const canCollapse = allDone && !mod.locked;
-          const open = !canCollapse || !!expandedMods[mod.id];
+          // Every unlocked module collapses, so the list reads as one uniform
+          // set of sections. Defaults differ: the active module opens (it's
+          // where you are), a completed one collapses to a title.
+          const canCollapse = !mod.locked;
+          const open = !canCollapse || (expandedMods[mod.id] === undefined ? !allDone : !!expandedMods[mod.id]);
           return (
           <div key={mod.id} className="px-24" style={{ marginBottom: 20 }}>
             <window.Disclosure
               collapsible={canCollapse}
               open={open}
-              onToggle={() => toggleMod(mod.id)}
+              onToggle={() => toggleMod(mod.id, open)}
               headerPad="0"
               headerAlign="baseline"
               glyphSize={16}
@@ -1801,6 +1818,10 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
               </React.Fragment>}
               trailing={locked ? <span className="trail"><window.LockMark size={13}/></span> : null}
               below={<div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginLeft: 44, marginTop: 8, marginBottom: 2 }}>{locked ? 'Visual guides unlock as lessons teach them' : 'Visual guides from your lessons'}</div>}>
+            {/* A locked Reference has nothing to disclose: `collapsible={false}`
+                forces the panel open, so the children must be withheld here or
+                they leak out under the header. `below` carries the copy. */}
+            {!locked && <React.Fragment>
             <div style={{ marginTop: 6 }}>
               {guides.map((g, i) => {
                 const t = (window.VISUAL_GUIDE_CONTENT || {})[g.visualGuide] || {};
@@ -1820,8 +1841,9 @@ function PathTab({ onLesson, purchaseLocked, onPurchaseTap, brewCompleted, brewA
               })}
             </div>
             {left > 0 && (
-              <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginTop: 10 }}>{left} more unlock as you learn</div>
+              <div className="ff-mono" style={{ fontSize: 'var(--t-micro)', letterSpacing: '0.1em', color: 'var(--ink-mute)', textTransform: 'uppercase', marginTop: 10, marginLeft: 44 }}>{left} more unlock as you learn</div>
             )}
+            </React.Fragment>}
             </window.Disclosure>
           </div>
         ); })()}
@@ -1874,13 +1896,13 @@ function CardsTab({ onOpen, brewCompleted }) {
         <div className="px-24" style={{ paddingTop: 24 }}>
           <div className="cards-grid">
             {(() => {
-              const firstLockedIdx = collectibles.findIndex(c => !c.earned);
-              return collectibles.map((c, i) => {
-                if (c.earned) return <CollectionCard key={c.id} card={c} index={i} total={collectibles.length} onOpen={onOpen} stamped={stampedFor(c)} challengeOpen={challengeOpen(c)}/>;
-                // Preview the very next card as a locked teaser so the grid stays consistent.
-                if (i === firstLockedIdx) return <CollectionCard key={c.id} card={c} index={i} total={collectibles.length} onOpen={onOpen} stamped={false}/>;
-                return null;
-              });
+              // Earned cards only. A locked "?" teaser used to trail the grid,
+              // but the "N more to collect" block directly below says the same
+              // thing in words — and an empty tile reads as a bug, especially
+              // when out-of-order progress stranded it mid-grid.
+              return collectibles.map((c, i) => c.earned
+                ? <CollectionCard key={c.id} card={c} index={i} total={collectibles.length} onOpen={onOpen} stamped={stampedFor(c)} challengeOpen={challengeOpen(c)}/>
+                : null).filter(Boolean);
             })()}
           </div>
           {(collectibles.length - earned) > 0 && (
@@ -2623,6 +2645,56 @@ const CARD_TINT = {
   fieldGuideBrew:   'color-mix(in oklab, var(--surface) 89%, var(--berry) 11%)',
 };
 
+// The corner mark on a collectible card. ONE metaphor, two states: a challenge
+// is something you brew for real, and a cup that stood on paper leaves a ring.
+// Nothing set down yet — a clean empty ring, hairline and dashed. Tried — the
+// stain: a heavier ring broken unevenly, over a faint tint. Deliberately not a
+// checkmark (says nothing about coffee) and not a target-in-a-circle (a second
+// idea sitting 26px from the first). The disc behind it keeps both legible on
+// the tinted card surfaces.
+function CupRingBadge({ tried }) {
+  const R = 8.2;
+  return (
+    <span title={tried ? 'Challenge tried — you brewed this for real' : 'Challenge to earn — tap the card'}
+      aria-label={tried ? 'Challenge tried' : 'Challenge to earn'}
+      style={{
+        position: 'absolute', top: 10, right: 10, zIndex: 2,
+        width: 26, height: 26, borderRadius: 999, display: 'grid', placeItems: 'center',
+        background: tried
+          ? 'color-mix(in oklab, var(--accent) 13%, var(--surface))'
+          : 'color-mix(in oklab, var(--surface) 92%, var(--ink))',
+      }}>
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        {tried ? (
+          <React.Fragment>
+            <circle cx="13" cy="13" r={R} fill="var(--accent)" fillOpacity="0.14"/>
+            {/* Broken unevenly — a ring lifted off wet paper never closes. */}
+            <circle cx="13" cy="13" r={R} stroke="var(--accent)" strokeWidth="2.3"
+              strokeLinecap="round" strokeDasharray="15 3.4 12 2.6 13 5" transform="rotate(-24 13 13)"/>
+          </React.Fragment>
+        ) : (
+          <circle cx="13" cy="13" r={R} stroke="var(--ink-mute)" strokeWidth="1.1"
+            strokeDasharray="2 2.6" opacity="0.75"/>
+        )}
+      </svg>
+    </span>
+  );
+}
+
+// The ring on its own, for callers that supply their own container (the card
+// sheet's TRIED chip). Same broken-ring geometry as the badge above, so the
+// grid corner and the sheet read as one mark.
+function CupRingGlyph({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 26 26" fill="none" aria-hidden="true">
+      <circle cx="13" cy="13" r="8.2" fill="currentColor" fillOpacity="0.16"/>
+      <circle cx="13" cy="13" r="8.2" stroke="currentColor" strokeWidth="2.3"
+        strokeLinecap="round" strokeDasharray="15 3.4 12 2.6 13 5" transform="rotate(-24 13 13)"/>
+    </svg>
+  );
+}
+window.CupRingGlyph = CupRingGlyph;
+
 function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) {
   // `index` is the card's place in the whole catalogue, not in this grid — cards
   // unlock out of catalogue order, so the grid shows gaps (01, 04, 21). Printing
@@ -2649,31 +2721,8 @@ function CollectionCard({ card, index, total, onOpen, stamped, challengeOpen }) 
   return (
     <div className="collect-card" onClick={() => onOpen(card)}
          style={{ background: surfaceTint }}>
-      {stamped && (
-        <span title="Challenge tried" style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 2,
-          width: 26, height: 26, borderRadius: 999, display: 'grid', placeItems: 'center',
-          background: 'color-mix(in oklab, var(--accent) 16%, var(--surface))',
-          border: '1px solid color-mix(in oklab, var(--accent) 40%, var(--rule))',
-        }}>
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-            <path d="M3.6 7.4 L6.1 9.8 L10.6 4.6" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </span>
-      )}
-      {!stamped && challengeOpen && (
-        <span title="Challenge to earn — tap the card" style={{
-          position: 'absolute', top: 10, right: 10, zIndex: 2,
-          width: 26, height: 26, borderRadius: 999, display: 'grid', placeItems: 'center',
-          background: 'color-mix(in oklab, var(--accent) 8%, var(--surface))',
-          border: '1px dashed color-mix(in oklab, var(--accent) 50%, var(--rule))',
-        }}>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <circle cx="6" cy="6" r="4.4" stroke="var(--accent)" strokeWidth="1.3"/>
-            <circle cx="6" cy="6" r="1.6" fill="var(--accent)"/>
-          </svg>
-        </span>
-      )}
+      {stamped && <CupRingBadge tried={true}/>}
+      {!stamped && challengeOpen && <CupRingBadge tried={false}/>}
       <div className="cc-sub">{isVisualGuide ? 'VISUAL GUIDE' : 'CARD ' + num}</div>
       <div style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -3279,13 +3328,16 @@ MINI_GAMES.forEach(g => { g.mod = g.lesson.match(/^m\d+/)[0]; });
 // asks the same set). No local copy of the rule lives here.
 if (!window.FREE_LESSON_IDS) throw new Error('screens.jsx: window.FREE_LESSON_IDS missing — data.jsx must load first.');
 // A game is free iff the lesson that TEACHES it is free — the same question the
-// app asks before opening that lesson. Asking "is its module Module 1?" instead
-// picks the same three games today only because every M1 lesson is free; the
-// moment the free tier narrows to specific lessons, a Module 1 game taught by a
-// paid lesson would read free here and lock in the app, with nothing to flag it.
+// app asks before opening that lesson. Asking "is its module Module 1?" is now
+// actively wrong: the free tier is m1l1–m1l3, so m1l4–m1l7 are paid, and a game
+// taught by one of them would read free here and lock in the app. Nothing broke
+// when the tier narrowed only because no game is taught by those four lessons —
+// the derived set still comes out at three. Keep the question on the LESSON and
+// that stays true however the tier moves (#175).
 function gameIsFree(g) { return window.FREE_LESSON_IDS.has(g.lesson); }
-// DERIVED, not hand-kept — today g-match, g-quiz and g-flavor-origin-signatures;
-// the free catalog widens only if what's unlocked widens (#175).
+// DERIVED, not hand-kept — today g-match, g-quiz and g-flavor-origin-signatures,
+// taught by m1l1/m1l2/m1l3 respectively; the free catalog widens only if what's
+// unlocked widens (#175).
 const FREE_GAME_IDS = MINI_GAMES.filter(gameIsFree).map(g => g.id);
 
 // First screen of the game flow: what it is, how to play, then Play.

@@ -160,7 +160,7 @@ function LessonCompleteScreen({ lesson, result, freezeEarned = false, lessonStat
 // Module Complete — tree growth with a stronger emotional beat.
 // Continue → module reward card.
 // ───────────────────────────────────────────────────────────
-function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoints, onContinue, onBack, reward, hasNext, freezeEarned = false, brewChallenge, brewChallengeState, onStartChallenge, startFlipped = false }) {
+function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoints, onContinue, onBack, reward, lessonReward, hasNext, freezeEarned = false, brewChallenge, brewChallengeState, onStartChallenge, startFlipped = false }) {
   // Tree stages come from CORE-LESSON progress only (single source of truth).
   const prevStage = fromStage != null ? fromStage : 1;
   const newStage  = toStage   != null ? toStage   : 1;
@@ -175,6 +175,28 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
   };
   const [frontScrolled, onFrontScroll] = window.useScrollFlag();
   const [backScrolled, onBackScroll] = window.useScrollFlag();
+  // The module-closing lesson earns TWO cards — its own and the Field Guide.
+  // Revealed one at a time: stacking them turned the flip's single-hero moment
+  // into a scrolling list with the second card behind the footer. Lesson card
+  // first, Field Guide last — the module prize closes the sequence.
+  const rewardCards = [lessonReward, reward].filter(Boolean);
+  const [cardIdx, setCardIdx] = useStateR(0);
+  const lastCard = cardIdx >= rewardCards.length - 1;
+  // Swipe between the earned cards — same three pieces as the flashcard deck:
+  // useSwipeX for the gesture, DeckStack for the standing affordance,
+  // useSwipeHint for the first run.
+  const cardHint = window.useSwipeHint
+    ? window.useSwipeHint({ storageKey: 'cq-reward-swipe-used', enabled: rewardCards.length > 1 && half })
+    : { hint: false, hintDx: 0, markUsed: () => {} };
+  const cardSwipe = window.useSwipeX ? window.useSwipeX({
+    canNext: cardIdx < rewardCards.length - 1,
+    canPrev: cardIdx > 0,
+    exitDistance: 420,
+    exitDurationMs: 250,
+    tiltDegreesPer100px: 6,
+    onNext: () => { cardHint.markUsed(); setCardIdx(i => Math.min(rewardCards.length - 1, i + 1)); },
+    onPrev: () => { cardHint.markUsed(); setCardIdx(i => Math.max(0, i - 1)); },
+  }) : { bind: {}, motion: {} };
   if (phase === 'roasty') {
     return <RoastyMoment state="module" eyebrow="MODULE COMPLETE" title="Look how far you’ve come."
                          autoMs={2200} onDone={() => setPhase('content')}/>;
@@ -242,7 +264,7 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
                   fontSize: 'var(--t-support)', lineHeight: 1.5, color: 'var(--ink-mute)',
                   margin: '0 auto 16px', textAlign: 'center', maxWidth: 280, textWrap: 'pretty',
                 }}>
-                  A reward card is waiting on the other side.
+                  {lessonReward ? 'Two reward cards are waiting on the other side.' : 'A reward card is waiting on the other side.'}
                 </p>
                 <button className="btn btn-primary" onClick={() => flipTo(true)}
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
@@ -262,19 +284,55 @@ function ModuleCompleteScreen({ module, fromStage, toStage, prevPoints, newPoint
               position: 'absolute', inset: 0, pointerEvents: 'none',
               background: 'radial-gradient(ellipse at 50% 30%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 55%)',
             }}/>
-            <RewardTopbar scrolled={backScrolled} onBack={() => flipTo(false)} back label="Flip back"/>
+            {/* Back steps through the cards before it flips the screen over, so
+                card 1 is always reachable — "Next card" was one-way. */}
+            <RewardTopbar scrolled={backScrolled} back
+              onBack={() => { if (cardIdx > 0) setCardIdx(i => i - 1); else flipTo(false); }}
+              label={cardIdx > 0 ? 'Previous card' : 'Flip back'}/>
 
             <div className="scroll" onScroll={onBackScroll} style={{ paddingTop: 90, paddingBottom: 32, display: 'flex', flexDirection: 'column', position: 'relative', height: '100%' }}>
-              <div className="px-24" style={{ paddingTop: 34, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                {half && <RewardCard reward={reward}/>}
+              {/* The counter is CONTEXT for the card, so it sits above it where
+                  the flashcard deck puts its deck line — in the footer it sat in
+                  the control row and read like one. Forward/back buttons are
+                  gone from that row: the topbar back already steps to the
+                  previous card, the footer CTA carries forward, and the stack
+                  below says the deck moves. */}
+              {rewardCards.length > 1 ? (
+                <div className="px-24" style={{ paddingTop: 24 }}>
+                  <div className="smallcaps">CARD {cardIdx + 1} OF {rewardCards.length}</div>
+                </div>
+              ) : null}
+              <div className="px-24" style={{ paddingTop: rewardCards.length > 1 ? 16 : 34 }}>
+                <div style={{
+                  position: 'relative', width: '100%', maxWidth: 320, margin: '0 auto',
+                  transform: cardHint.hintDx ? 'translateX(' + cardHint.hintDx + 'px)' : 'none',
+                  transition: 'transform 420ms cubic-bezier(0.22,0.61,0.36,1)',
+                }}>
+                  {rewardCards.length > 1 && window.DeckStack
+                    ? <window.DeckStack swipe={cardSwipe} canPrev={cardIdx > 0} canNext={cardIdx < rewardCards.length - 1}
+                        radius={2} shadow="0 14px 30px rgba(0,0,0,0.28)"/>
+                    : null}
+                  <div {...(rewardCards.length > 1 ? cardSwipe.bind : {})}
+                    style={{ display: 'flex', justifyContent: 'center', position: 'relative', zIndex: 1,
+                      ...(rewardCards.length > 1 ? cardSwipe.motion : {}) }}>
+                    {half && <RewardCard key={cardIdx} reward={rewardCards[cardIdx] || reward}/>}
+                  </div>
+                </div>
+                {window.SwipeHintCaption
+                  ? <window.SwipeHintCaption show={cardHint.hint} label="Swipe the card left for the next one"/>
+                  : null}
               </div>
 
               <div style={{ flex: 1, minHeight: 24 }}/>
 
-              <RewardExitFooter label={hasNext ? 'Begin next module' : 'Back to Path'} onContinue={onContinue}
-                offer={brewChallenge && window.ChallengeSuggestion && brewChallengeState !== 'completed' && brewChallengeState !== 'active'
-                  ? <window.ChallengeSuggestion challenge={brewChallenge} realState={brewChallengeState} onStart={onStartChallenge}/>
-                  : null}/>
+              {lastCard ? (
+                <RewardExitFooter label={hasNext ? 'Begin next module' : 'Back to Path'} onContinue={onContinue}
+                  offer={brewChallenge && window.ChallengeSuggestion && brewChallengeState !== 'completed' && brewChallengeState !== 'active'
+                    ? <window.ChallengeSuggestion challenge={brewChallenge} realState={brewChallengeState} onStart={onStartChallenge}/>
+                    : null}/>
+              ) : (
+                <RewardExitFooter label="Next card" onContinue={() => { cardHint.markUsed(); setCardIdx(i => i + 1); }}/>
+              )}
             </div>
           </div>
 
@@ -316,23 +374,17 @@ function RewardRow({ label, detail, onPress }) {
 
 // ───────────────────────────────────────────────────────────
 // Shared sticky footer for ALL reward screens: the exit CTA over the standard
-// gradient, with optional quiet rows. The challenge offer lives in the screen's
-// reward LIST (or, on the module card back, in `offer` above the CTA) — the
-// footer itself owns nothing but exits.
+// gradient, with optional quiet rows. The challenge offer rides INSIDE the
+// sticky band above the CTA: in the scroll flow it sat under the 58px band at
+// rest and rendered clipped on the densest card.
 function RewardExitFooter({ label, onContinue, offer = null, ghostRow = null, alwaysRow = null }) {
   return (
-    <>
-      {/* The offer lives in the scroll flow — it moves with the content.
-          Only the exit CTA floats: declining IS the CTA. */}
-      {offer && (
-        <div className="px-24" style={{ marginTop: 'auto', paddingTop: 8 }}>{offer}</div>
-      )}
-      <div className="px-24" style={{ position: 'sticky', bottom: 0, marginTop: offer ? undefined : 'auto', paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 74%, transparent)' }}>
-        <button className="btn btn-primary" onClick={onContinue}>{label}</button>
-        {!offer && ghostRow}
-        {alwaysRow}
-      </div>
-    </>
+    <div className="px-24" style={{ position: 'sticky', bottom: 0, flexShrink: 0, marginTop: 'auto', paddingTop: 16, paddingBottom: 24, background: 'linear-gradient(to top, var(--bg) 82%, transparent)' }}>
+      {offer && <div style={{ marginBottom: 14 }}>{offer}</div>}
+      <button className="btn btn-primary" onClick={onContinue}>{label}</button>
+      {!offer && ghostRow}
+      {alwaysRow}
+    </div>
   );
 }
 

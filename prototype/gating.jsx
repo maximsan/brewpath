@@ -17,7 +17,7 @@ const { useState: useStateG, useEffect: useEffectG, useRef: useRefG } = React;
 // The gated surfaces, with copy used by the sheet / locks.
 const PLUS_FEATURES = {
   course:     { label: 'Foundations',       items: ['Modules 2–5, every lesson', 'The five premium practice formats', 'The complete Dictionary', 'Unlimited Saved', 'The Studio'],
-                note: 'All of Module 1 stays free.',
+                note: 'The first three lessons stay free.',
                 blurb: 'The rest of the course, and everything around it.' },
   games:      { label: 'Practice formats',  blurb: 'The five palate-training formats, included with Foundations.',
                 items: ['Name the flavor notes', 'Read the green bean', 'Fix the cup', 'Dial it in', 'Put it in order'],
@@ -109,18 +109,44 @@ function TrialBadge({ until, floating = true }) {
 // ── PURCHASE GATE SHEET ──────────────────────────────────────
 // Shown when a free user taps any locked surface. One real path out — buy
 // Foundations once — plus, in v2 only, a rewarded-ad preview of the feature.
-function PlusGateSheet({ featureKey, game, open, onClose, onUpgrade, onWatchAd, showAd = true }) {
-  // A locked mini-game gates on the MODULE that teaches its topic — a targeted
-  // course pitch at peak intent, not the generic formats list. Falls back to
-  // the static catalog when no game rode in (e.g. a routed gate).
+// The one place that resolves "what did the user just tap" into a headline.
+// Both the gate sheet and the paywall render from this, so handing straight off
+// to the paywall never loses the targeting the sheet used to carry.
+function gateContext(featureKey, game) {
   const gmod = featureKey === 'games' && game && game.mod
     ? (window.MODULES || []).find(m => m.id === game.mod) : null;
-  const f = gmod
-    ? { label: game.title,
-        // Eyebrow already says "Taught in Module N" — the blurb pitches the
-        // module itself, never restates the lock.
-        blurb: (((window.MODULE_REWARDS || {})[gmod.id] || {}).summary || `Unlock Foundations to take Module ${gmod.n} — the game opens with it.`) }
-    : (PLUS_FEATURES[featureKey] || { label: 'This feature', blurb: '' });
+  if (gmod) return {
+    // Names the module that teaches the topic — a targeted course pitch at peak
+    // intent, not the generic formats list.
+    eyebrow: 'TAUGHT IN ' + gmod.label,
+    // Only the module-targeted case earns an eyebrow in the SHEET — it names
+    // something the sheet doesn't otherwise say. The generic eyebrow below is
+    // for the paywall, which has no blurb to carry the context.
+    targeted: true,
+    label: game.title,
+    sheetLabel: game.title,
+    // Eyebrow already says "Taught in Module N" — the blurb pitches the
+    // module itself, never restates the lock.
+    blurb: (((window.MODULE_REWARDS || {})[gmod.id] || {}).summary || `Unlock Foundations to take Module ${gmod.n} — the game opens with it.`),
+  };
+  const f = PLUS_FEATURES[featureKey] || { label: 'This feature', blurb: '' };
+  // The whole product can't be "part of" itself. The course gate IS Foundations,
+  // so it carries no narrower label — the paywall hero already says what it is.
+  const selfIsProduct = featureKey === 'course';
+  return {
+    eyebrow: selfIsProduct ? null : 'INCLUDED WITH FOUNDATIONS',
+    targeted: false,
+    label: selfIsProduct ? null : f.label,
+    sheetLabel: f.label, blurb: f.blurb, items: f.items, note: f.note,
+  };
+}
+
+// ---------------------------------------------------------------
+// Shown when a free user taps a locked surface AND the sheet has a real branch
+// to offer (the rewarded-ad preview). With one CTA it would be the paywall's
+// button twice over, so app.jsx routes those gates straight to the paywall.
+function PlusGateSheet({ featureKey, game, open, onClose, onUpgrade, onWatchAd, showAd = true }) {
+  const f = gateContext(featureKey, game);
   const mon = window.getMonetization();
   return (
     <>
@@ -129,7 +155,7 @@ function PlusGateSheet({ featureKey, game, open, onClose, onUpgrade, onWatchAd, 
           step above the base sheet layer (95/96) instead of tying on z-index and
           losing to whichever sheet renders later. */}
       <div className={'sheet-backdrop' + (open ? ' open' : '')} style={{ zIndex: 97 }} onClick={onClose}/>
-      <div className={'sheet' + (open ? ' open' : '')} style={{ zIndex: 98 }} role="dialog" aria-label={'Unlock ' + f.label}>
+      <div className={'sheet' + (open ? ' open' : '')} style={{ zIndex: 98 }} role="dialog" aria-label={'Unlock ' + f.sheetLabel}>
         <div className="sheet-handle"/>
         <div className="sheet-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
@@ -140,12 +166,10 @@ function PlusGateSheet({ featureKey, game, open, onClose, onUpgrade, onWatchAd, 
               <LockGlyph size={18}/>
             </span>
             <div>
-              {/* The whole product can't be "part of" itself — the eyebrow renders
-                  only when the gated feature is narrower than Foundations. */}
-              {gmod && (
-                <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 6 }}>TAUGHT IN {gmod.label}</div>
+              {f.targeted && f.eyebrow && (
+                <div className="smallcaps" style={{ color: 'var(--accent)', marginBottom: 6 }}>{f.eyebrow}</div>
               )}
-              <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.05 }}>{f.label}</div>
+              <div className="ff-display" style={{ fontSize: 'var(--t-heading)', fontWeight: 400, letterSpacing: '-0.01em', color: 'var(--ink)', lineHeight: 1.05 }}>{f.sheetLabel}</div>
             </div>
           </div>
 
@@ -435,6 +459,7 @@ window.LockBadge = LockBadge;
 window.PlusPill = PlusPill;
 window.TrialBadge = TrialBadge;
 window.PlusGateSheet = PlusGateSheet;
+window.gateContext = gateContext;
 window.RewardedAdScreen = RewardedAdScreen;
 window.RoastyGiftScreen = RoastyGiftScreen;
 window.FeatureLock = FeatureLock;

@@ -683,7 +683,7 @@ function renderComponents() {
        <span style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);border-radius:999px;padding:5px 12px 5px 9px;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="color:var(--accent);"><path d="M4 8 H6.5 L10 4.5 V15.5 L6.5 12 H4 Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M13 7.5 a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/></svg><span class="mono" style="font-size:11px;letter-spacing:0.04em;color:var(--ink-mute);">uh-RAB-ih-kuh</span></span>
        <span style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);border-radius:999px;padding:4px 10px 4px 8px;"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" style="color:var(--accent);"><path d="M4 8 H6.5 L10 4.5 V15.5 L6.5 12 H4 Z" fill="currentColor" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/><path d="M13 7.5 a3.5 3.5 0 0 1 0 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/></svg><span class="mono" style="font-size:11px;letter-spacing:0.04em;color:var(--ink-mute);">KREH-muh</span></span>
      </div>`, ['Hairline pill: accent speaker glyph + respelling in mono.', 'Tapping speaks the term and pulses a second arc.', 'Renders only when a respelling exists \u2014 never a bare speaker icon.', 'Respelling, never IPA: the respelling is the readable artefact, the audio is the bonus.',
-     'The respelling convention: syllables split by hyphens, <b>exactly one syllable in caps \\u2014 the stressed one</b> (primary stress only, never a secondary beat: <span class="mono">POR-tuh-fil-ter</span>), and sounds spelled as an English reader would guess them \u2014 <span class="mono">uh</span> for a schwa, <span class="mono">ay/ee/oh</span> for long vowels, a trailing <i>a</i> as <span class="mono">-uh</span>.',
+     'The respelling convention: syllables split by hyphens, <b>exactly one syllable in caps \u2014 the stressed one</b> (primary stress only, never a secondary beat: <span class="mono">POR-tuh-fil-ter</span>), and sounds spelled as an English reader would guess them \u2014 <span class="mono">uh</span> for a schwa, <span class="mono">ay/ee/oh</span> for long vowels, a trailing <i>a</i> as <span class="mono">-uh</span>.',
      'Names read as letters take no stress cap at all \u2014 acronyms go letter by letter (<span class="mono">S-C-A</span>, <span class="mono">M-A-S-L</span>) and any number is written as a word (<span class="mono">V-sixty</span>, <span class="mono">C-O-two</span>, <span class="mono">S-L twenty-eight</span>). Caps are for stress, and a string of letter names has none.',
      'Spell the sound, not the spelling: Chemex is <span class="mono">KEM-ex</span>, never <span class="mono">CHEM-ex</span> \u2014 if the respelling can be misread, it has failed.',
      'A respelling is authored only where the term is genuinely mispronounceable. Plain English words (Bloom, Body, Fines) carry none and the chip does not render \u2014 do not invent one to fill the line.']));
@@ -739,6 +739,8 @@ function renderComponents() {
     ],
     [
       'The lead card is the <b>one</b> place a gradient and a soft shadow are allowed on a content surface.',
+      '<b>The screen is the term, not a page about the term.</b> Dateline, Roasty, term, respelling, definition \u2014 and nothing else. The category line was dropped: it changes nothing you can do here, and the entry one tap away states it.',
+      '<b>The date takes the app\u2019s own hairline, turned sideways</b> \u2014 a 28px rule either side of the mono date. It gives the composition a top edge without inventing a decoration for the term, which is already set in the display face and is shown plain on every other surface (entry, flashcard).',
     ], 280));
 
   wrap.append(compRules('Knowledge check',
@@ -752,7 +754,7 @@ function renderComponents() {
        </div>
      </div>`, ['A surface card wrapping the standard MCQ rows.', 'One tap locks; Roasty answers CORRECT or NOT QUITE with one line of why.', 'Never scored, never awards points \u2014 reading the dictionary is not a lesson.']));
 
-  wrap.append(compStates('Lesson reference card',
+  wrap.append(compStates('Lesson reference row',
     'Term entry \u2014 \u201cwhere you learned it\u201d once known, \u201cwhere you\u2019ll learn it\u201d before.',
     [
       { label: 'Playable', demo: refCard(true),
@@ -764,7 +766,8 @@ function renderComponents() {
     ],
     [
       'Led by the <b>bean node</b> \u2014 the same progress primitive as a lesson row, filled to that lesson\u2019s state.',
-      'The card never lies about being tappable: if it cannot open, it says SOON and drops out of the accent language entirely.',
+      'The row never lies about being tappable: if it cannot open, it says SOON and drops out of the accent language entirely.',
+      '<b>Hairlines, not a filled card.</b> A term entry already runs several labelled blocks; one box per page is the budget, and the knowledge check spends it \u2014 it is the only block you act on from inside. Anything else that needs bounding takes rules above and below.',
     ], 300));
 
   wrap.append(compRules('Labelled block',
@@ -789,7 +792,7 @@ function renderComponents() {
          <span class="mono" style="font-size:11px;line-height:1.5;color:var(--ink-mute);display:flex;gap:8px;"><span style="color:var(--accent);">01</span><span>SCA \u2014 Flavor Wheel and Lexicon</span><svg width="10" height="10" viewBox="0 0 10 10" style="flex-shrink:0;margin-top:3px;"><path d="M2.5 1.5 h6 v6 M8.5 1.5 L1.5 8.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
          <span class="mono" style="font-size:11px;line-height:1.5;color:var(--ink-mute);display:flex;gap:8px;"><span style="color:var(--accent);">02</span><span>World Coffee Research \u2014 variety catalogue</span></span>
        </div>
-     </div>`, ['Mono rows at label size, each led by an accent zero-padded index.', 'External sources link out with the corner arrow and turn accent on hover.', 'Unlinked sources sit inert in ink-mute.', 'Cite the body, not the blog \u2014 this is what makes the dictionary quotable.']));
+     </div>`, ['Mono rows at label size, each led by an accent zero-padded index.', '<b>Collapsed by default</b>, behind the standard disclosure \u2014 its smallcaps label IS the disclosure header, so the block costs one line until asked for. Provenance is what makes the dictionary quotable and also the one block nobody reads on the way through.', 'External sources link out with the corner arrow and turn accent on hover.', 'Unlinked sources sit inert in ink-mute.', 'Cite the body, not the blog \u2014 this is what makes the dictionary quotable.']));
 
   wrap.append(compRules('Dictionary quick chips',
     'Dictionary home, directly under the search field.',
@@ -1046,7 +1049,7 @@ function renderComponents() {
        <div>
          <div style="${SMALLCAPS}margin-bottom:7px;">SECTION</div>
          <div style="${SMALLCAPS}margin-bottom:4px;">FREE</div>
-         <div style="font-size:14px;color:var(--ink);padding:12px 0;">All of Module 1, five practice formats, a shelf of 5.</div>
+         <div style="font-size:14px;color:var(--ink);padding:12px 0;">First three lessons, five practice formats, a shelf of 5.</div>
        </div>
      </div>`,
     ['A card is a <b>container for facts</b> — a purchase date, a price, a countdown. Given facts, it earns its border.',
@@ -1278,6 +1281,69 @@ function renderComponents() {
   });
   [...wrap.children].filter(n => n.classList && n.classList.contains('comp-subhead'))
     .forEach(s => { const t = s.querySelector('.ff-display'); if (t) s.id = 'g-' + dsSlug(t.textContent); });
+
+  wrap.append(compRules('Disclosure · window.Disclosure',
+    'The ONE expand/collapse. Owns the header button, the glyph, the height animation and the a11y wiring. Seven hand-rolled variants were consolidated into it — FAQ rows, practice groups, sub-groups, Path module and reference rows, Duel reviews, saved challenges.',
+    disclosureDemo(),
+    ['<b>Two glyphs only:</b> the caret for lists (a row that opens more rows), the plus for FAQ prose (a question that opens an answer). Never a third, never plus-to-cross.',
+     'One duration everywhere: <b>240ms</b> height animation. A collapsed panel also takes <span class="mono">visibility:hidden</span> on the same delay, so its content leaves the tab order.',
+     'The header is always a real <span class="mono">&lt;button&gt;</span> with <span class="mono">aria-expanded</span> — keyboard-reachable by construction.',
+     'A row with nothing to disclose renders as a <b>static div</b>, not a button that does nothing (an active Path module, a locked Reference shelf).',
+     'Counts belong in the header label as <span class="mono">LESSONS · 1</span>, not as a loose digit at the trailing edge. The trailing edge carries the glyph, plus a lock where the group is gated.',
+     'On a list that can outgrow a screen, the group header is <b>sticky</b> under the nav bar — it carries the count, the group identity and any group-scoped action, all of which otherwise scroll away. Never a paginated-looking footer count: everything is already rendered, so it would promise a page that never comes.']));
+
+  wrap.append(compRules('Card mark · window.CupRingGlyph',
+    'The corner mark on a collectible card, and the same glyph in the card sheet\u2019s TRIED chip. Says whether the card\u2019s Coffee Challenge has been brewed for real.',
+    cardMarkDemo(),
+    ['<b>One metaphor, two states:</b> a cup that stood on paper leaves a ring. Nothing set down yet — an empty hairline dashed ring. Tried — the stain, a heavier ring broken unevenly over a faint tint.',
+     'Never a checkmark: it says nothing about coffee, and it read as generic UI chrome on a printed-card surface.',
+     'Never two ideas side by side — the earlier pairing put a check in one corner badge and a target-in-a-circle in the other, 26px apart.',
+     'The ring uses <span class="mono">currentColor</span>, so the grid badge and the sheet chip are the same mark at two sizes and two colours.',
+     'The disc behind it exists for legibility only — card surfaces are tinted per kind, so the mark cannot rely on the card\u2019s own background.']));
+
+  wrap.append(compRules('Screen title block',
+    'Every screen title is the same shape: the large display title, then at most one muted support line. No eyebrow above the title.',
+    '<div><div style="font-family:Fraunces,serif;font-size:30px;letter-spacing:-0.02em;color:var(--ink);line-height:1.05;">Coffee Dictionary</div>' +
+    '<div style="font-size:13px;line-height:1.5;color:var(--ink-mute);margin-top:8px;">Only the terms your lessons have covered so far.</div>' +
+    '<div style="font-family:Fraunces,serif;font-size:30px;letter-spacing:-0.02em;color:var(--ink);line-height:1.05;margin-top:26px;">Beans and Botany</div>' +
+    '<div class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--ink-mute);margin-top:8px;">NO SUPPORT LINE — THE CHOICE IS ALREADY MADE</div></div>',
+    ['<b>The support line is optional and must earn its place.</b> It states a scope or a cap — something the page does not otherwise show. Never a total that is the sum of counts listed below it, and never a recap of a choice the user just made to get here.',
+     'A drill-down titles itself: inside a category the title is the CATEGORY, not the parent screen. The back control already states where you came from.',
+     'No eyebrow. Context above the title and context below it are two shapes for one job — the dictionary read <span class="mono">REFERENCE · 73 TERMS</span> above while Favorites read <span class="mono">3 OF 5 SAVED</span> below.']));
+
+  wrap.append(compRules('Horizontal swipe · window.useSwipeX',
+    'The one horizontal swipe. Card stacks and carousels share this hook so the gesture is identical wherever it appears — the flashcard deck, the module reward carousel, the challenge card. Three parts ship together in <span class="mono">swipe.jsx</span>: <span class="mono">useSwipeX</span> (the gesture), <span class="mono">DeckStack</span> (the standing affordance), <span class="mono">useSwipeHint</span> + <span class="mono">SwipeHintCaption</span> (the first run).',
+    swipeDirectionDemo(),
+    ['<b>Direction is a contract, app-wide.</b> Left advances — next card, next step. Right goes back, or sets aside. The same motion must never mean “keep this for later” on one screen and “destroy it” on another.',
+     '<b>Destructive actions get no swipe.</b> Removing a saved item keeps its button: an accidental 70px drag must not be able to delete something.',
+     '<b>On a list row the track names the OUTCOME, not a place.</b> A dictionary term swipes right to <span class="mono">SAVE</span> — the same set-aside direction, and what fills the flashcard deck. Un-saving stays on the button, because a stray drag must not be able to empty a curated list.',
+     '<b>A mark and a control must not look the same.</b> Saved rows keep the ringed toggle: every row there is saved, so a mark would state the obvious, and it is the only way to un-save. Giving it the saved mark\u2019s bare glyph made one appearance carry two behaviours across two screens.',
+     '<b>Save-only applies to the GESTURE, not to the control.</b> A stray drag must never empty a curated list \u2014 that says nothing about a deliberate tap. A saved row carries a tappable bookmark; unsaved rows carry nothing, so the list is never a column of empty toggles. Adding by flick and removing by two navigations is an asymmetry with no justification.',
+     '<b>A row that cannot act still moves.</b> An already-saved term damps to ~22% and its track reads <span class="mono">ALREADY SAVED</span>, so the resistance explains itself instead of feeling broken. Teach the gesture on a row it actually works on — nudging the first row taught on a saved one.',
+     '<b>Drive a blocked direction’s caption from the GESTURE, not from the damped movement.</b> Use <span class="mono">rawDragX</span> (the undamped finger distance), never <span class="mono">dragX</span>: keyed to the 22% offset, a 60px swipe on a saved row showed 13px of travel at 0.3 opacity — no motion and no reason given, which on a screen where most rows are already saved is indistinguishable from a dead list.',
+     '<b>A committed swipe flies off.</b> The element leaves the screen with a tilt before the content changes — snapping back to centre with new content already inside reads as a jump cut, and makes the gesture hard to see happening at all. Decks and carousels opt in; list rows do not, since a saved row is still in the list afterwards.',
+     '<b>A counter is not an affordance.</b> “Card 1 of 2” and a Next button say another card EXISTS; neither says the deck MOVES, so the gesture goes undiscovered and gets reported as broken. Every swipe surface carries a standing visual that implies motion — a peeked neighbour, a directional chevron — and it must sit OUTSIDE the element carrying the drag transform, or it travels with the card instead of being left behind.',
+     '<b>A deck’s affordance and its hint are components, not per-screen code.</b> <span class="mono">DeckStack</span> draws the peeked neighbour — one card per side that HAS a card, at the deck’s own radius, rising into place as the drag goes its way — and takes the card’s geometry, so the reward card’s square 2px corner and the flashcard’s 20px both come out right. It renders inside a relative box the size of the card, as a SIBLING of the element carrying the transform. <span class="mono">useSwipeHint</span> owns the nudge timings and the used-flag; a screen that re-implements either drifts from the rest within one session.',
+     'A swipe is a SHORTCUT wherever a control can state something the gesture cannot — the reward carousel keeps its counter, the deck keeps Finish on its last card. Where the structure itself carries the affordance (a stack that looks like a stack), the button row goes.',
+     '<b>A counter is context for the card, so it sits ABOVE the card</b> — the same slot the flashcard deck gives its deck line — never in the footer control row, where a position readout stands among buttons and reads like one. Once the stack is there, that row needs no Previous/Next: the topbar back steps a card, the footer CTA carries forward.',
+     'Past the end of a deck the card still moves, damped to ~22%. A dead card reads as broken; a resisting one reads as “nothing there”.',
+     'The gesture engages only once clearly horizontal (8px, and more X than Y), so vertical scrolling still works from anywhere on the card. A drag never also fires the element’s click.',
+     '<b>A gesture must never outrun its own listeners — or its own state.</b> Attach <span class="mono">pointermove</span>/<span class="mono">pointerup</span> synchronously in <span class="mono">pointerdown</span> — never from an effect keyed on state, which a flick completes before React commits, so nothing moves. For the same reason the release distance the commit decision reads must be written imperatively by the move handler, never assigned during render: a value a native handler needs must not depend on React having re-rendered. And release an implicitly-captured pointer at the END of the gesture, not the start: dropping it early lets the engine retarget the stream and the drag never begins on touch.',
+     '<b>Keyboard focus is a 2px <span class="mono">--accent</span> outline at 2px offset, on <span class="mono">:focus-visible</span> only — outline and offset, nothing else.</b> A focus rule that also sets <span class="mono">border-radius</span> matches every component class on specificity and is declared later, so it replaces their real radii while focused: cards and buttons square off on tab, pills de-pill. The engine paints the ring to the element’s own radius already.',
+     '<b>The swipe target is the whole row — but the row is not the button.</b> Content wrapped in an inner button sized to the text leaves the row’s padding, gaps and trailing controls answering neither gesture, so most of the row does nothing and the swipe reads as broken. Put the gesture on the row and make the tap target a stretched <span class="mono">button</span> at <span class="mono">inset: 0</span> behind the content, with any trailing control above it in z-order. Do NOT give the row <span class="mono">role="button"</span> with a control inside it: that role takes presentational children, so a screen reader may prune the nested control — here the bookmark, which is the only way to un-save.',
+     '<b>A swipe surface is never selectable.</b> Set <span class="mono">user-select: none</span> and <span class="mono">touch-action: pan-y</span> on the surface AND on every interactive child — a drag starting on text begins a selection and cancels the pointer stream, and <span class="mono">touch-action</span> applies to the element the touch starts on, not to an ancestor. The symptom is a gesture that only works over icons.']));
+
+  wrap.append(compRules('Slide to park · ActiveBrewCard',
+    'The optional Coffee Challenge card is dismissed by sliding it aside, not by a button. Past 104px it lets go on release; short of that it springs back. It runs on <span class="mono">useSwipeX</span> / <span class="mono">useSwipeHint</span> / <span class="mono">SwipeHintCaption</span> like every other swipe surface \u2014 the copy of the pointer arithmetic it used to keep is what left this gesture broken for a session after the hook itself was sound.',
+    slideParkDemo(),
+    ['<b>Gestures carry the skippable action; buttons carry the primary one.</b> Log result stays a visible CTA because it opens a form (the taste reaction) — a swipe can only fire, not ask.',
+     'The revealed track names the <b>destination</b>, so the gesture explains itself the moment the card moves. It rests invisible and appears only under the drag.',
+     '<b>The card must actually go where the track says.</b> A replay \u2014 an already-completed challenge brewed again \u2014 queues under For Later like any other, and its row there reads <span class="mono">Brew again</span> so the list never implies it is unfinished. Parking a card toward a destination it never reaches is the control lying.',
+     'The travel threshold is set by the LABEL, not by feel: at 104px with a 12px inset, 92px of an ~84px label is uncovered, so the destination reads whole at the moment of release.',
+     'The standing affordance is a directional double chevron inside the card, pointing the way it travels. It <b>never retires, it steps back</b> — 0.7 until the gesture has been used, a quiet 0.35 after. A challenge surfaces about once per module, so the gesture is forgotten between sightings: this is not a daily swipe that earns its own muscle memory.',
+     'First-run hint nudges the card twice and captions it, <b>every time until the gesture is actually used</b> — not once ever, and not capped at N showings: someone who has not learned it needs the explanation more the third time, not less. Reduced motion keeps the caption, drops the movement.',
+     'The gesture engages only once clearly horizontal, so vertical scrolling still works from anywhere on the card. Keyboard and AT get a real button, revealed on focus.',
+     '<b>The card and every control on it are non-selectable</b> \u2014 <span class="mono">user-select: none</span> on the card, and <span class="mono">touch-action: pan-y</span> on the card AND on its CTA, since touch-action applies to the element the touch starts on rather than to an ancestor. A drag beginning on the title starts a text selection and a drag beginning on the button belongs to the browser; both cancel the pointer stream, and the gesture then only works from the empty parts of the card. The general rule is under <b>Horizontal swipe</b>; it is restated here because this card is the surface that shipped without it.']));
 
   return section('components', 'Library', 'Components',
     'The reusable building blocks, each shown live in the current theme. Anything new should be assembled from these before a fresh pattern is invented.',
@@ -1589,6 +1655,74 @@ function lockBadgeDemo() {
   </span>`;
 }
 
+function disclosureDemo() {
+  const caret = (open) => '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--ink-mute);transform:rotate(' + (open ? 180 : 0) + 'deg);"><path d="M4 6.5 8 10.5 12 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const plus = (open) => '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--ink-mute);"><path d="M8 3.5v9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" style="opacity:' + (open ? 0 : 1) + ';"/><path d="M3.5 8h9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  const row = (label, glyph, panel, last) => '<div style="' + (last ? '' : 'border-bottom:1px solid var(--rule);') + '">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;">' +
+        '<span style="font-size:14px;color:var(--ink);">' + label + '</span>' + glyph +
+      '</div>' +
+      (panel ? '<div style="font-size:12.5px;line-height:1.5;color:var(--ink-mute);padding-bottom:12px;text-wrap:pretty;">' + panel + '</div>' : '') +
+    '</div>';
+  return '<div>' +
+    row('Collapsed list row', caret(false), null) +
+    row('Expanded list row', caret(true), 'The panel animates height at 240ms and takes visibility:hidden on the same delay, so collapsed content leaves the tab order.') +
+    row('FAQ prose row', plus(false), null, true) +
+  '</div>';
+}
+
+function cardMarkDemo() {
+  const disc = (bg, inner, cap) => '<div style="display:flex;flex-direction:column;align-items:center;gap:9px;">' +
+      '<span style="width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:' + bg + ';">' + inner + '</span>' +
+      '<span class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--ink-mute);">' + cap + '</span>' +
+    '</div>';
+  const ring = '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" style="color:var(--accent);"><circle cx="13" cy="13" r="8.2" fill="currentColor" fill-opacity="0.14"/><circle cx="13" cy="13" r="8.2" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-dasharray="15 3.4 12 2.6 13 5" transform="rotate(-24 13 13)"/></svg>';
+  const empty = '<svg width="26" height="26" viewBox="0 0 26 26" fill="none"><circle cx="13" cy="13" r="8.2" stroke="var(--ink-mute)" stroke-width="1.1" stroke-dasharray="2 2.6" opacity="0.75"/></svg>';
+  return '<div style="display:flex;gap:28px;align-items:flex-start;">' +
+    disc('color-mix(in oklab, var(--surface) 92%, var(--ink))', empty, 'TO EARN') +
+    disc('color-mix(in oklab, var(--accent) 13%, var(--surface))', ring, 'TRIED') +
+  '</div>';
+}
+
+function swipeDirectionDemo() {
+  // dir 0 needs its OWN mark: falling through to the default drew an accent
+  // right-arrow beside the rule that forbids swiping. Muted, and struck.
+  const arrow = (dir) => dir === 0
+    ? '<svg width="26" height="12" viewBox="0 0 26 12" fill="none" style="color:var(--ink-mute);opacity:0.8;"><path d="M1 6h22M19 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"/><path d="M4 11 22 1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>'
+    : '<svg width="26" height="12" viewBox="0 0 26 12" fill="none" style="color:var(--accent);' + (dir < 0 ? 'transform:scaleX(-1);' : '') + '"><path d="M1 6h22M19 2l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const row = (dir, name, meaning, where, last) => '<div style="display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;padding:13px 0;' + (last ? '' : 'border-bottom:1px solid var(--rule);') + '">' +
+      '<div style="padding-top:3px;">' + arrow(dir) + '</div>' +
+      '<div><div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;"><span style="font-size:13.5px;font-weight:500;color:var(--ink);">' + name + '</span>' +
+      '<span class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--ink-mute);">' + where + '</span></div>' +
+      '<div style="font-size:12.5px;line-height:1.5;color:var(--ink-mute);margin-top:4px;text-wrap:pretty;">' + meaning + '</div></div>' +
+    '</div>';
+  return '<div>' +
+    row(-1, 'Left \u2014 advance', 'The next card, the next step. Never a commitment you cannot undo by swiping back.', 'DECK \u00b7 CAROUSEL') +
+    row(1, 'Right \u2014 back, or set aside', 'Return to the previous card; or park this one somewhere named, as the challenge card does.', 'DECK \u00b7 CHALLENGE') +
+    row(0, 'Neither \u2014 destroy', 'Deleting keeps its button. No swipe, in any direction.', 'SAVED ROWS', true) +
+  '</div>';
+}
+
+function slideParkDemo() {
+  const chev = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="color:var(--accent);"><path d="M4.2 3.6 8.6 8l-4.4 4.4M8.8 3.6 13.2 8l-4.4 4.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  // 14px literal, not var(--r): this page does not define the app's radius
+  // token, and an unresolved var() renders square — the opposite of the rule
+  // this entry documents. overflow:hidden clips the translated card the way the
+  // phone's own card clips against the track.
+  const stage = (label, title, cap) => '<div>' +
+    '<div style="position:relative;overflow:hidden;border-radius:14px;">' +
+      '<div style="position:absolute;inset:0;border-radius:14px;background:color-mix(in oklab, var(--accent) 9%, var(--surface));border:1px dashed color-mix(in oklab, var(--accent) 34%, var(--rule));display:flex;align-items:center;padding-left:18px;"><span class="mono" style="font-size:12px;letter-spacing:0.14em;color:var(--accent);">' + label + '</span></div>' +
+      '<div style="position:relative;transform:translateX(110px);width:calc(100% - 110px);background:color-mix(in oklab, var(--accent) 6%, var(--surface));border:1px solid color-mix(in oklab, var(--accent) 34%, var(--rule));border-radius:14px;padding:16px 18px;box-sizing:border-box;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
+          '<span class="ff-display" style="font-size:17px;color:var(--ink);">' + title + '</span>' + chev +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--ink-mute);margin-top:9px;">' + cap + '</div>' +
+  '</div>';
+  return stage('FOR LATER', 'Two cups, two ratios', 'PAST ~104px IT LETS GO ON RELEASE');
+}
+
 function affordancesDemo() {
   return `<div class="afford-row">
     <div class="afford">
@@ -1846,9 +1980,11 @@ function roundLengthDemo() {
 
 // ── ACCESS TIERS ───────────────────────────────────────────
 // Every published game and who can play it. Tier DERIVES FROM TOPIC: a game
-// is free iff the module that teaches its topic is unlocked (free tier =
-// Module 1) — today that opens exactly the two M1-topic games. New games take
-// paid-module topics, so the free catalog widens only if what's unlocked widens.
+// is free iff the LESSON that teaches its topic is free (free tier = the first
+// three lessons of Module 1, m1l1–m1l3) — today that opens exactly three games,
+// one per free lesson. Not "is its module Module 1?": later M1 lessons are paid,
+// so a game taught by one of them would read free here and lock in the app. New games take
+// paid topics, so the free catalog widens only if what's unlocked widens.
 const ACCESS_COLS = 'display:grid;grid-template-columns:150px 110px 92px 1fr;gap:14px;';
 
 const GAME_ACCESS = [
@@ -1861,7 +1997,7 @@ const GAME_ACCESS = [
   ['Roast basics', 'g-quiz-roast-basics', 0, 'Recognition',
    'Topic: roasting (M3). Myth-forward true-or-false \u2014 caffeine, oil, freshness, first crack.'],
   ['Name the flavor notes', 'g-flavor', 0, 'Palate', 'Topic: tasting notes (M5). Sensory judgement.'],
-  ['Name the origin', 'g-flavor-origin-signatures', 1, 'Palate', 'Topic: origin signatures (M1). A deliberate free taste of the palate tier \u2014 on free-module material.'],
+  ['Name the origin', 'g-flavor-origin-signatures', 1, 'Palate', 'Topic: origin signatures (m1l3). A deliberate free taste of the palate tier \u2014 on free-lesson material.'],
   ['Read the green bean', 'g-bagpick', 0, 'Palate', 'Topic: washed, honey or natural (M2). Sensory judgement. The one single-game kind.'],
   ['Fix the cup', 'g-tastefix', 0, 'Palate', 'Topic: dialing in by taste (M4). Sensory judgement \u2014 diagnose, then correct.'],
   ['Fix the shot', 'g-tastefix-espresso', 0, 'Palate', 'Topic: espresso dial-in (M5). Read the stream and the sip; fixes cut every way \u2014 finer, coarser, prep, ratio, beans.'],
@@ -1895,8 +2031,8 @@ function accessInventory() {
     el('div', null, head, rows),
     el('ul', { class: 'rules' }, [
       '<b>Show every game, always.</b> A locked one keeps its name, its topic eyebrow and a <b>legible static preview</b>. Never blur it, never hide it, never leave it as a bare padlock \u2014 a user cannot want what they cannot read.',
-      '<b>Tier derives from topic:</b> a game is free iff its topic\u2019s module is unlocked \u2014 today True or false, Match the facts and Name the origin, the three M1-topic games. The free list is <b>derived, never hand-kept</b>.',
-      'The free set is deliberately <b>one recognition, one recall, one palate</b> format \u2014 the origin game is a free taste of the palate tier on free-module material. Two of the same axis would be the same exercise twice.',
+      '<b>Tier derives from topic:</b> a game is free iff the LESSON that teaches its topic is free \u2014 today True or false, Match the facts and Name the origin, taught by m1l1, m1l2 and m1l3, the three free lessons. The free list is <b>derived, never hand-kept</b>.',
+      'The free set is deliberately <b>one recognition, one recall, one palate</b> format \u2014 the origin game is a free taste of the palate tier on free-lesson material. Two of the same axis would be the same exercise twice.',
       'Premium is a <b>tier with a sentence</b>, not a leftover: everything gated asks for a sensory, numeric or ordering judgement \u2014 or drills paid-module material. <b>Free tests what you know; Foundations trains your palate.</b>',
       'Tapping a locked game opens <span class="mono">PlusGateSheet</span> led by <b>\u201cTaught in Module N\u201d</b> \u2014 a targeted course pitch naming the module that teaches its topic, never a generic upgrade screen. <b>In v1 the sheet is upgrade-only</b> (<span class="mono">showAd={false}</span>): no advertising ships in v1.',
       '<b>New games take paid-module topics</b> unless a free taster is the point; the free catalog widens only if what\u2019s unlocked widens.',
