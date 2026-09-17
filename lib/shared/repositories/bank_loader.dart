@@ -39,6 +39,9 @@ Future<List<Map<String, dynamic>>> loadBankRecords(
 }
 
 /// Reads a generated bank and parses each of its records.
+///
+/// A record that fails to parse names the folder it could have come from as
+/// well as the master, because by here the two have already been merged.
 Future<List<T>> loadBank<T>(
   String bank,
   T Function(Map<String, dynamic>) fromJson, {
@@ -53,9 +56,11 @@ Future<List<T>> loadBank<T>(
   try {
     return [for (final record in records) fromJson(record)];
   } on Object catch (error) {
-    throw ContentFormatException(
-      '${masterBankPath(bank)} holds an unreadable record: $error',
-    );
+    final translatedPath = translatedBankPath(bank, language);
+    final source = translatedPath == null
+        ? masterBankPath(bank)
+        : '${masterBankPath(bank)} overlaid by $translatedPath';
+    throw ContentFormatException('$source holds an unreadable record: $error');
   }
 }
 

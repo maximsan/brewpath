@@ -23,7 +23,8 @@ const String nativeReviewedField = 'nativeReviewed';
 /// The translation tool's bookkeeping, stripped before a model sees a record.
 ///
 /// It travels in the folder because the folder is both what the owner reviews
-/// and what the app ships; nothing on a device may read it.
+/// and what the app ships; nothing on a device may read it. Stripped at every
+/// depth, because ADR-0026 marks a piece of text wherever it sits.
 const Set<String> bookkeepingFields = {
   translatedFromField,
   nativeReviewedField,
@@ -31,20 +32,30 @@ const Set<String> bookkeepingFields = {
 
 /// [master]'s records with [translated]'s text laid over them, by id.
 ///
-/// Per entry and per field: a translated field wins, anything omitted stays
-/// English, and ADR-0027 leaves staleness invisible. An id the master lacks
-/// throws the way ADR-0018 refuses broken content, while a *missing* id is the
-/// fallback ADR-0008 asks for — so only one direction is fatal.
+/// Per field at every depth: a translated field wins and anything omitted
+/// stays English. Only an omission falls back — a short list or an unknown
+/// field would replace text rather than fall back, so both are refused the
+/// way ADR-0018 refuses broken content.
 List<Map<String, dynamic>> overlayTranslations({
   required List<Map<String, dynamic>> master,
   required List<Map<String, dynamic>> translated,
   required String assetPath,
 }) {
-  final byId = {
-    for (final record in translated) record['id'] as Object?: record,
-  };
+  final byId = <Object?, Map<String, dynamic>>{};
+  for (final record in translated) {
+    final id = record['id'] as Object?;
+    if (byId.containsKey(id)) {
+      throw ContentFormatException(
+        '$assetPath translates "$id" twice — one entry per id, so nothing but '
+        'the file order decides which of the two a reader would get',
+      );
+    }
+    byId[id] = record;
+  }
+
   final records = [
-    for (final record in master) _merge(record, byId.remove(record['id'])),
+    for (final record in master)
+      _mergeRecord(record, byId.remove(record['id']), assetPath),
   ];
   if (byId.isNotEmpty) {
     throw ContentFormatException(
@@ -55,12 +66,86 @@ List<Map<String, dynamic>> overlayTranslations({
   return records;
 }
 
-/// [master] with [translation]'s fields written over it, bookkeeping removed.
-Map<String, dynamic> _merge(
+/// [master] with [translation] over it, or [master] where none was drafted.
+Map<String, dynamic> _mergeRecord(
   Map<String, dynamic> master,
   Map<String, dynamic>? translation,
+  String assetPath,
+) => translation == null
+    ? master
+    : _mergeMap(master, translation, '$assetPath entry "${master['id']}"');
+
+/// [master]'s fields with [translation]'s written over them, bookkeeping gone.
+///
+/// [where] names the entry and the field path under it, so a refusal says
+/// which piece of text to redraft rather than which file.
+Map<String, dynamic> _mergeMap(
+  Map<String, dynamic> master,
+  Map<String, dynamic> translation,
+  String where,
 ) {
-  if (translation == null) return master;
-  final merged = {...master, ...translation};
+  final merged = <String, dynamic>{...master};
+  for (final field in translation.entries) {
+    if (bookkeepingFields.contains(field.key)) continue;
+    if (!master.containsKey(field.key)) {
+      throw ContentFormatException(
+        '$where translates "${field.key}", which the master has no field for '
+        '— check it against the English bank, because a misspelt key leaves '
+        'the real one in English',
+      );
+    }
+    merged[field.key] = _mergeValue(
+      master[field.key],
+      field.value,
+      '$where field "${field.key}"',
+    );
+  }
   return merged..removeWhere((field, _) => bookkeepingFields.contains(field));
 }
+
+/// [translation] where it carries text, [master] where it does not.
+///
+/// Recurses so the per-field fallback reaches a lesson's cards and a help
+/// entry's steps, which is where most of the course's prose actually sits.
+Object? _mergeValue(Object? master, Object? translation, String where) {
+  if (translation == null) return master;
+  if (master is Map<String, dynamic> && translation is Map<String, dynamic>) {
+    return _mergeMap(master, translation, where);
+  }
+  if (master is List && translation is List) {
+    if (master.length != translation.length) {
+      throw ContentFormatException(
+        '$where lists ${translation.length} where the master lists '
+        '${master.length} — a list is translated whole or left out, because a '
+        'short one replaces the English rather than falling back to it',
+      );
+    }
+    return [
+      for (var index = 0; index < master.length; index++)
+        _mergeValue(
+          master[index],
+          translation[index],
+          '$where item '
+          '${index + 1}',
+        ),
+    ];
+  }
+  if (_isNested(master) || _isNested(translation)) {
+    throw ContentFormatException(
+      '$where is ${_shape(translation)} where the master has ${_shape(master)} '
+      '— redraft the folder against the current master',
+    );
+  }
+  return translation;
+}
+
+/// Whether [value] holds text under it rather than being text.
+bool _isNested(Object? value) => value is Map || value is List;
+
+/// What [value] is, in the words a refusal uses.
+String _shape(Object? value) => switch (value) {
+  Map() => 'a group of fields',
+  List() => 'a list',
+  null => 'nothing',
+  _ => 'a single value',
+};
