@@ -234,8 +234,14 @@ void main() {
       // frozen date is gone, so it has to run against whatever today is.
       final today = await _todaysTerm(tester);
 
+      // Scoped to the banner: a category chip on the index can carry the
+      // same name as a term — `Espresso` is both — so an unscoped finder
+      // matches twice on whichever day picks one of those words.
       expect(
-        find.text(today.term),
+        find.descendant(
+          of: find.byType(TermOfDayBanner),
+          matching: find.text(today.term),
+        ),
         findsOneWidget,
         reason: 'the banner names the term the pick chose for today',
       );
@@ -246,7 +252,10 @@ void main() {
       expect(find.byType(TermOfDayScreen), findsOneWidget);
       expect(find.text(TermOfDayCopy.readFullEntry), findsOneWidget);
       expect(
-        find.text(today.term),
+        find.descendant(
+          of: find.byType(TermOfDayScreen),
+          matching: find.text(today.term),
+        ),
         findsOneWidget,
         reason: 'and the screen it opens names the same one',
       );
