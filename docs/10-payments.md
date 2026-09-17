@@ -21,17 +21,17 @@ Three concerns stay separated, and that separation is the whole design
 | Buying, and which arm they are on | `PaymentsService` and its implementations, in `lib/services/payments/` |
 | What the paywall says | `lib/features/monetization/` |
 
-The interface is the source; this doc does not restate it. Four
+The interface is the source; this doc does not restate it. Three
 implementations of `PaymentsService`:
 
-- `NoOpPaymentsService` — owns nothing, cancels every purchase. Active until
-  the store lands.
+- `NoOpPaymentsService` — owns nothing, cancels every purchase. What a build
+  without a `REVENUECAT_KEY` runs, so the app is free by construction.
 - `GrantedPaymentsService` — owns everything. Development only, behind
-  `--dart-define=GRANT_COURSE=true`.
-- `RevenueCatPaymentsService` — the real one. **Not written yet**
-  ([#421](https://github.com/maximsan/brewpath/issues/421)).
-- `InAppPurchaseService` — an abandoned stub from when v1 was going to talk to
-  StoreKit directly. Delete it when the RevenueCat one lands.
+  `--dart-define=GRANT_COURSE=true`, which wins over a real store.
+- `RevenueCatPaymentsService` — the real one, chosen when a build is given a
+  `REVENUECAT_KEY`. Written in
+  [#602](https://github.com/maximsan/brewpath/pull/602); not yet proven
+  against a store, which the checklist below tracks.
 
 `paymentsProvider` picks one. Nothing outside `lib/services/payments/` names a
 store SDK.
