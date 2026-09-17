@@ -222,6 +222,11 @@ function main(argv) {
         "SPROUT_OPTS",
         "customize.jsx",
       ),
+      companionLines: evaluateDeclaration(
+        customize,
+        "ROASTY_LINES",
+        "customize.jsx",
+      ),
       visualGuideCards: evaluateDeclaration(
         data,
         "VISUAL_GUIDE_CARDS",
@@ -290,6 +295,10 @@ function main(argv) {
     bank("companion_hats", "customize.jsx", derived.companionHats),
     bank("companion_gear", "customize.jsx", derived.companionGear),
     bank("companion_sprouts", "customize.jsx", derived.companionSprouts),
+    // Words, not an axis: what Roasty *says*, one record per line so a
+    // language folder reaches each one and a typo fixed in one leaves its
+    // neighbours' translations alone (#604).
+    bank("companion_lines", "customize.jsx", derived.companionLines),
     // Two sources, honestly: identity, unlock and the meta table are authored
     // in `data.jsx`, the words in `practical.jsx`, and a guide is only whole
     // once they are joined.

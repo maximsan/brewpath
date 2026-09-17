@@ -2,38 +2,58 @@ import 'dart:math';
 
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
+import 'package:brew_path/shared/models/content/companion_line.dart';
+import 'package:brew_path/shared/repositories/content_assembly.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+CompanionLine _line(String id, String occasion, String text) =>
+    CompanionLine(id: id, occasion: occasion, text: text);
 
 void main() {
   group('CompanionLines', () {
-    test('fromJson parses reaction-keyed variant lists', () {
-      final lines = CompanionLines.fromJson(const {
-        'lessonComplete': ['a', 'b'],
-        'challengeComplete': ['c'],
-      });
+    test('fromRecords groups a bank by the reaction each line answers', () {
+      final lines = CompanionLines.fromRecords([
+        _line('rl-a', 'lessonComplete', 'a'),
+        _line('rl-b', 'lessonComplete', 'b'),
+        _line('rl-c', 'challengeComplete', 'c'),
+      ]);
+
+      expect(lines.lineFor(CompanionReaction.challengeComplete), 'c');
+    });
+
+    test('fromRecords refuses an occasion that names no reaction', () {
       expect(
-        lines.lineFor(CompanionReaction.challengeComplete),
-        'c',
+        () => CompanionLines.fromRecords([
+          _line('rl-typo', 'lessonComplet', 'a'),
+        ]),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (error) => error.message,
+            'message',
+            allOf(contains('rl-typo'), contains('lessonComplet')),
+          ),
+        ),
       );
     });
 
     test('lineFor returns null when a reaction has no authored lines', () {
-      final lines = CompanionLines.fromJson(const {
-        'lessonComplete': ['a'],
-      });
+      final lines = CompanionLines.fromRecords([
+        _line('rl-a', 'lessonComplete', 'a'),
+      ]);
       expect(lines.lineFor(CompanionReaction.moduleComplete), isNull);
     });
 
     test('lineFor picks a variant deterministically with a seeded Random', () {
-      final lines = CompanionLines.fromJson(const {
-        'lessonComplete': ['a', 'b', 'c'],
-      });
+      final lines = CompanionLines.fromRecords([
+        _line('rl-a', 'lessonComplete', 'a'),
+        _line('rl-b', 'lessonComplete', 'b'),
+        _line('rl-c', 'lessonComplete', 'c'),
+      ]);
       final picked = lines.lineFor(
         CompanionReaction.lessonComplete,
         random: Random(1),
       );
       expect(['a', 'b', 'c'], contains(picked));
-      // Same seed -> same pick (stable selection).
       expect(
         lines.lineFor(CompanionReaction.lessonComplete, random: Random(1)),
         picked,

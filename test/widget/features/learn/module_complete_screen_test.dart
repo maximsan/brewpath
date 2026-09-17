@@ -76,7 +76,7 @@ void main() {
       ).overrideWith((ref) async => offer),
       streakProvider.overrideWith((ref) => 0),
       companionLinesProvider.overrideWith(
-        (ref) => CompanionLines.fromJson(const {
+        (ref) => const CompanionLines({
           'moduleComplete': ['Whole module brewed!'],
         }),
       ),
