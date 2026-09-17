@@ -171,3 +171,92 @@ final class LessonTitleFamily extends $Family
   @override
   String toString() => r'lessonTitleProvider';
 }
+
+/// The entry's path row draws the lesson with its module's picture, so the
+/// row is looked up through the modules rather than the lesson bank.
+
+@ProviderFor(lessonPlace)
+final lessonPlaceProvider = LessonPlaceFamily._();
+
+/// The entry's path row draws the lesson with its module's picture, so the
+/// row is looked up through the modules rather than the lesson bank.
+
+final class LessonPlaceProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<LessonPlace?>,
+          LessonPlace?,
+          FutureOr<LessonPlace?>
+        >
+    with $FutureModifier<LessonPlace?>, $FutureProvider<LessonPlace?> {
+  /// The entry's path row draws the lesson with its module's picture, so the
+  /// row is looked up through the modules rather than the lesson bank.
+  LessonPlaceProvider._({
+    required LessonPlaceFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'lessonPlaceProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$lessonPlaceHash();
+
+  @override
+  String toString() {
+    return r'lessonPlaceProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<LessonPlace?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<LessonPlace?> create(Ref ref) {
+    final argument = this.argument as String?;
+    return lessonPlace(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LessonPlaceProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$lessonPlaceHash() => r'f527996924cfa1a7830ef25ec358ef23bb571f26';
+
+/// The entry's path row draws the lesson with its module's picture, so the
+/// row is looked up through the modules rather than the lesson bank.
+
+final class LessonPlaceFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<LessonPlace?>, String?> {
+  LessonPlaceFamily._()
+    : super(
+        retry: null,
+        name: r'lessonPlaceProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// The entry's path row draws the lesson with its module's picture, so the
+  /// row is looked up through the modules rather than the lesson bank.
+
+  LessonPlaceProvider call(String? lessonId) =>
+      LessonPlaceProvider._(argument: lessonId, from: this);
+
+  @override
+  String toString() => r'lessonPlaceProvider';
+}

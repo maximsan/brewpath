@@ -1,7 +1,7 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
-import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -47,26 +47,21 @@ class _TermSelfCheckState extends State<TermSelfCheck> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          widget.check.question,
-          style: Theme.of(
-            context,
-          ).textTheme.titleSmall?.copyWith(color: mood.ink),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        for (var index = 0; index < choices.length; index++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xxs),
-            child: _ChoiceTile(
-              text: choices[index].text,
-              isChosen: _chosen == index,
-              // Right and wrong are only ever shown after an answer.
-              isCorrect: _chosen == null ? null : choices[index].isCorrect,
-              onTap: _chosen == null
-                  ? () => setState(() => _chosen = index)
-                  : null,
-            ),
+        // The question in the display face: it is the card's heading.
+        Text(widget.check.question, style: AppText.heading(mood: mood)),
+        const SizedBox(height: AppSpacing.base),
+        for (var index = 0; index < choices.length; index++) ...[
+          if (index > 0) Divider(height: 1, thickness: 1, color: mood.rule),
+          _ChoiceRow(
+            text: choices[index].text,
+            isChosen: _chosen == index,
+            // Right and wrong are only ever shown after an answer.
+            isCorrect: _chosen == null ? null : choices[index].isCorrect,
+            onTap: _chosen == null
+                ? () => setState(() => _chosen = index)
+                : null,
           ),
+        ],
         // The explanation, once an answer is in.
         //
         // ⚠️ **Reduced motion drops the animator, rather than giving it a zero
@@ -94,13 +89,20 @@ class _TermSelfCheckState extends State<TermSelfCheck> {
   }
 }
 
-class _ChoiceTile extends StatelessWidget {
-  const _ChoiceTile({
+/// One answer as a row: a radio mark, then the text, ruled off from the next.
+///
+/// Neutral before an answer; then the right choice turns sage and a wrong
+/// one the learner picked turns amber, on the mark rather than a box.
+class _ChoiceRow extends StatelessWidget {
+  const _ChoiceRow({
     required this.text,
     required this.isChosen,
     required this.isCorrect,
     required this.onTap,
   });
+
+  /// The design's `20` radio mark, and its `1px` ring.
+  static const double _mark = 20;
 
   final String text;
   final bool isChosen;
@@ -109,9 +111,7 @@ class _ChoiceTile extends StatelessWidget {
   final bool? isCorrect;
   final VoidCallback? onTap;
 
-  /// The outline colour: neutral before an answer, then green for the right
-  /// choice and amber for a wrong one the learner picked.
-  Color _borderColor(MoodColors mood) {
+  Color _markColor(MoodColors mood) {
     if (isCorrect == null) return mood.rule;
     if (isCorrect!) return mood.sage;
     return isChosen ? mood.warn : mood.rule;
@@ -121,6 +121,9 @@ class _ChoiceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final answered = isCorrect != null;
+    final color = _markColor(mood);
+    // Filled once it carries a verdict the learner took part in.
+    final filled = answered && (isChosen || isCorrect!);
 
     return Semantics(
       button: onTap != null,
@@ -129,19 +132,27 @@ class _ChoiceTile extends StatelessWidget {
       child: ExcludeSemantics(
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(AppRadii.chrome),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadii.chrome),
-              border: Border.all(color: _borderColor(mood)),
-            ),
-            child: Text(
-              text,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: mood.ink),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+            child: Row(
+              children: [
+                Container(
+                  width: _mark,
+                  height: _mark,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: filled ? color : null,
+                    border: Border.all(color: color),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    text,
+                    style: AppText.body(mood: mood, face: AppFace.control),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

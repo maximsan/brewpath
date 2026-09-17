@@ -1,3 +1,8 @@
+import 'dart:async';
+
+import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/utils/object_position.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
@@ -7,7 +12,11 @@ import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart'
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/features/dictionary/presentation/term_sources_section.dart';
+import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/monetization/domain/free_tier.dart';
+import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
+import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -34,6 +43,7 @@ class TermEntryBody extends ConsumerWidget {
     required this.view,
     required this.term,
     this.onRelatedTap,
+    this.leadWithShort = true,
     super.key,
   });
 
@@ -48,6 +58,10 @@ class TermEntryBody extends ConsumerWidget {
   /// the peek sheet does not stack peeks on itself.
   final ValueChanged<String>? onRelatedTap;
 
+  /// Whether the short explanation opens the entry even when the deep one
+  /// follows. The peek keeps it; the full page leads with the deep text.
+  final bool leadWithShort;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mood = context.mood;
@@ -57,6 +71,10 @@ class TermEntryBody extends ConsumerWidget {
     // a free learner's shelf, or content that moved — is dropped, and a block
     // whose every chip dropped is not drawn at all.
     final related = [for (final id in term.relatedIds) ?view.termById(id)];
+    final showsDeep = view.hasCourse && term.deepExplanation != null;
+    // The short line is the free learner's whole entry and the peek's opener;
+    // a full page with a deep explanation starts on that instead.
+    final leadsWithShort = leadWithShort || !showsDeep;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,10 +82,8 @@ class TermEntryBody extends ConsumerWidget {
         if (term.pronunciation != null)
           SpeakButton(word: term.term, respelling: term.pronunciation!),
         const SizedBox(height: AppSpacing.xs),
-        // The **display** face at the heading rung, not
-        // body copy: the short explanation is the entry's answer, and setting
-        // it in the reading face made it a first paragraph of the deep one.
-        Text(term.shortExplanation, style: AppText.heading(mood: mood)),
+        if (leadsWithShort)
+          Text(term.shortExplanation, style: AppText.heading(mood: mood)),
         // The gate stands only where something stands behind it: a term the
         // course adds nothing to has no full entry to promise.
         if (!view.hasCourse && term.hasFullEntry) ...[
@@ -79,8 +95,8 @@ class TermEntryBody extends ConsumerWidget {
           ),
         ],
         if (view.hasCourse) ...[
-          if (term.deepExplanation != null) ...[
-            const SizedBox(height: AppSpacing.md),
+          if (showsDeep) ...[
+            if (leadsWithShort) const SizedBox(height: AppSpacing.md),
             Text(
               term.deepExplanation!,
               style: text.bodyMedium?.copyWith(color: mood.ink),
@@ -97,13 +113,6 @@ class TermEntryBody extends ConsumerWidget {
               ),
             ),
           ],
-          if (term.check != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            _Block(
-              label: 'Knowledge check',
-              child: TermSelfCheck(check: term.check!),
-            ),
-          ],
         ],
         if (onRelatedTap != null && related.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
@@ -112,8 +121,19 @@ class TermEntryBody extends ConsumerWidget {
             child: _RelatedChips(related: related, onTap: onRelatedTap!),
           ),
         ],
+        if (view.hasCourse && term.check != null) ...[
+          const SizedBox(height: AppSpacing.lg),
+          _Card(
+            child: _Block(
+              label: 'Knowledge check',
+              child: TermSelfCheck(check: term.check!),
+            ),
+          ),
+        ],
         const SizedBox(height: AppSpacing.lg),
-        _PathBlock(status: status, lessonId: term.lessonId),
+        Divider(height: 1, thickness: 1, color: mood.rule),
+        const SizedBox(height: AppSpacing.lg),
+        _PathBlock(view: view, status: status, lessonId: term.lessonId),
         if (view.hasCourse && term.sources.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           TermSourcesSection(sources: term.sources),
@@ -123,33 +143,95 @@ class TermEntryBody extends ConsumerWidget {
   }
 }
 
-/// Related terms, shown by name rather than by id.
+/// Related terms as outlined pills, shown by name rather than by id.
 ///
-/// A learner reading *Cold Brew* should see *Gooseneck kettle*, not
-/// `gooseneck`. Already resolved against the learner's shelf, so every chip
-/// here opens onto a term they can have.
+/// Already resolved against the learner's shelf, so every pill here opens
+/// onto a term they can have.
 class _RelatedChips extends StatelessWidget {
   const _RelatedChips({required this.related, required this.onTap});
+
+  /// The design's `padding: 10px 18px` inside a pill.
+  static const EdgeInsets _pillPadding = EdgeInsets.symmetric(
+    horizontal: 18,
+    vertical: 10,
+  );
 
   final List<DictionaryTerm> related;
   final ValueChanged<String> onTap;
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
+
     return Wrap(
       spacing: AppSpacing.xs,
+      runSpacing: AppSpacing.xs,
       children: [
         for (final term in related)
-          ActionChip(label: Text(term.term), onPressed: () => onTap(term.id)),
+          Material(
+            color: Colors.transparent,
+            shape: StadiumBorder(side: BorderSide(color: mood.rule)),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => onTap(term.id),
+              child: Padding(
+                padding: _pillPadding,
+                child: Text(
+                  term.term,
+                  style: AppText.body(mood: mood, face: AppFace.control),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
 }
 
-/// Where on the path this term is taught — or that nothing teaches it.
-class _PathBlock extends ConsumerWidget {
-  const _PathBlock({required this.status, required this.lessonId});
+/// The page's one filled container — the design's `radius 14` card on a
+/// `1px var(--rule)` border, given to the block you act on from inside.
+class _Card extends StatelessWidget {
+  const _Card({required this.child});
 
+  /// The design's `padding: 18` inside the card.
+  static const double _pad = 18;
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(_pad),
+      decoration: BoxDecoration(
+        color: mood.surface,
+        borderRadius: BorderRadius.circular(AppRadii.chrome),
+        border: Border.all(color: mood.rule),
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Where on the path this term is taught — or that nothing teaches it.
+///
+/// The lesson is a row you can open: its module's picture, its title, and a
+/// chevron when the learner may play it or a lock when the course has not
+/// been bought.
+class _PathBlock extends ConsumerWidget {
+  const _PathBlock({
+    required this.view,
+    required this.status,
+    required this.lessonId,
+  });
+
+  /// The design's `48` square thumbnail at `borderRadius: 10`, then `gap: 14`.
+  static const double _art = 48;
+  static const double _artGap = 14;
+
+  final DictionaryView view;
   final DictionaryStatus status;
   final String? lessonId;
 
@@ -165,12 +247,70 @@ class _PathBlock extends ConsumerWidget {
       );
     }
 
-    final title = ref.watch(lessonTitleProvider(lessonId)).asData?.value;
+    final id = lessonId;
+    final place = ref.watch(lessonPlaceProvider(id)).asData?.value;
+    final accessible = id != null && (view.hasCourse || isLessonFree(id));
+    // Until the place resolves there is nothing honest to show — an id is not
+    // an answer, so the row simply has no text yet.
+    final title = place?.title ?? '';
+
     return _Block(
       label: status.pathLabel,
-      // Until the title resolves there is nothing honest to show — an id is
-      // not an answer, so the row simply has no text yet.
-      child: Text(title ?? '', style: body?.copyWith(color: mood.ink)),
+      child: Semantics(
+        button: true,
+        label: '$title, ${accessible ? 'opens the lesson' : 'locked'}',
+        excludeSemantics: true,
+        child: InkWell(
+          onTap: id == null
+              ? null
+              : () => unawaited(context.pushActivity(lessonRun(id))),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadii.inner),
+                child: SizedBox.square(
+                  dimension: _art,
+                  child: _ModuleArt(art: place?.art, artPos: place?.artPos),
+                ),
+              ),
+              const SizedBox(width: _artGap),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppText.body(mood: mood, face: AppFace.control),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              IconMark(
+                accessible ? AppIcon.chevron : AppIcon.lock,
+                color: accessible ? mood.accent : mood.inkMute,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A module's picture cropped to a square, or the raised surface where a
+/// module has none or the bundle cannot decode it — never a broken image.
+class _ModuleArt extends StatelessWidget {
+  const _ModuleArt({required this.art, required this.artPos});
+
+  final String? art;
+  final String? artPos;
+
+  @override
+  Widget build(BuildContext context) {
+    final fallback = ColoredBox(color: context.mood.surface2);
+    final asset = art;
+    if (asset == null) return fallback;
+    return Image.asset(
+      asset,
+      fit: BoxFit.cover,
+      alignment: alignmentFromObjectPosition(artPos),
+      errorBuilder: (_, _, _) => fallback,
     );
   }
 }

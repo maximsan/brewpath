@@ -203,6 +203,36 @@ You can always edit this file by hand instead — the helpers just save effort.
   bookmark that takes it off the shelf, and closes with a hairline. The title
   no longer sits a gutter too low under the back chevron.
 
+- **Module reward cards speak to you.** Each card's memorable line now names
+  the thing that used to be opaque and hands it over — *"Washed, natural,
+  honey — now you know why they matter"* — instead of describing a barista;
+  the summaries that said the same thing moved out of its way. The bundled
+  banks are regenerated from the 15 September prototype sources.
+
+- **Dictionary rows read like the design's.** A row's meaning wraps in full
+  instead of stopping at two lines, the name sits at body weight over it, a
+  hairline closes each row, and a saved term carries a filled bookmark on the
+  right — a control that un-saves — while unsaved rows carry nothing. The
+  status marks are the design's: a dashed ring with a dot for a term still to
+  learn, a sage ring with a check once learned, a hairline ring with a dash for
+  one off the path.
+
+- **The dictionary's index and its categories each carry only their own
+  controls.** The index heads its rows *All categories* and keeps the two
+  practice chips; a category shows the `ALL / LEARNED / TO LEARN` filter —
+  accent-filled, no counts — and nothing else above its rows: no chips, no
+  repeated category header, no *All categories* button (the bar's chevron is
+  the way back). A term's bar no longer carries its category as an eyebrow.
+
+- **A term's full entry takes the design's composition.** The page leads
+  with the deep explanation (the short line stays the peek's opener and the
+  free learner's entry), related terms are outlined pills, the knowledge check
+  is the page's one filled card with radio rows instead of boxed tiles, and
+  *Where you'll learn it* is a row you can open — the module's picture, the
+  lesson's title, and a chevron or a lock. Sources are numbered, named in
+  mono, and one with an address opens it in the browser. The status chip under
+  the title is gone; the path row says where the term stands.
+
 - **Term of the Day is the term, centred.** The `TERM OF THE DAY` kicker is
   gone, the dateline, Roasty, word and definition sit centred between the bar
   and the footer, and *Back* is the outlined ghost button every other bottom

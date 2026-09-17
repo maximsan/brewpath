@@ -12,17 +12,10 @@ import 'package:flutter/material.dart';
 /// category the back chevron already says where the learner came from.
 class DictionaryMasthead extends StatelessWidget {
   /// Creates a [DictionaryMasthead].
-  const DictionaryMasthead({
-    required this.category,
-    required this.onClear,
-    super.key,
-  });
+  const DictionaryMasthead({required this.category, super.key});
 
   /// The category being browsed, or null on the index.
   final DictionaryCategory? category;
-
-  /// Leaves the category for the index.
-  final VoidCallback onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -34,19 +27,9 @@ class DictionaryMasthead extends StatelessWidget {
         AppSpacing.sm,
       ),
       // Browsing a category, the category is the heading — one heading, always
-      // naming where the learner actually is.
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: PageLargeTitle(
-              category?.label ?? DictionaryHomeScreen.title,
-            ),
-          ),
-          if (category != null)
-            TextButton(onPressed: onClear, child: const Text('All categories')),
-        ],
-      ),
+      // naming where the learner actually is. The bar's chevron is the way
+      // back, so nothing beside the heading offers a second one.
+      child: PageLargeTitle(category?.label ?? DictionaryHomeScreen.title),
     );
   }
 }

@@ -10,7 +10,7 @@ part of 'owned_term.dart';
 // ignore_for_file: type=lint, type=warning
 /// The term the learner currently holds, or null when they hold none.
 ///
-/// Asked of the store, not of [PurchasedTerm], which records only what *this
+/// Asked of the store, not of `PurchasedTerm`, which records only what *this
 /// session* bought — so it survives a restart and a plan changed elsewhere.
 
 @ProviderFor(ownedTerm)
@@ -18,7 +18,7 @@ final ownedTermProvider = OwnedTermProvider._();
 
 /// The term the learner currently holds, or null when they hold none.
 ///
-/// Asked of the store, not of [PurchasedTerm], which records only what *this
+/// Asked of the store, not of `PurchasedTerm`, which records only what *this
 /// session* bought — so it survives a restart and a plan changed elsewhere.
 
 final class OwnedTermProvider
@@ -31,7 +31,7 @@ final class OwnedTermProvider
     with $FutureModifier<PlusTerm?>, $FutureProvider<PlusTerm?> {
   /// The term the learner currently holds, or null when they hold none.
   ///
-  /// Asked of the store, not of [PurchasedTerm], which records only what *this
+  /// Asked of the store, not of `PurchasedTerm`, which records only what *this
   /// session* bought — so it survives a restart and a plan changed elsewhere.
   OwnedTermProvider._()
     : super(

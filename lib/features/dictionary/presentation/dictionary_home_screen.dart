@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
+import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
@@ -15,16 +16,9 @@ import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.da
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// The inset the practice chips take when they are fixed under the filters.
-const EdgeInsets _chipPadding = EdgeInsets.fromLTRB(
-  AppSpacing.gutter,
-  AppSpacing.sm,
-  AppSpacing.gutter,
-  0,
-);
 
 /// Dictionary home: search, filter, and every term under its category.
 class DictionaryHomeScreen extends ConsumerWidget {
@@ -36,6 +30,9 @@ class DictionaryHomeScreen extends ConsumerWidget {
   /// `Coffee Dictionary`, not `Dictionary`: the course is about one subject
   /// and the shelf says so.
   static const title = 'Coffee Dictionary';
+
+  /// The heading over the index's category rows.
+  static const allCategories = 'All categories';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -151,29 +148,18 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
             padding: EdgeInsets.only(top: scrollPadding.top),
             sliver: SliverList.list(
               children: [
-                DictionaryMasthead(
-                  category: _category,
-                  onClear: () => setState(() => _category = null),
-                ),
+                DictionaryMasthead(category: _category),
                 DictionarySearchField(
                   onChanged: (value) => setState(() => _query = value),
                 ),
-                DictionaryFilterControl(
-                  selected: _filter,
-                  counts: widget.view.counts,
-                  onSelected: (filter) => setState(() => _filter = filter),
-                ),
-                // The practice chips sit between narrowing the shelf and
-                // reading it: drilling is a third thing to do here rather
-                // than a way of browsing. Only once the learner has started
-                // narrowing — on the index they sit under Term of the Day.
-                if (!_onIndex) ...[
-                  const Padding(
-                    padding: _chipPadding,
-                    child: DictionaryQuickChips(),
+                // The filter belongs to a category, where learned and
+                // to-learn are worth telling apart; the index sums them in
+                // its counts, and a search has already said what it wants.
+                if (_category != null && _query.isEmpty)
+                  DictionaryFilterControl(
+                    selected: _filter,
+                    onSelected: (filter) => setState(() => _filter = filter),
                   ),
-                  const SizedBox(height: AppSpacing.sm),
-                ],
                 if (_onIndex) _index(),
               ],
             ),
@@ -186,6 +172,9 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                 view: widget.view,
                 visible: visible,
                 onOpen: _openTerm,
+                // Inside a category the title names it; only a search, which
+                // can cross categories, heads each run of rows.
+                grouped: _category == null,
               ),
           const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
         ],
@@ -206,7 +195,13 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
         TermOfDayBanner(onOpen: () => unawaited(context.pushTermOfDay())),
         const SizedBox(height: AppSpacing.md),
         const DictionaryQuickChips(),
-        const SizedBox(height: AppSpacing.md),
+        const SizedBox(height: AppSpacing.lg),
+        const SmallcapsLabel(
+          DictionaryHomeScreen.allCategories,
+          isHeader: true,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        Divider(height: 1, thickness: 1, color: context.mood.rule),
         CategoryIndex(
           categories: widget.view.categories,
           terms: widget.view.terms,

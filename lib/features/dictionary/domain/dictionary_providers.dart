@@ -56,13 +56,9 @@ class DictionaryView {
 /// Loads the dictionary, the learner's completed lessons and their tier
 /// together.
 ///
-/// **The tier is awaited, not read as it stands.** The shelf is one value
-/// that every dictionary surface — and the Saved shelf — resolves once and
-/// keeps, so it waits for the answer rather than emitting a free shelf and
-/// then a wider one: a paying learner would watch their reference terms
-/// arrive a frame late, and a one-shot reader that finished on the first
-/// emission would hold the wrong shelf for good. While it waits nothing is
-/// shown, which is the same safe direction every gate resolves in.
+/// The tier is awaited, not read as it stands: emitting a free shelf and then
+/// a wider one would show a paying learner their reference terms a frame late
+/// and leave a one-shot reader holding the wrong shelf for good.
 @riverpod
 Future<DictionaryView> dictionaryView(Ref ref) async {
   // Every watch resolved before the first await: a rebuild mid-flight must not
@@ -93,4 +89,23 @@ Future<String?> lessonTitle(Ref ref, String? lessonId) async {
       .watch(contentRepositoryProvider)
       .getLessonById(lessonId);
   return lesson?.title;
+}
+
+/// Where a lesson sits: its title, and the picture of the module it is in.
+typedef LessonPlace = ({String title, String? art, String? artPos});
+
+/// The entry's path row draws the lesson with its module's picture, so the
+/// row is looked up through the modules rather than the lesson bank.
+@riverpod
+Future<LessonPlace?> lessonPlace(Ref ref, String? lessonId) async {
+  if (lessonId == null) return null;
+  final modules = await ref.watch(contentRepositoryProvider).getModules();
+  for (final module in modules) {
+    for (final lesson in module.lessons) {
+      if (lesson.id == lessonId) {
+        return (title: lesson.title, art: module.art, artPos: module.artPos);
+      }
+    }
+  }
+  return null;
 }
