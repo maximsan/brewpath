@@ -11,13 +11,9 @@ part of 'dictionary_providers.dart';
 /// Loads the dictionary, the learner's completed lessons and their tier
 /// together.
 ///
-/// **The tier is awaited, not read as it stands.** The shelf is one value
-/// that every dictionary surface — and the Saved shelf — resolves once and
-/// keeps, so it waits for the answer rather than emitting a free shelf and
-/// then a wider one: a paying learner would watch their reference terms
-/// arrive a frame late, and a one-shot reader that finished on the first
-/// emission would hold the wrong shelf for good. While it waits nothing is
-/// shown, which is the same safe direction every gate resolves in.
+/// The tier is awaited, not read as it stands: emitting a free shelf and then
+/// a wider one would show a paying learner their reference terms a frame late
+/// and leave a one-shot reader holding the wrong shelf for good.
 
 @ProviderFor(dictionaryView)
 final dictionaryViewProvider = DictionaryViewProvider._();
@@ -25,13 +21,9 @@ final dictionaryViewProvider = DictionaryViewProvider._();
 /// Loads the dictionary, the learner's completed lessons and their tier
 /// together.
 ///
-/// **The tier is awaited, not read as it stands.** The shelf is one value
-/// that every dictionary surface — and the Saved shelf — resolves once and
-/// keeps, so it waits for the answer rather than emitting a free shelf and
-/// then a wider one: a paying learner would watch their reference terms
-/// arrive a frame late, and a one-shot reader that finished on the first
-/// emission would hold the wrong shelf for good. While it waits nothing is
-/// shown, which is the same safe direction every gate resolves in.
+/// The tier is awaited, not read as it stands: emitting a free shelf and then
+/// a wider one would show a paying learner their reference terms a frame late
+/// and leave a one-shot reader holding the wrong shelf for good.
 
 final class DictionaryViewProvider
     extends
@@ -44,13 +36,9 @@ final class DictionaryViewProvider
   /// Loads the dictionary, the learner's completed lessons and their tier
   /// together.
   ///
-  /// **The tier is awaited, not read as it stands.** The shelf is one value
-  /// that every dictionary surface — and the Saved shelf — resolves once and
-  /// keeps, so it waits for the answer rather than emitting a free shelf and
-  /// then a wider one: a paying learner would watch their reference terms
-  /// arrive a frame late, and a one-shot reader that finished on the first
-  /// emission would hold the wrong shelf for good. While it waits nothing is
-  /// shown, which is the same safe direction every gate resolves in.
+  /// The tier is awaited, not read as it stands: emitting a free shelf and then
+  /// a wider one would show a paying learner their reference terms a frame late
+  /// and leave a one-shot reader holding the wrong shelf for good.
   DictionaryViewProvider._()
     : super(
         from: null,

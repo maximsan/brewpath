@@ -5,32 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Invalidates every provider derived against *today*.
 ///
-/// The list lives here because three call sites each held their own copy of
-/// it — a lesson that recorded a day, a mini-game that marked one, and a
-/// resume that crossed midnight. A fourth day-dependent provider would have
-/// had to be added to all three, and the one that got missed fails silently:
-/// a surface quietly showing yesterday's answer, which is the defect
-/// [#202](https://github.com/maximsan/brewpath/issues/202) existed to end.
-///
-/// **The app header's date is the fourth**, added when the shared header
-/// landed — the case this doc predicted, where a day-dependent surface added
-/// later gets missed and quietly shows yesterday.
-///
-/// **`keepSharpAcknowledgedToday` is named deliberately**, even though it
-/// watches the recommendation and so already rebuilds when that one is
-/// invalidated. Trimming this to what the dependency graph currently makes
-/// sufficient would make every caller's correctness depend on wiring inside
-/// another feature, and no test can catch that being rewired — a test with
-/// overridden providers severs the very edge it would be relying on. Naming
-/// all three is what stops this list from being knowledge each caller has to
-/// hold correctly.
-///
-/// **The free day's allowance is deliberately not on this list**, though it is
-/// derived against today like everything here: it re-derives on every read
-/// instead (`activityAllowanceNow`, ADR-0020).
-///
-/// It lives in `app/` because the trio spans progress and learn and belongs to
-/// neither: the day it turns on is the app's, not a feature's.
+/// Each is named rather than left to the dependency graph, which would put a
+/// caller's correctness in another feature's wiring. Off the list on purpose:
+/// the free day's allowance (ADR-0020) and the challenge windows (ADR-0030),
+/// which read the clock as they rebuild instead of caching a day.
 void invalidateDaySurfaces(WidgetRef ref) {
   ref
     ..invalidate(currentDayProvider)

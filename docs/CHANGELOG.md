@@ -54,6 +54,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **An app left open across midnight no longer shows yesterday.** The streak,
+  the freeze line, Keep Sharp, the header's date and a Coffee Challenge's
+  window were worked out when a screen last drew and refreshed only when the
+  app came back from the background, so a phone sitting on the counter at
+  midnight kept yesterday's answers until something was tapped. The app now
+  notices midnight itself and moves them all together (ADR-0030).
+
 - **A half-translated language folder is refused, not shown.** The fallback to
   English reaches every depth of an entry, so a folder can translate one of a
   lesson's cards or one of a help entry's steps and leave the rest in English.
