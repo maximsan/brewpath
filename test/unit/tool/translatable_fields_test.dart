@@ -1,0 +1,101 @@
+// The drafting tool treats an unregistered string as prose, which is the safe
+// default for words and the wrong one for a key. This reads the committed
+// banks and fails when a string that reads like a key is heading for
+// translation — the case that would leave a language quietly unusable.
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
+
+const _generated = 'assets/content/generated';
+
+/// A value that reads as a key rather than as words: one lowercase token.
+final _looksLikeAKey = RegExp(r'^[a-z][a-z0-9_-]*$');
+
+/// Asks the tool what it would do with each path, so the test and the tool
+/// cannot disagree about the register.
+Map<String, String> _classify(List<String> paths) {
+  final result = Process.runSync('node', [
+    '-e',
+    "const {classify, mirrorOf} = require('./tool/draft_language/fields.js');"
+        'const paths = JSON.parse(process.argv[1]);'
+        'process.stdout.write(JSON.stringify(Object.fromEntries('
+        'paths.map((path) => [path, mirrorOf(path) ? "mirror" : classify(path)])'
+        ')));',
+    jsonEncode(paths),
+  ]);
+  expect(result.exitCode, 0, reason: result.stderr.toString());
+  return (jsonDecode(result.stdout.toString()) as Map<String, dynamic>)
+      .cast<String, String>();
+}
+
+/// Every string in the committed banks, by the register's path.
+Map<String, List<String>> _stringsByPath() {
+  final found = <String, List<String>>{};
+  void walk(Object? value, String path) {
+    if (value is Map) {
+      value.forEach(
+        (key, item) => walk(item, path.isEmpty ? '$key' : '$path.$key'),
+      );
+    } else if (value is List) {
+      for (final item in value) {
+        walk(item, '$path[]');
+      }
+    } else if (value is String) {
+      (found[path] ??= []).add(value);
+    }
+  }
+
+  for (final file in Directory(_generated).listSync().whereType<File>()) {
+    final bank = p.basenameWithoutExtension(file.path);
+    final envelope =
+        jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+    for (final record in envelope['items']! as List) {
+      walk(record, bank);
+    }
+  }
+  return found;
+}
+
+/// The option lists a mirrored answer chooses from — keys by design.
+Set<String> _mirrorOptionPaths(Map<String, String> classes) {
+  final result = Process.runSync('node', [
+    '-e',
+    "const {MIRRORS} = require('./tool/draft_language/fields.js');"
+        'process.stdout.write(JSON.stringify(Object.values(MIRRORS)));',
+  ]);
+  expect(result.exitCode, 0, reason: result.stderr.toString());
+  return (jsonDecode(result.stdout.toString()) as List).cast<String>().toSet();
+}
+
+void main() {
+  test('every bank field the banks carry has a place in the register', () {
+    final byPath = _stringsByPath();
+    final classes = _classify(byPath.keys.toList());
+
+    expect(classes.keys, hasLength(byPath.length));
+    expect(classes.values, everyElement(isNotEmpty));
+  });
+
+  test('no string that reads like a key is heading for translation', () {
+    final byPath = _stringsByPath();
+    final classes = _classify(byPath.keys.toList());
+    final optionPaths = _mirrorOptionPaths(classes);
+
+    final suspects = <String>[];
+    byPath.forEach((path, values) {
+      if (classes[path] != 'prose') return;
+      if (optionPaths.contains(path)) return;
+      if (values.every(_looksLikeAKey.hasMatch)) suspects.add(path);
+    });
+
+    expect(
+      suspects,
+      isEmpty,
+      reason:
+          'these read as keys but the tool would translate them — classify '
+          'each in tool/draft_language/fields.js, or say why it is words',
+    );
+  });
+}
