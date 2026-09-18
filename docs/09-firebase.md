@@ -119,7 +119,7 @@ from them):
 | `lesson_reviewed`  | Completed replay / practice run       |
 | `card_unlocked`    | Coffee Card earned                    |
 | `module_unlocked`  | Next module unlocked                  |
-| `xp_earned`        | Points awarded (`source`: lesson, practice, module_bonus) |
+| `points_earned`    | Points awarded (`source`: always `lesson` today)          |
 
 Screen views are not a `logEvent` — they flow through
 `AnalyticsService.logScreen` via `lib/app/analytics_navigator_observer.dart`,
