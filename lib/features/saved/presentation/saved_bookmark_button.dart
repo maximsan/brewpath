@@ -161,6 +161,7 @@ class _Captioned extends StatelessWidget {
       button: true,
       toggled: isSaved,
       label: isSaved ? 'Remove $label from Saved' : 'Save $label',
+      onTap: onPressed,
       excludeSemantics: true,
       child: TextButton.icon(
         onPressed: onPressed,

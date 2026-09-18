@@ -101,6 +101,7 @@ class _OptionPill extends StatelessWidget {
       button: true,
       selected: selected,
       label: option.label,
+      onTap: onSelect,
       excludeSemantics: true,
       child: Material(
         color: selected ? mood.accent.withValues(alpha: _pickedWash) : null,

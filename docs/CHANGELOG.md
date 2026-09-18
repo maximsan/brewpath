@@ -54,6 +54,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **Buttons a screen reader announced but could not press now press.** The
+  idiom that reads a tappable row as one announcement dropped the tap along
+  with the text it hid, leaving twenty-seven controls flagged as buttons with
+  no action to carry — the drill and lesson rows, the studio and appearance
+  pickers, the flashcard, the pronounce button and the welcome sound toggle
+  among them. A guard now reads the sources and fails if the pair comes apart.
+
 - **A half-translated language folder is refused, not shown.** The fallback to
   English reaches every depth of an entry, so a folder can translate one of a
   lesson's cards or one of a help entry's steps and leave the rest in English.

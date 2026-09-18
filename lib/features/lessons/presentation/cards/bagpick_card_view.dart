@@ -300,6 +300,7 @@ class _CueRow extends StatelessWidget {
       label: isTell
           ? '${cue.label}. $body. This was the tell.'
           : '${cue.label}. $body',
+      onTap: onTap,
       excludeSemantics: true,
       child: Material(
         // A closed cue has to *look* closed, before its words are read: the
