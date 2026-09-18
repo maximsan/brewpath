@@ -290,7 +290,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('IN PRACTICE'), findsOneWidget);
+      // No example block: the design's entry carries none (ruled 18 Sep).
+      expect(find.text('IN PRACTICE'), findsNothing);
       expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
       expect(find.text('RELATED TERMS'), findsOneWidget);
       // The words they replaced.
@@ -609,7 +610,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Roughly 60% of world coffee.'), findsOneWidget);
-      expect(find.text('IN PRACTICE'), findsOneWidget);
       expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
       expect(find.text('SOURCES'), findsOneWidget);
       expect(find.byType(TermFullEntryGate), findsNothing);

@@ -230,8 +230,7 @@ You can always edit this file by hand instead — the helpers just save effort.
   is the page's one filled card with radio rows instead of boxed tiles, and
   *Where you'll learn it* is a row you can open — the module's picture, the
   lesson's title, and a chevron or a lock. Sources are numbered, named in
-  mono, and one with an address opens it in the browser. The status chip under
-  the title is gone; the path row says where the term stands.
+  mono, and one with an address opens it in the browser. The status chip under the title is gone; the path row says where the term stands, and the *In practice* block is gone with it — the design's entry carries no example.
 
 - **Term of the Day is the term, centred.** The `TERM OF THE DAY` kicker is
   gone, the dateline, Roasty, word and definition sit centred between the bar

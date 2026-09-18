@@ -102,17 +102,6 @@ class TermEntryBody extends ConsumerWidget {
               style: text.bodyMedium?.copyWith(color: mood.ink),
             ),
           ],
-          if (term.example != null) ...[
-            const SizedBox(height: AppSpacing.md),
-            _Block(
-              label: 'In practice',
-              accent: true,
-              child: Text(
-                term.example!,
-                style: text.bodyMedium?.copyWith(color: mood.inkMute),
-              ),
-            ),
-          ],
         ],
         if (onRelatedTap != null && related.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
@@ -322,10 +311,8 @@ class _Block extends StatelessWidget {
   final String label;
   final Widget child;
 
-  /// Whether the label takes the accent. `IN PRACTICE` does — it heads the
-  /// one block that is an example rather than more explanation — and so does
-  /// the gated expansion, because a purchase lock is drawn in accent
-  /// (ADR-0016).
+  /// Whether the label takes the accent: the gated expansion does, because a
+  /// purchase lock is drawn in accent (ADR-0016).
   final bool accent;
 
   @override
