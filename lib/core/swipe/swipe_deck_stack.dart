@@ -15,12 +15,16 @@ class SwipeDeckStack extends StatelessWidget {
     required this.radius,
     this.canAdvance = false,
     this.canBack = false,
-    this.inset = 13,
-    this.restScale = 0.955,
-    this.riseDistance = 104,
+    this.inset = _restInset,
+    this.restScale = _restScale,
+    this.riseDistance = _riseDistance,
     this.shadow = _lift,
     super.key,
   });
+
+  static const double _restInset = 13;
+  static const double _restScale = 0.955;
+  static const double _riseDistance = 104;
 
   /// The design's `0 10px 26px rgba(0,0,0,0.18)`.
   static const List<BoxShadow> _lift = [

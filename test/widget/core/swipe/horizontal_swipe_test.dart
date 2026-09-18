@@ -139,6 +139,18 @@ void main() {
       expect(advanced, 0);
     });
 
+    testWidgets('the same holds the other way round', (tester) async {
+      var back = 0;
+      await tester.pumpWidget(
+        _app(_Surface(canBack: false, onBack: () => back++)),
+      );
+
+      await tester.drag(find.byKey(_cardKey), const Offset(400, 0));
+      await tester.pumpAndSettle();
+
+      expect(back, 0);
+    });
+
     testWidgets('reaches full caption opacity on a 60px swipe', (tester) async {
       await tester.pumpWidget(_app(const _Surface(canAdvance: false)));
 

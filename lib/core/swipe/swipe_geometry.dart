@@ -88,6 +88,25 @@ bool swipeIsBlocked({
   null => false,
 };
 
+/// How far the element may be for [distance] of finger on this surface.
+///
+/// The block and the damping in one step, so no caller can apply one without
+/// the other.
+double swipeOffsetFor({
+  required double distance,
+  required bool canAdvance,
+  required bool canBack,
+  required double maxDrag,
+}) => swipeOffset(
+  distance: distance,
+  blocked: swipeIsBlocked(
+    distance: distance,
+    canAdvance: canAdvance,
+    canBack: canBack,
+  ),
+  maxDrag: maxDrag,
+);
+
 /// How far the element moves for [distance] of finger.
 double swipeOffset({
   required double distance,
@@ -133,7 +152,13 @@ double swipeCommitProgress({
 /// A card that pivots as it leaves reads as a physical object being thrown;
 /// pure translation reads as a slide control.
 double swipeTilt({required double offset, required double degreesPer100px}) =>
-    (offset / 100) * degreesPer100px * math.pi / 180;
+    (offset / _tiltSpan) * degreesPer100px * _radiansPerDegree;
+
+/// The span the design states a tilt over: so many degrees per 100px moved.
+const double _tiltSpan = 100;
+
+/// Degrees are what the design writes; radians are what Flutter turns in.
+const double _radiansPerDegree = math.pi / 180;
 
 /// Where a committed swipe flies to, off the side it is heading for.
 double swipeExitOffset({required SwipeAim aim, required double exitDistance}) =>

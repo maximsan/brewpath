@@ -43,7 +43,7 @@ class SwipeHint extends ConsumerStatefulWidget {
     required this.surface,
     required this.builder,
     this.enabled = true,
-    this.nudge = -34,
+    this.nudge = swipeDefaultNudge,
     super.key,
   });
 

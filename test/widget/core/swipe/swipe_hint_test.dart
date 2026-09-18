@@ -2,7 +2,6 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/swipe/swipe_geometry.dart';
 import 'package:brew_path/core/swipe/swipe_hint.dart';
 import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
-import 'package:brew_path/core/swipe/swipe_hint_providers.dart';
 import 'package:brew_path/core/swipe/swipe_hint_timing.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
