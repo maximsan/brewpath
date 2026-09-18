@@ -2,32 +2,23 @@ import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The kicker and the name, which the design leads the screen with.
+/// The name the design leads the screen with, and nothing above it.
+///
+/// Title first, then at most one muted support line, and only where it says
+/// something the page does not already show. Neither state here has one: the
+/// term total is the sum of the category counts listed below it, and in a
+/// category the back chevron already says where the learner came from.
 class DictionaryMasthead extends StatelessWidget {
   /// Creates a [DictionaryMasthead].
-  const DictionaryMasthead({
-    required this.terms,
-    required this.category,
-    required this.onClear,
-    super.key,
-  });
-
-  /// How many terms the shelf holds, for the kicker.
-  final int terms;
+  const DictionaryMasthead({required this.category, super.key});
 
   /// The category being browsed, or null on the index.
   final DictionaryCategory? category;
 
-  /// Leaves the category for the index.
-  final VoidCallback onClear;
-
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.gutter,
@@ -35,29 +26,10 @@ class DictionaryMasthead extends StatelessWidget {
         AppSpacing.gutter,
         AppSpacing.sm,
       ),
-      // Browsing a category, the category is the heading and the shelf's name
-      // steps up into the kicker — one heading, always naming where the
-      // learner actually is. It is the page's half of the design's title pair,
-      // so it is the same `PageLargeTitle` every pushed page opens on.
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Expanded(
-            child: PageLargeTitle(
-              category?.label ?? DictionaryHomeScreen.title,
-              kicker: category == null
-                  ? DictionaryHomeScreen.kickerFor(terms)
-                  : DictionaryHomeScreen.title,
-              kickerColor: mood.accentText,
-            ),
-          ),
-          if (category != null)
-            TextButton(
-              onPressed: onClear,
-              child: const Text('All categories'),
-            ),
-        ],
-      ),
+      // Browsing a category, the category is the heading — one heading, always
+      // naming where the learner actually is. The bar's chevron is the way
+      // back, so nothing beside the heading offers a second one.
+      child: PageLargeTitle(category?.label ?? DictionaryHomeScreen.title),
     );
   }
 }

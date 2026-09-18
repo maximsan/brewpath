@@ -171,9 +171,10 @@ void main() {
       expect(savedCountLine(count: 5, isPlus: false), '5 of 5 saved');
     });
 
-    test('a Plus learner is not shown a limit that does not apply', () {
-      expect(savedCountLine(count: 3, isPlus: true), '3 items to revisit');
-      expect(savedCountLine(count: 1, isPlus: true), '1 item to revisit');
+    test('an owner gets no line, because the page already states it', () {
+      expect(savedCountLine(count: 3, isPlus: true), isNull);
+      expect(savedCountLine(count: 1, isPlus: true), isNull);
+      expect(savedCountLine(count: 0, isPlus: true), isNull);
     });
 
     test('a shelf filled on Plus still reads honestly without it', () {

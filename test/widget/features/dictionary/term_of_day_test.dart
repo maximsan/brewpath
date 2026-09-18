@@ -162,10 +162,28 @@ void main() {
       final term = await _expectedTerm(tester, hasCourse: false);
       await _pumpScreen(tester, hasCourse: false);
 
-      expect(find.text(TermOfDayCopy.title.toUpperCase()), findsOneWidget);
+      // No kicker: the screen is the term, and the bar's close is its exit.
+      expect(find.text(TermOfDayCopy.title.toUpperCase()), findsNothing);
       expect(find.text(longDate(_pinnedDay).toUpperCase()), findsOneWidget);
       expect(find.text(term.term), findsOneWidget);
       expect(find.text(term.shortExplanation), findsOneWidget);
+    });
+
+    testWidgets('says nothing about the term but the term', (tester) async {
+      final term = await _expectedTerm(tester, hasCourse: true);
+      await _pumpScreen(tester, hasCourse: true);
+
+      // The category changes nothing the learner can do here, and the full
+      // entry — one tap away, behind the only primary button — states it.
+      final categories = await tester.runAsync(
+        () => DictionaryRepository().getCategories(),
+      );
+      final category = categories!.firstWhere(
+        (each) => each.id == term.categoryId,
+      );
+
+      expect(find.text(category.label), findsNothing);
+      expect(find.text(category.label.toUpperCase()), findsNothing);
     });
 
     testWidgets('the short explanation is what it offers, never the full one', (

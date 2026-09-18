@@ -22,6 +22,7 @@ class DictionaryTermList extends StatelessWidget {
     required this.view,
     required this.visible,
     required this.onOpen,
+    this.grouped = true,
     super.key,
   });
 
@@ -34,15 +35,21 @@ class DictionaryTermList extends StatelessWidget {
   /// Called with the id of the term the learner opened.
   final ValueChanged<String> onOpen;
 
+  /// Whether each category heads its own run of rows. Off inside a category,
+  /// where the page title already names it and a header would repeat it.
+  final bool grouped;
+
   @override
   Widget build(BuildContext context) {
-    final grouped = groupByCategory(visible, view.categories);
+    final groups = groupByCategory(visible, view.categories);
 
     return SliverList.list(
       children: [
-        for (final entry in grouped.entries) ...[
-          SectionHeader(entry.key.label),
-          _CategoryNote(category: entry.key),
+        for (final entry in groups.entries) ...[
+          if (grouped) ...[
+            SectionHeader(entry.key.label),
+            _CategoryNote(category: entry.key),
+          ],
           for (final term in entry.value)
             TermRow(
               term: term,
@@ -84,11 +91,8 @@ class DictionaryNoMatches extends StatelessWidget {
 
 /// A category's glyph and its one-line description, under the section header.
 ///
-/// Every category wears its **own** mark. It wore one generic cup until now,
-/// because the drawings did not exist when this screen was built.
-///
 /// [moduleMark] is the mapping — the same one the Path headers use, because a
-/// topic is one topic wherever it appears. A second mapping here is how the
+/// topic is one topic wherever it appears; a second mapping here is how the
 /// two would come to disagree about what Roasting looks like.
 class _CategoryNote extends StatelessWidget {
   const _CategoryNote({required this.category});

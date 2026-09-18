@@ -2,9 +2,7 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
-import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
@@ -74,36 +72,38 @@ class _TermDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The bar carries the way back, the term's category as an eyebrow and the
-    // bookmark. Its back control is ringed, which the design does on exactly
-    // this page: it is the one bar with a control at both ends, and the ring
-    // is what makes the two read at one weight.
+    // The bar carries the way back and the bookmark, and once scrolled the
+    // term's name — no eyebrow. Its back control is ringed, which the design
+    // does on exactly this page: it is the one bar with a control at both
+    // ends, and the ring is what makes the two read at one weight.
     return SubScreenScaffold(
       title: term.term,
-      eyebrow: view.categoryById(term.categoryId)?.label,
       isRinged: true,
       trailing: SavedBookmarkButton(
         savedKey: formatSavedKey(SavedKind.term, term.id),
         label: term.term,
         ringed: true,
       ),
+      // The scroll padding already clears the bar; a gutter on top of it put
+      // the title a second gutter below the back control.
       body: (context, scrollPadding) => SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppSpacing.gutter) +
+            scrollPadding +
+            const EdgeInsets.only(bottom: AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // The page heading lives here rather than inside the entry: the
             // screen owns the page's chrome, and the peek sheet reuses the
-            // same entry without wanting a second title above its own.
+            // same entry without wanting a second title above its own. The
+            // path block below says where the term stands, so no chip does.
             PageLargeTitle(term.term),
-            const SizedBox(height: AppSpacing.xs),
-            StatusChip(
-              status: dictionaryStatusOf(term, view.completedLessonIds),
-            ),
             const SizedBox(height: AppSpacing.sm),
             TermEntryBody(
               view: view,
               term: term,
+              leadWithShort: false,
               // A related term opens as a peek, not a push: following a
               // thread through the vocabulary should not bury the entry you
               // started on.

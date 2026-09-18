@@ -194,6 +194,71 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Screens stop repeating what they already show.** Four surfaces were
+  saying the same thing twice. The dictionary's `Reference · 73 terms`
+  eyebrow is gone — the number was the sum of the category counts listed
+  right below it — and so is the one over a category, which the back chevron
+  already answers. The Saved shelf drops its total for owners, keeping only
+  the free `3 of 5 saved`, which is stated nowhere else. Term of the Day
+  drops its category line, and its date is now framed by the app's own
+  hairline turned sideways. Saved's group headings carry their count inside
+  the label — `DICTIONARY TERMS · 6` — instead of trailing a loose digit.
+
+- **The flashcards route sits on the group it belongs to.** The full-width
+  accent banner over the saved terms is now `FLASHCARDS →` on the *Dictionary
+  terms* heading, set at type weight rather than object weight: the deck is
+  built from saved terms only, so beside the page title it read as covering
+  lessons and guides too. The heading already carries the count, so the route
+  only names where it goes.
+
+- **The shelf is titled *Favorites*, as the design titles it**, on the page
+  and in the bar once scrolled; saving is still *Save*, and the Profile card
+  still says *saved*.
+
+- **Saved rows read like the design's.** Each row leads with its mark — a
+  term's category glyph, the empty bean for a lesson, the guide mark for a
+  guide — sets its category in small mono over the title, ends in the ringed
+  bookmark that takes it off the shelf, and closes with a hairline. The title
+  no longer sits a gutter too low under the back chevron.
+
+- **Module reward cards speak to you.** Each card's memorable line now names
+  the thing that used to be opaque and hands it over — *"Washed, natural,
+  honey — now you know why they matter"* — instead of describing a barista;
+  the summaries that said the same thing moved out of its way. The bundled
+  banks are regenerated from the 15 September prototype sources.
+
+- **Dictionary rows read like the design's.** A row's meaning wraps in full
+  instead of stopping at two lines, the name sits at body weight over it, a
+  hairline closes each row, and a saved term carries a filled bookmark on the
+  right — a control that un-saves — while unsaved rows carry nothing. The
+  status marks are the design's: a dashed ring with a dot for a term still to
+  learn, a sage ring with a check once learned, a hairline ring with a dash for
+  one off the path.
+
+- **The dictionary's index and its categories each carry only their own
+  controls.** The index heads its rows *All categories* and keeps the two
+  practice chips; a category shows the `ALL / LEARNED / TO LEARN` filter —
+  accent-filled, no counts — and nothing else above its rows: no chips, no
+  repeated category header, no *All categories* button (the bar's chevron is
+  the way back). A term's bar no longer carries its category as an eyebrow.
+
+- **A term's full entry takes the design's composition.** The page leads
+  with the deep explanation (the short line stays the peek's opener and the
+  free learner's entry), related terms are outlined pills, the knowledge check
+  is the page's one filled card with radio rows instead of boxed tiles, and
+  *Where you'll learn it* is a row you can open — the module's picture, the
+  lesson's title, and a chevron or a lock. Sources are numbered, named in
+  mono, and one with an address opens it in the browser. The status chip under the title is gone; the path row says where the term stands, and the *In practice* block is gone with it — the design's entry carries no example.
+
+- **Term of the Day is the term, centred.** The `TERM OF THE DAY` kicker is
+  gone, the dateline, Roasty, word and definition sit centred between the bar
+  and the footer, and *Back* is the outlined ghost button every other bottom
+  stack uses rather than a bare accent link.
+
+- **A term's sources fold away.** Provenance is what makes an entry quotable
+  and also the block nobody reads on the way through, so it now costs one
+  line until asked for.
+
 - **Owning the course can now stop.** What you own used to be settled once
   when the app opened, which was right for a purchase you keep forever and
   wrong for a subscription: a plan that lapses, is refunded, or fails to renew

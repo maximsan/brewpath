@@ -202,4 +202,4 @@ final class SavedShelfProvider
   }
 }
 
-String _$savedShelfHash() => r'11b8b5359aa26438647fbefae5aa65d9616695e6';
+String _$savedShelfHash() => r'c2046951a9ea92328612b81b6db8a28ccbde2cd0';

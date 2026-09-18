@@ -19,6 +19,7 @@ import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
 import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,19 +30,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// page takes the hook's default 40.
 const double _shelfScrollThreshold = 72;
 
+/// The design's `paddingBottom: 28` under the list.
+const double _designBottomPad = 28;
+
+/// The design's `paddingTop: 22` between the title block and the groups, and
+/// `marginTop: 26` between one group and the next.
+const double _groupsTop = 22;
+const double _groupGap = 26;
+
 /// Everything the learner has bookmarked, in three groups.
 ///
-/// **Named "Saved", once.** The prototype calls this screen both "Saved" and
-/// "Favorites"; "Favourites" was the word for the card-favouriting feature
-/// deleted in `8fd7e6e`, and reusing it re-imports a confusion the design docs
-/// keep having to correct. The stored field keeps its own name — renaming that
-/// would be a schema change for a cosmetic reason.
+/// Titled *Favorites*, as the design titles it. The feature keeps its own
+/// name — the bookmark says *Save*, the Profile card and the stored field say
+/// *saved* — because the title names the place and the verb names the act.
 class SavedScreen extends ConsumerWidget {
   /// Creates a [SavedScreen].
   const SavedScreen({super.key});
 
-  /// What this screen is called, everywhere it is named.
-  static const title = 'Saved';
+  /// The page's title, and what the header button that opens it announces.
+  static const title = 'Favorites';
 
   Future<void> _open(
     BuildContext context,
@@ -111,7 +118,9 @@ class _Empty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.gutter) +
+          scrollPadding,
       children: const [
         PageLargeTitle(SavedScreen.title),
         SizedBox(height: AppSpacing.lg),
@@ -139,31 +148,53 @@ class _Shelf extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = savedShelfCount(groups);
+    final countLine = savedCountLine(count: count, isPlus: isPlus);
 
+    final mood = context.mood;
+
+    // The scroll padding already clears the bar by the design's 108; a gutter
+    // on top of it put the title a second gutter below the back chevron.
     return ListView(
-      padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.gutter) +
+          scrollPadding +
+          const EdgeInsets.only(bottom: _designBottomPad),
       children: [
         const PageLargeTitle(SavedScreen.title),
-        const SizedBox(height: AppSpacing.sm),
-        Text(
-          savedCountLine(count: count, isPlus: isPlus),
-          style: Theme.of(
-            context,
-          ).textTheme.labelMedium?.copyWith(color: context.mood.inkMute),
-        ),
+        if (countLine != null) ...[
+          const SizedBox(height: AppSpacing.xs),
+          // Mono at the design's `letterSpacing: 0.08em`, uppercase by rule
+          // and announced as written.
+          Semantics(
+            label: countLine,
+            excludeSemantics: true,
+            child: Text(
+              countLine.toUpperCase(),
+              style: AppText.label(
+                mood: mood,
+                face: AppFace.mono,
+                tracking: AppTracking.meta,
+              ),
+            ),
+          ),
+        ],
         // The offer belongs where the limit is felt.
         if (savedShelfIsFull(count: count, isPlus: isPlus)) ...[
           const SizedBox(height: AppSpacing.md),
           const SavedUpgradeRow(),
         ],
-        const SizedBox(height: AppSpacing.lg),
-        for (final group in groups) ...[
-          SavedGroupSection(group: group, onOpen: onOpen),
-          if (group.kind == SavedKind.term) ...[
-            const SizedBox(height: AppSpacing.sm),
-            const SavedStudyRow(),
-          ],
-          const SizedBox(height: AppSpacing.lg),
+        const SizedBox(height: _groupsTop),
+        for (final (index, group) in groups.indexed) ...[
+          if (index > 0) const SizedBox(height: _groupGap),
+          SavedGroupSection(
+            group: group,
+            onOpen: onOpen,
+            // The deck is built from saved terms only, so the route belongs
+            // on that group's header rather than over the whole page.
+            trailing: group.kind == SavedKind.term
+                ? const SavedStudyRow()
+                : null,
+          ),
         ],
       ],
     );

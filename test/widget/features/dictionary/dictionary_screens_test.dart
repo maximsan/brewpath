@@ -4,7 +4,6 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
-import 'package:brew_path/features/dictionary/presentation/status_chip.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
@@ -100,6 +99,9 @@ Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
     lessonTitleProvider(
       'm1l2',
     ).overrideWith((ref) async => 'Arabica vs Robusta'),
+    lessonPlaceProvider('m1l2').overrideWith(
+      (ref) async => (title: 'Arabica vs Robusta', art: null, artPos: null),
+    ),
     plusPitchProvider.overrideWith((ref) async => _pitch),
   ],
   child: MaterialApp(theme: AppTheme.cupping, home: child),
@@ -107,28 +109,40 @@ Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
 
 void main() {
   group('dictionary home', () {
-    testWidgets('leads with the kicker and the name, not a bar title', (
+    testWidgets('leads with the name and nothing above it, not a bar title', (
       tester,
     ) async {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
       await tester.pumpAndSettle();
 
       expect(find.text('Coffee Dictionary'), findsOneWidget);
-      expect(find.text('REFERENCE · 2 TERMS'), findsOneWidget);
+      // No eyebrow: the term total is the sum of the category counts listed
+      // directly below the title, so a line stating it restated the page.
+      expect(find.textContaining('REFERENCE ·'), findsNothing);
       // The shelf is about one subject, and says so — it read `Dictionary`.
       expect(find.text('Dictionary'), findsNothing);
       expect(find.widgetWithText(AppBar, 'Coffee Dictionary'), findsNothing);
     });
 
-    testWidgets('the filter is one control, not three loose chips', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'the filter is one control inside a category, not on the index',
+      (
+        tester,
+      ) async {
+        await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+        await tester.pumpAndSettle();
 
-      expect(find.byType(SegmentedButton<DictionaryFilter>), findsOneWidget);
-      expect(find.byType(ChoiceChip), findsNothing);
-    });
+        // The index sums learned and to-learn in its counts; only a category
+        // is worth telling them apart in.
+        expect(find.byType(SegmentedButton<DictionaryFilter>), findsNothing);
+
+        await tester.tap(find.text('Beans and Botany'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(SegmentedButton<DictionaryFilter>), findsOneWidget);
+        expect(find.byType(ChoiceChip), findsNothing);
+      },
+    );
 
     testWidgets('each category wears its own mark', (tester) async {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
@@ -168,8 +182,9 @@ void main() {
       expect(find.text('Arabica'), findsOneWidget);
       // The other category's term is behind its own row.
       expect(find.text('TDS'), findsNothing);
-      // The heading follows the learner, and offers the way back.
-      expect(find.text('All categories'), findsOneWidget);
+      // The heading follows the learner; the bar's chevron is the way back,
+      // so nothing beside the heading offers a second one.
+      expect(find.text('All categories'), findsNothing);
     });
 
     testWidgets('a row says how the word sounds, beside the word', (
@@ -193,7 +208,7 @@ void main() {
 
       await tester.tap(find.text('Beans and Botany'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('All categories'));
+      await tester.tap(findMark(AppIcon.back));
       await tester.pumpAndSettle();
 
       expect(find.byType(CategoryIndex), findsOneWidget);
@@ -220,18 +235,25 @@ void main() {
       expect(find.text('No terms match that search.'), findsOneWidget);
     });
 
-    testWidgets('counts to-learn without the reference term', (tester) async {
+    testWidgets('the filter names its three states, without counts', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
       await tester.pumpAndSettle();
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
 
-      // Two terms, one reference-only: All 2, Learned 0, To learn 1.
-      expect(find.text('All 2'), findsOneWidget);
-      expect(find.text('To learn 1'), findsOneWidget);
+      // Uppercase by the type rule; the counts the segments once carried are
+      // the index's business.
+      expect(find.text('ALL'), findsOneWidget);
+      expect(find.text('LEARNED'), findsOneWidget);
+      expect(find.text('TO LEARN'), findsOneWidget);
+      expect(find.textContaining('All 2'), findsNothing);
     });
   });
 
   group('term detail', () {
-    testWidgets('the term is a page heading with its status beside it', (
+    testWidgets('the term is a page heading, and the path says its status', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -239,27 +261,27 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // A heading in the page, not a title in the bar — which is what lets it
-      // set at display size and take a chip.
+      // A heading in the page, not a title in the bar. No chip beside it: the
+      // path block below already says where the term stands.
       expect(find.widgetWithText(AppBar, 'Arabica'), findsNothing);
       expect(find.text('Arabica'), findsOneWidget);
-      expect(find.byType(StatusChip), findsOneWidget);
+      expect(find.text("Where you'll learn it".toUpperCase()), findsOneWidget);
     });
 
-    testWidgets('the status is a mark and a word, never one alone', (
-      tester,
-    ) async {
+    testWidgets('the path row says whether its lesson opens', (tester) async {
       await tester.pumpWidget(
         _wrap(const TermDetailScreen(termId: 'arabica')),
       );
       await tester.pumpAndSettle();
 
-      // The three states differ by hue, and hue is the one thing a screen
-      // reader cannot report — so the word travels with the mark.
+      // A chevron and a lock differ by shape, which a screen reader cannot
+      // report — so the row says it in words.
+      final handle = tester.ensureSemantics();
       expect(
-        tester.getSemantics(find.byType(StatusChip)).label,
-        isNotEmpty,
+        find.bySemanticsLabel(RegExp('Arabica vs Robusta, opens the lesson')),
+        findsOneWidget,
       );
+      handle.dispose();
     });
 
     testWidgets('the blocks carry the design labels', (tester) async {
@@ -268,7 +290,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('IN PRACTICE'), findsOneWidget);
+      // No example block: the design's entry carries none (ruled 18 Sep).
+      expect(find.text('IN PRACTICE'), findsNothing);
       expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
       expect(find.text('RELATED TERMS'), findsOneWidget);
       // The words they replaced.
@@ -324,9 +347,9 @@ void main() {
       await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
       await tester.pumpAndSettle();
 
-      expect(find.widgetWithText(ActionChip, 'TDS'), findsOneWidget);
+      expect(find.widgetWithText(InkWell, 'TDS'), findsOneWidget);
       expect(
-        find.widgetWithText(ActionChip, 'tds'),
+        find.text('tds'),
         findsNothing,
         reason: 'a learner should never be shown a raw content id',
       );
@@ -338,7 +361,7 @@ void main() {
       await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(ActionChip, 'TDS'));
+      await tester.tap(find.widgetWithText(InkWell, 'TDS'));
       await tester.pumpAndSettle();
 
       // The peek is over the entry, and the entry is still behind it.
@@ -347,11 +370,25 @@ void main() {
       expect(find.text('Arabica'), findsWidgets);
     });
 
-    testWidgets('a source with an address shows it', (tester) async {
+    testWidgets('a source is named once Sources is opened, never by its URL', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const TermDetailScreen(termId: 'arabica')));
       await tester.pumpAndSettle();
 
-      expect(find.text('https://sca.coffee/research'), findsOneWidget);
+      // Shut by default: provenance costs one line until asked for.
+      expect(find.text('SOURCES'), findsOneWidget);
+      expect(find.text('https://sca.coffee/research'), findsNothing);
+
+      // The section closes the entry, below the fold of a short viewport.
+      await tester.ensureVisible(find.text('SOURCES'));
+      await tester.tap(find.text('SOURCES'));
+      await tester.pumpAndSettle();
+
+      // The address is behind the arrow, not on the page.
+      expect(find.text('SCA'), findsOneWidget);
+      expect(find.text('The World Atlas of Coffee'), findsOneWidget);
+      expect(find.text('https://sca.coffee/research'), findsNothing);
     });
 
     testWidgets('an unlearned term promises the lesson instead', (
@@ -410,10 +447,8 @@ void main() {
       await tester.pumpWidget(_wrap(const DictionaryHomeScreen(), view: free));
       await tester.pumpAndSettle();
 
-      // One reference term in the fixture, and it is gone from the kicker,
-      // the filter counts and the category index alike — absent, not locked.
-      expect(find.text('REFERENCE · 1 TERMS'), findsOneWidget);
-      expect(find.text('All 1'), findsOneWidget);
+      // One reference term in the fixture, and it is gone from the category
+      // index — absent, not locked.
       expect(find.text('Beans and Botany'), findsOneWidget);
       expect(find.text('Coffee Trade'), findsNothing);
     });
@@ -502,7 +537,7 @@ void main() {
 
       // Arabica relates to TDS; for a free learner that chip would open a
       // term they cannot have, so the block has nothing to draw.
-      expect(find.widgetWithText(ActionChip, 'TDS'), findsNothing);
+      expect(find.widgetWithText(InkWell, 'TDS'), findsNothing);
       expect(find.text('RELATED TERMS'), findsNothing);
     });
 
@@ -575,7 +610,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Roughly 60% of world coffee.'), findsOneWidget);
-      expect(find.text('IN PRACTICE'), findsOneWidget);
       expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
       expect(find.text('SOURCES'), findsOneWidget);
       expect(find.byType(TermFullEntryGate), findsNothing);
