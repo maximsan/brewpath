@@ -46,6 +46,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Roasty can speak a language other than English.** His lines were the one
+  piece of reader-facing prose no language folder could reach; they now load
+  like every other content file. Each line carries an id of its own, so a
+  language fills the same slots English has and fixing an English typo sends
+  only that line back for re-reading (ADR-0029).
+
 ### Fixed
 
 - **A half-translated language folder is refused, not shown.** The fallback to

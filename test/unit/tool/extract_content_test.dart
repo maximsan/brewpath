@@ -44,6 +44,7 @@ const _expectedBanks = [
   'companion_hats.json',
   'companion_gear.json',
   'companion_sprouts.json',
+  'companion_lines.json',
 ];
 
 /// The entry whose rounds live in a second source behind a `window` getter —
