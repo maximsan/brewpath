@@ -20,6 +20,13 @@ const String translatedFromField = 'translatedFrom';
 /// different facts and need different marks (ADR-0026).
 const String nativeReviewedField = 'nativeReviewed';
 
+/// Lists that are search keys, not prose, so a language sets its own length.
+///
+/// A term's aliases are its inflected forms — ten in Polish where English
+/// needs three (ADR-0025) — and the length rule below exists to stop
+/// *prose* being silently replaced, which these are not.
+const Set<String> searchKeyFields = {'aliases'};
+
 /// The translation tool's bookkeeping, stripped before a model sees a record.
 ///
 /// It travels in the folder because the folder is both what the owner reviews
@@ -94,11 +101,13 @@ Map<String, dynamic> _mergeMap(
         'the real one in English',
       );
     }
-    merged[field.key] = _mergeValue(
-      master[field.key],
-      field.value,
-      '$where field "${field.key}"',
-    );
+    merged[field.key] = searchKeyFields.contains(field.key)
+        ? field.value
+        : _mergeValue(
+            master[field.key],
+            field.value,
+            '$where field "${field.key}"',
+          );
   }
   return merged..removeWhere((field, _) => bookkeepingFields.contains(field));
 }

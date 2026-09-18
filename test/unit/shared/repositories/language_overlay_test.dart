@@ -174,6 +174,54 @@ void main() {
       );
     });
 
+    test('a term carries more aliases than English, and they all land', () {
+      final records = overlayTranslations(
+        master: [
+          {
+            'id': 'coffee',
+            'term': 'Coffee',
+            'aliases': ['coffee', 'beans'],
+          },
+        ],
+        translated: [
+          {
+            'id': 'coffee',
+            'term': 'Kawa',
+            'aliases': ['kawa', 'kawy', 'kawie', 'kawę'],
+          },
+        ],
+        assetPath: 'assets/content/l10n/pl/dictionary_terms.json',
+      );
+
+      expect(records.first['aliases'], [
+        'kawa',
+        'kawy',
+        'kawie',
+        'kawę',
+      ]);
+    });
+
+    test('a term with fewer aliases than English keeps only its own', () {
+      final records = overlayTranslations(
+        master: [
+          {
+            'id': 'coffee',
+            'term': 'Coffee',
+            'aliases': ['coffee', 'beans', 'brew'],
+          },
+        ],
+        translated: [
+          {
+            'id': 'coffee',
+            'aliases': ['kawa'],
+          },
+        ],
+        assetPath: 'assets/content/l10n/pl/dictionary_terms.json',
+      );
+
+      expect(records.first['aliases'], ['kawa']);
+    });
+
     test('a field the master has no slot for is refused', () {
       expect(
         () => overlaidHelp({'id': 'mcq', 'titel': 'Wielokrotny wybór'}),
