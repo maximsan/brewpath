@@ -6,19 +6,47 @@ import 'package:flutter_test/flutter_test.dart';
 /// The drafting tool's pure core, driven through `node` for the reason the
 /// word-search test gives: the logic is the tool's, and re-implementing it in
 /// Dart would guarantee the two drift.
-const _module = 'tool/draft_language/folder';
-
-Object? _call(String expression, Object? argument) {
-  final script =
-      '''
-const folder = require('./$_module.js');
-const argument = JSON.parse(process.argv[1]);
-const value = ($expression)(folder, argument);
+const _script = '''
+const folder = require('./tool/draft_language/folder.js');
+const given = JSON.parse(process.argv[1]);
+const call = { bank: 'lessons', master: given.master, folder: given.folder };
+if (given.translations) {
+  call.translations = new Map(Object.entries(given.translations));
+}
+const value = folder[given.call](call);
 process.stdout.write(JSON.stringify(value === undefined ? null : value));
 ''';
-  final result = Process.runSync('node', ['-e', script, jsonEncode(argument)]);
+
+/// Runs one of `folder.js`'s functions over the lessons bank.
+List<Object?> _run(
+  String call, {
+  required List<Map<String, dynamic>> master,
+  required List<Object?> folder,
+  Map<String, Object?>? translations,
+}) {
+  final result = Process.runSync('node', [
+    '-e',
+    _script,
+    jsonEncode({
+      'call': call,
+      'master': master,
+      'folder': folder,
+      'translations': translations,
+    }),
+  ]);
   expect(result.exitCode, 0, reason: result.stderr.toString());
-  return jsonDecode(result.stdout.toString());
+  return jsonDecode(result.stdout.toString()) as List<Object?>;
+}
+
+const _fingerprintScript = '''
+const { fingerprint } = require('./tool/draft_language/fingerprint.js');
+process.stdout.write(fingerprint(process.argv[1]));
+''';
+
+String _digest(String english) {
+  final result = Process.runSync('node', ['-e', _fingerprintScript, english]);
+  expect(result.exitCode, 0, reason: result.stderr.toString());
+  return result.stdout.toString();
 }
 
 List<Map<String, dynamic>> _master() => [
@@ -43,27 +71,23 @@ Map<String, Object?> _polish() => {
   'm1l1|cards[0].options[1]': 'naturalne',
 };
 
-List<Object?> _plan(
-  List<Map<String, dynamic>> master,
-  List<Object?> existing,
-) =>
-    _call(
-          '(f, a) => f.planBank({ bank: "lessons", master: a.master, folder: a.folder })',
-          {'master': master, 'folder': existing},
-        )!
-        as List<Object?>;
+List<Object?> _plan(List<Map<String, dynamic>> master, List<Object?> folder) =>
+    _run('planBank', master: master, folder: folder);
 
-List<Object?> _apply(
+List<Object?> _draft(
   List<Map<String, dynamic>> master,
-  List<Object?> existing,
+  List<Object?> folder,
   Map<String, Object?> translations,
-) =>
-    _call(
-          '(f, a) => f.applyBank({ bank: "lessons", master: a.master, '
-          'folder: a.folder, translations: new Map(Object.entries(a.t)) })',
-          {'master': master, 'folder': existing, 't': translations},
-        )!
-        as List<Object?>;
+) => _run(
+  'applyBank',
+  master: master,
+  folder: folder,
+  translations: translations,
+);
+
+Map<String, dynamic> _onlyCard(List<Object?> folder) =>
+    ((folder.single! as Map<String, dynamic>)['cards']! as List).single!
+        as Map<String, dynamic>;
 
 void main() {
   group('what a language still owes', () {
@@ -82,13 +106,13 @@ void main() {
     });
 
     test('a drafted folder owes nothing on a second run', () {
-      final folder = _apply(_master(), [], _polish());
+      final folder = _draft(_master(), [], _polish());
 
       expect(_plan(_master(), folder), isEmpty);
     });
 
     test('an English edit stales that field and leaves its neighbours', () {
-      final folder = _apply(_master(), [], _polish());
+      final folder = _draft(_master(), [], _polish());
       final edited = _master()..first['title'] = 'What coffee really is';
 
       final work = _plan(
@@ -105,10 +129,7 @@ void main() {
 
   group('what a draft writes', () {
     test('an answer follows the option it names into the language', () {
-      final folder = _apply(_master(), [], _polish());
-      final card =
-          ((folder.single! as Map<String, dynamic>)['cards']! as List).single!
-              as Map<String, dynamic>;
+      final card = _onlyCard(_draft(_master(), [], _polish()));
 
       expect(card['options'], ['myte', 'naturalne']);
       expect(card['answer'], 'myte');
@@ -124,8 +145,8 @@ void main() {
         },
       ];
 
-      final folder = _apply(_master(), reviewed, const {});
-      final entry = folder.single! as Map<String, dynamic>;
+      final entry =
+          _draft(_master(), reviewed, const {}).single! as Map<String, dynamic>;
 
       expect(entry['title'], 'Czym naprawdę jest kawa');
       expect((entry['nativeReviewed']! as Map)['title'], isTrue);
@@ -141,8 +162,9 @@ void main() {
         },
       ];
 
-      final folder = _apply(_master(), reviewed, {'m1l1|title': 'Nowe słowa'});
-      final entry = folder.single! as Map<String, dynamic>;
+      final entry =
+          _draft(_master(), reviewed, {'m1l1|title': 'Nowe słowa'}).single!
+              as Map<String, dynamic>;
 
       expect(entry['title'], 'Nowe słowa');
       expect(entry['nativeReviewed'], isNot(contains('title')));
@@ -151,43 +173,24 @@ void main() {
 
   group('what stops a language being complete', () {
     test('a folder missing a field names it', () {
-      final missing =
-          _call(
-                '(f, a) => f.checkBank({ bank: "lessons", master: a.master, folder: a.folder })',
-                {'master': _master(), 'folder': const <Object>[]},
-              )!
-              as List<Object?>;
+      final missing = _run('checkBank', master: _master(), folder: const []);
 
       expect(missing, hasLength(4));
       expect(missing.first, contains('m1l1'));
     });
 
     test('an answer naming no option it is offered beside is caught', () {
-      final folder = _apply(_master(), [], _polish());
-      (((folder.single! as Map<String, dynamic>)['cards']! as List).single!
-              as Map<String, dynamic>)['answer'] =
-          'washed';
+      final folder = _draft(_master(), [], _polish());
+      _onlyCard(folder)['answer'] = 'washed';
 
-      final stranded =
-          _call(
-                '(f, a) => f.strandedAnswers({ bank: "lessons", master: a.master, folder: a.folder })',
-                {'master': _master(), 'folder': folder},
-              )!
-              as List<Object?>;
+      final stranded = _run(
+        'strandedAnswers',
+        master: _master(),
+        folder: folder,
+      );
 
       expect(stranded, hasLength(1));
       expect(stranded.single, contains('washed'));
     });
   });
-}
-
-String _digest(String english) {
-  final result = Process.runSync('node', [
-    '-e',
-    "const {fingerprint} = require('./tool/draft_language/fingerprint.js');"
-        'process.stdout.write(fingerprint(process.argv[1]));',
-    english,
-  ]);
-  expect(result.exitCode, 0, reason: result.stderr.toString());
-  return result.stdout.toString();
 }

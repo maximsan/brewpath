@@ -16,15 +16,14 @@ final _looksLikeAKey = RegExp(r'^[a-z][a-z0-9_-]*$');
 /// Asks the tool what it would do with each path, so the test and the tool
 /// cannot disagree about the register.
 Map<String, String> _classify(List<String> paths) {
-  final result = Process.runSync('node', [
-    '-e',
-    "const {classify, mirrorOf} = require('./tool/draft_language/fields.js');"
-        'const paths = JSON.parse(process.argv[1]);'
-        'process.stdout.write(JSON.stringify(Object.fromEntries('
-        'paths.map((path) => [path, mirrorOf(path) ? "mirror" : classify(path)])'
-        ')));',
-    jsonEncode(paths),
-  ]);
+  const script = '''
+const { classify, mirrorOf } = require('./tool/draft_language/fields.js');
+const paths = JSON.parse(process.argv[1]);
+process.stdout.write(JSON.stringify(Object.fromEntries(
+  paths.map((path) => [path, mirrorOf(path) ? 'mirror' : classify(path)]),
+)));
+''';
+  final result = Process.runSync('node', ['-e', script, jsonEncode(paths)]);
   expect(result.exitCode, 0, reason: result.stderr.toString());
   return (jsonDecode(result.stdout.toString()) as Map<String, dynamic>)
       .cast<String, String>();
@@ -59,12 +58,12 @@ Map<String, List<String>> _stringsByPath() {
 }
 
 /// The option lists a mirrored answer chooses from — keys by design.
-Set<String> _mirrorOptionPaths(Map<String, String> classes) {
-  final result = Process.runSync('node', [
-    '-e',
-    "const {MIRRORS} = require('./tool/draft_language/fields.js');"
-        'process.stdout.write(JSON.stringify(Object.values(MIRRORS)));',
-  ]);
+Set<String> _mirrorOptionPaths() {
+  const script = '''
+const { MIRRORS } = require('./tool/draft_language/fields.js');
+process.stdout.write(JSON.stringify(Object.values(MIRRORS)));
+''';
+  final result = Process.runSync('node', ['-e', script]);
   expect(result.exitCode, 0, reason: result.stderr.toString());
   return (jsonDecode(result.stdout.toString()) as List).cast<String>().toSet();
 }
@@ -81,7 +80,7 @@ void main() {
   test('no string that reads like a key is heading for translation', () {
     final byPath = _stringsByPath();
     final classes = _classify(byPath.keys.toList());
-    final optionPaths = _mirrorOptionPaths(classes);
+    final optionPaths = _mirrorOptionPaths();
 
     final suspects = <String>[];
     byPath.forEach((path, values) {
