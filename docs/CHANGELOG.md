@@ -44,6 +44,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **One horizontal swipe, for every surface that has one.** A shared gesture
+  carries the direction contract — left advances, right goes back or sets
+  aside, and destructive actions get no swipe — with a blocked direction
+  damping to 22% instead of going dead and a committed swipe flying off before
+  the content changes. The deck's peeked neighbour and the first-run hint ship
+  beside it. The hint stops when the gesture is used, never after a count
+  ([#610](https://github.com/maximsan/brewpath/issues/610)).
+
 ### Changed
 
 - **Roasty can speak a language other than English.** His lines were the one
