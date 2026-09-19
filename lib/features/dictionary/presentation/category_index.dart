@@ -81,6 +81,7 @@ class _CategoryRow extends StatelessWidget {
     return Semantics(
       button: true,
       label: '${category.label}, $count terms. ${category.summary}',
+      onTap: onOpen,
       excludeSemantics: true,
       child: InkWell(
         onTap: onOpen,

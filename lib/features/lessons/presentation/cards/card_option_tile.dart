@@ -65,6 +65,7 @@ class CardOptionTile extends StatelessWidget {
       button: true,
       enabled: onTap != null,
       label: semanticsLabel,
+      onTap: onTap,
       excludeSemantics: true,
       child: OutlinedButton(
         onPressed: onTap,

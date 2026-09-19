@@ -18,10 +18,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// The drill row on Dictionary home — one slim chip per practice surface the
 /// dictionary owns.
 ///
-/// Both chips now (#97, #98), in the design's own order: Flashcards leads
-/// because it drills what the learner chose to keep, and only it carries a
-/// count — the design gives *Guess the term* none, since the whole glossary
-/// is not a number worth reading.
+/// In the design's own order: Flashcards leads because it drills what the
+/// learner chose to keep, and only it carries a count — the design gives
+/// *Guess the term* none (#97, #98).
 class DictionaryQuickChips extends ConsumerWidget {
   /// Creates a [DictionaryQuickChips].
   const DictionaryQuickChips({super.key});
@@ -56,19 +55,21 @@ class _FlashcardsChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    void open() => unawaited(context.pushActivity(flashcardReview));
 
     return Semantics(
       button: true,
       label: cards == null
           ? FlashcardsCopy.title
           : '${FlashcardsCopy.title}, ${FlashcardsCopy.deckLine(cards!)}',
+      onTap: open,
       excludeSemantics: true,
       child: Material(
         color: mood.surface,
         borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadii.chrome),
-          onTap: () => unawaited(context.pushActivity(flashcardReview)),
+          onTap: open,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: mood.rule),
@@ -116,18 +117,20 @@ class _VocabChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    void open() => unawaited(context.pushActivity(vocabGame));
 
     return Semantics(
       button: true,
       label: VocabCopy.title,
       hint: VocabCopy.rowSubtitle,
+      onTap: open,
       excludeSemantics: true,
       child: Material(
         color: mood.surface,
         borderRadius: BorderRadius.circular(AppRadii.chrome),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppRadii.chrome),
-          onTap: () => unawaited(context.pushActivity(vocabGame)),
+          onTap: open,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(color: mood.rule),

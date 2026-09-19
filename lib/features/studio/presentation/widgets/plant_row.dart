@@ -56,6 +56,7 @@ class PlantRow extends StatelessWidget {
       button: true,
       selected: selected,
       label: '${variety.name}, ${variety.use}',
+      onTap: onSelect,
       excludeSemantics: true,
       child: Material(
         color: GroveSelection.fill(mood, picked: selected),

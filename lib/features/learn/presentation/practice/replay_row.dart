@@ -12,16 +12,9 @@ import 'package:flutter/material.dart';
 /// One row of the practice shelf: what it drills, its name, what it costs or
 /// takes, and the replay mark — or a lock.
 ///
-/// **The row is not a card.** The design draws `.tap-row` flat on the page,
-/// with a press highlight and nothing else around it; the shelf reads as one
-/// list, not as a stack of boxes. The highlight bleeds a stop past the text
-/// on each side (`margin: 0 -8px; padding: 12px 8px`), which is why the shelf
-/// sits that stop inside the page gutter and every row pads it back.
-///
-/// Every practice list draws this one row — a finished lesson, a dictionary
-/// drill, a mini-game — with an [icon] only where the design gives the kind
-/// one: the lessons and the two drills. A game's kind is on its group's
-/// heading, never repeated per row.
+/// Flat on the page, not a card: its press highlight bleeds a stop past the
+/// text (`margin: 0 -8px; padding: 12px 8px`), so the shelf sits that stop
+/// inside the page gutter and every row pads it back.
 class ReplayRow extends StatelessWidget {
   /// Creates a [ReplayRow].
   const ReplayRow({
@@ -89,6 +82,7 @@ class ReplayRow extends StatelessWidget {
       button: true,
       label: _announcement,
       hint: hint,
+      onTap: onTap,
       excludeSemantics: true,
       child: InkWell(
         onTap: onTap,

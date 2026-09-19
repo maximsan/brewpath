@@ -86,6 +86,7 @@ class _PickTile extends StatelessWidget {
         button: true,
         selected: chosen,
         label: text,
+        onTap: onTap,
         excludeSemantics: true,
         child: OutlinedButton(
           onPressed: onTap,
