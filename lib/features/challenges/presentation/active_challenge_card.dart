@@ -1,8 +1,20 @@
+import 'dart:async';
+
+import 'dart:math' as math;
+
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/swipe/horizontal_swipe.dart';
+import 'package:brew_path/core/swipe/swipe_geometry.dart';
+import 'package:brew_path/core/swipe/swipe_hint.dart';
+import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
+import 'package:brew_path/core/swipe/swipe_surface.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_log_sheet.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_park_controls.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_park_geometry.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_park_track.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_recap_sheet.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
@@ -16,6 +28,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 const double _cardRadius = 12;
 const double _iconSm = 18;
 
+/// The design's `right: 9` on the chevron inside the card.
+const double _chevronInset = 9;
+
 /// The Coffee Challenge in play, on Today.
 ///
 /// A **sibling** of the day's lesson card rather than a state of it. The two
@@ -25,8 +40,31 @@ class ActiveChallengeCard extends ConsumerWidget {
   /// Creates an [ActiveChallengeCard].
   const ActiveChallengeCard({required this.challenge, super.key});
 
+  /// The card parks rather than advances, and it leaves by flying off.
+  static const SwipeMotion _motion = SwipeMotion(
+    commitThreshold: challengeParkAt,
+    maxDrag: challengeParkMaxDrag,
+    exitDistance: challengeParkExit,
+    exitDuration: challengeParkExitDuration,
+  );
+
+  /// The first-run hint's words.
+  static const String _hint = 'Slide the card aside to save it for later';
+
   /// The challenge currently in play.
   final BrewChallenge challenge;
+
+  /// Takes the challenge off Today and puts it in the queue.
+  Future<void> _park(WidgetRef ref) async {
+    await saveActiveChallengeForLater(
+      ref.read(snapshotRepositoryProvider),
+      id: challenge.id,
+      now: DateTime.now(),
+    );
+    ref
+      ..invalidate(activeChallengeProvider)
+      ..invalidate(savedChallengesProvider);
+  }
 
   /// Logs the brew, then celebrates it and offers to run it again.
   ///
@@ -40,14 +78,7 @@ class ActiveChallengeCard extends ConsumerWidget {
     if (result == null || !context.mounted) return;
 
     if (result is ChallengeSavedForLater) {
-      await saveActiveChallengeForLater(
-        ref.read(snapshotRepositoryProvider),
-        id: challenge.id,
-        now: DateTime.now(),
-      );
-      ref
-        ..invalidate(activeChallengeProvider)
-        ..invalidate(savedChallengesProvider);
+      await _park(ref);
       return;
     }
 
@@ -84,7 +115,39 @@ class ActiveChallengeCard extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) => SwipeHint(
+    surface: SwipeSurface.challenge,
+    nudge: challengeParkNudge,
+    builder: (context, hint) => Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        HorizontalSwipe(
+          motion: _motion,
+          // Left has nowhere to go, so it damps rather than moving.
+          canAdvance: false,
+          onBack: () {
+            hint.markUsed();
+            unawaited(_park(ref));
+          },
+          behind: (context, drag) => ChallengeParkTrack(
+            offset: math.max(drag.offset, hint.offset),
+            radius: _cardRadius,
+          ),
+          builder: (context, drag) => SwipeNudge(
+            offset: hint.offset,
+            child: _card(context, ref, hint),
+          ),
+        ),
+        SwipeHintCaption(
+          show: hint.showing,
+          aim: SwipeAim.back,
+          label: _hint,
+        ),
+      ],
+    ),
+  );
+
+  Widget _card(BuildContext context, WidgetRef ref, SwipeHintState hint) {
     final theme = Theme.of(context);
     final mood = context.mood;
     final effort = effortParts(challenge.effort);
@@ -99,39 +162,60 @@ class ActiveChallengeCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(_cardRadius),
           side: BorderSide(color: mood.rule),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _eyebrow(theme, mood),
-              const SizedBox(height: AppSpacing.xs),
-              // One step below a lesson title, because the challenge is
-              // optional — the design added this rung rather than let the two
-              // read as equals.
-              Text(challenge.title, style: AppText.subtitle(mood: mood)),
-              const SizedBox(height: AppSpacing.xxs),
-              Text(
-                challenge.instruction,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: mood.inkMute,
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _eyebrow(theme, mood),
+                  const SizedBox(height: AppSpacing.xs),
+                  // One step below a lesson title, because the challenge is
+                  // optional — the design added this rung rather than let the
+                  // two read as equals.
+                  Text(challenge.title, style: AppText.subtitle(mood: mood)),
+                  const SizedBox(height: AppSpacing.xxs),
+                  Text(
+                    challenge.instruction,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: mood.inkMute,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  _effortLine(theme, mood, effort),
+                  const SizedBox(height: AppSpacing.sm),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    // Deliberately not full width — an action on a card, sized
+                    // to its label rather than the screen.
+                    child: FilledButton(
+                      onPressed: () => _log(context, ref),
+                      child: const Text('Log Result'),
+                    ),
+                  ),
+                  ChallengeParkButton(
+                    onPark: () {
+                      hint.markUsed();
+                      unawaited(_park(ref));
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              bottom: 0,
+              right: _chevronInset,
+              child: Center(
+                child: ChallengeParkChevron(
+                  hinting: hint.showing,
+                  used: hint.used,
                 ),
               ),
-              const SizedBox(height: AppSpacing.sm),
-              _effortLine(theme, mood, effort),
-              const SizedBox(height: AppSpacing.sm),
-              Align(
-                alignment: Alignment.centerLeft,
-                // Deliberately not full width — an action on a card, sized
-                // to its label rather than the screen.
-                child: FilledButton(
-                  onPressed: () => _log(context, ref),
-                  child: const Text('Log Result'),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,10 +1,8 @@
-/// Parking a Coffee Challenge for later, and what happens when one runs out
-/// of time.
+/// Parking a Coffee Challenge for later, and what a lapsed window owes.
 ///
 /// **Park, don't drop.** Every path that would otherwise lose a challenge the
-/// learner asked for puts it in the saved queue instead. The learner expressed
-/// an intent by starting it; discarding that intent quietly is the one place
-/// it goes missing.
+/// learner asked for puts it in the saved queue instead — discarding an intent
+/// quietly is the one place it goes missing.
 library;
 
 import 'package:brew_path/features/challenges/domain/challenge_lifecycle.dart';
@@ -27,18 +25,10 @@ typedef ExpiryPark = ({Set<String> saved, ActiveChallenge? active});
 
 /// The write an expiry check owes, or **null when it owes nothing**.
 ///
-/// That null is the whole idempotence. A cleared pair, a live window and an
-/// already-finished challenge all produce no write at all, so running the
-/// check again — on this device or the other one — changes nothing and neither
-/// device churns the last-writer-wins stamp.
-///
-/// Two devices computing the same lapsed pair produce the *same value*:
-/// `(saved ∪ {id}, null)`. They differ only in when they stamped it, and
-/// last-writer-wins over two equal values converges to that value whichever
-/// stamp wins.
-///
-/// A challenge that has already been logged is cleared but **not queued** — a
-/// replay does not re-queue, because the learner has done it.
+/// That null is the whole idempotence: a cleared pair, a live window and an
+/// already-finished challenge each owe no write, so a re-run on either device
+/// changes nothing and neither churns the last-writer-wins stamp. A logged
+/// challenge is cleared but not queued — the learner has done it.
 ExpiryPark? expiryPark({
   required ActiveChallenge? active,
   required Set<String> saved,
@@ -60,20 +50,16 @@ ExpiryPark? expiryPark({
 
 /// The challenges the saved list should show, in bank order.
 ///
-/// Excludes whatever is in play and anything already logged, and refuses to
-/// advertise a challenge whose lesson the learner has not reached — a queue
-/// that offers work locked behind content is worse than an empty one.
+/// Excludes only what is in play, and never advertises a challenge whose
+/// lesson the learner has not reached. **One already logged still belongs
+/// here**: logging unparks it, so it can only be back by having been brewed
+/// again and parked, and vanishing was the gesture lying about where it went.
 List<String> visibleSavedChallenges({
   required Set<String> saved,
   required String? activeId,
-  required Set<String> completed,
   required List<String> bankOrder,
   required bool Function(String id) isOfferable,
 }) => [
   for (final id in bankOrder)
-    if (saved.contains(id) &&
-        id != activeId &&
-        !completed.contains(id) &&
-        isOfferable(id))
-      id,
+    if (saved.contains(id) && id != activeId && isOfferable(id)) id,
 ];

@@ -107,12 +107,10 @@ void main() {
     List<String> visible({
       Set<String> saved = const {'bc-m1', 'bc-m2'},
       String? activeId,
-      Set<String> completed = const {},
       bool Function(String id)? isOfferable,
     }) => visibleSavedChallenges(
       saved: saved,
       activeId: activeId,
-      completed: completed,
       bankOrder: const ['bc-m1', 'bc-m2', 'bc-m3'],
       isOfferable: isOfferable ?? (_) => true,
     );
@@ -123,10 +121,6 @@ void main() {
 
     test('excludes the one in play', () {
       expect(visible(activeId: 'bc-m1'), ['bc-m2']);
-    });
-
-    test('excludes one already logged', () {
-      expect(visible(completed: const {'bc-m2'}), ['bc-m1']);
     });
 
     test('excludes one whose lesson the learner has not reached', () {
