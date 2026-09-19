@@ -15,8 +15,16 @@ const _generated = 'assets/content/generated';
 /// The allowance list the extractor reads; the Dart mirror reads the same file.
 const _exceptions = 'tool/extract_content/exceptions.json';
 
-/// The ceiling #540 set for the five module pictures, together.
-const int _moduleArtBudget = 2 * 1024 * 1024;
+/// The ceiling #540 set for the module pictures, together.
+const int _moduleArtBudgetBytes = 2 * 1024 * 1024;
+
+List<({String id, String art})> _modulePictures(
+  List<Map<String, dynamic>> modules,
+) => [
+  for (final module in modules)
+    if (module['art'] case final String art)
+      (id: module['id'] as String, art: art),
+];
 
 /// A card in canonical form — keys sorted at every depth, so two cards that
 /// differ only in key order compare equal. It has to agree with the extractor's
@@ -259,24 +267,21 @@ void main() {
   });
 
   test('every module picture the bank names is in the bundle', () {
-    for (final module in modules) {
-      final art = module['art'] as String?;
-      if (art == null) continue;
+    for (final picture in _modulePictures(modules)) {
       expect(
-        File(art).existsSync(),
+        File(picture.art).existsSync(),
         isTrue,
-        reason: '${module['id']} names $art, which is not bundled',
+        reason: '${picture.id} names ${picture.art}, which is not bundled',
       );
     }
   });
 
   test('the module pictures stay inside their bundle budget', () {
-    var total = 0;
-    for (final module in modules) {
-      final art = module['art'] as String?;
-      if (art == null) continue;
-      total += File(art).lengthSync();
-    }
-    expect(total, lessThan(_moduleArtBudget));
+    final pictures = _modulePictures(modules);
+    expect(pictures, isNotEmpty);
+    final total = pictures
+        .map((picture) => File(picture.art).lengthSync())
+        .fold(0, (sum, bytes) => sum + bytes);
+    expect(total, lessThan(_moduleArtBudgetBytes));
   });
 }

@@ -27,13 +27,22 @@ function moduleLabelOf(module) {
 const ECHOED_LESSON_FIELDS = ["title", "points", "time"];
 
 /**
- * The module picture's path in the app bundle.
+ * The module picture's path in the app bundle, which ships JPEG (#540).
  *
- * The design source keeps lossless PNGs; the app bundles the same pictures as
- * JPEG, so the extension is rewritten here rather than authored twice (#540).
+ * The design source keeps its lossless PNGs, so the extension is mapped here
+ * rather than authored twice.
  */
-function bundledArt(art) {
-  return art.replace(/\.png$/, ".jpg");
+function bundledArt(module, report) {
+  if (!module.art.endsWith(".png")) {
+    report(
+      `module ${module.id}`,
+      `names art '${module.art}', but the bundle ships the module pictures ` +
+        "as JPEG re-encoded from .png — the bank would name a file that is " +
+        "not there.",
+    );
+    return module.art;
+  }
+  return module.art.replace(/\.png$/, ".jpg");
 }
 
 /**
@@ -72,7 +81,7 @@ function derive(banks, report) {
 
   const modules = banks.modules.map((module) => ({
     ...module,
-    ...(module.art ? { art: bundledArt(module.art) } : {}),
+    ...(module.art ? { art: bundledArt(module, report) } : {}),
     lessons: (module.lessons || []).map((entry) => {
       const lesson = banks.lessons[entry.id];
       // A module listing a lesson that does not exist is the course
