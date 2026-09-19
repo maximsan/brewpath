@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_status_line.dart';
@@ -60,6 +61,10 @@ const _weekReopened = StreakStatus(
   frozenDays: {},
 );
 
+/// The day every test here is read against — a Thursday, fixed so the freeze
+/// line and the weekday it names do not change with the day the suite runs.
+final _today = DateTime(2026, 8, 20);
+
 Future<void> _pump(
   WidgetTester tester, {
   Future<StreakStatus> Function()? load,
@@ -80,6 +85,7 @@ Future<void> _pump(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        currentDayProvider.overrideWithValue(_today),
         streakStatusProvider.overrideWith(
           (ref) => load != null ? load() : Future.value(status),
         ),
@@ -158,22 +164,19 @@ void main() {
   testWidgets('a covered day this week is named on the status line', (
     tester,
   ) async {
-    // Today's own day index is always inside the current week, whatever
-    // weekday the suite happens to run on.
-    final now = DateTime.now();
     final covered = StreakStatus(
       streak: 5,
       longestStreak: 5,
       freezeHeld: false,
       daysToNextFreeze: 7,
       freezesSpent: 1,
-      frozenDays: {epochDay(now)},
+      frozenDays: {epochDay(_today)},
     );
     await _pump(tester, status: covered);
 
     expect(
       find.text(
-        '${weekdayNames[now.weekday - DateTime.monday]} '
+        '${weekdayNames[_today.weekday - DateTime.monday]} '
         'was covered by a freeze',
       ),
       findsOneWidget,

@@ -3,6 +3,7 @@
 // The unit that matters is `streakDaySet`; this pins the wiring, because the
 // failure it guards against is silent — a learner opens the update and their
 // streak reads zero, with nothing throwing anywhere.
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
@@ -16,6 +17,9 @@ import '../../../support/progress_seed.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  /// The day every streak here is folded against.
+  final today = DateTime(2026, 8, 20);
 
   late AppDatabase db;
 
@@ -35,18 +39,18 @@ void main() {
     mastery: const MasteryResult(correct: 1, total: 1),
   );
 
-  /// Midday, [back] whole calendar days ago. Built by field arithmetic from a
-  /// fixed hour, never by subtracting a `Duration`: subtracting hours crosses
-  /// midnight when the suite runs just after it, and subtracting days lands on
-  /// the wrong day across a DST boundary. The provider reads the real clock for
-  /// *today*, so the anchor is real and only the time of day is pinned.
-  DateTime daysAgo(int back) {
-    final today = DateTime.now();
-    return DateTime(today.year, today.month, today.day - back, 12);
-  }
+  /// Midday, [back] whole calendar days before [today]. Built by field
+  /// arithmetic, never by subtracting a `Duration`: subtracting days lands on
+  /// the wrong day across a DST boundary.
+  DateTime daysAgo(int back) =>
+      DateTime(today.year, today.month, today.day - back, 12);
 
+  /// The day the provider folds against is pinned rather than read off the
+  /// wall clock, so a run that straddles midnight cannot shift what counts.
   Future<int> streak() async {
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [currentDayProvider.overrideWithValue(today)],
+    );
     addTearDown(container.dispose);
     return container.read(streakProvider.future);
   }
@@ -99,7 +103,9 @@ void main() {
       await completedOn('l$back', daysAgo(back));
     }
 
-    final container = ProviderContainer();
+    final container = ProviderContainer(
+      overrides: [currentDayProvider.overrideWithValue(today)],
+    );
     addTearDown(container.dispose);
     final status = await container.read(streakStatusProvider.future);
 
