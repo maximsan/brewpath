@@ -9,6 +9,7 @@ import 'package:brew_path/core/swipe/swipe_geometry.dart';
 import 'package:brew_path/core/swipe/swipe_hint.dart';
 import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
+import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_log_sheet.dart';
@@ -50,6 +51,12 @@ class ActiveChallengeCard extends ConsumerWidget {
 
   /// The first-run hint's words.
   static const String _hint = 'Slide the card aside to save it for later';
+
+  /// The gesture's keyboard equivalent, in the design's own words.
+  static const String _parkLabel = 'Save for later';
+
+  /// The ring the focused control wears — the design's accent share.
+  static const double _ringShare = 0.30;
 
   /// The challenge currently in play.
   final BrewChallenge challenge;
@@ -195,8 +202,11 @@ class ActiveChallengeCard extends ConsumerWidget {
                       child: const Text('Log Result'),
                     ),
                   ),
-                  ChallengeParkButton(
-                    onPark: () {
+                  FocusRevealedButton(
+                    label: _parkLabel,
+                    // `color-mix(in oklab, var(--accent) 30%, var(--rule))`.
+                    ring: Color.lerp(mood.rule, mood.accent, _ringShare)!,
+                    onPressed: () {
                       hint.markUsed();
                       unawaited(_park(ref));
                     },

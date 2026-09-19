@@ -1,6 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/swipe/swipe_hint_providers.dart';
-import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_controls.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_geometry.dart';
@@ -227,7 +227,7 @@ void main() {
   ) async {
     await pump(tester);
 
-    await tester.tap(find.byType(ChallengeParkButton), warnIfMissed: false);
+    await tester.tap(find.byType(FocusRevealedButton), warnIfMissed: false);
     await tester.pumpAndSettle();
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 20)),

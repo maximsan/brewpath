@@ -18,13 +18,10 @@ abstract final class FlashcardsCopy {
       'Bookmark terms in the dictionary and they become a flashcard deck '
       'here — flip to test yourself.';
 
-  /// The empty state's other body: they *did* bookmark, and none of what they
-  /// saved is a word their free lessons cover, so the line above would be a
-  /// lie (#468). Not the design's — the design's dictionary is gated, so it
-  /// never had this state to write for.
-  ///
-  /// Names both ways out, because both are real: save a word a free lesson
-  /// mentions, or buy the course, after which every word is in reach.
+  /// The empty state's other body: they *did* bookmark, and none of it is a
+  /// word their free lessons cover, so the line above would be a lie (#468).
+  /// Not the design's — its dictionary is gated, so it never had this state.
+  /// Names both ways out, because both are real.
   static const emptyOutOfReachBody =
       'The terms you saved are not in your free lessons, so there is nothing '
       'to flip yet. Bookmark a term one of your lessons mentions, or unlock '
@@ -48,15 +45,17 @@ abstract final class FlashcardsCopy {
   /// The link under a revealed card.
   static const viewEntry = 'View full entry';
 
-  /// Walking the deck. The chevrons are the design's own — they say which
-  /// way each button goes without a second word.
-  static const previous = '‹ Prev';
-
-  /// The action on every card but the last.
-  static const next = 'Next ›';
-
   /// The action on the last card, which ends the review.
+  ///
+  /// The only button the deck keeps: completing it is the one state a swipe
+  /// cannot announce. Prev and Next are gone — they used the opposite
+  /// direction model to the gesture, and the stack behind the card now says
+  /// the deck can be moved through.
   static const finish = 'Finish';
+
+  /// The focus-revealed pair, which the pointer user never sees.
+  static const previousCard = 'Previous card';
+  static const nextCard = 'Next card';
 
   /// Re-deals the same cards in a new order.
   static const shuffle = 'Shuffle deck';

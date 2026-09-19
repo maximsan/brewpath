@@ -65,9 +65,15 @@ class SwipeHintCaption extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: _gap),
-                  Text(
-                    label.toUpperCase(),
-                    style: AppText.micro(mood: mood),
+                  // Flexible, so a long label or a large text scale shortens
+                  // the words rather than overflowing the row it sits in.
+                  Flexible(
+                    child: Text(
+                      label.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppText.micro(mood: mood),
+                    ),
                   ),
                 ],
               ),
