@@ -34,9 +34,8 @@ class KeepSharpRecommendation {
 /// rotation, which returns the type and the one screen its CTA opens. Null
 /// when no registered type has material.
 ///
-/// The reads are the material the rule is asked of: which formats are playable,
-/// which the learner already played today, and which lessons they have
-/// finished. Every decision made from them lives in [keepSharpResolutionFor].
+/// The reads are what the rule is asked of — playable, played today, finished
+/// — and every decision from them lives in [keepSharpResolutionFor].
 @riverpod
 Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   final day = keepSharpDayNumber(DateTime.now());
@@ -45,7 +44,7 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   final formatsFuture = ref.watch(miniGameFormatsProvider.future);
   final completedFuture = ref.watch(completedLessonsProvider.future);
   final poolsFuture = ref.watch(vocabPoolsProvider.future);
-  final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
+  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
   final formats = await formatsFuture;
   final completed = await completedFuture;
   final pools = await poolsFuture;
@@ -89,7 +88,7 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
   final recommendationFuture = ref.watch(
     keepSharpRecommendationProvider.future,
   );
-  final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
+  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
   final snapshot = await snapshotFuture;
   final recommendation = await recommendationFuture;
   if (recommendation == null) return false;

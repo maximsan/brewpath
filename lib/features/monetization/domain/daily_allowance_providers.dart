@@ -12,18 +12,16 @@ part 'daily_allowance_providers.g.dart';
 
 /// Whether a full learning/practice activity may start right now.
 ///
-/// **Derived, never stored.** The count is the cardinality of today's entries
-/// in the activity record — a stored quota would be neither monotonic nor an
-/// outcome, and #65 refused that shape three times before this landed.
-///
-/// **Read it through [activityAllowanceNow], never straight from the cache.**
+/// Derived, never stored: the count is the cardinality of today's entries in
+/// the activity record, and a stored quota would be neither monotonic nor an
+/// outcome (#65). Read it through [activityAllowanceNow], not from the cache.
 @riverpod
 Future<bool> canStartActivity(Ref ref) async {
   // Watches before awaits: a mid-flight rebuild must not reach a watch across
   // an async gap on a disposed ref.
   final today = epochDay(ref.watch(currentDayProvider));
   final entitlementFuture = ref.watch(courseEntitlementProvider.future);
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotProvider.future);
 
   return mayStartActivity(
     hasCourse: await entitlementFuture,
@@ -34,9 +32,8 @@ Future<bool> canStartActivity(Ref ref) async {
 /// Re-derives the allowance rather than recalling it.
 ///
 /// `refresh` and not `read`: nothing watches this provider, so its cached
-/// value is only ever as old as the last tap — and the write that spends an
-/// activity happens between two taps. Making freshness the read's job rather
-/// than a register's is what stops a completion path added later from being
-/// the one that forgot to invalidate.
+/// value is only as old as the last tap, and the write that spends an activity
+/// happens between two taps. Freshness is the read's job here, not a
+/// register's.
 Future<bool> activityAllowanceNow(ProviderContainer container) =>
     container.refresh(canStartActivityProvider.future);

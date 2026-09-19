@@ -108,7 +108,7 @@ final class ActiveChallengeProvider
   }
 }
 
-String _$activeChallengeHash() => r'3ba853c312826500e6f1193a6f69c6e3cfe28b8d';
+String _$activeChallengeHash() => r'0850b827b9e47a9beb7424c0ae5cf5a1e814c073';
 
 /// Every challenge the learner has logged at least once.
 
@@ -153,7 +153,7 @@ final class CompletedChallengesProvider
 }
 
 String _$completedChallengesHash() =>
-    r'2467e35ae3c7023fe8fee777732928b15c86483a';
+    r'58afda8ae3bd51ecfdfba7eb6e8befd74b2eaac3';
 
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
@@ -582,7 +582,7 @@ final class SavedChallengesProvider
   }
 }
 
-String _$savedChallengesHash() => r'c08b48809b441c453abd142ea10a6530d02a3f1c';
+String _$savedChallengesHash() => r'1ff2f925e43a8bd71026b933c49f8fc20fc67f69';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
@@ -645,7 +645,7 @@ final class ModuleChallengeOfferProvider
 }
 
 String _$moduleChallengeOfferHash() =>
-    r'e90b9819e00b7c4879d97ab7ac2608ce648820ad';
+    r'9367cd0cb25a1f12182cbc1ff2fda8549184b334';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 

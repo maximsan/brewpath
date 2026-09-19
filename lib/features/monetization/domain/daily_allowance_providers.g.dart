@@ -10,33 +10,27 @@ part of 'daily_allowance_providers.dart';
 // ignore_for_file: type=lint, type=warning
 /// Whether a full learning/practice activity may start right now.
 ///
-/// **Derived, never stored.** The count is the cardinality of today's entries
-/// in the activity record — a stored quota would be neither monotonic nor an
-/// outcome, and #65 refused that shape three times before this landed.
-///
-/// **Read it through [activityAllowanceNow], never straight from the cache.**
+/// Derived, never stored: the count is the cardinality of today's entries in
+/// the activity record, and a stored quota would be neither monotonic nor an
+/// outcome (#65). Read it through [activityAllowanceNow], not from the cache.
 
 @ProviderFor(canStartActivity)
 final canStartActivityProvider = CanStartActivityProvider._();
 
 /// Whether a full learning/practice activity may start right now.
 ///
-/// **Derived, never stored.** The count is the cardinality of today's entries
-/// in the activity record — a stored quota would be neither monotonic nor an
-/// outcome, and #65 refused that shape three times before this landed.
-///
-/// **Read it through [activityAllowanceNow], never straight from the cache.**
+/// Derived, never stored: the count is the cardinality of today's entries in
+/// the activity record, and a stored quota would be neither monotonic nor an
+/// outcome (#65). Read it through [activityAllowanceNow], not from the cache.
 
 final class CanStartActivityProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
   /// Whether a full learning/practice activity may start right now.
   ///
-  /// **Derived, never stored.** The count is the cardinality of today's entries
-  /// in the activity record — a stored quota would be neither monotonic nor an
-  /// outcome, and #65 refused that shape three times before this landed.
-  ///
-  /// **Read it through [activityAllowanceNow], never straight from the cache.**
+  /// Derived, never stored: the count is the cardinality of today's entries in
+  /// the activity record, and a stored quota would be neither monotonic nor an
+  /// outcome (#65). Read it through [activityAllowanceNow], not from the cache.
   CanStartActivityProvider._()
     : super(
         from: null,
@@ -62,4 +56,4 @@ final class CanStartActivityProvider
   }
 }
 
-String _$canStartActivityHash() => r'887a2e11752eb309841908e2c4bd35e805515f96';
+String _$canStartActivityHash() => r'824189f7fd21cd4c8a8d5d7aabfc5c68797bf93b';

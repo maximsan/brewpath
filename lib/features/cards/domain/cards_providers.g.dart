@@ -68,4 +68,4 @@ final class CardsWithCollectionProvider
 }
 
 String _$cardsWithCollectionHash() =>
-    r'5bfcb4fda5637fecf1d244b5ff0f265b1d5a6995';
+    r'1be8e012e38ca662f3c28a8c4a644b44fe356bef';

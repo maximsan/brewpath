@@ -28,7 +28,6 @@ class FreezeSaveNoticeCard extends ConsumerWidget {
       coveredDay,
       today,
     );
-    ref.invalidate(freezeSaveNoticeDayProvider);
   }
 
   @override

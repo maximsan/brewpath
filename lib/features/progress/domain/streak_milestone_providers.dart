@@ -21,9 +21,9 @@ const String milestoneAckKey = 'streakMilestone';
 Future<bool> streakMilestoneDue(Ref ref) async {
   final today = epochDay(ref.watch(currentDayProvider));
   final statusFuture = ref.watch(streakStatusProvider.future);
-  final repository = ref.watch(snapshotRepositoryProvider);
+  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
   final status = await statusFuture;
-  final snapshot = await repository.read();
+  final snapshot = await snapshotFuture;
   return milestoneCelebrationDue(
     streak: status.streak,
     ackedDay: snapshot.clearedByReset.acks[milestoneAckKey],

@@ -27,9 +27,9 @@ class CardWithCollection {
 @riverpod
 Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
-  final snapshots = ref.watch(snapshotRepositoryProvider);
+  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
   final cards = await content.getCards();
-  final collected = (await snapshots.read()).clearedByReset.ownedCollectibles;
+  final collected = (await snapshotFuture).clearedByReset.ownedCollectibles;
   return cards
       .map(
         (c) =>

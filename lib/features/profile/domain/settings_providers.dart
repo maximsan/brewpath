@@ -1,12 +1,6 @@
-import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
-import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
-import 'package:brew_path/features/progress/domain/progress_providers.dart';
-import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
-import 'package:brew_path/shared/storage/account_wipe.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -96,28 +90,13 @@ Future<String> appVersion(Ref ref) async {
 Future<String> appVersionShort(Ref ref) async =>
     'v${(await PackageInfo.fromPlatform()).version}';
 
-/// Wipes the learner's progress and rebuilds the screens that showed it.
+/// Wipes the learner's progress.
 ///
-/// *What* a reset clears belongs to [AccountWipe]; only the invalidations are
-/// here, because only the widget layer knows what was on screen. Takes a
-/// [WidgetRef] (not a provider [Ref]) so the caller's lifetime owns the reads
-/// and invalidations across this async work.
+/// Every progress surface follows the write on its own, because it reads the
+/// snapshot through a stream (ADR-0030). The settings row is a second table
+/// that no snapshot stream covers, so it is still told by hand.
 Future<void> resetProgress(WidgetRef ref) async {
   await ref.read(accountWipeProvider).resetProgress();
 
-  ref.invalidate(totalPointsProvider);
-  ref.invalidate(streakStatusProvider);
-  ref.invalidate(completedLessonsProvider);
-  ref.invalidate(cardsWithCollectionProvider);
-  ref.invalidate(modulesWithProgressProvider);
-  ref.invalidate(todayLessonProvider);
   ref.invalidate(settingsControllerProvider);
-  // The shelf goes with the progress it recorded. Without this the header's
-  // badge keeps the wiped keys alive: it watches the key set continuously, so
-  // nothing else ever asks the store again.
-  ref.invalidate(savedKeysProvider);
-  // And the Vocab game's review deck, which the wipe emptied for the same
-  // reason: both are snapshot reads cached behind a provider, so clearing the
-  // store is only half of clearing what a screen shows.
-  ref.invalidate(vocabAnswersProvider);
 }

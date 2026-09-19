@@ -27,10 +27,10 @@ Future<int> totalPoints(Ref ref) async {
   // find a watch on the far side of an async gap.
   final completedFuture = ref.watch(completedLessonsProvider.future);
   final content = ref.watch(contentRepositoryProvider);
-  final snapshots = ref.watch(snapshotRepositoryProvider);
+  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
 
   final lessons = await content.getLessons();
-  final snapshot = await snapshots.read();
+  final snapshot = await snapshotFuture;
   final completed = await completedFuture;
 
   final fromLessons = lessons
@@ -50,7 +50,7 @@ Future<int> totalPoints(Ref ref) async {
 @riverpod
 Future<Set<int>> activeDaySet(Ref ref) async {
   final completedFuture = ref.watch(completedLessonsProvider.future);
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotProvider.future);
   final completed = await completedFuture;
   final progress = snapshot.clearedByReset;
   return streakDaySet(
@@ -97,7 +97,7 @@ Future<int> streak(Ref ref) async =>
 /// stored for it — are what those rows carried that anything still asks for.
 @riverpod
 Future<CompletedLessons> completedLessons(Ref ref) async {
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotProvider.future);
   final progress = snapshot.clearedByReset;
   return CompletedLessons(
     completedOn: progress.completedLessons,
@@ -128,9 +128,9 @@ Future<int> treeStage(Ref ref) async {
   // must come from the same moment, or a completion landing between two reads
   // would be counted on one side of the max and not the other.
   final content = ref.watch(contentRepositoryProvider);
-  final snapshots = ref.watch(snapshotRepositoryProvider);
+  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
 
-  final progress = (await snapshots.read()).clearedByReset;
+  final progress = (await snapshotFuture).clearedByReset;
   final modules = await content.getModules();
 
   final derived = treeStageForProgress(
@@ -179,7 +179,7 @@ Future<DateTime?> joinedDate(Ref ref) async {
 /// and lights: it receives a treatment, not a pair of ids to look up.
 @riverpod
 Future<GroveTreatment> groveTreatment(Ref ref) async {
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotProvider.future);
   final content = ref.watch(contentRepositoryProvider);
   final grove = snapshot.clearedByDeleteOnly.grove.value;
 

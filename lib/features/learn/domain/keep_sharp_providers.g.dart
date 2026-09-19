@@ -71,7 +71,7 @@ final class KeepSharpRecommendationProvider
 }
 
 String _$keepSharpRecommendationHash() =>
-    r'983f0d1febf67165a07730109efaffe8afcf7191';
+    r'771ec6ebd0f73b9739307df1633f179484c42db0';
 
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.
@@ -126,4 +126,4 @@ final class KeepSharpAcknowledgedTodayProvider
 }
 
 String _$keepSharpAcknowledgedTodayHash() =>
-    r'00246ee8415f828d60e7499f4854875840d6606e';
+    r'5cfa07558d41f4f5b5c140857420851f343a65fb';

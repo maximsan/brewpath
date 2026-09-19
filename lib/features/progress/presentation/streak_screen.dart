@@ -52,12 +52,7 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
     // skips the beat but still marks the milestone seen, or the same moment
     // would be re-offered forever (#26).
     unawaited(
-      ackStreakMilestone(
-        ref.read(snapshotRepositoryProvider),
-        DateTime.now(),
-      ).then((_) {
-        if (mounted) ref.invalidate(streakMilestoneDueProvider);
-      }),
+      ackStreakMilestone(ref.read(snapshotRepositoryProvider), DateTime.now()),
     );
     if (!reducedMotion) setState(() => _showBeat = true);
   }

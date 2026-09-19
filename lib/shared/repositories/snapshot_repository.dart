@@ -6,29 +6,43 @@ import 'package:drift/drift.dart';
 
 /// Reads and writes the single progress-snapshot row.
 ///
-/// The repository is deliberately thin: it moves the snapshot between its Dart
-/// form and one row of text, and owns no merge logic at all. Every conflict
-/// decision belongs to `mergeSnapshot`, which is pure and therefore testable
-/// without any of this — putting even part of it here would create a second
-/// home for merge semantics that no test of the merge could reach.
+/// Deliberately thin: it moves the snapshot between its Dart form and one row
+/// of text, and owns no merge logic. Every conflict decision belongs to
+/// `mergeSnapshot`, which is pure and so testable without any of this.
 class SnapshotRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
   /// Primary-key id of the singleton snapshot row.
   static const int snapshotId = 1;
 
-  /// The stored snapshot, or [ProgressSnapshot.empty] on a fresh install.
+  /// The snapshot as it stands, once — for a **write path**, never a screen.
   ///
-  /// A row that fails to parse also reads as empty rather than throwing. The
-  /// snapshot arrives from an unvalidated key-value store, so a truncated or
-  /// mangled payload must cost the learner their progress at worst — never the
-  /// ability to open the app.
+  /// A read-modify-write needs the value at the instant it edits it, which a
+  /// stream cannot give: its latest delivered value may already be behind. A
+  /// screen that reads this instead goes stale the moment anything writes, and
+  /// only a hand-written announcement would bring it back (ADR-0030).
   Future<ProgressSnapshot> read() async {
-    final row = await (_db.select(
-      _db.progressSnapshots,
-    )..where((row) => row.id.equals(snapshotId))).getSingleOrNull();
-    if (row == null) return ProgressSnapshot.empty;
+    final row = await _row().getSingleOrNull();
+    return _parse(row);
+  }
 
+  /// The snapshot, and every later version of it — for a **screen**.
+  ///
+  /// Drift re-runs the query when a write touches the row's table, so nothing
+  /// has to announce a change and nothing can forget to. Opens on what is
+  /// stored, so a listener never waits for a write to learn the current value
+  /// (ADR-0030).
+  Stream<ProgressSnapshot> watch() => _row().watchSingleOrNull().map(_parse);
+
+  SimpleSelectStatement<$ProgressSnapshotsTable, SnapshotRow> _row() =>
+      _db.select(_db.progressSnapshots)
+        ..where((row) => row.id.equals(snapshotId));
+
+  /// [ProgressSnapshot.empty] for a fresh install, and for a row that fails to
+  /// parse: the payload is unvalidated, so a mangled one must cost the learner
+  /// their progress at worst, never the ability to open the app.
+  ProgressSnapshot _parse(SnapshotRow? row) {
+    if (row == null) return ProgressSnapshot.empty;
     try {
       return ProgressSnapshot.fromJson(
         jsonDecode(row.payload) as Map<String, dynamic>,

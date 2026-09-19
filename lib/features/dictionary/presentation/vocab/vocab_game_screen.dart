@@ -148,21 +148,8 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
     // when a guard flag keeps it to one write.
     if (_index >= _rounds.length) {
       _recordRoundOnce();
-      _refreshPools();
     }
   }
-
-  /// Re-reads the answers once every one this drill logged has been written,
-  /// which rebuilds the pools that derive from them.
-  ///
-  /// Waiting matters: the Misses deck the results screen offers *Play again*
-  /// from, and the counts setup shows after *Change round*, both have to be
-  /// what this drill just left behind rather than what it started with.
-  void _refreshPools() => unawaited(
-    _log.settled.then((_) {
-      if (mounted) ref.invalidate(vocabAnswersProvider);
-    }),
-  );
 
   /// Back to setup, with the rounds dropped so the drill is startable again.
   void _changeRound() => setState(() {

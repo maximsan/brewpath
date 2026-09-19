@@ -160,6 +160,62 @@ final class SnapshotRepositoryProvider
 String _$snapshotRepositoryHash() =>
     r'93a9fe008652c6c4bb29f85cd883ad2ca783f66b';
 
+/// The stored progress, and every later version of it.
+///
+/// The one place the app listens to the database, so a display provider reads
+/// progress by deriving from this rather than by asking once and waiting to be
+/// told (ADR-0030).
+
+@ProviderFor(progressSnapshot)
+final progressSnapshotProvider = ProgressSnapshotProvider._();
+
+/// The stored progress, and every later version of it.
+///
+/// The one place the app listens to the database, so a display provider reads
+/// progress by deriving from this rather than by asking once and waiting to be
+/// told (ADR-0030).
+
+final class ProgressSnapshotProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgressSnapshot>,
+          ProgressSnapshot,
+          Stream<ProgressSnapshot>
+        >
+    with $FutureModifier<ProgressSnapshot>, $StreamProvider<ProgressSnapshot> {
+  /// The stored progress, and every later version of it.
+  ///
+  /// The one place the app listens to the database, so a display provider reads
+  /// progress by deriving from this rather than by asking once and waiting to be
+  /// told (ADR-0030).
+  ProgressSnapshotProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'progressSnapshotProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$progressSnapshotHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<ProgressSnapshot> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<ProgressSnapshot> create(Ref ref) {
+    return progressSnapshot(ref);
+  }
+}
+
+String _$progressSnapshotHash() => r'a2249a817aada45fdc756f0b90c7c3553fda56bc';
+
 /// Provides the [InstallRepository].
 
 @ProviderFor(installRepository)

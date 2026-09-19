@@ -54,6 +54,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The database announces its own changes, so no screen can be left showing
+  stale progress.** Progress was read once and cached, and every write had to
+  remember to say it had happened — a duty forgotten twice in code that shipped,
+  once leaving a wiped Saved shelf still showing its old count. Screens now read
+  the snapshot through a stream that re-runs when the row changes, and the
+  twenty-odd hand-written refreshes are gone. A read taken straight after a
+  write still asks the database directly, which two places do and say so
+  (ADR-0030).
+
 - **Roasty can speak a language other than English.** His lines were the one
   piece of reader-facing prose no language folder could reach; they now load
   like every other content file. Each line carries an id of its own, so a

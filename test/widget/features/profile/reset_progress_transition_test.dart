@@ -10,11 +10,11 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
-// The walk `saved_shelf_persistence_test.dart` deliberately does not make. It
-// drives reset from a tab root instead, because the badge's subscription is
-// paused while Settings covers the shell and flushes the reset's invalidation
-// on resume, inside a build. That is #299, and the resume is the return to the
-// badge's own tab — leaving Settings alone is not enough to provoke it.
+// The walk that used to throw (#299): the badge's subscription is paused while
+// Settings covers the shell, and the reset's queued invalidation flushed on
+// resume, inside a build. Nothing is queued now that the snapshot is a stream
+// (ADR-0030). The resume is the return to the badge's own tab, so leaving
+// Settings alone would not have provoked it.
 void main() {
   setUp(useInMemoryDatabase);
 

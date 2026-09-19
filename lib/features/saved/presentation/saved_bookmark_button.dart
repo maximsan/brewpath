@@ -69,12 +69,9 @@ class SavedBookmarkButton extends ConsumerWidget {
       visible: visible,
     );
 
-    if (outcome is SaveGateRaised) {
-      if (context.mounted) showSavedCapReached(context);
-      // Nothing moved, so nothing to re-read.
-      return;
+    if (outcome is SaveGateRaised && context.mounted) {
+      showSavedCapReached(context);
     }
-    ref.invalidate(savedKeysProvider);
   }
 
   @override

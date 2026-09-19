@@ -31,7 +31,7 @@ class RoastyStudio {
 @riverpod
 Future<RoastyStudio> roastyStudio(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotProvider.future);
 
   return RoastyStudio(
     options: await content.getCompanionOptions(),
