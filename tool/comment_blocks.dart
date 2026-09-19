@@ -15,6 +15,33 @@ Iterable<String> commentsIn(String source) =>
 String withoutComments(String source) =>
     _runs(source).where((run) => !run.isComment).map((run) => run.text).join();
 
+/// [source] with every string literal blanked to spaces, so a rule about code
+/// never reads a bracket or quote that a literal only spells. Comments are
+/// left whole; offsets and line breaks survive, so line numbers still hold.
+String withoutStringLiterals(String source) {
+  final buffer = StringBuffer();
+  var index = 0;
+  while (index < source.length) {
+    final int end;
+    if (source.startsWith('//', index) || source.startsWith('/*', index)) {
+      end = source[index + 1] == '/'
+          ? _lineEnd(source, index)
+          : _blockCommentEnd(source, index);
+      buffer.write(source.substring(index, end));
+    } else if (_opensString(source, index)) {
+      end = _stringEnd(source, index);
+      buffer.write(source.substring(index, end).replaceAll(_notNewline, ' '));
+    } else {
+      end = index + 1;
+      buffer.write(source[index]);
+    }
+    index = end;
+  }
+  return buffer.toString();
+}
+
+final _notNewline = RegExp('[^\n]');
+
 /// A block comment, or line comments on consecutive lines: where it starts
 /// (1-based) and how many lines it spans.
 typedef CommentBlock = ({int line, int lines});

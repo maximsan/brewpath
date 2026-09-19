@@ -11,22 +11,10 @@ import 'package:flutter/material.dart';
 
 /// The Coffee Challenge offer, as one row of a reward screen.
 ///
-/// The app's port of the design's `ChallengeSuggestion`. It is not the only
-/// one yet: the lesson ending still runs [ChallengeSuggestion], an older
-/// bordered card with its own *Save for later*, and converging the two onto
-/// this row is #490's job rather than this one's. Until then the confirmation
-/// sentence and the write exist in both places, deliberately.
-///
-/// **One affordance, and no way to say no.** The design gives the row a go
-/// button and nothing else: declining is walking past it, because the challenge
-/// waits on the Path either way. That is why there is no *not now* here — a
-/// dismissal would have to mean something, and there is nothing for it to mean.
-///
-/// **The row is the button**, not the circle inside it — the anatomy every
-/// actionable reward row shares (*"Span, not button: the row itself is the
-/// button"*). The design's own offer wires the tap to the 38-px circle alone,
-/// which is under every platform's minimum touch target; the row is well over
-/// it and the circle still reads as the affordance.
+/// The row is the button, not the 38-px circle inside it: the design wires the
+/// tap to that circle alone, which is under every platform's minimum touch
+/// target. The lesson ending still runs the older [ChallengeSuggestion] card,
+/// and converging the two onto this row is #490's job rather than this one's.
 class ChallengeOfferRow extends StatelessWidget {
   /// Creates a [ChallengeOfferRow].
   const ChallengeOfferRow({
@@ -74,6 +62,7 @@ class ChallengeOfferRow extends StatelessWidget {
     return Semantics(
       button: true,
       label: '$kicker. $_detail. $startAction',
+      onTap: onStart,
       excludeSemantics: true,
       child: InkWell(
         onTap: onStart,

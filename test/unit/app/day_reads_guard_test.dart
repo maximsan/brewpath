@@ -5,11 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/dart_sources.dart';
 
 /// Source with comments removed, so prose about `DateTime.now()` does not read
-/// as a call to it.
-String _code(String path) => File(path)
-    .readAsStringSync()
-    .replaceAll(RegExp(r'/\*.*?\*/', dotAll: true), '')
-    .replaceAll(RegExp(r'^\s*//.*$', multiLine: true), '');
+/// as a call to it, and literals blanked, so no brace a string only spells can
+/// end a body early.
+String _code(String path) =>
+    withoutStringLiterals(withoutComments(File(path).readAsStringSync()));
 
 List<File> _dartFilesUnder(String directory) =>
     dartSourcesUnder(directory).toList();

@@ -104,6 +104,7 @@ class _FlashcardViewState extends State<FlashcardView>
       hint: widget.isRevealed
           ? FlashcardsCopy.tapToSeeTerm
           : FlashcardsCopy.tapToReveal,
+      onTap: widget.onFlip,
       excludeSemantics: true,
       child: GestureDetector(
         onTap: widget.onFlip,

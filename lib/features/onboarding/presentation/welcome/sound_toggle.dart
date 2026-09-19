@@ -10,18 +10,10 @@ const double _glyphSize = 19;
 
 /// Mute and unmute for the Welcome film.
 ///
-/// A circle on the scrim rather than a chrome button: it floats over artwork,
-/// so it takes the overlay palette both moods share and never the surface
-/// tokens of the page beneath.
-///
-/// Labelled by what a press *does*, not by what is true now — a reader hearing
-/// "turn sound on" knows the outcome, where "muted" leaves them to work it out.
-///
-/// **The scrim is taken whole here**, tint and blur. It is the one overlay
-/// `OverlayBarrier` cannot render, because it is the only one of the four that
-/// is not full-screen: its blur has to be shaped like the control it sits
-/// behind, so the control clips it (#379). The design puts the film behind it
-/// at 8px.
+/// A circle on the scrim, labelled by what a press does rather than what is
+/// true now. It takes the scrim whole, tint and blur — the one overlay
+/// `OverlayBarrier` cannot render, since it is not full-screen and its blur
+/// must be clipped to the control's shape (#379), blurring the film at 8px.
 class SoundToggle extends StatelessWidget {
   /// Creates a [SoundToggle].
   const SoundToggle({required this.muted, required this.onPressed, super.key});
@@ -50,6 +42,7 @@ class SoundToggle extends StatelessWidget {
     return Semantics(
       button: true,
       label: muted ? 'Turn sound on' : 'Turn sound off',
+      onTap: onPressed,
       excludeSemantics: true,
       child: SizedBox(
         width: _targetSize,

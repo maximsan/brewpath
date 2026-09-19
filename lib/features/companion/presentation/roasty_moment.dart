@@ -11,15 +11,9 @@ import 'package:flutter/material.dart';
 /// The full-screen beat a reward route opens on: the companion, an eyebrow, a
 /// headline, and a bar that runs down to the content behind it.
 ///
-/// **A beat, not a screen.** It owns no content and no navigation — it holds
-/// the frame for [hold], then hands over through [onDone]. Every reward route
-/// in the design opens on one, so it is built shared rather than by whichever
-/// route landed first.
-///
-/// ⚠️ **[onDone] fires exactly once, and fires under reduced motion too.**
-/// A tap and the timer race by construction, and a host that sequences its
-/// screen behind this callback stalls forever if stillness swallows it — the
-/// same discipline the tree's growth is held to (ADR-0011).
+/// A beat, not a screen: it owns no content and no navigation, holding the
+/// frame for [hold] and then handing over through [onDone]. Every reward route
+/// in the design opens on one, so it is built shared.
 class RoastyMoment extends StatefulWidget {
   /// Creates a [RoastyMoment].
   const RoastyMoment({
@@ -47,7 +41,9 @@ class RoastyMoment extends StatefulWidget {
   /// The headline, which varies with what the run actually did.
   final String title;
 
-  /// Called once, when the beat is over — by the timer or by a tap.
+  /// Called once, when the beat is over — by the timer or by a tap, and under
+  /// reduced motion too, so a host sequencing behind it never stalls
+  /// (ADR-0011).
   final VoidCallback onDone;
 
   /// The companion's rendered size in the beat.
@@ -121,6 +117,7 @@ class _RoastyMomentState extends State<RoastyMoment>
           button: true,
           label: '${widget.eyebrow}. ${widget.title}',
           hint: 'Tap to continue',
+          onTap: _finish,
           excludeSemantics: true,
           child: Stack(
             children: [

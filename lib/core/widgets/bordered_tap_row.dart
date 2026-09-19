@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 /// A surface on the ground, ruled and tappable: the frame the design's chips
 /// and slim entry rows share.
 ///
-/// Only the frame. What goes inside is the caller's — a chip pairs a name with
-/// a count, a row pairs a name with a chevron — and the shapes stay separate
-/// components because the design draws them as two. What they must not do is
-/// disagree about the surface, the rule and the corner they sit on, which is
-/// the part that lives here.
+/// Only the frame; what goes inside is the caller's. The chip and the row stay
+/// separate components because the design draws them as two, but they must not
+/// disagree about the surface, the rule and the corner, which live here.
 class BorderedTapRow extends StatelessWidget {
   /// Creates a [BorderedTapRow].
   const BorderedTapRow({
@@ -40,6 +38,10 @@ class BorderedTapRow extends StatelessWidget {
     return Semantics(
       button: true,
       label: semanticsLabel,
+      // The action, not just the flag: `excludeSemantics` drops the InkWell's
+      // tap along with the text, and a node saying "button" with no tap to
+      // carry announces something a screen reader cannot press (#487).
+      onTap: onTap,
       excludeSemantics: true,
       child: Material(
         color: mood.surface,
