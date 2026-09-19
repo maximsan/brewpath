@@ -222,6 +222,31 @@ void main() {
       expect(records.first['aliases'], ['kawa']);
     });
 
+    test('aliases given as one word, where the master lists them, are '
+        'refused', () {
+      expect(
+        () => overlayTranslations(
+          master: [
+            {
+              'id': 'coffee',
+              'aliases': ['coffee', 'beans'],
+            },
+          ],
+          translated: [
+            {'id': 'coffee', 'aliases': 'kawa'},
+          ],
+          assetPath: 'assets/content/l10n/pl/dictionary_terms.json',
+        ),
+        throwsA(
+          isA<ContentFormatException>().having(
+            (it) => it.message,
+            'message',
+            contains('a list'),
+          ),
+        ),
+      );
+    });
+
     test('a field the master has no slot for is refused', () {
       expect(
         () => overlaidHelp({'id': 'mcq', 'titel': 'Wielokrotny wybór'}),

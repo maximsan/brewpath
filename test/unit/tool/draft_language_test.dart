@@ -9,7 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 const _script = '''
 const folder = require('./tool/draft_language/folder.js');
 const given = JSON.parse(process.argv[1]);
-const call = { bank: 'lessons', master: given.master, folder: given.folder };
+const call = {
+  bank: given.bank,
+  master: given.master,
+  folder: given.folder,
+};
 if (given.translations) {
   call.translations = new Map(Object.entries(given.translations));
 }
@@ -22,6 +26,7 @@ List<Object?> _run(
   String call, {
   required List<Map<String, dynamic>> master,
   required List<Object?> folder,
+  String bank = 'lessons',
   Map<String, Object?>? translations,
 }) {
   final result = Process.runSync('node', [
@@ -29,6 +34,7 @@ List<Object?> _run(
     _script,
     jsonEncode({
       'call': call,
+      'bank': bank,
       'master': master,
       'folder': folder,
       'translations': translations,
@@ -48,6 +54,15 @@ String _digest(String english) {
   expect(result.exitCode, 0, reason: result.stderr.toString());
   return result.stdout.toString();
 }
+
+List<Map<String, dynamic>> _terms() => [
+  {
+    'id': 'arabica',
+    'term': 'Arabica',
+    'pron': 'uh-RAB-ih-kuh',
+    'aliases': ['arabica', 'arabicas'],
+  },
+];
 
 List<Map<String, dynamic>> _master() => [
   {
@@ -168,6 +183,74 @@ void main() {
 
       expect(entry['title'], 'Nowe słowa');
       expect(entry['nativeReviewed'], isNot(contains('title')));
+    });
+
+    test('re-applying the same words leaves review where it was', () {
+      final reviewed = [
+        {
+          'id': 'm1l1',
+          'title': 'Czym naprawdę jest kawa',
+          'translatedFrom': {'title': _digest('What coffee actually is')},
+          'nativeReviewed': {'title': true},
+        },
+      ];
+
+      final entry =
+          _draft(_master(), reviewed, {
+                'm1l1|title': 'Czym naprawdę jest kawa',
+              }).single!
+              as Map<String, dynamic>;
+
+      expect((entry['nativeReviewed']! as Map)['title'], isTrue);
+    });
+  });
+
+  group('what a language is never owed', () {
+    test('a term without a respelling is still complete', () {
+      final folder = _run(
+        'applyBank',
+        bank: 'dictionary_terms',
+        master: _terms(),
+        folder: const [],
+        translations: {'arabica|term': 'Arabika'},
+      );
+
+      final missing = _run(
+        'checkBank',
+        bank: 'dictionary_terms',
+        master: _terms(),
+        folder: folder,
+      );
+
+      expect(missing, isEmpty);
+    });
+
+    test('a respelling is still offered to a language that wants one', () {
+      final keys = _run(
+        'planBank',
+        bank: 'dictionary_terms',
+        master: _terms(),
+        folder: const [],
+      ).map((item) => (item! as Map<String, dynamic>)['key']).toList();
+
+      expect(keys, contains('pron'));
+    });
+
+    test('a term sets the length of its own aliases', () {
+      final entry =
+          _run(
+                'applyBank',
+                bank: 'dictionary_terms',
+                master: _terms(),
+                folder: const [],
+                translations: {
+                  'arabica|term': 'Arabika',
+                  'arabica|aliases': ['arabika', 'arabiki', 'arabice'],
+                },
+              ).single!
+              as Map<String, dynamic>;
+
+      expect(entry['aliases'], hasLength(3));
     });
   });
 

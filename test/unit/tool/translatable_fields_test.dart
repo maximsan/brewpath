@@ -57,6 +57,22 @@ Map<String, List<String>> _stringsByPath() {
   return found;
 }
 
+/// Every path the register names, whatever it names it.
+Set<String> _registeredPaths() {
+  const script = '''
+const f = require('./tool/draft_language/fields.js');
+process.stdout.write(JSON.stringify([
+  ...Object.keys(f.STRUCTURAL),
+  ...Object.keys(f.MIRRORS),
+  ...Object.keys(f.OPTIONAL),
+  ...f.SEARCH_KEYS,
+]));
+''';
+  final result = Process.runSync('node', ['-e', script]);
+  expect(result.exitCode, 0, reason: result.stderr.toString());
+  return (jsonDecode(result.stdout.toString()) as List).cast<String>().toSet();
+}
+
 /// The option lists a mirrored answer chooses from — keys by design.
 Set<String> _mirrorOptionPaths() {
   const script = '''
@@ -69,12 +85,20 @@ process.stdout.write(JSON.stringify(Object.values(MIRRORS)));
 }
 
 void main() {
-  test('every bank field the banks carry has a place in the register', () {
-    final byPath = _stringsByPath();
-    final classes = _classify(byPath.keys.toList());
+  test('the register still names a field for every path it claims', () {
+    // Not "does classify answer" — it answers 'prose' for anything. This asks
+    // the opposite: that every path the register names is one the banks
+    // actually carry, so a rename leaves a dead entry rather than silent cover.
+    final carried = _stringsByPath().keys.toSet();
+    final registered = _registeredPaths();
 
-    expect(classes.keys, hasLength(byPath.length));
-    expect(classes.values, everyElement(isNotEmpty));
+    expect(
+      registered.difference(carried),
+      isEmpty,
+      reason:
+          'the register classifies paths the banks no longer carry — a rename '
+          'left these behind, and the real field is now unclassified',
+    );
   });
 
   test('no string that reads like a key is heading for translation', () {

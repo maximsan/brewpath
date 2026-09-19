@@ -101,27 +101,33 @@ Map<String, dynamic> _mergeMap(
         'the real one in English',
       );
     }
-    merged[field.key] = searchKeyFields.contains(field.key)
-        ? field.value
-        : _mergeValue(
-            master[field.key],
-            field.value,
-            '$where field "${field.key}"',
-          );
+    merged[field.key] = _mergeValue(
+      master[field.key],
+      field.value,
+      '$where field "${field.key}"',
+      setsItsOwnLength: searchKeyFields.contains(field.key),
+    );
   }
   return merged..removeWhere((field, _) => bookkeepingFields.contains(field));
 }
 
 /// [translation] where it carries text, [master] where it does not.
 ///
-/// Recurses so the per-field fallback reaches a lesson's cards and a help
-/// entry's steps, which is where most of the course's prose actually sits.
-Object? _mergeValue(Object? master, Object? translation, String where) {
+/// Recurses so the fallback reaches a lesson's cards and a help entry's steps.
+/// [setsItsOwnLength] drops the length rule for a search-key list, never the
+/// shape check — a lone string must not land where the master holds a list.
+Object? _mergeValue(
+  Object? master,
+  Object? translation,
+  String where, {
+  bool setsItsOwnLength = false,
+}) {
   if (translation == null) return master;
   if (master is Map<String, dynamic> && translation is Map<String, dynamic>) {
     return _mergeMap(master, translation, where);
   }
   if (master is List && translation is List) {
+    if (setsItsOwnLength) return List<Object?>.from(translation);
     if (master.length != translation.length) {
       throw ContentFormatException(
         '$where lists ${translation.length} where the master lists '

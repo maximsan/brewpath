@@ -95,6 +95,17 @@ const MIRRORS = {
 /** Search keys a language sets the length of, not prose (ADR-0025). */
 const SEARCH_KEYS = new Set(["dictionary_terms.aliases[]"]);
 
+/**
+ * Prose a language may simply not have, which completeness must not demand.
+ *
+ * A respelling is per language and optional, so a language that supplies none
+ * is still complete (ADR-0025). It is still offered in the queue: optional
+ * means nobody is owed it, not that nobody may write it.
+ */
+const OPTIONAL = {
+  "dictionary_terms.pron": "a respelling a language may not need",
+};
+
 /** The register's path for [pointer]: list indices collapse to `[]`. */
 function pathOf(bank, pointer) {
   return (
@@ -116,6 +127,17 @@ function classify(path) {
 /** The options path whose translation [path]'s answer must match. */
 function mirrorOf(path) {
   return MIRRORS[path] || null;
+}
+
+/** The field name holding the options [path]'s answer chooses from. */
+function mirrorField(path) {
+  const options = mirrorOf(path);
+  return options === null ? null : options.split(".").pop().replace("[]", "");
+}
+
+/** Whether completeness may be claimed without [path]. */
+function isOptional(path) {
+  return Boolean(OPTIONAL[path]);
 }
 
 /** Every string in [record], as `{ path, pointer, value }`, in bank order. */
@@ -147,9 +169,12 @@ module.exports = {
   STRUCTURAL,
   MIRRORS,
   SEARCH_KEYS,
+  OPTIONAL,
   pathOf,
   classify,
   mirrorOf,
+  mirrorField,
+  isOptional,
   stringsIn,
   translatableIn,
 };

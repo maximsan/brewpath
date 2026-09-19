@@ -26,11 +26,24 @@ const {
   checkBank,
   strandedAnswers,
 } = require("./draft_language/folder");
+const { fingerprint } = require("./draft_language/fingerprint");
+
+/**
+ * Where an interface string's fingerprint rides.
+ *
+ * ARB keeps a key's metadata under `@key`, and an `x-` attribute is the
+ * documented place for something that is nobody else's business — so the mark
+ * ADR-0026 asks for travels with the string instead of in a file beside it.
+ */
+const ARB_MARK = "x-translatedFrom";
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const GENERATED = path.join(REPO_ROOT, "assets", "content", "generated");
 const FOLDERS = path.join(REPO_ROOT, "assets", "content", "l10n");
 const ARB_DIR = path.join(REPO_ROOT, "lib", "l10n");
+
+/** How many missing pieces a refusal lists before it summarises the rest. */
+const SHOWN = 20;
 
 const DO_NOT_EDIT =
   "Drafted by tool/draft_language.js from the English master. Edit the " +
@@ -85,14 +98,17 @@ function plan(code, given) {
   }
   const { english, theirs, keys } = arbStrings(code);
   for (const key of keys) {
-    if (theirs[key] !== undefined) continue;
+    const has = theirs[key] !== undefined;
+    const mark = (theirs[`@${key}`] || {})[ARB_MARK];
+    if (has && mark === fingerprint(english[key])) continue;
     work.push({
       bank: "app.arb",
       id: key,
       key,
       english: english[key],
-      state: "absent",
-      held: null,
+      state: has ? "stale" : "absent",
+      optional: false,
+      held: has ? theirs[key] : null,
     });
   }
 
@@ -144,10 +160,9 @@ function apply(code, given) {
       translations: byBank.get(bank) || new Map(),
     });
     const out = path.join(FOLDERS, code, `${bank}.json`);
-    if (!items.length) {
-      if (fs.existsSync(out)) fs.unlinkSync(out);
-      continue;
-    }
+    // A bank with nothing translated has no file to write. An existing one is
+    // left alone: this tool adds words to a folder, it does not prune it.
+    if (!items.length) continue;
     fs.writeFileSync(
       out,
       `${JSON.stringify(
@@ -176,8 +191,13 @@ function writeArb(code, supplied) {
   const out = { "@@locale": code };
   for (const key of keys) {
     const given = supplied && supplied.get(`${key}|${key}`);
-    const value = given || theirs[key];
-    if (value !== undefined) out[key] = value;
+    const value = given === undefined ? theirs[key] : given;
+    if (value === undefined) continue;
+    out[key] = value;
+    const held = (theirs[`@${key}`] || {})[ARB_MARK];
+    const fresh = given !== undefined && given !== theirs[key];
+    const mark = fresh ? fingerprint(english[key]) : held;
+    if (mark !== undefined) out[`@${key}`] = { [ARB_MARK]: mark };
   }
   if (Object.keys(out).length === 1) return;
   fs.writeFileSync(
@@ -210,9 +230,9 @@ function check(code) {
   }
   if (problems.length) {
     console.error(`✗ ${code} is not complete — ${problems.length} to go:`);
-    for (const problem of problems.slice(0, 20)) console.error(`  ${problem}`);
-    if (problems.length > 20) {
-      console.error(`  … and ${problems.length - 20} more`);
+    for (const problem of problems.slice(0, SHOWN)) console.error(`  ${problem}`);
+    if (problems.length > SHOWN) {
+      console.error(`  … and ${problems.length - SHOWN} more`);
     }
     process.exit(1);
   }
