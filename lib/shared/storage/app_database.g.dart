@@ -158,6 +158,18 @@ class $UserSettingsTable extends UserSettings
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _swipesUsedMeta = const VerificationMeta(
+    'swipesUsed',
+  );
+  @override
+  late final GeneratedColumn<String> swipesUsed = GeneratedColumn<String>(
+    'swipes_used',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -172,6 +184,7 @@ class $UserSettingsTable extends UserSettings
     learnerName,
     notificationsEnabled,
     dailyReminderTime,
+    swipesUsed,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -282,6 +295,12 @@ class $UserSettingsTable extends UserSettings
         ),
       );
     }
+    if (data.containsKey('swipes_used')) {
+      context.handle(
+        _swipesUsedMeta,
+        swipesUsed.isAcceptableOrUnknown(data['swipes_used']!, _swipesUsedMeta),
+      );
+    }
     return context;
   }
 
@@ -339,6 +358,10 @@ class $UserSettingsTable extends UserSettings
         DriftSqlType.string,
         data['${effectivePrefix}daily_reminder_time'],
       ),
+      swipesUsed: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}swipes_used'],
+      )!,
     );
   }
 
@@ -404,6 +427,12 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
   /// Nullable rather than defaulted: "never chose a time" is a different fact
   /// from "chose 8:00 AM", and the row reads *Off* for the first.
   final String? dailyReminderTime;
+
+  /// Swipe surfaces whose gesture the learner has used, comma-separated; empty
+  /// for none. The first-run hint stops on use, never after a count, so this
+  /// is the only thing that retires it (#610). Under [tourSeen]'s wipe rule
+  /// like [tipsSeen]: not progress. Device-local.
+  final String swipesUsed;
   const SettingsRow({
     required this.id,
     required this.hapticsEnabled,
@@ -417,6 +446,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     this.learnerName,
     required this.notificationsEnabled,
     this.dailyReminderTime,
+    required this.swipesUsed,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -441,6 +471,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     if (!nullToAbsent || dailyReminderTime != null) {
       map['daily_reminder_time'] = Variable<String>(dailyReminderTime);
     }
+    map['swipes_used'] = Variable<String>(swipesUsed);
     return map;
   }
 
@@ -466,6 +497,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       dailyReminderTime: dailyReminderTime == null && nullToAbsent
           ? const Value.absent()
           : Value(dailyReminderTime),
+      swipesUsed: Value(swipesUsed),
     );
   }
 
@@ -493,6 +525,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       dailyReminderTime: serializer.fromJson<String?>(
         json['dailyReminderTime'],
       ),
+      swipesUsed: serializer.fromJson<String>(json['swipesUsed']),
     );
   }
   @override
@@ -511,6 +544,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       'learnerName': serializer.toJson<String?>(learnerName),
       'notificationsEnabled': serializer.toJson<bool>(notificationsEnabled),
       'dailyReminderTime': serializer.toJson<String?>(dailyReminderTime),
+      'swipesUsed': serializer.toJson<String>(swipesUsed),
     };
   }
 
@@ -527,6 +561,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     Value<String?> learnerName = const Value.absent(),
     bool? notificationsEnabled,
     Value<String?> dailyReminderTime = const Value.absent(),
+    String? swipesUsed,
   }) => SettingsRow(
     id: id ?? this.id,
     hapticsEnabled: hapticsEnabled ?? this.hapticsEnabled,
@@ -546,6 +581,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     dailyReminderTime: dailyReminderTime.present
         ? dailyReminderTime.value
         : this.dailyReminderTime,
+    swipesUsed: swipesUsed ?? this.swipesUsed,
   );
   SettingsRow copyWithCompanion(UserSettingsCompanion data) {
     return SettingsRow(
@@ -577,6 +613,9 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
       dailyReminderTime: data.dailyReminderTime.present
           ? data.dailyReminderTime.value
           : this.dailyReminderTime,
+      swipesUsed: data.swipesUsed.present
+          ? data.swipesUsed.value
+          : this.swipesUsed,
     );
   }
 
@@ -594,7 +633,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           ..write('tipsSeen: $tipsSeen, ')
           ..write('learnerName: $learnerName, ')
           ..write('notificationsEnabled: $notificationsEnabled, ')
-          ..write('dailyReminderTime: $dailyReminderTime')
+          ..write('dailyReminderTime: $dailyReminderTime, ')
+          ..write('swipesUsed: $swipesUsed')
           ..write(')'))
         .toString();
   }
@@ -613,6 +653,7 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
     learnerName,
     notificationsEnabled,
     dailyReminderTime,
+    swipesUsed,
   );
   @override
   bool operator ==(Object other) =>
@@ -629,7 +670,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
           other.tipsSeen == this.tipsSeen &&
           other.learnerName == this.learnerName &&
           other.notificationsEnabled == this.notificationsEnabled &&
-          other.dailyReminderTime == this.dailyReminderTime);
+          other.dailyReminderTime == this.dailyReminderTime &&
+          other.swipesUsed == this.swipesUsed);
 }
 
 class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
@@ -645,6 +687,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
   final Value<String?> learnerName;
   final Value<bool> notificationsEnabled;
   final Value<String?> dailyReminderTime;
+  final Value<String> swipesUsed;
   const UserSettingsCompanion({
     this.id = const Value.absent(),
     this.hapticsEnabled = const Value.absent(),
@@ -658,6 +701,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.learnerName = const Value.absent(),
     this.notificationsEnabled = const Value.absent(),
     this.dailyReminderTime = const Value.absent(),
+    this.swipesUsed = const Value.absent(),
   });
   UserSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -672,6 +716,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     this.learnerName = const Value.absent(),
     this.notificationsEnabled = const Value.absent(),
     this.dailyReminderTime = const Value.absent(),
+    this.swipesUsed = const Value.absent(),
   }) : hapticsEnabled = Value(hapticsEnabled),
        soundEnabled = Value(soundEnabled);
   static Insertable<SettingsRow> custom({
@@ -687,6 +732,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Expression<String>? learnerName,
     Expression<bool>? notificationsEnabled,
     Expression<String>? dailyReminderTime,
+    Expression<String>? swipesUsed,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -703,6 +749,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       if (notificationsEnabled != null)
         'notifications_enabled': notificationsEnabled,
       if (dailyReminderTime != null) 'daily_reminder_time': dailyReminderTime,
+      if (swipesUsed != null) 'swipes_used': swipesUsed,
     });
   }
 
@@ -719,6 +766,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     Value<String?>? learnerName,
     Value<bool>? notificationsEnabled,
     Value<String?>? dailyReminderTime,
+    Value<String>? swipesUsed,
   }) {
     return UserSettingsCompanion(
       id: id ?? this.id,
@@ -733,6 +781,7 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
       learnerName: learnerName ?? this.learnerName,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       dailyReminderTime: dailyReminderTime ?? this.dailyReminderTime,
+      swipesUsed: swipesUsed ?? this.swipesUsed,
     );
   }
 
@@ -775,6 +824,9 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
     if (dailyReminderTime.present) {
       map['daily_reminder_time'] = Variable<String>(dailyReminderTime.value);
     }
+    if (swipesUsed.present) {
+      map['swipes_used'] = Variable<String>(swipesUsed.value);
+    }
     return map;
   }
 
@@ -792,7 +844,8 @@ class UserSettingsCompanion extends UpdateCompanion<SettingsRow> {
           ..write('tipsSeen: $tipsSeen, ')
           ..write('learnerName: $learnerName, ')
           ..write('notificationsEnabled: $notificationsEnabled, ')
-          ..write('dailyReminderTime: $dailyReminderTime')
+          ..write('dailyReminderTime: $dailyReminderTime, ')
+          ..write('swipesUsed: $swipesUsed')
           ..write(')'))
         .toString();
   }
@@ -1228,6 +1281,7 @@ typedef $$UserSettingsTableCreateCompanionBuilder =
       Value<String?> learnerName,
       Value<bool> notificationsEnabled,
       Value<String?> dailyReminderTime,
+      Value<String> swipesUsed,
     });
 typedef $$UserSettingsTableUpdateCompanionBuilder =
     UserSettingsCompanion Function({
@@ -1243,6 +1297,7 @@ typedef $$UserSettingsTableUpdateCompanionBuilder =
       Value<String?> learnerName,
       Value<bool> notificationsEnabled,
       Value<String?> dailyReminderTime,
+      Value<String> swipesUsed,
     });
 
 class $$UserSettingsTableFilterComposer
@@ -1311,6 +1366,11 @@ class $$UserSettingsTableFilterComposer
 
   ColumnFilters<String> get dailyReminderTime => $composableBuilder(
     column: $table.dailyReminderTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get swipesUsed => $composableBuilder(
+    column: $table.swipesUsed,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1383,6 +1443,11 @@ class $$UserSettingsTableOrderingComposer
     column: $table.dailyReminderTime,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get swipesUsed => $composableBuilder(
+    column: $table.swipesUsed,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UserSettingsTableAnnotationComposer
@@ -1445,6 +1510,11 @@ class $$UserSettingsTableAnnotationComposer
     column: $table.dailyReminderTime,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get swipesUsed => $composableBuilder(
+    column: $table.swipesUsed,
+    builder: (column) => column,
+  );
 }
 
 class $$UserSettingsTableTableManager
@@ -1490,6 +1560,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> learnerName = const Value.absent(),
                 Value<bool> notificationsEnabled = const Value.absent(),
                 Value<String?> dailyReminderTime = const Value.absent(),
+                Value<String> swipesUsed = const Value.absent(),
               }) => UserSettingsCompanion(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -1503,6 +1574,7 @@ class $$UserSettingsTableTableManager
                 learnerName: learnerName,
                 notificationsEnabled: notificationsEnabled,
                 dailyReminderTime: dailyReminderTime,
+                swipesUsed: swipesUsed,
               ),
           createCompanionCallback:
               ({
@@ -1518,6 +1590,7 @@ class $$UserSettingsTableTableManager
                 Value<String?> learnerName = const Value.absent(),
                 Value<bool> notificationsEnabled = const Value.absent(),
                 Value<String?> dailyReminderTime = const Value.absent(),
+                Value<String> swipesUsed = const Value.absent(),
               }) => UserSettingsCompanion.insert(
                 id: id,
                 hapticsEnabled: hapticsEnabled,
@@ -1531,6 +1604,7 @@ class $$UserSettingsTableTableManager
                 learnerName: learnerName,
                 notificationsEnabled: notificationsEnabled,
                 dailyReminderTime: dailyReminderTime,
+                swipesUsed: swipesUsed,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
