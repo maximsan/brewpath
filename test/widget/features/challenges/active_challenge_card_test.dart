@@ -2,10 +2,11 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/swipe/swipe_hint_providers.dart';
 import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/features/challenges/presentation/active_challenge_card.dart';
-import 'package:brew_path/features/challenges/presentation/challenge_park_controls.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_park_chevron.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_geometry.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_track.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -158,7 +159,18 @@ void main() {
         ),
       );
       expect(track.opacity, 1);
-      expect(find.text('FOR LATER'), findsOneWidget);
+
+      // The threshold is set by the label, and the label only pays for it by
+      // sitting at the left edge: a centred one stays under the card for the
+      // whole gesture, however far 104 uncovers. Its width against the strip
+      // is real type metrics, which a stub font cannot measure — the
+      // screenshot is what checks that.
+      final trackBox = tester.getRect(find.byType(ChallengeParkTrack));
+      expect(
+        tester.getTopLeft(find.text('FOR LATER')).dx - trackBox.left,
+        AppSpacing.sm,
+        reason: 'left-aligned at the track inset, never centred',
+      );
 
       await gesture.up();
       await tester.pumpAndSettle();
@@ -239,13 +251,41 @@ void main() {
     });
   });
 
+  testWidgets('the focus-revealed control is a point until it takes focus', (
+    tester,
+  ) async {
+    await pump(tester);
+
+    expect(
+      tester.getSize(find.byType(FocusRevealedButton)),
+      const Size(1, 1),
+      reason: 'a full-width invisible strip is still something to land on',
+    );
+  });
+
+  testWidgets('but assistive technology can still press it', (tester) async {
+    final semantics = tester.ensureSemantics();
+    await pump(tester);
+
+    tester.semantics.tap(find.semantics.byLabel('Save for later'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
+
+    expect(await parked(), contains(testChallenge().id));
+    semantics.dispose();
+  });
+
   testWidgets('parks from the focus-revealed control, not the log sheet', (
     tester,
   ) async {
     await pump(tester);
 
-    await tester.tap(find.byType(FocusRevealedButton), warnIfMissed: false);
+    final semantics = tester.ensureSemantics();
+    tester.semantics.tap(find.semantics.byLabel('Save for later'));
     await tester.pumpAndSettle();
+    semantics.dispose();
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );

@@ -50,10 +50,17 @@ class _FocusRevealedButtonState extends State<FocusRevealedButton> {
     return Padding(
       padding: EdgeInsets.only(top: _hasFocus ? AppSpacing.xs : 0),
       child: SizedBox(
+        // The design's `width: kbd ? '100%' : 1, height: kbd ? 40 : 1`: it
+        // collapses to a point rather than to a full-width invisible strip,
+        // which a finger could still land on.
         height: _hasFocus ? widget.height : FocusRevealedButton._hairline,
-        width: double.infinity,
+        width: _hasFocus ? double.infinity : FocusRevealedButton._hairline,
         child: Opacity(
           opacity: _hasFocus ? 1 : 0,
+          // Without this a fully transparent subtree is dropped from the
+          // semantics tree — and a control nothing announces is not a
+          // keyboard equivalent, it is a control that does not exist.
+          alwaysIncludeSemantics: true,
           child: OutlinedButton(
             onFocusChange: (value) => setState(() => _hasFocus = value),
             onPressed: widget.onPressed,

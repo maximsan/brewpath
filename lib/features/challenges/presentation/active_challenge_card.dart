@@ -11,15 +11,11 @@ import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
 import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
-import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
-import 'package:brew_path/features/challenges/presentation/challenge_log_sheet.dart';
-import 'package:brew_path/features/challenges/presentation/challenge_park_controls.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_card_actions.dart';
+import 'package:brew_path/features/challenges/presentation/challenge_park_chevron.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_geometry.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_track.dart';
-import 'package:brew_path/features/challenges/presentation/challenge_recap_sheet.dart';
-import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
-import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -66,64 +62,13 @@ class ActiveChallengeCard extends ConsumerWidget {
   /// The challenge currently in play.
   final BrewChallenge challenge;
 
-  /// Takes the challenge off Today and puts it in the queue.
-  Future<void> _park(WidgetRef ref) async {
-    await saveActiveChallengeForLater(
-      ref.read(snapshotRepositoryProvider),
-      id: challenge.id,
-      now: DateTime.now(),
-    );
-    ref
-      ..invalidate(activeChallengeProvider)
-      ..invalidate(savedChallengesProvider);
-  }
-
-  /// Logs the brew, then celebrates it and offers to run it again.
+  /// Parks the challenge, and retires the hint that taught the gesture.
   ///
-  /// Dismissing the log sheet resolves null and writes nothing — looking is
-  /// free, and only a picked outcome is a claim that the brew happened.
-  Future<void> _log(BuildContext context, WidgetRef ref) async {
-    final result = await showChallengeLogSheet(
-      context: context,
-      challenge: challenge,
-    );
-    if (result == null || !context.mounted) return;
-
-    if (result is ChallengeSavedForLater) {
-      await _park(ref);
-      return;
-    }
-
-    final reaction = (result as ChallengeLogged).reaction;
-    final points = await logChallenge(
-      ref.read(snapshotRepositoryProvider),
-      id: challenge.id,
-      reaction: reaction,
-      now: DateTime.now(),
-    );
-    if (!context.mounted) return;
-
-    ref
-      ..invalidate(activeChallengeProvider)
-      ..invalidate(completedChallengesProvider)
-      ..invalidate(savedChallengesProvider)
-      ..invalidate(totalPointsProvider);
-
-    final choice = await showChallengeRecapSheet(
-      context: context,
-      challenge: challenge,
-      pointsAwarded: points,
-    );
-    if (choice != ChallengeRecapChoice.brewAgain || !context.mounted) return;
-
-    await startChallenge(
-      ref.read(snapshotRepositoryProvider),
-      id: challenge.id,
-      now: DateTime.now(),
-    );
-    ref
-      ..invalidate(activeChallengeProvider)
-      ..invalidate(savedChallengesProvider);
+  /// One place, because every way to park — the swipe, the focus-revealed
+  /// control — owes both halves.
+  void _park(WidgetRef ref, SwipeHintState hint) {
+    hint.markUsed();
+    unawaited(parkChallengeForLater(ref, challenge));
   }
 
   @override
@@ -137,10 +82,7 @@ class ActiveChallengeCard extends ConsumerWidget {
           motion: _motion,
           // Left has nowhere to go, so it damps rather than moving.
           canAdvance: false,
-          onBack: () {
-            hint.markUsed();
-            unawaited(_park(ref));
-          },
+          onBack: () => _park(ref, hint),
           behind: (context, drag) => ChallengeParkTrack(
             offset: math.max(drag.offset, hint.offset),
             radius: _cardRadius,
@@ -208,7 +150,9 @@ class ActiveChallengeCard extends ConsumerWidget {
                     // Deliberately not full width — an action on a card, sized
                     // to its label rather than the screen.
                     child: FilledButton(
-                      onPressed: () => _log(context, ref),
+                      onPressed: () => unawaited(
+                        runChallengeLogFlow(context, ref, challenge),
+                      ),
                       child: const Text('Log Result'),
                     ),
                   ),
@@ -216,10 +160,7 @@ class ActiveChallengeCard extends ConsumerWidget {
                     label: _parkLabel,
                     // `color-mix(in oklab, var(--accent) 30%, var(--rule))`.
                     ring: Color.lerp(mood.rule, mood.accent, _ringShare)!,
-                    onPressed: () {
-                      hint.markUsed();
-                      unawaited(_park(ref));
-                    },
+                    onPressed: () => _park(ref, hint),
                   ),
                 ],
               ),

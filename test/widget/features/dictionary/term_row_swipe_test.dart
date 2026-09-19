@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/swipe/horizontal_swipe.dart';
 import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
@@ -211,6 +213,48 @@ void main() {
       );
     });
 
+    testWidgets('cannot be un-saved by a swipe landing before the shelf '
+        'has resolved', (tester) async {
+      // The shelf never answers, so the row builds with an unresolved read
+      // for the whole test — the window a real device has for a frame or two.
+      await pumpWithProviders(
+        tester,
+        MaterialApp(
+          theme: AppTheme.darkRoast,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                DictionaryTermList(
+                  view: _view([_term('crema')]),
+                  visible: [_term('crema')],
+                  onOpen: (_) {},
+                  grouped: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+        container: ProviderContainer(
+          overrides: [
+            savedKeysProvider.overrideWith(
+              (ref) => Completer<Set<String>>().future,
+            ),
+          ],
+        ),
+      );
+
+      expect(
+        tester.widget<HorizontalSwipe>(find.byType(HorizontalSwipe)).canBack,
+        isFalse,
+        reason: 'an unresolved read must not open the gesture',
+      );
+
+      await tester.drag(row('crema'), const Offset(120, 0));
+      await tester.pumpAndSettle();
+
+      expect(await shelf(tester), isEmpty);
+    });
+
     testWidgets('says already saved rather than save', (tester) async {
       await pump(tester, [_term('crema')], saved: const {'crema'});
 
@@ -280,6 +324,32 @@ void main() {
       );
 
       expect(find.byType(SwipeHintCaption), findsNothing);
+    });
+
+    testWidgets('leaves a grouped run alone, where counting terms says '
+        'nothing about the fold', (tester) async {
+      await pumpWithProviders(
+        tester,
+        MaterialApp(
+          theme: AppTheme.darkRoast,
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                DictionaryTermList(
+                  view: _view([_term('crema')]),
+                  visible: [_term('crema')],
+                  onOpen: (_) {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      // Headers and category notes sit between the rows, so the fifth term is
+      // not the fifth thing on screen.
+      expect(find.byType(SwipeHintCaption), findsNothing);
+      expect(tester.widget<TermRow>(row('crema')).nudge, 0);
     });
 
     testWidgets('leaves search results alone, which move as you type', (

@@ -1,7 +1,8 @@
 /// Which row the dictionary's swipe-to-save hint teaches on.
 library;
 
-/// Roughly how many rows fit above the fold on a phone — `ROWS_ABOVE_FOLD`.
+/// Roughly how many rows fit above the fold on a phone — the design's
+/// `ROWS_ABOVE_FOLD = 5`.
 const int dictionaryRowsAboveFold = 5;
 
 /// The first id in [termIds] that is not saved and is on screen, or null.

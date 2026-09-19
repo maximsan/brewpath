@@ -35,14 +35,21 @@ class FlashcardDealView extends StatelessWidget {
 
   /// The committed card **leaves the screen** with a tilt before the next one
   /// appears: snapping back with new content inside read as a jump cut.
+  ///
+  /// The design's `exitDistance: 460, exitDurationMs: 260,
+  /// tiltDegreesPer100px: 7`.
   static const SwipeMotion _motion = SwipeMotion(
-    exitDistance: 460,
-    exitDuration: Duration(milliseconds: 260),
-    tiltDegreesPer100px: 7,
+    exitDistance: _exitDistance,
+    exitDuration: Duration(milliseconds: _exitMillis),
+    tiltDegreesPer100px: _tiltPer100px,
   );
 
+  static const double _exitDistance = 460;
+  static const int _exitMillis = 260;
+  static const double _tiltPer100px = 7;
+
   /// The first-run hint's words.
-  static const String hintLabel = 'Swipe the card left for the next term';
+  static const String _hintLabel = 'Swipe the card left for the next term';
 
   /// The card showing.
   final DictionaryTerm term;
@@ -92,7 +99,7 @@ class FlashcardDealView extends StatelessWidget {
             SmallcapsLabel(FlashcardsCopy.deckLine(deckSize)),
             const SizedBox(height: AppSpacing.md),
             Expanded(child: _deck(hint)),
-            SwipeHintCaption(show: hint.showing, label: hintLabel),
+            SwipeHintCaption(show: hint.showing, label: _hintLabel),
             _EntryLink(
               isShowing: round.isRevealed,
               onOpen: onOpenEntry,

@@ -36,12 +36,16 @@ class TermRow extends ConsumerWidget {
     super.key,
   });
 
-  /// A row commits at 64 and moves at most 120, and **never flies off** — it
-  /// is still in the list afterwards, saved.
+  /// A row **never flies off** — it is still in the list afterwards, saved.
+  ///
+  /// The design's `commitThreshold: 64, maxDragDistance: 120`.
   static const SwipeMotion _motion = SwipeMotion(
-    commitThreshold: 64,
-    maxDrag: 120,
+    commitThreshold: _commitAt,
+    maxDrag: _maxDrag,
   );
+
+  static const double _commitAt = 64;
+  static const double _maxDrag = 120;
 
   /// The design's `padding: 13px 0` above and below the row.
   static const double _rowPad = 13;
@@ -77,7 +81,12 @@ class TermRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final savedKey = formatSavedKey(SavedKind.term, term.id);
-    final isSaved = ref.watch(isKeySavedProvider(savedKey)).value ?? false;
+    // Tri-state on purpose. The gesture opens only on a *positive* unsaved
+    // read, so a swipe landing before the shelf resolves cannot un-save a
+    // term; the bookmark and the label wait for a positive saved one, so
+    // neither draws a claim the shelf has not made.
+    final saved = ref.watch(isKeySavedProvider(savedKey)).value;
+    final isSaved = saved ?? false;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
@@ -87,7 +96,7 @@ class TermRow extends ConsumerWidget {
           // Save-only: losing a curated list to a stray 70px drag is exactly
           // the destructive case the direction contract keeps off gestures.
           canAdvance: false,
-          canBack: !isSaved,
+          canBack: saved == false,
           onBack: () {
             onSaved?.call();
             unawaited(toggleSavedKey(context, ref, savedKey));

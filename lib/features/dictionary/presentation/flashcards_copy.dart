@@ -53,8 +53,10 @@ abstract final class FlashcardsCopy {
   /// the deck can be moved through.
   static const finish = 'Finish';
 
-  /// The focus-revealed pair, which the pointer user never sees.
+  /// The focus-revealed way back, which the pointer user never sees.
   static const previousCard = 'Previous card';
+
+  /// Its forward twin, shown in place of Finish until the last card.
   static const nextCard = 'Next card';
 
   /// Re-deals the same cards in a new order.

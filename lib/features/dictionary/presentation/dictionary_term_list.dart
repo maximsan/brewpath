@@ -60,10 +60,17 @@ class DictionaryTermList extends ConsumerWidget {
   /// they type, and a row sliding there reads as a glitch.
   final bool isBrowsing;
 
+  /// Whether the hint may run here at all.
+  ///
+  /// The nudge is picked by counting terms, which only says anything about
+  /// what is on screen when nothing else takes vertical room between them —
+  /// so a [grouped] run, with its headers and category notes, is left alone.
+  bool get _mayNudge => isBrowsing && !grouped;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final saved = ref.watch(savedKeysProvider).value ?? const <String>{};
-    final nudgeId = isBrowsing
+    final nudgeId = _mayNudge
         ? firstUnsavedAboveFold(
             [for (final term in visible) term.id],
             isSaved: (id) => saved.contains(formatSavedKey(SavedKind.term, id)),
