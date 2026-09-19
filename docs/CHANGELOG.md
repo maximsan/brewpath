@@ -68,6 +68,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **An app left open across midnight no longer shows yesterday.** The streak,
+  the freeze line, Keep Sharp, the header's date and a Coffee Challenge's
+  window were worked out when a screen last drew and refreshed only when the
+  app came back from the background, so a phone sitting on the counter at
+  midnight kept yesterday's answers until something was tapped. The app now
+  notices midnight itself and moves them all together (ADR-0030).
+
 - **Buttons a screen reader announced but could not press now press.** The
   idiom that reads a tappable row as one announcement dropped the tap along
   with the text it hid, leaving twenty-seven controls flagged as buttons with

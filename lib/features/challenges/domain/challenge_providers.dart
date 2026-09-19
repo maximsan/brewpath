@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
@@ -29,7 +30,9 @@ Future<BrewChallenge?> activeChallenge(Ref ref) async {
   // already disposed.
   final snapshots = ref.watch(snapshotRepositoryProvider);
   final bank = ref.watch(challengeBankProvider.future);
-  final nowMillis = DateTime.now().millisecondsSinceEpoch;
+  // Called per rebuild, not cached: a window is elapsed hours, so it is read
+  // at the moment it is asked about (ADR-0030).
+  final nowMillis = ref.watch(appClockProvider)().millisecondsSinceEpoch;
 
   final stored = (await snapshots.read()).clearedByReset.activeChallenge.value;
   final id = liveChallengeId(stored, nowMillis: nowMillis);
@@ -46,10 +49,9 @@ Future<Set<String>> completedChallenges(Ref ref) async {
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge (twenty of the thirty-two do not), the learner has already
-/// started it, or they have already finished it. Resolved as one question
-/// because the reward list needs one answer — a row that rendered itself empty
-/// would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 @riverpod
 Future<BrewChallenge?> lessonChallengeOffer(Ref ref, String lessonId) async {
   final challenge = challengeForLesson(
@@ -67,17 +69,10 @@ Future<BrewChallenge?> lessonChallengeOffer(Ref ref, String lessonId) async {
 
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
-/// Three states, not two: a card can have no challenge at all, one waiting to
-/// be brewed, or one already brewed. The tile draws the last two differently —
-/// solid for done, dashed for an offer — so it needs to tell them apart, and
-/// the arithmetic lives here rather than in the widget.
-///
-/// **Every unbrewed challenge is an offer**, not only the one currently in
-/// play. The design's `challengeOpen` is *earned, has a
-/// challenge, has not completed it* — so a learner sees every card that still
-/// owes them a brew, rather than the single one the lifecycle happens to have
-/// active. Reading the active challenge here would ring at most one tile and
-/// would blink off when its window lapsed.
+/// Three states, not two: no challenge, one waiting to be brewed, or one
+/// already brewed — the tile draws the last two differently. **Every unbrewed
+/// challenge is an offer**, not only the one in play (the design's
+/// `challengeOpen`), so a learner sees every card that still owes a brew.
 @riverpod
 Future<CardChallengeState> cardChallengeState(Ref ref, String cardId) async {
   if (await ref.watch(cardChallengeTriedProvider(cardId).future)) {
@@ -92,11 +87,10 @@ Future<CardChallengeState> cardChallengeState(Ref ref, String cardId) async {
 
 /// Whether the challenge on [cardId] has been brewed.
 ///
-/// The card's sheet asks this twice over — once for the seal on its header,
-/// once for the stamp block at its foot — so the three reads behind the answer
-/// live here rather than in either widget. A card with no challenge, or a bank
-/// still loading, answers *not tried*: the honest reading while there is
-/// nothing to say yes about.
+/// The card's sheet asks this twice over — for the seal on its header and the
+/// stamp at its foot — so the three reads behind the answer live here rather
+/// than in either widget. A card with no challenge, or a bank still loading,
+/// answers *not tried*.
 @riverpod
 Future<bool> cardChallengeTried(Ref ref, String cardId) async {
   final bank = await ref.watch(challengeBankProvider.future);
@@ -133,8 +127,8 @@ Future<bool> _isOfferable(
 Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
   final snapshots = ref.watch(snapshotRepositoryProvider);
   final content = ref.watch(contentRepositoryProvider);
+  final nowMillis = ref.watch(appClockProvider)().millisecondsSinceEpoch;
   final bank = await ref.watch(challengeBankProvider.future);
-  final nowMillis = DateTime.now().millisecondsSinceEpoch;
 
   final progress = (await snapshots.read()).clearedByReset;
   final completedLessonIds = progress.completedLessons.keys.toSet();
@@ -180,13 +174,10 @@ Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
 
 /// The capstone [moduleId] is offering **right now**, or null.
 ///
-/// A reward screen shows the offer only while it is live — the design's
-/// `offerLive`: the challenge is neither in play nor already brewed. A saved
-/// challenge is still live; parking it was the learner saying *not yet*.
-///
-/// Eligibility is not re-derived here. [moduleChallengeOfferProvider] owns the
-/// gate — a module challenge needs its module's every lesson complete (#143) —
-/// and this only narrows what that gate returns.
+/// Live is the design's `offerLive`: neither in play nor already brewed. A
+/// saved challenge is still live; parking it was the learner saying *not yet*.
+/// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+/// the gate (#143), and this only narrows what that gate returns.
 @riverpod
 Future<BrewChallenge?> liveModuleChallengeOffer(
   Ref ref,
@@ -209,10 +200,9 @@ Future<BrewChallenge?> liveModuleChallengeOffer(
 /// Puts [id] in play, parking whatever it displaced.
 ///
 /// Returns the challenge that was pushed out, if any. Starting a second
-/// challenge is not a way to abandon the first: the learner asked for it, so
-/// it goes into the queue rather than out of existence. Taking [id] itself out
-/// of the queue is part of the same write — a challenge cannot be both waiting
-/// and in play.
+/// challenge is not a way to abandon the first: it goes into the queue rather
+/// than out of existence. Taking [id] out of the queue is part of the same
+/// write — a challenge cannot be both waiting and in play.
 Future<String?> startChallenge(
   SnapshotRepository repository, {
   required String id,
@@ -340,17 +330,10 @@ Future<bool> parkExpiredChallenge(
 
 /// Records that [id] was brewed, with the outcome the learner reported.
 ///
-/// One write. The completion, the reaction and clearing the active pair are a
-/// single event, so they land together or not at all — a challenge recorded as
-/// done while still sitting on Today is a state nothing else knows how to read.
-///
-/// Returns the points paid: the flat award on a first completion, and zero on
-/// every replay.
-///
-/// **Records nothing toward the streak or the daily allowance.** A Coffee
-/// Challenge is not an activity — its completion can be reported without the
-/// app being able to tell — and that exclusion is structural rather than a
-/// branch that could be forgotten here.
+/// One write: the completion, the reaction and clearing the active pair land
+/// together or not at all. Returns the points paid — the flat award on a first
+/// completion, zero on a replay. **Records nothing toward the streak or the
+/// daily allowance**: a Coffee Challenge is not an activity.
 Future<int> logChallenge(
   SnapshotRepository repository, {
   required String id,

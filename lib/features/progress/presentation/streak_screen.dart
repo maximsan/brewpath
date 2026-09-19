@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
@@ -129,6 +130,7 @@ class _StreakScreenState extends ConsumerState<StreakScreen> {
         data: (value) => _StreakBody(
           scrollPadding: scrollPadding,
           status: value,
+          today: ref.watch(currentDayProvider),
           weekDays: ref.watch(weekStripDaysProvider).asData?.value ?? const [],
           onShare: _share,
         ),
@@ -141,6 +143,7 @@ class _StreakBody extends StatelessWidget {
   const _StreakBody({
     required this.scrollPadding,
     required this.status,
+    required this.today,
     required this.weekDays,
     required this.onShare,
   });
@@ -149,13 +152,18 @@ class _StreakBody extends StatelessWidget {
   final EdgeInsets scrollPadding;
 
   final StreakStatus status;
+
+  /// The day the freeze line is read against, watched by the screen above so
+  /// this stays a drawing with no clock of its own.
+  final DateTime today;
+
   final List<StreakDay> weekDays;
   final Future<void> Function() onShare;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final statusLine = freezeStatusLine(status: status, today: DateTime.now());
+    final statusLine = freezeStatusLine(status: status, today: today);
     return SingleChildScrollView(
       padding: const EdgeInsets.all(AppSpacing.lg) + scrollPadding,
       child: Column(
