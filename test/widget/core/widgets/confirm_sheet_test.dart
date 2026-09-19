@@ -4,6 +4,20 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// Every word the sheet itself renders — the page under it is excluded by
+/// descending from the sheet's route, so only what the sheet drew is asserted.
+Set<String> _sheetText(WidgetTester tester) => tester
+    .widgetList<Text>(
+      find.descendant(
+        of: find.byType(BottomSheet),
+        matching: find.byType(Text),
+      ),
+    )
+    .map((text) => text.data)
+    .whereType<String>()
+    .where((line) => line.trim().isNotEmpty)
+    .toSet();
+
 void main() {
   const lines = [
     ConfirmLine(label: 'Daily streak', value: '12 days'),
@@ -90,21 +104,54 @@ void main() {
       stakes: const ConfirmStakes(lines: lines, closingLine: 'And the rest.'),
     );
 
-    expect(find.text('Daily streak'), findsOneWidget);
-    expect(find.text('12 days'), findsOneWidget);
-    expect(find.text('And the rest.'), findsOneWidget);
+    // A row is one announcement: read apart, "Daily streak" and "12 days" are
+    // two unrelated fragments in a list of fourteen.
     expect(
       tester.getSemantics(find.text('Daily streak')),
       matchesSemantics(label: 'Daily streak\n12 days'),
     );
   });
 
-  testWidgets('a sheet without lines draws no list', (tester) async {
+  testWidgets('a sheet without stakes says only what it was given', (
+    tester,
+  ) async {
+    // The assertion is the whole text of the sheet, not the absence of one
+    // widget: a list that crept back in under any other shape fails here.
     await openSheet(tester, body: 'Nothing is lost.');
 
-    expect(find.text('Nothing is lost.'), findsOneWidget);
-    expect(find.byType(ListBody), findsNothing);
-    expect(find.text('Daily streak'), findsNothing);
+    expect(
+      _sheetText(tester),
+      {
+        'Start again from seed?',
+        'Nothing is lost.',
+        'Reset everything',
+        ConfirmSheetCopy.keepMyProgress,
+      },
+    );
+  });
+
+  testWidgets('the stakes add the list and its closing line, and nothing '
+      'else', (tester) async {
+    await openSheet(
+      tester,
+      body: 'Nothing is lost.',
+      stakes: const ConfirmStakes(lines: lines, closingLine: 'And the rest.'),
+    );
+
+    expect(
+      _sheetText(tester),
+      {
+        'Start again from seed?',
+        'Nothing is lost.',
+        'Daily streak',
+        '12 days',
+        'Points earned',
+        '340 pts',
+        'And the rest.',
+        'Reset everything',
+        ConfirmSheetCopy.keepMyProgress,
+      },
+    );
   });
 
   testWidgets('a destructive confirm is filled with berry', (tester) async {

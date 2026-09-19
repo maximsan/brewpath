@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -26,12 +27,11 @@ class ChallengeStatRow extends ConsumerWidget {
     final done = ref.watch(completedChallengesProvider).asData?.value;
     if (bank == null || bank.isEmpty) return const SizedBox.shrink();
 
-    // The denominator is the bank's own length. A literal twelve here would be
-    // a count restated away from the thing that decides it.
-    final total = bank.length;
-    final brewed = done?.where((id) => bank.any((c) => c.id == id)).length ?? 0;
+    // Folded by the rule the reset sheet's line folds, so the two cannot
+    // report different numbers for the same learner.
+    final tally = challengeTally(bank: bank, completed: done ?? const {});
 
-    return _StatRow(brewed: brewed, total: total);
+    return _StatRow(brewed: tally.brewed, total: tally.total);
   }
 }
 

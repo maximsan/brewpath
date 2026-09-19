@@ -269,12 +269,14 @@ everything"* over the component's default cancel, *"Keep my progress"*. Itemised
 Points earned · Lessons completed · Cards collected · Coffee challenges · Saved
 items · Your coffee tree → Back to seed.**
 
-> ⚠️ **Mastery is the one loss no line names.** `bestResults` is wiped and the
-> summary never says so. [§6](06-content.md) describes these sheets as carrying
-> "an itemised summary of what will be lost"; on that one field it is a partial
-> one. The app closes the gap with a catch-all line under the seven
-> ([#570](https://github.com/maximsan/brewpath/issues/570)) rather than by naming
-> a field a learner would not recognise.
+> ⚠️ **The seven lines still name less than a reset clears.** Mastery, the
+> dictionary terms learned and answered, challenge reactions, completed modules,
+> the active-day set, parked challenges and the one-off acknowledgements all go
+> and no line says so. [§6](06-content.md) describes these sheets as carrying
+> "an itemised summary of what will be lost"; it is a partial one. The app
+> closes the gap with a catch-all line under the seven
+> ([#570](https://github.com/maximsan/brewpath/issues/570)) rather than by
+> naming fields a learner would not recognise.
 
 ### ✅ Defect 1 — `brew.saved` was dropped, not emptied — **FIXED**
 

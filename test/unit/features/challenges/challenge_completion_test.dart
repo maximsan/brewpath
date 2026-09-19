@@ -1,6 +1,9 @@
 import 'package:brew_path/core/constants/points_values.dart';
 import 'package:brew_path/features/challenges/domain/challenge_completion.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/content_fixtures.dart';
 
 void main() {
   group('isFirstCompletion', () {
@@ -62,6 +65,35 @@ void main() {
       // `bc-m1l1` authors "Bag didn't say" with U+2019.
       const authored = 'Bag didn’t say';
       expect(logReaction(reaction: authored, day: 1).reaction, authored);
+    });
+  });
+
+  group('challengeTally', () {
+    final bank = [
+      testChallenge(scope: ChallengeScope.module),
+      testChallenge(id: 'bc-m2', scope: ChallengeScope.module, moduleId: 'm2'),
+    ];
+
+    test('counts the brewed against the bank', () {
+      expect(
+        challengeTally(bank: bank, completed: const {'bc-m1'}),
+        (brewed: 1, total: 2),
+      );
+    });
+
+    test('an id the bank no longer carries counts for nothing', () {
+      // Otherwise dropping a challenge from the course reads as "3 of 2".
+      expect(
+        challengeTally(bank: bank, completed: const {'bc-m1', 'bc-retired'}),
+        (brewed: 1, total: 2),
+      );
+    });
+
+    test('an empty bank is nothing out of nothing', () {
+      expect(
+        challengeTally(bank: const [], completed: const {'bc-m1'}),
+        (brewed: 0, total: 0),
+      );
     });
   });
 }

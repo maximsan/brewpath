@@ -69,18 +69,20 @@ abstract final class RestartOnboardingCopy {
 
 /// Asks before wiping progress, then wipes it and says so.
 ///
-/// The seven figures resolve before the sheet opens, so it never draws a
-/// number it would have to correct — and a read that fails opens nothing,
-/// which leaves the progress intact.
+/// The figures resolve before the sheet opens so it never draws a number it
+/// would have to correct. A read that fails still opens the sheet: its
+/// paragraph names the loss on its own, and a dead row would be worse.
 Future<void> confirmResetProgress(BuildContext context, WidgetRef ref) async {
-  final lines = await ref.read(resetSummaryProvider.future);
+  final summary = await AsyncValue.guard(
+    () => ref.read(resetSummaryProvider.future),
+  );
   if (!context.mounted) return;
 
   final confirmed = await showConfirmSheet(
     context: context,
     title: ResetCopy.title,
     body: ResetCopy.body,
-    stakes: ConfirmStakes(lines: lines, closingLine: ResetCopy.closingLine),
+    stakes: _stakesFrom(summary),
     actions: const ConfirmActions.destructive(confirm: ResetCopy.confirm),
   );
 
@@ -107,6 +109,20 @@ Future<void> confirmResetProgress(BuildContext context, WidgetRef ref) async {
     );
   Timer(_bannerLinger, messenger.hideCurrentMaterialBanner);
 }
+
+/// The measures as the sheet lists them, or nothing where they would not
+/// resolve — the closing line goes with them, having nothing left to close.
+ConfirmStakes _stakesFrom(AsyncValue<List<ResetMeasure>> summary) =>
+    switch (summary) {
+      AsyncData(:final value) => ConfirmStakes(
+        lines: [
+          for (final measure in value)
+            ConfirmLine(label: measure.label, value: measure.value),
+        ],
+        closingLine: ResetCopy.closingLine,
+      ),
+      _ => const ConfirmStakes(),
+    };
 
 /// Clears the onboarding gate and returns to Welcome.
 ///

@@ -10,8 +10,8 @@ import 'package:flutter/material.dart';
 /// accent-ink text, [AppRadii.chrome] corners (ADR-0009).
 ///
 /// The shape repeats `AppTheme`'s because a themeless `MaterialApp` would
-/// otherwise render Material's pill; disabled takes a muted fill, since the
-/// design's 35% fade is invisible on dark roast.
+/// otherwise render Material's pill — `button_shape_test.dart` pins that case;
+/// disabled takes a muted fill, the design's 35% fade being invisible here.
 class PrimaryButton extends StatelessWidget {
   /// Creates a [PrimaryButton].
   const PrimaryButton({
@@ -24,9 +24,8 @@ class PrimaryButton extends StatelessWidget {
     super.key,
   }) : _isDestructive = false;
 
-  /// The same CTA in berry, for a confirm that throws something away — the
-  /// design's `danger` override, `background: var(--berry)` under the accent's
-  /// ink. It carries no mark: a destructive confirm is words alone.
+  /// The same CTA in berry — the design's `danger` override, `background:
+  /// var(--berry)`. It carries no mark: a destructive confirm is words alone.
   const PrimaryButton.destructive({
     required this.label,
     required this.onPressed,

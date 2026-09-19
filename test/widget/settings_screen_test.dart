@@ -16,6 +16,7 @@ import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/find_mark.dart';
@@ -360,6 +361,44 @@ void main() {
 
     // Drain the 2-second auto-dismiss Timer the banner schedules.
     await tester.pump(const Duration(seconds: 3));
+  });
+
+  testWidgets('figures that will not resolve still raise the sheet', (
+    tester,
+  ) async {
+    // A destructive row that did nothing would be worse than one whose list is
+    // missing: the paragraph names the loss on its own.
+    tester.view.physicalSize = const Size(400, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await pumpWithProviders(
+      tester,
+      const BrewPathApp(),
+      container: ProviderContainer(
+        overrides: [
+          resetSummaryProvider.overrideWith(
+            (ref) => Future<List<ResetMeasure>>.error(StateError('no banks')),
+          ),
+        ],
+      ),
+    );
+    await tester.tap(findMark(AppIcon.leaf, active: false));
+    await settleLoaders(tester);
+    await tester.tap(findMark(AppIcon.gear));
+    await settleLoaders(tester);
+
+    await tester.tap(find.text(SettingsCopy.resetProgressRow));
+    await settleLoaders(tester);
+
+    expect(find.text(ResetCopy.title), findsOneWidget);
+    expect(find.text(ResetCopy.confirm), findsOneWidget);
+    expect(find.text(ResetSummaryCopy.streak), findsNothing);
+    expect(find.text(ResetCopy.closingLine), findsNothing);
+
+    await tester.tap(find.text(ConfirmSheetCopy.keepMyProgress));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('a reset takes the tree and the challenge count with it', (

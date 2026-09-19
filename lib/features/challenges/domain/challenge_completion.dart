@@ -2,7 +2,23 @@
 library;
 
 import 'package:brew_path/core/constants/points_values.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
+
+/// How many challenges have been brewed, out of the bank's own count.
+typedef ChallengeTally = ({int brewed, int total});
+
+/// The fraction every surface reporting Coffee Challenges folds.
+///
+/// Counted only for ids [bank] still carries, so a challenge dropped from the
+/// course cannot push the numerator past the denominator.
+ChallengeTally challengeTally({
+  required List<BrewChallenge> bank,
+  required Set<String> completed,
+}) => (
+  brewed: bank.where((challenge) => completed.contains(challenge.id)).length,
+  total: bank.length,
+);
 
 /// Whether logging [id] is its first completion.
 ///
@@ -35,11 +51,10 @@ bool canLogResult(String? picked) => picked != null;
 
 /// The reaction to store for a challenge logged on [day].
 ///
-/// The **text**, never an index into the record's list. The design has
-/// rewritten every reaction once already: a stored `0` meant *"Tasted the
-/// difference"* under the old set and *"Preferred 1:15"* under the new one. A
-/// stored string either still matches an authored option or visibly does not,
-/// which is a detectable state rather than a silently wrong one.
+/// The **text**, never an index: the design has rewritten every reaction once
+/// already, so a stored `0` meant *"Tasted the difference"* under the old set
+/// and *"Preferred 1:15"* under the new. A string either still matches an
+/// authored option or visibly does not.
 ChallengeReaction logReaction({
   required String reaction,
   required int day,

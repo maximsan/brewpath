@@ -23,8 +23,7 @@ class ConfirmLine {
 
 /// What an action costs: the itemised list, and the line that closes it.
 ///
-/// One value rather than two parameters, so a catch-all cannot be written
-/// without the list it is catching for.
+/// One value, so a catch-all cannot be written without the list it closes.
 @immutable
 class ConfirmStakes {
   /// Creates the stakes. Empty is the sheet that only asks.
@@ -111,9 +110,8 @@ class _ConfirmBody extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (body != null) Text(body!, style: support),
-        // The design's `marginTop: 18` over the list and `22` over the button
-        // stack are off the spacing scale; the nearest stops stand in, as they
-        // do on the name and reminder sheets.
+        // The design's `marginTop: 18` here is off the spacing scale; the
+        // nearest stop stands in, as it does on the name and reminder sheets.
         if (stakes.lines.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.md),
           _LineList(lines: stakes.lines),
@@ -122,8 +120,18 @@ class _ConfirmBody extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(closingLine, style: support),
         ],
+        // The stack's own `marginTop: 22`, rounded the same way.
         const SizedBox(height: AppSpacing.lg),
-        _ConfirmButton(actions: actions),
+        if (actions.isDestructive)
+          PrimaryButton.destructive(
+            label: actions.confirm,
+            onPressed: () => Navigator.of(context).pop(true),
+          )
+        else
+          PrimaryButton(
+            label: actions.confirm,
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
         // `.stack.gap-12` between the pair.
         const SizedBox(height: AppSpacing.sm),
         GhostButton(
@@ -132,22 +140,6 @@ class _ConfirmBody extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-/// The confirm itself, in berry when what it confirms throws something away.
-class _ConfirmButton extends StatelessWidget {
-  const _ConfirmButton({required this.actions});
-
-  final ConfirmActions actions;
-
-  @override
-  Widget build(BuildContext context) {
-    void confirm() => Navigator.of(context).pop(true);
-
-    return actions.isDestructive
-        ? PrimaryButton.destructive(label: actions.confirm, onPressed: confirm)
-        : PrimaryButton(label: actions.confirm, onPressed: confirm);
   }
 }
 
