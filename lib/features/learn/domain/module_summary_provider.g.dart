@@ -71,7 +71,7 @@ final class ModuleSummaryProvider
   }
 }
 
-String _$moduleSummaryHash() => r'c55838c1fbcc52d2f4bfebd05ded1d2c48cb1fda';
+String _$moduleSummaryHash() => r'4fa463cd33da7bae2b30fd27af9d1cae933b0cfc';
 
 /// Builds the [ModuleSummary] for [moduleId] by joining content (module +
 /// cards) with persisted progress (collected cards).

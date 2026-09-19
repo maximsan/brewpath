@@ -48,7 +48,7 @@ final class CourseCompletionAckedProvider
 }
 
 String _$courseCompletionAckedHash() =>
-    r'a4f40a1d8ad4ab65e9dc86ed20649d42b62d23ac';
+    r'4389e6c00389f19cdf7c0ced9cb24d0aec519219';
 
 /// Whether the router should present the completion moment now: the course
 /// derives as complete (no lesson anywhere is current), something was

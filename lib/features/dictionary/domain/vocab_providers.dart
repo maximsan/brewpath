@@ -20,7 +20,7 @@ part 'vocab_providers.g.dart';
 /// reaches the deck as one named thing rather than through an inline read.
 @riverpod
 Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async => (await ref.watch(
-  progressSnapshotProvider.future,
+  progressSnapshotStateProvider.future,
 )).clearedByReset.termAnswers;
 
 /// Both pools a drill picks from, resolved together.

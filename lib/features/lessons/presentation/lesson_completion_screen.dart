@@ -79,7 +79,7 @@ class _LessonCompletionScreenState
     // A read straight after the write, so it takes the snapshot from the
     // database rather than the stream's last delivery — which this run may not
     // have reached yet. It must be the lesson queued *behind* this completion.
-    ref.invalidate(progressSnapshotProvider);
+    ref.invalidate(progressSnapshotStateProvider);
     final next = await ref.read(todayLessonProvider.future);
 
     return LessonCompletionReward(

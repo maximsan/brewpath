@@ -17,7 +17,7 @@ part 'saved_providers.g.dart';
 /// key is in here.
 @riverpod
 Future<Set<String>> savedKeys(Ref ref) async => (await ref.watch(
-  progressSnapshotProvider.future,
+  progressSnapshotStateProvider.future,
 )).clearedByReset.favourites.value;
 
 /// Whether [key] is on the shelf.

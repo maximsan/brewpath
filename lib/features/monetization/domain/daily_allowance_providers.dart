@@ -21,7 +21,7 @@ Future<bool> canStartActivity(Ref ref) async {
   // an async gap on a disposed ref.
   final today = epochDay(ref.watch(currentDayProvider));
   final entitlementFuture = ref.watch(courseEntitlementProvider.future);
-  final snapshot = await ref.watch(progressSnapshotProvider.future);
+  final snapshot = await ref.watch(progressSnapshotStateProvider.future);
 
   return mayStartActivity(
     hasCourse: await entitlementFuture,
@@ -31,9 +31,11 @@ Future<bool> canStartActivity(Ref ref) async {
 
 /// Re-derives the allowance rather than recalling it.
 ///
-/// `refresh` and not `read`: nothing watches this provider, so its cached
-/// value is only as old as the last tap, and the write that spends an activity
-/// happens between two taps. Freshness is the read's job here, not a
-/// register's.
-Future<bool> activityAllowanceNow(ProviderContainer container) =>
-    container.refresh(canStartActivityProvider.future);
+/// Read on a tap, straight after the write that may have spent the allowance,
+/// so it goes back to the database rather than trusting the snapshot stream to
+/// have delivered yet (ADR-0030). Nothing watches this, so nothing else would
+/// bring it up to date.
+Future<bool> activityAllowanceNow(ProviderContainer container) {
+  container.invalidate(progressSnapshotStateProvider);
+  return container.refresh(canStartActivityProvider.future);
+}

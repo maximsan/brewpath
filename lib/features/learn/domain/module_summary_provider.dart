@@ -47,7 +47,7 @@ Future<ModuleSummary> moduleSummary(Ref ref, String moduleId) async {
   // Every watch resolved before the first await: a rebuild mid-flight must not
   // find a watch on the far side of an async gap.
   final content = ref.watch(contentRepositoryProvider);
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final modules = await content.getModules();
   final module = modules.firstWhere((m) => m.id == moduleId);
 

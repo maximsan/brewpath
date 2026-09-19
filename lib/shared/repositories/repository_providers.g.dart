@@ -162,59 +162,76 @@ String _$snapshotRepositoryHash() =>
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens to the database, so a display provider reads
-/// progress by deriving from this rather than by asking once and waiting to be
-/// told (ADR-0030).
+/// The one place the app listens to the database (ADR-0030). It opens on a
+/// one-shot read, so a caller that only wants the value now is not left
+/// waiting on a subscription, and goes with its last watcher, so no
+/// subscription outlives the database it reads.
 
-@ProviderFor(progressSnapshot)
-final progressSnapshotProvider = ProgressSnapshotProvider._();
+@ProviderFor(ProgressSnapshotState)
+final progressSnapshotStateProvider = ProgressSnapshotStateProvider._();
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens to the database, so a display provider reads
-/// progress by deriving from this rather than by asking once and waiting to be
-/// told (ADR-0030).
-
-final class ProgressSnapshotProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<ProgressSnapshot>,
-          ProgressSnapshot,
-          Stream<ProgressSnapshot>
-        >
-    with $FutureModifier<ProgressSnapshot>, $StreamProvider<ProgressSnapshot> {
+/// The one place the app listens to the database (ADR-0030). It opens on a
+/// one-shot read, so a caller that only wants the value now is not left
+/// waiting on a subscription, and goes with its last watcher, so no
+/// subscription outlives the database it reads.
+final class ProgressSnapshotStateProvider
+    extends $AsyncNotifierProvider<ProgressSnapshotState, ProgressSnapshot> {
   /// The stored progress, and every later version of it.
   ///
-  /// The one place the app listens to the database, so a display provider reads
-  /// progress by deriving from this rather than by asking once and waiting to be
-  /// told (ADR-0030).
-  ProgressSnapshotProvider._()
+  /// The one place the app listens to the database (ADR-0030). It opens on a
+  /// one-shot read, so a caller that only wants the value now is not left
+  /// waiting on a subscription, and goes with its last watcher, so no
+  /// subscription outlives the database it reads.
+  ProgressSnapshotStateProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'progressSnapshotProvider',
+        name: r'progressSnapshotStateProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$progressSnapshotHash();
+  String debugGetCreateSourceHash() => _$progressSnapshotStateHash();
 
   @$internal
   @override
-  $StreamProviderElement<ProgressSnapshot> $createElement(
-    $ProviderPointer pointer,
-  ) => $StreamProviderElement(pointer);
-
-  @override
-  Stream<ProgressSnapshot> create(Ref ref) {
-    return progressSnapshot(ref);
-  }
+  ProgressSnapshotState create() => ProgressSnapshotState();
 }
 
-String _$progressSnapshotHash() => r'a2249a817aada45fdc756f0b90c7c3553fda56bc';
+String _$progressSnapshotStateHash() =>
+    r'7f208de1c1c08ba8a95867ba39ec2e3aa263efbf';
+
+/// The stored progress, and every later version of it.
+///
+/// The one place the app listens to the database (ADR-0030). It opens on a
+/// one-shot read, so a caller that only wants the value now is not left
+/// waiting on a subscription, and goes with its last watcher, so no
+/// subscription outlives the database it reads.
+
+abstract class _$ProgressSnapshotState
+    extends $AsyncNotifier<ProgressSnapshot> {
+  FutureOr<ProgressSnapshot> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<ProgressSnapshot>, ProgressSnapshot>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ProgressSnapshot>, ProgressSnapshot>,
+              AsyncValue<ProgressSnapshot>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
 
 /// Provides the [InstallRepository].
 

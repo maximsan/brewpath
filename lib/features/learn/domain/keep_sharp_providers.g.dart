@@ -12,9 +12,8 @@ part of 'keep_sharp_providers.dart';
 /// rotation, which returns the type and the one screen its CTA opens. Null
 /// when no registered type has material.
 ///
-/// The reads are the material the rule is asked of: which formats are playable,
-/// which the learner already played today, and which lessons they have
-/// finished. Every decision made from them lives in [keepSharpResolutionFor].
+/// The reads are what the rule is asked of — playable, played today, finished
+/// — and every decision from them lives in [keepSharpResolutionFor].
 
 @ProviderFor(keepSharpRecommendation)
 final keepSharpRecommendationProvider = KeepSharpRecommendationProvider._();
@@ -23,9 +22,8 @@ final keepSharpRecommendationProvider = KeepSharpRecommendationProvider._();
 /// rotation, which returns the type and the one screen its CTA opens. Null
 /// when no registered type has material.
 ///
-/// The reads are the material the rule is asked of: which formats are playable,
-/// which the learner already played today, and which lessons they have
-/// finished. Every decision made from them lives in [keepSharpResolutionFor].
+/// The reads are what the rule is asked of — playable, played today, finished
+/// — and every decision from them lives in [keepSharpResolutionFor].
 
 final class KeepSharpRecommendationProvider
     extends
@@ -41,9 +39,8 @@ final class KeepSharpRecommendationProvider
   /// rotation, which returns the type and the one screen its CTA opens. Null
   /// when no registered type has material.
   ///
-  /// The reads are the material the rule is asked of: which formats are playable,
-  /// which the learner already played today, and which lessons they have
-  /// finished. Every decision made from them lives in [keepSharpResolutionFor].
+  /// The reads are what the rule is asked of — playable, played today, finished
+  /// — and every decision from them lives in [keepSharpResolutionFor].
   KeepSharpRecommendationProvider._()
     : super(
         from: null,
@@ -71,7 +68,7 @@ final class KeepSharpRecommendationProvider
 }
 
 String _$keepSharpRecommendationHash() =>
-    r'771ec6ebd0f73b9739307df1633f179484c42db0';
+    r'66d136facd050fdde6f66359cc8f49140ca2c9f3';
 
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.
@@ -126,4 +123,4 @@ final class KeepSharpAcknowledgedTodayProvider
 }
 
 String _$keepSharpAcknowledgedTodayHash() =>
-    r'5cfa07558d41f4f5b5c140857420851f343a65fb';
+    r'd80509bd4030e172b881ba247c699b64e2b5e5bb';

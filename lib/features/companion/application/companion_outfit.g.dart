@@ -65,4 +65,4 @@ final class CompanionOutfitProvider
   }
 }
 
-String _$companionOutfitHash() => r'ecfe1f44e3d200c5feefb7a05f73d797c7005e43';
+String _$companionOutfitHash() => r'4529323325c363d4806fc7b5fbafb4e628f9e5ac';

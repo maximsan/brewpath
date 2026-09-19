@@ -27,7 +27,7 @@ Future<BrewChallenge?> activeChallenge(Ref ref) async {
   // Every watch resolved before the first await: a rebuild mid-flight must not
   // find a watch on the far side of an async gap, where the old build's ref is
   // already disposed.
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final bank = ref.watch(challengeBankProvider.future);
   final nowMillis = DateTime.now().millisecondsSinceEpoch;
 
@@ -39,7 +39,7 @@ Future<BrewChallenge?> activeChallenge(Ref ref) async {
 /// Every challenge the learner has logged at least once.
 @riverpod
 Future<Set<String>> completedChallenges(Ref ref) async {
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   return (await snapshotFuture).clearedByReset.challengesCompleted;
 }
 
@@ -121,7 +121,7 @@ Future<bool> _isOfferable(
 /// work locked behind content is worse than an empty one.
 @riverpod
 Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final content = ref.watch(contentRepositoryProvider);
   final bank = await ref.watch(challengeBankProvider.future);
   final nowMillis = DateTime.now().millisecondsSinceEpoch;
@@ -153,7 +153,7 @@ Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
 @riverpod
 Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
   final content = ref.watch(contentRepositoryProvider);
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final bank = await ref.watch(challengeBankProvider.future);
 
   final challenge = challengeForModule(bank, moduleId);

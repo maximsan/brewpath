@@ -18,7 +18,7 @@ Future<int?> freezeSaveNoticeDay(Ref ref) async {
   final today = epochDay(ref.watch(currentDayProvider));
   final statusFuture = ref.watch(streakStatusProvider.future);
   final daysFuture = ref.watch(activeDaySetProvider.future);
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final status = await statusFuture;
   final activeDays = await daysFuture;
   final snapshot = await snapshotFuture;

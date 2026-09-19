@@ -22,8 +22,15 @@ Nothing in the app used it.
 ## Decision
 
 A screen reads progress through `SnapshotRepository.watch()`, a stream, and
-never invalidates anything to see its own write. `progressSnapshotProvider` is
+never invalidates anything to see its own write. `ProgressSnapshotState` holds
 the single subscription; every display provider derives from it.
+
+It opens on `read()` rather than on the stream's first delivery. A provider
+whose value arrives only by subscription cannot answer a caller that merely
+wants the value now: nothing subscribes for a one-shot read, so its future
+never completes. Seeding from the one-shot read makes both kinds of caller work
+against the same provider, and the stream then pushes each later version into
+its state.
 
 `SnapshotRepository.read()` stays, for two cases that a stream cannot serve:
 

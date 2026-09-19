@@ -65,7 +65,7 @@ final class SavedKeysProvider
   }
 }
 
-String _$savedKeysHash() => r'b73fe64eb1e5070731642f40eb860df3ed1852b4';
+String _$savedKeysHash() => r'1362ad2d41592c6a6d2d79dd3ebd8cfc43a8d747';
 
 /// Whether [key] is on the shelf.
 

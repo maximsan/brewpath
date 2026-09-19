@@ -57,4 +57,4 @@ final class FreezeSaveNoticeDayProvider
 }
 
 String _$freezeSaveNoticeDayHash() =>
-    r'e3888b4754aba1f654f2ea651861286e559acf98';
+    r'7f96da81ba3dafe73c03afff87b1ed171571a121';

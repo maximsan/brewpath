@@ -20,14 +20,12 @@ class CardWithCollection {
 
 /// Every card the bank holds, paired with whether the learner owns it.
 ///
-/// Reads the collected ids **off the snapshot directly**: chaining through a
-/// provider hit a Riverpod 3.2.1 pause-state assertion (issue #4709) under the
-/// `StatefulShellRoute`. So a caller that collects a card invalidates this,
-/// and everything showing a collection hangs off it.
+/// Reads the collected ids off the snapshot, which follows the database on its
+/// own, so collecting a card reaches every surface showing one (ADR-0030).
 @riverpod
 Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
-  final snapshotFuture = ref.watch(progressSnapshotProvider.future);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final cards = await content.getCards();
   final collected = (await snapshotFuture).clearedByReset.ownedCollectibles;
   return cards

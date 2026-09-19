@@ -71,7 +71,7 @@ class StudioGrove {
 @riverpod
 Future<StudioGrove> studioGrove(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
-  final snapshot = await ref.watch(progressSnapshotProvider.future);
+  final snapshot = await ref.watch(progressSnapshotStateProvider.future);
 
   return StudioGrove(
     varieties: await content.getGroveVarieties(),

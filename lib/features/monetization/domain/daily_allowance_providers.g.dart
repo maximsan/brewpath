@@ -56,4 +56,4 @@ final class CanStartActivityProvider
   }
 }
 
-String _$canStartActivityHash() => r'824189f7fd21cd4c8a8d5d7aabfc5c68797bf93b';
+String _$canStartActivityHash() => r'2fe4464f91c1d99797947f2493f998bb5787e02c';
