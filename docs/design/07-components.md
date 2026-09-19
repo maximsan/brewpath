@@ -28,7 +28,7 @@ per-screen work.
 | `NavRow` | `settings.jsx:142` | `label` · `sub` · `value` · `accent` (destructive) · `dim` (disabled-looking but live) · `external` · `toggle` + `toggleOn` · **`pending` + `pendingLabel`** (async, e.g. "Restoring…") | **Settings / nav row** |
 | `SettingsRow` | `screens.jsx:2691` | Alias of `NavRow`, kept so screen code reads in its own vocabulary | same |
 | `SettingsToggle` | `settings.jsx:11` | `on` / `off` | **Toggle** |
-| `ConfirmSheet` | `settings.jsx:39` | `eyebrow` · `title` · `body` (⚠️ **single `<p>` — cannot render the approved multi-paragraph delete copy**, see [§5](05-mechanics.md) 5.12) · **`lines`** (itemised loss summary) · `danger` · custom `confirmLabel` / `cancelLabel` (default "Keep my progress") | **Bottom sheet** + **Result sheet** |
+| `ConfirmSheet` | `settings.jsx:39` | `title` · `body` (⚠️ **single `<p>` — cannot render the approved multi-paragraph delete copy**, see [§5](05-mechanics.md) 5.12) · **`lines`** (itemised loss summary) · `danger` · custom `confirmLabel` / `cancelLabel` (default "Keep my progress") | **Bottom sheet** + **Result sheet** |
 | `TimeSheet` | `settings.jsx:87` | 8 preset times; `value` / `onSave` | **Bottom sheet** |
 | `PlanSheet` | `settings.jsx:388` | Yearly / Monthly from `PLAN_OPTS` | **Bottom sheet** |
 | `SubScreenHeader` | `settings.jsx:254` | `scrolled` · `icon: 'back' \| 'close'` · `right` slot · `ringBack` · `solid` | **Screen top bar** + **Header buttons** |

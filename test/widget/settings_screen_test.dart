@@ -1,15 +1,20 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/widgets/confirm_sheet.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
+import 'package:brew_path/features/profile/domain/reset_summary.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/features/progress/domain/progress_write.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
+import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -259,10 +264,8 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
   });
 
-  testWidgets('Reset Progress is gated behind a confirmation dialog', (
-    tester,
-  ) async {
-    // Seed progress so we can prove the dialog Cancel path is a true no-op.
+  testWidgets('Reset Progress is gated behind a confirm sheet', (tester) async {
+    // Seed progress so we can prove the Keep path is a true no-op.
     final snapshots = SnapshotRepository();
     await seedCompletedLesson(
       snapshots,
@@ -274,12 +277,13 @@ void main() {
     await openSettings(tester);
 
     await tester.tap(find.text(SettingsCopy.resetProgressRow));
-    await tester.pumpAndSettle();
-    expect(find.text('Reset all progress?'), findsOneWidget);
+    await settleLoaders(tester);
+    expect(find.text(ResetCopy.title), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
 
-    await tester.tap(find.text('Cancel'));
+    await tester.tap(find.text(ConfirmSheetCopy.keepMyProgress));
     await tester.pumpAndSettle();
-    expect(find.text('Reset all progress?'), findsNothing);
+    expect(find.text(ResetCopy.title), findsNothing);
     final kept = (await snapshots.read()).clearedByReset;
     expect(kept.completedLessons.keys, ['lesson_a']);
     expect(kept.ownedCollectibles, {'card_a'});
@@ -288,6 +292,38 @@ void main() {
       kept.bestResults['lesson_a'],
       const MasteryResult(correct: 4, total: 5),
     );
+  });
+
+  testWidgets("the sheet itemises this learner's own figures", (tester) async {
+    // The seven measures are the point of the sheet: seeing *1 day* is what
+    // makes someone stop, where a list of storage fields would not.
+    final snapshots = SnapshotRepository();
+    await seedCompletedLesson(snapshots, 'm1l1');
+    await seedCollectible(snapshots, 'c1');
+
+    await openSettings(tester);
+    await tester.tap(find.text(SettingsCopy.resetProgressRow));
+    await settleLoaders(tester);
+
+    expect(find.text(ResetCopy.body), findsOneWidget);
+    expect(find.text(ResetCopy.closingLine), findsOneWidget);
+    for (final label in [
+      ResetSummaryCopy.streak,
+      ResetSummaryCopy.points,
+      ResetSummaryCopy.lessons,
+      ResetSummaryCopy.cards,
+      ResetSummaryCopy.challenges,
+      ResetSummaryCopy.saved,
+      ResetSummaryCopy.tree,
+    ]) {
+      expect(find.text(label), findsOneWidget, reason: '$label is missing');
+    }
+    expect(find.text('1 day'), findsOneWidget);
+    expect(find.text('Lessons completed'), findsOneWidget);
+    expect(find.text('Back to Seed'), findsOneWidget);
+
+    await tester.tap(find.text(ConfirmSheetCopy.keepMyProgress));
+    await tester.pumpAndSettle();
   });
 
   testWidgets('confirming Reset wipes all progress', (tester) async {
@@ -307,8 +343,8 @@ void main() {
     await openSettings(tester);
 
     await tester.tap(find.text(SettingsCopy.resetProgressRow));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TextButton, 'Reset'));
+    await settleLoaders(tester);
+    await tester.tap(find.text(ResetCopy.confirm));
     await settleLoaders(tester);
 
     final wiped = (await snapshots.read()).clearedByReset;
@@ -320,9 +356,91 @@ void main() {
     expect(after.hapticsEnabled, isFalse);
     expect(after.learnerName, 'Maya');
 
-    expect(find.text('Progress reset.'), findsOneWidget);
+    expect(find.text(ResetCopy.banner), findsOneWidget);
 
     // Drain the 2-second auto-dismiss Timer the banner schedules.
     await tester.pump(const Duration(seconds: 3));
+  });
+
+  testWidgets('a reset takes the tree and the challenge count with it', (
+    tester,
+  ) async {
+    // Two of the seven the sheet promises by name, and the two that went
+    // stalest before ADR-0031: this asks Profile, not the snapshot, so it
+    // fails whether the cause is a missing refresh or a stream that skipped
+    // them.
+    final snapshots = SnapshotRepository();
+    await updateProgress(
+      snapshots,
+      (progress) => progress
+          .withTreeStageAtLeast(5)
+          .withChallengeLogged('bc-m1', reaction: 'Preferred 1:15', day: 0),
+      now: DateTime.now(),
+    );
+
+    await openSettings(tester);
+    await tester.tap(find.text(SettingsCopy.resetProgressRow));
+    await settleLoaders(tester);
+    await tester.tap(find.text(ResetCopy.confirm));
+    await settleLoaders(tester);
+    await tester.tap(findMark(AppIcon.back));
+    await settleLoaders(tester);
+
+    expect(find.textContaining('Stage 1 · Seed'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp(r'Coffee Challenges, 0 of \d+ brewed')),
+      findsOneWidget,
+    );
+
+    await tester.pump(const Duration(seconds: 3));
+  });
+
+  testWidgets('Restart onboarding asks on the same sheet, plain', (
+    tester,
+  ) async {
+    // Two adjacent rows must not mix a sheet and a dialog. Nothing is thrown
+    // away here, so the sheet carries no lines and no berry.
+    await openSettings(tester);
+
+    await tester.tap(find.text(SettingsCopy.restartOnboardingRow));
+    await tester.pumpAndSettle();
+
+    expect(find.text(RestartOnboardingCopy.title), findsOneWidget);
+    expect(find.byType(AlertDialog), findsNothing);
+    expect(find.text(ResetSummaryCopy.streak), findsNothing);
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.ancestor(
+              of: find.text(RestartOnboardingCopy.confirm),
+              matching: find.byType(FilledButton),
+            ),
+          )
+          .style!
+          .backgroundColor!
+          .resolve({}),
+      isNot(MoodColors.darkRoast.berry),
+    );
+
+    await tester.tap(find.text(RestartOnboardingCopy.cancel));
+    await tester.pumpAndSettle();
+    expect(find.text(RestartOnboardingCopy.title), findsNothing);
+  });
+
+  testWidgets('confirming Restart onboarding returns to Welcome', (
+    tester,
+  ) async {
+    await openSettings(tester);
+
+    await tester.tap(find.text(SettingsCopy.restartOnboardingRow));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(RestartOnboardingCopy.confirm));
+    await settleLoaders(tester);
+
+    expect(
+      (await SettingsRepository().getSettings()).onboardingCompleted,
+      isFalse,
+    );
+    expect(find.text(SettingsCopy.title), findsNothing);
   });
 }

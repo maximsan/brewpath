@@ -261,18 +261,20 @@ only — no key, so the dev guard cannot see them — and both feed the Roasty m
 gift, which is `!isV1`-gated, so the leak is within-session and v2-only. They
 belong in the keyless registry row alongside the freeze state.
 
-**Confirm sheet copy.** Eyebrow `RESET PROGRESS`, title *"Start again from seed?"*,
-body *"Your tree returns to a bare seed and every lesson locks back to the start.
-There's no undo."*, confirm *"Reset everything"*. Itemised `lines` come from
-`progressSummary` (`app.jsx:1077`) and list exactly four things: **Daily streak ·
-Points earned · Lessons completed · Your coffee tree → Back to SEED.**
+**Confirm sheet copy.** No eyebrow — no sheet carries one. Title *"Start again
+from seed?"*, body *"Your tree returns to a bare seed, every lesson locks back to
+the start, and your saved items are cleared. There's no undo."*, confirm *"Reset
+everything"* over the component's default cancel, *"Keep my progress"*. Itemised
+`lines` come from `progressSummary` and list seven things: **Daily streak ·
+Points earned · Lessons completed · Cards collected · Coffee challenges · Saved
+items · Your coffee tree → Back to seed.**
 
-> ⚠️ **The itemised summary under-states the loss.** It never mentions brew
-> challenges (all completions cleared, stamps removed), collectible cards
-> (all re-lock), mastery (`bestResults` wiped), or — since the correction above —
-> the Saved shelf. [§6](06-content.md) describes these sheets as carrying "an
-> itemised summary of what will be lost"; it is a partial one. Either extend the
-> lines or soften the claim. The fix direction is *say more*, not *clear less*.
+> ⚠️ **Mastery is the one loss no line names.** `bestResults` is wiped and the
+> summary never says so. [§6](06-content.md) describes these sheets as carrying
+> "an itemised summary of what will be lost"; on that one field it is a partial
+> one. The app closes the gap with a catch-all line under the seven
+> ([#570](https://github.com/maximsan/brewpath/issues/570)) rather than by naming
+> a field a learner would not recognise.
 
 ### ✅ Defect 1 — `brew.saved` was dropped, not emptied — **FIXED**
 
