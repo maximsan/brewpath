@@ -37,7 +37,7 @@ const List<String> _moduleLessons = [
 /// The lesson's module, illustrated — the picture the bank names for Beans.
 final ModuleModel _module = testModule(
   lessonIds: _moduleLessons,
-  art: 'assets/modules/m1-beans.png',
+  art: 'assets/modules/m1-beans.jpg',
   artPos: '50% 42%',
 );
 
