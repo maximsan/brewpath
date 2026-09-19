@@ -26,6 +26,7 @@ class SettingsRepository {
         themeMode: AppThemeMode.fromStorage(row.themeMode),
         tourSeen: row.tourSeen,
         tipsSeen: row.tipsSeen,
+        swipesUsed: row.swipesUsed,
         learnerName: row.learnerName,
         notificationsEnabled: row.notificationsEnabled,
         dailyReminderTime: row.dailyReminderTime,
@@ -51,6 +52,7 @@ class SettingsRepository {
             themeMode: Value(settings.themeMode.storageValue),
             tourSeen: Value(settings.tourSeen),
             tipsSeen: Value(settings.tipsSeen),
+            swipesUsed: Value(settings.swipesUsed),
             learnerName: Value(settings.learnerName),
             notificationsEnabled: Value(settings.notificationsEnabled),
             dailyReminderTime: Value(settings.dailyReminderTime),
@@ -62,8 +64,8 @@ class SettingsRepository {
   ///
   /// **Delete Account only.** This row is the whole device-local store, which
   /// a progress reset keeps deliberately. Dropping it whole is also what keeps
-  /// `onboardingCompleted`, `tourSeen` and `tipsSeen` fate-sharing: nothing
-  /// gets the chance to clear one alone.
+  /// `onboardingCompleted`, `tourSeen`, `tipsSeen` and `swipesUsed` fate-
+  /// sharing: nothing gets the chance to clear one alone.
   Future<void> deleteAll() async {
     await _db.delete(_db.userSettings).go();
   }

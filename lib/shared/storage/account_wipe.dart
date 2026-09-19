@@ -45,8 +45,8 @@ class AccountWipe {
   ///
   /// Device-local state is not synced *and* not wiped by reset, so Delete is
   /// where it goes. Dropping the whole row is what keeps the appearance, the
-  /// onboarding answers, `tourSeen` and `tipsSeen` fate-sharing. The install
-  /// stamp is restamped, not kept and not cleared (ADR-0013).
+  /// onboarding answers, `tourSeen`, `tipsSeen` and `swipesUsed` fate-sharing.
+  /// The install stamp is restamped, not kept and not cleared (ADR-0013).
   Future<void> deleteAccount() async {
     await _publish(deleteTombstone);
     await _settings.deleteAll();

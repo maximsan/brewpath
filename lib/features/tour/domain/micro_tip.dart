@@ -1,17 +1,11 @@
+import 'package:brew_path/shared/storage/id_set.dart';
+
 /// The seven micro-tips, with the copy each one carries.
 ///
-/// A micro-tip is the guide layer's second piece: one small card explaining one
-/// feature the first time it matters, shown once ever and dismissable. The Tour
-/// introduces the Learn tab; these cover everything the Tour does not reach
-/// ([#342](https://github.com/maximsan/brewpath/issues/342)).
-///
-/// Every tip carries a rule the learner cannot read off the screen it appears
-/// on — the unlock order, the 48-hour window, that only lessons grow the tree —
-/// which is what the ruling checked each one against before keeping it.
-///
-/// [id] is what is written to disk, so it is spelled here rather than derived
-/// from [name]: a rename of the enum value must not silently re-arm a tip on
-/// every device that has already seen it.
+/// One small card explaining one feature the first time it matters, shown once
+/// ever; the Tour introduces the Learn tab and these cover what it does not
+/// reach ([#342](https://github.com/maximsan/brewpath/issues/342)). Each
+/// carries a rule the learner cannot read off the screen it appears on.
 enum MicroTip {
   /// The Path tab: what the line and the diamonds on it mean.
   path(
@@ -91,6 +85,9 @@ enum MicroTip {
   });
 
   /// The stored id — the string the seen list holds.
+  ///
+  /// Spelled rather than derived from the enum value: a rename must not
+  /// silently re-arm a tip on every device that has already seen it.
   final String id;
 
   /// The smallcaps line above the title.
@@ -113,21 +110,14 @@ enum MicroTip {
 /// the row must not trim them — the learner would be shown them again on the
 /// next upgrade.
 abstract final class MicroTipsSeen {
-  static const String _separator = ',';
-
   /// The ids in [stored], with blanks dropped.
-  static Set<String> decode(String stored) => stored
-      .split(_separator)
-      .map((id) => id.trim())
-      .where((id) => id.isNotEmpty)
-      .toSet();
+  static Set<String> decode(String stored) => IdSet.decode(stored);
 
   /// [ids] as one column value, in a stable order so an unchanged set writes
   /// an unchanged string.
-  static String encode(Set<String> ids) =>
-      (ids.toList()..sort()).join(_separator);
+  static String encode(Set<String> ids) => IdSet.encode(ids);
 
   /// [stored] with [tip] added.
   static String withTip(String stored, MicroTip tip) =>
-      encode(decode(stored)..add(tip.id));
+      IdSet.plus(stored, tip.id);
 }
