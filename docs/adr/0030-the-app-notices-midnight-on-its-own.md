@@ -6,10 +6,16 @@
 ## Context
 
 Day-dependent surfaces — the streak, the freeze line, Keep Sharp, the header's
-date, a Coffee Challenge's 48-hour window — were derived from `DateTime.now()`
-at the moment a screen built. They were refreshed when the app resumed, so an
-app left **foregrounded** across midnight kept showing yesterday until the
-learner happened to tap something.
+date — were derived from `DateTime.now()` at the moment a screen built, and
+refreshed only when the app resumed. An app left **foregrounded** across
+midnight kept showing yesterday.
+
+**What that cost a learner, which is why it was worth a timer.** The streak is
+folded against *today* and ignores every day after it, so someone studying at
+23:55 who finished a lesson at 00:02 watched their streak not move. The lesson
+was stored correctly; the screen counted it against yesterday. Beside it the
+header showed yesterday's date in plain text. It looked like the app had lost
+the lesson, at exactly the hour a learning app gets used.
 
 The earlier trade-off — no timer, because a read on resume answers it — was
 made in a code comment rather than with the owner. Ruled on
@@ -58,7 +64,20 @@ The defect is silent otherwise: nothing throws, a screen is just quietly wrong.
 The timer costs one pending `Timer` per app run and fires at most once a day.
 It does nothing while the app is backgrounded, which is the resume path's job.
 
-**A challenge window is still only checked at those moments.** One that lapses
-at 14:00 under an open app is noticed at the next midnight, resume or cold
-start — not at 14:00. Per-challenge timers were not built; revisit if a
-challenge ever needs to expire on screen.
+**A challenge window is checked at those moments and no others, on purpose.**
+One that lapses at 14:00 under an open app is noticed at the next midnight,
+resume or cold start. Nothing is owed here, because nothing is visible: the
+48 hours are never drawn — the card carries a title, an instruction, an effort
+line and *Log Result*, with no countdown — and `logChallenge` does not check
+the window, so logging a challenge in that gap still works and still pays. The
+late notice only moves a row from *active* to *saved* a few hours late, in the
+learner's favour.
+
+A timer per challenge would make this worse, not better: the card would vanish
+under a reader's finger at the moment they reached for it. Lingering is the
+kinder failure. Build one only if a countdown is ever drawn, which is what
+would make the staleness visible.
+
+The midnight tick can itself take a lapsed card off the screen while someone is
+looking at it. That is the same risk, accepted once a day rather than at any
+hour, and taken for the streak the tick exists to fix.

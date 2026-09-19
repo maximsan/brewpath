@@ -42,6 +42,17 @@ first, then resume.
 
 ## Critical Rules
 
+- **Judge by what a person can notice, before anything else.** Before you fix,
+  defer or ticket something, say in one plain sentence what the learner would
+  see. **If nobody can see it, it is not a problem** — leave it alone, and do
+  not open a ticket for it either; a ticket for an invisible thing is work
+  disguised as care. **If it is noticeable, it never gets a passing mention and
+  a shrug** — fix it in this branch, or open a ticket and say which you did.
+  Tidiness, internal correctness and "the rulebook says so" come *after* that
+  question, never instead of it. When the fix would itself be noticeable, weigh
+  that too: a card vanishing under someone's finger is worse than one that
+  lingers a few hours.
+
 - **Doc map and source precedence: [`docs/README.md`](docs/README.md).** Read
   it before resolving any documentation conflict. Any doc change must leave
   every link, path, name and `§`-reference that touches it still resolving —
