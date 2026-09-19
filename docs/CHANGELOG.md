@@ -60,6 +60,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   language fills the same slots English has and fixing an English typo sends
   only that line back for re-reading (ADR-0029).
 
+- **The five module pictures ship 92% smaller.** They were bundled exactly as
+  the design draws them — 1254×1254 PNGs, 11.7 MB together — and are now
+  1100×1100 JPEGs, 0.88 MB together, still more pixels than the card can draw
+  on a 3x phone. The design source keeps its lossless originals; the extractor
+  names what actually ships when it writes the modules bank.
+
 ### Fixed
 
 - **Buttons a screen reader announced but could not press now press.** The
