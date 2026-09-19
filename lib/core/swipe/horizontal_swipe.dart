@@ -88,8 +88,8 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
     final eased = _releaseCurve.transform(_release.value);
     final exiting = _committed != null;
     setState(() {
-      _drag = _dragAt(
-        motion: widget.motion,
+      _drag = SwipeDrag.at(
+        commitThreshold: widget.motion.commitThreshold,
         offset: lerpDouble(_fromOffset, _toOffset, eased)!,
         travel: exiting ? _fromTravel : _fromTravel * (1 - eased),
         phase: exiting ? SwipePhase.exiting : SwipePhase.rest,
@@ -99,15 +99,22 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
 
   void _onReleaseStatus(AnimationStatus status) {
     final aim = _committed;
-    if (status == AnimationStatus.completed && aim != null) _land(aim);
+    if (status == AnimationStatus.completed && aim != null) {
+      _land(aim, settle: false);
+    }
   }
 
-  /// Puts the element back at centre and only then changes the content, so the
-  /// incoming card is already in place rather than flying in from the edge.
-  void _land(SwipeAim aim) {
+  /// The content changes once the element is where the learner will next see
+  /// it: at centre after a flight, or springing back there after a row's
+  /// commit, which stays in the list and so never teleports home.
+  void _land(SwipeAim aim, {required bool settle}) {
     _committed = null;
-    _distance = 0;
-    setState(() => _drag = const SwipeDrag());
+    if (settle) {
+      _settleBack();
+    } else {
+      _distance = 0;
+      setState(() => _drag = const SwipeDrag());
+    }
     if (aim == SwipeAim.advance) {
       widget.onAdvance?.call();
     } else {
@@ -120,8 +127,8 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
     _committed = null;
     _distance = 0;
     setState(
-      () => _drag = _dragAt(
-        motion: widget.motion,
+      () => _drag = SwipeDrag.at(
+        commitThreshold: widget.motion.commitThreshold,
         offset: 0,
         travel: 0,
         phase: SwipePhase.dragging,
@@ -132,8 +139,8 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
   void _onDragUpdate(DragUpdateDetails details) {
     _distance += details.delta.dx;
     setState(
-      () => _drag = _dragAt(
-        motion: widget.motion,
+      () => _drag = SwipeDrag.at(
+        commitThreshold: widget.motion.commitThreshold,
         offset: swipeOffsetFor(
           distance: _distance,
           canAdvance: widget.canAdvance,
@@ -171,7 +178,7 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
     final reduced = MediaQuery.disableAnimationsOf(context);
     final distance = reduced ? 0.0 : widget.motion.exitDistance;
     if (distance == 0) {
-      _land(aim);
+      _land(aim, settle: true);
       return;
     }
     _committed = aim;
@@ -188,11 +195,6 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
     _committed = null;
     _releaseCurve = SwipeMotion.settleCurve;
     _toOffset = 0;
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _distance = 0;
-      setState(() => _drag = const SwipeDrag());
-      return;
-    }
     _startRelease(SwipeMotion.settleDuration);
   }
 
@@ -231,20 +233,3 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
     );
   }
 }
-
-/// [offset] and [travel] as one value, with the commit progress [motion]
-/// makes of them.
-SwipeDrag _dragAt({
-  required SwipeMotion motion,
-  required double offset,
-  required double travel,
-  required SwipePhase phase,
-}) => SwipeDrag(
-  offset: offset,
-  travel: travel,
-  progress: swipeCommitProgress(
-    offset: offset,
-    commitThreshold: motion.commitThreshold,
-  ),
-  phase: phase,
-);

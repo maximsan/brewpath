@@ -45,8 +45,10 @@ class SwipeHintCaption extends StatelessWidget {
         child: AnimatedOpacity(
           opacity: show ? 1 : 0,
           duration: duration,
+          curve: Curves.ease,
           child: AnimatedContainer(
             duration: duration,
+            curve: Curves.ease,
             height: show ? _height : 0,
             child: OverflowBox(
               minHeight: _height,

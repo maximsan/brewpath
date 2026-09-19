@@ -145,11 +145,10 @@ void main() {
     const riseDistance = 104.0;
 
     test('a sliver rises as the drag comes its way', () {
-      const halfway = SwipeDrag(offset: -52, phase: SwipePhase.dragging);
       expect(
         deckSliverRise(
           reveals: SwipeAim.advance,
-          drag: halfway,
+          offset: -52,
           riseDistance: riseDistance,
         ),
         0.5,
@@ -157,30 +156,32 @@ void main() {
       expect(
         deckSliverRise(
           reveals: SwipeAim.back,
-          drag: halfway,
+          offset: -52,
           riseDistance: riseDistance,
         ),
         0,
       );
     });
 
-    test('the exit drives the incoming sliver to full size', () {
-      const exiting = SwipeDrag(offset: -10, phase: SwipePhase.exiting);
+    test('the exit carries it the rest of the way, not in one jump', () {
+      // A commit releases at the threshold, so the rise is part-way up; the
+      // flight is far longer than the rise, so it arrives under its own steam.
+      const releasedAt = -70.0;
+      final atRelease = deckSliverRise(
+        reveals: SwipeAim.advance,
+        offset: releasedAt,
+        riseDistance: riseDistance,
+      );
+
+      expect(atRelease, greaterThan(0));
+      expect(atRelease, lessThan(1));
       expect(
         deckSliverRise(
           reveals: SwipeAim.advance,
-          drag: exiting,
+          offset: -340,
           riseDistance: riseDistance,
         ),
         1,
-      );
-      expect(
-        deckSliverRise(
-          reveals: SwipeAim.back,
-          drag: exiting,
-          riseDistance: riseDistance,
-        ),
-        0,
       );
     });
 

@@ -15,15 +15,16 @@ class SwipeDeckStack extends StatelessWidget {
     required this.radius,
     this.canAdvance = false,
     this.canBack = false,
-    this.inset = _restInset,
-    this.restScale = _restScale,
-    this.riseDistance = _riseDistance,
     this.shadow = _lift,
     super.key,
   });
 
+  /// How far a sliver stands out at rest, and how small it is there — the
+  /// design's 13px and 0.955, on their way to 0 and 1.
   static const double _restInset = 13;
   static const double _restScale = 0.955;
+
+  /// How far the drag must go for a sliver to arrive fully.
   static const double _riseDistance = 104;
 
   /// The design's `0 10px 26px rgba(0,0,0,0.18)`.
@@ -54,15 +55,6 @@ class SwipeDeckStack extends StatelessWidget {
   /// Whether there is one a right swipe would bring in.
   final bool canBack;
 
-  /// How far a sliver stands out at rest.
-  final double inset;
-
-  /// How small it is at rest, on its way to 1.
-  final double restScale;
-
-  /// How far the drag must go for a sliver to arrive fully.
-  final double riseDistance;
-
   /// The lift under the slivers.
   final List<BoxShadow> shadow;
 
@@ -78,17 +70,17 @@ class SwipeDeckStack extends StatelessWidget {
     final mood = context.mood;
     final rise = deckSliverRise(
       reveals: reveals,
-      drag: drag,
-      riseDistance: riseDistance,
+      offset: drag.offset,
+      riseDistance: _riseDistance,
     );
     return Positioned.fill(
       child: Transform.translate(
         offset: Offset(
-          deckSliverOffset(reveals: reveals, inset: inset, rise: rise),
+          deckSliverOffset(reveals: reveals, inset: _restInset, rise: rise),
           0,
         ),
         child: Transform.scale(
-          scale: deckSliverScale(restScale: restScale, rise: rise),
+          scale: deckSliverScale(restScale: _restScale, rise: rise),
           alignment: reveals == SwipeAim.advance
               ? Alignment.centerRight
               : Alignment.centerLeft,

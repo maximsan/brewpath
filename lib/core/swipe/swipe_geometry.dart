@@ -42,6 +42,23 @@ class SwipeDrag {
     this.phase = SwipePhase.rest,
   });
 
+  /// A drag of [offset] with [travel] of finger behind it, carrying the
+  /// progress [commitThreshold] makes of it.
+  factory SwipeDrag.at({
+    required double offset,
+    required double travel,
+    required double commitThreshold,
+    required SwipePhase phase,
+  }) => SwipeDrag(
+    offset: offset,
+    travel: travel,
+    progress: swipeCommitProgress(
+      offset: offset,
+      commitThreshold: commitThreshold,
+    ),
+    phase: phase,
+  );
+
   /// How far the element has actually moved — damped on a blocked direction.
   final double offset;
 
@@ -166,15 +183,14 @@ double swipeExitOffset({required SwipeAim aim, required double exitDistance}) =>
 
 /// How far the sliver that [reveals] brings in has risen, `0`–`1`.
 ///
-/// Driven to full size during the exit, so the incoming card rises to meet you
-/// as the old one leaves.
+/// It follows [offset] the whole way, so the exit — which carries the card far
+/// past [riseDistance] — drives it to full size as the old card leaves.
 double deckSliverRise({
   required SwipeAim reveals,
-  required SwipeDrag drag,
+  required double offset,
   required double riseDistance,
 }) {
-  final toward = reveals == SwipeAim.advance ? -drag.offset : drag.offset;
-  if (drag.isExiting && toward > 0) return 1;
+  final toward = reveals == SwipeAim.advance ? -offset : offset;
   return (toward / riseDistance).clamp(0.0, 1.0);
 }
 

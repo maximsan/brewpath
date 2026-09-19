@@ -5,6 +5,7 @@ import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
 import 'package:brew_path/core/swipe/swipe_hint_timing.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
+import 'package:brew_path/shared/storage/id_set.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -116,13 +117,13 @@ void main() {
 
     await settleLoaders(tester);
     final stored = await SettingsRepository().getSettings();
-    expect(SwipesUsed.decode(stored.swipesUsed), {SwipeSurface.dictionary.id});
+    expect(IdSet.decode(stored.swipesUsed), {SwipeSurface.dictionary.id});
   });
 
   testWidgets('a surface already used is never hinted again', (tester) async {
     final repository = SettingsRepository();
     final settings = await repository.getSettings();
-    settings.swipesUsed = SwipesUsed.withSurface('', SwipeSurface.dictionary);
+    settings.swipesUsed = IdSet.plus('', SwipeSurface.dictionary.id);
     await repository.saveSettings(settings);
 
     await _openAndResolve(tester, _app());

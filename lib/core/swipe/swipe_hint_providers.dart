@@ -1,5 +1,6 @@
 import 'package:brew_path/core/swipe/swipe_surface.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/id_set.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -19,7 +20,7 @@ const bool kReplaySwipeHints = bool.fromEnvironment('REPLAY_SWIPE_HINTS');
 Future<Set<String>> swipesUsed(Ref ref) async {
   if (kReplaySwipeHints) return const {};
   final settings = await ref.watch(settingsRepositoryProvider).getSettings();
-  return SwipesUsed.decode(settings.swipesUsed);
+  return IdSet.decode(settings.swipesUsed);
 }
 
 /// Records that [surface]'s gesture has been used.
@@ -30,7 +31,7 @@ Future<Set<String>> swipesUsed(Ref ref) async {
 Future<void> markSwipeUsed(WidgetRef ref, SwipeSurface surface) async {
   final repository = ref.read(settingsRepositoryProvider);
   final settings = await repository.getSettings();
-  settings.swipesUsed = SwipesUsed.withSurface(settings.swipesUsed, surface);
+  settings.swipesUsed = IdSet.plus(settings.swipesUsed, surface.id);
   await repository.saveSettings(settings);
 
   if (!ref.context.mounted) return;

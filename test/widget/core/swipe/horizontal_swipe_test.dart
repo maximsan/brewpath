@@ -167,6 +167,42 @@ void main() {
     });
   });
 
+  group('a row, which has no flight', () {
+    testWidgets('commits at once and springs home behind the change', (
+      tester,
+    ) async {
+      var back = 0;
+      await tester.pumpWidget(_app(_Surface(onBack: () => back++)));
+      final centre = _cardLeft(tester);
+
+      await tester.drag(find.byKey(_cardKey), const Offset(90, 0));
+      await tester.pump();
+
+      expect(back, 1);
+      expect(
+        _cardLeft(tester),
+        greaterThan(centre),
+        reason: 'still on its way home, not teleported',
+      );
+
+      await tester.pumpAndSettle();
+      expect(_cardLeft(tester), centre);
+    });
+
+    testWidgets('reduced motion keeps the spring — it drops the flight, '
+        'not the return', (tester) async {
+      await tester.pumpWidget(_app(const _Surface(), reduceMotion: true));
+      final centre = _cardLeft(tester);
+
+      await tester.drag(find.byKey(_cardKey), const Offset(40, 0));
+      await tester.pump();
+
+      expect(_cardLeft(tester), greaterThan(centre));
+      await tester.pumpAndSettle();
+      expect(_cardLeft(tester), centre);
+    });
+  });
+
   group('the fly-off', () {
     const flight = SwipeMotion(exitDistance: 340, tiltDegreesPer100px: 7);
 
@@ -205,6 +241,7 @@ void main() {
 
       expect(advanced, 1);
       expect(_dragOf(tester).phase, SwipePhase.rest);
+      await tester.pumpAndSettle();
     });
   });
 

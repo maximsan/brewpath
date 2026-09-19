@@ -1,5 +1,6 @@
 import 'package:brew_path/core/swipe/swipe_hint_timing.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
+import 'package:brew_path/shared/storage/id_set.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -33,35 +34,32 @@ void main() {
 
   group('the used list', () {
     test('a surface joins the list without disturbing the rest', () {
-      final stored = SwipesUsed.withSurface(
-        'rewards',
-        SwipeSurface.flashcards,
-      );
+      final stored = IdSet.plus('rewards', SwipeSurface.flashcards.id);
 
-      expect(SwipesUsed.decode(stored), {'flashcards', 'rewards'});
+      expect(IdSet.decode(stored), {'flashcards', 'rewards'});
     });
 
     test('an unchanged set writes an unchanged string', () {
       const surfaces = {'rewards', 'challenge', 'dictionary'};
 
       expect(
-        SwipesUsed.encode(surfaces),
-        SwipesUsed.encode(surfaces.toList().reversed.toSet()),
+        IdSet.encode(surfaces),
+        IdSet.encode(surfaces.toList().reversed.toSet()),
       );
     });
 
     test('an empty column is nobody, not one blank surface', () {
-      expect(SwipesUsed.decode(''), isEmpty);
-      expect(SwipesUsed.decode(' , '), isEmpty);
+      expect(IdSet.decode(''), isEmpty);
+      expect(IdSet.decode(' , '), isEmpty);
     });
 
     test('an id an older build does not know is kept as read', () {
-      final stored = SwipesUsed.withSurface(
+      final stored = IdSet.plus(
         'a-surface-from-later',
-        SwipeSurface.dictionary,
+        SwipeSurface.dictionary.id,
       );
 
-      expect(SwipesUsed.decode(stored), contains('a-surface-from-later'));
+      expect(IdSet.decode(stored), contains('a-surface-from-later'));
     });
   });
 }

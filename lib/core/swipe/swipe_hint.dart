@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:brew_path/core/swipe/horizontal_swipe.dart';
 import 'package:brew_path/core/swipe/swipe_hint_providers.dart';
 import 'package:brew_path/core/swipe/swipe_hint_timing.dart';
+import 'package:brew_path/core/swipe/swipe_motion.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,8 +68,56 @@ class _SwipeHintState extends ConsumerState<SwipeHint> {
   bool _showing = false;
   double _offset = 0;
   bool _played = false;
-  bool _wasUsed = true;
-  bool _usedNow = false;
+
+  /// What the stored flag says. An unresolved read counts as used, so a
+  /// standing affordance starts quiet rather than flashing bright on launch.
+  bool _usedStored = true;
+
+  /// Latched: a gesture used on this surface stays used for as long as it is
+  /// on screen. The provider re-reads while the write is still in flight, and
+  /// a hint rearmed by that stale read would replay itself mid-swipe.
+  bool _usedHere = false;
+
+  bool get _used => _usedHere || _usedStored;
+
+  @override
+  void initState() {
+    super.initState();
+    _usedStored = _storedSays(ref.read(swipesUsedProvider).asData?.value);
+    _arm();
+    ref.listenManual(
+      swipesUsedProvider,
+      (_, next) => _onKnown(next.asData?.value),
+    );
+  }
+
+  bool _storedSays(Set<String>? known) =>
+      known?.contains(widget.surface.id) ?? true;
+
+  @override
+  void didUpdateWidget(SwipeHint oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.enabled && !oldWidget.enabled) _arm();
+  }
+
+  /// Takes the stored flag as it now reads and arms or retires the hint.
+  void _onKnown(Set<String>? known) {
+    final stored = _storedSays(known);
+    if (stored == _usedStored) return;
+    setState(() => _usedStored = stored);
+    if (_used) {
+      _stop();
+    } else {
+      _played = false;
+      _arm();
+    }
+  }
+
+  void _arm() {
+    if (_used || _played || !widget.enabled) return;
+    _played = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _play());
+  }
 
   @override
   void dispose() {
@@ -94,7 +142,8 @@ class _SwipeHintState extends ConsumerState<SwipeHint> {
   }
 
   void _markUsed() {
-    _usedNow = true;
+    if (_usedHere) return;
+    setState(() => _usedHere = true);
     _stop();
     unawaited(markSwipeUsed(ref, widget.surface));
   }
@@ -121,27 +170,15 @@ class _SwipeHintState extends ConsumerState<SwipeHint> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    // An unresolved read counts as used, so a standing affordance starts quiet
-    // rather than flashing bright on every launch before the row comes back.
-    final known = ref.watch(swipesUsedProvider).asData?.value;
-    final used = _usedNow || (known?.contains(widget.surface.id) ?? true);
-    if (_wasUsed && !used) _played = false;
-    _wasUsed = used;
-    if (!used && !_played && widget.enabled) {
-      _played = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) => _play());
-    }
-    return widget.builder(
-      context,
-      SwipeHintState(
-        showing: _showing,
-        used: used,
-        offset: _offset,
-        markUsed: _markUsed,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => widget.builder(
+    context,
+    SwipeHintState(
+      showing: _showing,
+      used: _used,
+      offset: _offset,
+      markUsed: _markUsed,
+    ),
+  );
 }
 
 /// Slides [child] by the hint's nudge, over the design's 420ms.
