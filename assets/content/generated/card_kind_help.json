@@ -5,6 +5,7 @@
   "schemaVersion": 2,
   "items": [
     {
+      "id": "mcq",
       "kind": "mcq",
       "title": "Multiple choice",
       "blurb": "Read the question and pick the answer you think is right — an explanation follows either way.",
@@ -15,6 +16,7 @@
       ]
     },
     {
+      "id": "multi",
       "kind": "multi",
       "title": "Select all that apply",
       "blurb": "More than one answer can be right. Tap every option you think belongs, then check them all at once.",
@@ -25,6 +27,7 @@
       ]
     },
     {
+      "id": "match",
       "kind": "match",
       "title": "Match pairs",
       "blurb": "Drag each trait onto the item it belongs to — or tap one then the other. Several traits can share the same answer, and the board only scores if every pair lands first time.",
@@ -35,6 +38,7 @@
       ]
     },
     {
+      "id": "slider",
       "kind": "slider",
       "title": "Calibrate",
       "blurb": "Drag the slider to where you think the answer lands, then check to see how close you were.",
@@ -45,6 +49,7 @@
       ]
     },
     {
+      "id": "sequence",
       "kind": "sequence",
       "title": "Put in order",
       "blurb": "Tap the items in the correct order, then submit to see which spots you got right.",
@@ -55,6 +60,7 @@
       ]
     },
     {
+      "id": "quiz",
       "kind": "quiz",
       "title": "True or false",
       "blurb": "Read the statement and decide whether it’s true or false — an explanation follows either way.",
@@ -65,6 +71,7 @@
       ]
     },
     {
+      "id": "flavor",
       "kind": "flavor",
       "title": "Name the note",
       "blurb": "Read the tasting clue and pick the flavour note it describes.",
@@ -75,6 +82,7 @@
       ]
     },
     {
+      "id": "tastefix",
       "kind": "tastefix",
       "title": "Taste Fix",
       "blurb": "Your cup came out wrong. Read what’s off, then pick the one change you’d try first — the feedback names the cause either way.",
@@ -85,6 +93,7 @@
       ]
     },
     {
+      "id": "bagpick",
       "kind": "bagpick",
       "title": "Blind bag",
       "blurb": "An unlabelled bag of green coffee. Inspect the sample — colour, centre cut, aroma — then call how it was processed from the look alone.",
@@ -95,6 +104,7 @@
       ]
     },
     {
+      "id": "fill",
       "kind": "fill",
       "title": "Complete the sentence",
       "blurb": "Key words are left blank. Fill each one from the two choices — the sentence resolves to the right answer either way, so you always leave with the correct idea.",

@@ -322,10 +322,16 @@ function keyedToList(keyed) {
 /**
  * `CARD_KIND_HELP` is keyed by card kind and its entries carry no kind of
  * their own. Flattening restores the key as `kind` — the field name every card
- * already uses for the same value.
+ * already uses for the same value — and as `id`, because a language folder is
+ * laid over a bank entry by entry *by id*, so a bank without one cannot be
+ * translated at all.
  */
 function helpToList(help) {
-  return Object.entries(help).map(([kind, entry]) => ({ kind, ...entry }));
+  return Object.entries(help).map(([kind, entry]) => ({
+    id: kind,
+    kind,
+    ...entry,
+  }));
 }
 
 /**
