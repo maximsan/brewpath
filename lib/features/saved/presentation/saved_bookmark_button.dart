@@ -1,11 +1,7 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/saved/domain/saved_cap.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
-import 'package:brew_path/features/saved/domain/saved_shelf.dart';
-import 'package:brew_path/features/saved/presentation/saved_gate.dart';
-import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/features/saved/presentation/saved_toggle.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -52,27 +48,8 @@ class SavedBookmarkButton extends ConsumerWidget {
   /// style is a ring: muted ink on a rule-coloured ring, accent once saved.
   final bool ringed;
 
-  Future<void> _toggle(BuildContext context, WidgetRef ref) async {
-    // **Awaited, not read for its current value.** Nothing watches the
-    // entitlement here, so a synchronous read is still unresolved on the first
-    // tap and would report `false` — refusing a paying learner at five items.
-    final isPlus = await ref.read(courseEntitlementProvider.future);
-    // The cap is judged on what the shelf would show, so the number the
-    // learner is refused at is the number they were told they had.
-    final visible = savedShelfCount(await ref.read(savedShelfProvider.future));
-
-    final outcome = await toggleSaved(
-      ref.read(snapshotRepositoryProvider),
-      key: savedKey,
-      now: DateTime.now(),
-      isPlus: isPlus,
-      visible: visible,
-    );
-
-    if (outcome is SaveGateRaised && context.mounted) {
-      showSavedCapReached(context);
-    }
-  }
+  Future<void> _toggle(BuildContext context, WidgetRef ref) =>
+      toggleSavedKey(context, ref, savedKey);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -180,6 +180,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                 // Inside a category the title names it; only a search, which
                 // can cross categories, heads each run of rows.
                 grouped: _category == null,
+                isBrowsing: _query.isEmpty,
               ),
           const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xl)),
         ],
