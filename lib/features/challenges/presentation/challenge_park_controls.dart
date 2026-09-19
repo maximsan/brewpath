@@ -23,6 +23,9 @@ class ChallengeParkChevron extends StatelessWidget {
   /// The second chevron is drawn 4.6 right of the first in a 16-unit box.
   static const double _stride = _mark * 4.6 / 16;
 
+  /// How wide the pair is, so the card can keep its words clear of it.
+  static const double width = _mark + _stride;
+
   /// The design's `transition: opacity 260ms ease`.
   static const Duration _dim = Duration(milliseconds: 260);
 
@@ -48,7 +51,7 @@ class ChallengeParkChevron extends StatelessWidget {
             : _dim,
         curve: Curves.ease,
         child: SizedBox(
-          width: _mark + _stride,
+          width: width,
           height: _mark,
           child: Stack(
             children: [

@@ -32,6 +32,11 @@ const double _iconSm = 18;
 /// The design's `right: 9` on the chevron inside the card.
 const double _chevronInset = 9;
 
+/// The room the card's words leave for it. The chevron sits over the card at
+/// its vertical middle, which is where the instruction's last line runs; a
+/// glyph across the words it is meant to invite is worse than no glyph.
+const double _chevronClearance = _chevronInset + ChallengeParkChevron.width;
+
 /// The Coffee Challenge in play, on Today.
 ///
 /// A **sibling** of the day's lesson card rather than a state of it. The two
@@ -172,7 +177,12 @@ class ActiveChallengeCard extends ConsumerWidget {
         child: Stack(
           children: [
             Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
+              padding: const EdgeInsets.only(
+                left: AppSpacing.md,
+                top: AppSpacing.md,
+                bottom: AppSpacing.md,
+                right: _chevronClearance,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,

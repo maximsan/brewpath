@@ -197,6 +197,23 @@ void main() {
       );
     });
 
+    testWidgets('never runs across the words it is inviting', (tester) async {
+      await pump(tester);
+
+      final chevron = tester.getRect(find.byType(ChallengeParkChevron));
+      final instruction = tester.getRect(
+        find.text('Brew the same coffee twice at two different ratios.'),
+      );
+
+      expect(
+        instruction.right,
+        lessThanOrEqualTo(chevron.left),
+        reason:
+            'the chevron sits at the card’s vertical middle, which is '
+            'where the instruction runs',
+      );
+    });
+
     testWidgets('is quieter once the gesture has been used', (tester) async {
       await pumpWithProviders(
         tester,
