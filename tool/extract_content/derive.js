@@ -27,6 +27,16 @@ function moduleLabelOf(module) {
 const ECHOED_LESSON_FIELDS = ["title", "points", "time"];
 
 /**
+ * The module picture's path in the app bundle.
+ *
+ * The design source keeps lossless PNGs; the app bundles the same pictures as
+ * JPEG, so the extension is rewritten here rather than authored twice (#540).
+ */
+function bundledArt(art) {
+  return art.replace(/\.png$/, ".jpg");
+}
+
+/**
  * Rebuilds the two denormalized shapes and reports every authored disagreement.
  *
  * Returns the modules and lessons the banks should be written from. Callers get
@@ -62,6 +72,7 @@ function derive(banks, report) {
 
   const modules = banks.modules.map((module) => ({
     ...module,
+    ...(module.art ? { art: bundledArt(module.art) } : {}),
     lessons: (module.lessons || []).map((entry) => {
       const lesson = banks.lessons[entry.id];
       // A module listing a lesson that does not exist is the course

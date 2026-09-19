@@ -15,6 +15,9 @@ const _generated = 'assets/content/generated';
 /// The allowance list the extractor reads; the Dart mirror reads the same file.
 const _exceptions = 'tool/extract_content/exceptions.json';
 
+/// The ceiling #540 set for the five module pictures, together.
+const int _moduleArtBudget = 2 * 1024 * 1024;
+
 /// A card in canonical form — keys sorted at every depth, so two cards that
 /// differ only in key order compare equal. It has to agree with the extractor's
 /// own fingerprint: a bare `jsonEncode` preserves insertion order, which would
@@ -253,5 +256,27 @@ void main() {
         expect(entry['time'], lesson['time']);
       }
     }
+  });
+
+  test('every module picture the bank names is in the bundle', () {
+    for (final module in modules) {
+      final art = module['art'] as String?;
+      if (art == null) continue;
+      expect(
+        File(art).existsSync(),
+        isTrue,
+        reason: '${module['id']} names $art, which is not bundled',
+      );
+    }
+  });
+
+  test('the module pictures stay inside their bundle budget', () {
+    var total = 0;
+    for (final module in modules) {
+      final art = module['art'] as String?;
+      if (art == null) continue;
+      total += File(art).lengthSync();
+    }
+    expect(total, lessThan(_moduleArtBudget));
   });
 }

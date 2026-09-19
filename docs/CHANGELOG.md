@@ -52,6 +52,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   language fills the same slots English has and fixing an English typo sends
   only that line back for re-reading (ADR-0029).
 
+- **The five module pictures ship at a fourteenth of their old size.** They were
+  bundled exactly as the design draws them — 1254×1254 PNGs, 11.7 MB together —
+  and are now 1100×1100 JPEGs, 0.84 MB together, still more pixels than the
+  card can draw on a 3x phone. The design source keeps its lossless originals;
+  the extractor names what actually ships when it writes the modules bank.
+
 ### Fixed
 
 - **A half-translated language folder is refused, not shown.** The fallback to
