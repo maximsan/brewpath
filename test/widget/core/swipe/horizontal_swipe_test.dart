@@ -243,6 +243,32 @@ void main() {
       expect(_dragOf(tester).phase, SwipePhase.rest);
       await tester.pumpAndSettle();
     });
+
+    testWidgets('a finger landing mid-flight does not lose the commit', (
+      tester,
+    ) async {
+      var advanced = 0;
+      await tester.pumpWidget(
+        _app(_Surface(motion: flight, onAdvance: () => advanced++)),
+      );
+      final centre = _cardLeft(tester);
+
+      await tester.drag(find.byKey(_cardKey), const Offset(-90, 0));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(advanced, 0, reason: 'still in flight');
+
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(HorizontalSwipe)),
+      );
+      await gesture.moveBy(const Offset(-30, 0));
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(advanced, 1, reason: 'the flight is presentation only');
+      expect(_cardLeft(tester), centre);
+    });
   });
 
   group('the whole element is the target', () {

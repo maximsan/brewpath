@@ -122,9 +122,12 @@ class _HorizontalSwipeState extends State<HorizontalSwipe>
     }
   }
 
+  /// A finger landing mid-flight lands the flight first: the change is never
+  /// hostage to the animation, so the new drag begins on the new content.
   void _onDragStart(DragStartDetails details) {
     _release.stop();
-    _committed = null;
+    final pending = _committed;
+    if (pending != null) _land(pending, settle: false);
     _distance = 0;
     setState(
       () => _drag = SwipeDrag.at(
