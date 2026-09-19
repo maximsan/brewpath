@@ -6,15 +6,8 @@ import 'package:flutter/material.dart';
 /// and a tap that covers the whole card.
 ///
 /// The design makes each of these a `<button>` rather than a card with a row
-/// inside it, so the whole thing is the target. Shared here because three cards
-/// repeat it and a hairline that drifts on one of them is the kind of thing
-/// only a screenshot catches.
-///
-/// **The radii live here, not on each card.** `AppRadii` ships one token and
-/// says a component that needs its own may sit anywhere in 12–20 — "slack
-/// around chrome rather than a set of stops of its own" — so these are not
-/// tokens and not `OffTokens` either. Naming them once keeps the design's two
-/// values one fact rather than three copies.
+/// inside, so the whole thing is the target. The two radii are named here
+/// because `AppRadii` leaves chrome slack in 12–20 rather than ship a stop.
 class ProfileCard extends StatelessWidget {
   /// Creates a [ProfileCard].
   const ProfileCard({
@@ -80,10 +73,15 @@ class ProfileCard extends StatelessWidget {
             );
     }
 
+    // Carried here only when the child's own tap is dropped with its text
+    // (#487); beside a live InkWell it would split the card into two nodes.
+    final announcesAlone = semanticLabel != null;
+
     return Semantics(
       button: true,
       label: semanticLabel,
-      excludeSemantics: semanticLabel != null,
+      onTap: announcesAlone ? onTap : null,
+      excludeSemantics: announcesAlone,
       child: Material(
         color: Colors.transparent,
         child: InkWell(

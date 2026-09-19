@@ -99,10 +99,12 @@ class PathLessonRow extends StatelessWidget {
   /// meets the wall, and a dead row would say no without saying what it costs.
   Widget _row(BuildContext context, String title) {
     final locked = entry.isPurchaseLocked;
+    void openGate() =>
+        unawaited(showPlusGate(context, LockedLesson(title: title)));
 
     final row = InkWell(
       onTap: locked
-          ? () => unawaited(showPlusGate(context, LockedLesson(title: title)))
+          ? openGate
           : () => unawaited(context.goToActivity(lessonRun(entry.lesson.id))),
       child: Opacity(
         opacity: locked ? _lockedOpacity : 1,
@@ -128,6 +130,7 @@ class PathLessonRow extends StatelessWidget {
     return Semantics(
       button: true,
       label: LockedRowCopy.purchaseLockedSemantics(title),
+      onTap: openGate,
       excludeSemantics: true,
       child: row,
     );

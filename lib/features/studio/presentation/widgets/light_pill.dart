@@ -50,6 +50,7 @@ class LightPill extends StatelessWidget {
       button: true,
       selected: selected,
       label: light.name,
+      onTap: onSelect,
       excludeSemantics: true,
       child: Material(
         color: GroveSelection.fill(mood, picked: selected),

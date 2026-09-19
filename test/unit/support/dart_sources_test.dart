@@ -57,6 +57,70 @@ final nested = '${"//" + '/*'}';
     });
   });
 
+  group('withoutStringLiterals', () {
+    test('blanks a literal and leaves the offsets around it', () {
+      expect(
+        withoutStringLiterals("final s = 'a(b,c'; final n = 1;"),
+        'final s = ${' ' * 7}; final n = 1;',
+      );
+    });
+
+    test('keeps the line breaks a triple-quoted literal spans', () {
+      const source = "final s = '''a\nb''';\nfinal n = 1;";
+
+      expect(withoutStringLiterals(source).split('\n').length, 3);
+    });
+  });
+
+  group('semanticsCallsIn', () {
+    test('takes only the arguments written on the call itself', () {
+      const source =
+          'Semantics(button: true, child: Semantics(onTap: go, child: x));';
+
+      expect(semanticsCallsIn(source).map((call) => call.arguments.keys), [
+        ['button', 'child'],
+        ['onTap', 'child'],
+      ]);
+    });
+
+    test('reads each value as it was written', () {
+      const source = 'Semantics(button: onTap != null, onTap: onTap);';
+
+      expect(semanticsCallsIn(source).single.arguments, {
+        'button': 'onTap != null',
+        'onTap': 'onTap',
+      });
+    });
+
+    test('a bracket or comma inside a string does not split the list', () {
+      const source = "Semantics(label: 'a, b (c', button: true, child: x);";
+
+      expect(semanticsCallsIn(source).single.arguments.keys, [
+        'label',
+        'button',
+        'child',
+      ]);
+    });
+
+    test('a name that merely ends in Semantics is not a match', () {
+      const source = 'MergeSemantics(child: ExcludeSemantics(child: x));';
+
+      expect(semanticsCallsIn(source), isEmpty);
+    });
+
+    test('a call written in a comment is not a call', () {
+      const source = '// Semantics(button: true) in prose\nfinal x = 1;';
+
+      expect(semanticsCallsIn(source), isEmpty);
+    });
+
+    test('reports the line the call opens on', () {
+      const source = 'final a = 1;\n\nSemantics(\n  button: true,\n);';
+
+      expect(semanticsCallsIn(source).single.line, 3);
+    });
+  });
+
   group('commentBlocksIn', () {
     test('groups line comments on consecutive lines into one block', () {
       const source = '/// a\n/// b\n  /// c\nclass A {}\n\n// d\n// e\n';

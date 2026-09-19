@@ -68,6 +68,7 @@ class MatchTile extends StatelessWidget {
       button: onTap != null,
       selected: state == MatchTileState.held,
       label: semanticsLabel,
+      onTap: onTap,
       excludeSemantics: true,
       child: Opacity(
         opacity: dragging ? OffTokens.matchDraggingOpacity.value : 1,
