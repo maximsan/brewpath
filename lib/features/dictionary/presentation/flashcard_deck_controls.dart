@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 /// One focus-revealed control per direction and, on the last card, Finish.
 /// The stack's slivers are decorative and hidden from assistive technology, so
 /// a forward-only affordance would leave those users with no way back.
-class FlashcardDeckControls extends StatelessWidget {
+class FlashcardDeckControls extends StatefulWidget {
   /// Creates a [FlashcardDeckControls].
   const FlashcardDeckControls({
     required this.isOnFirst,
@@ -39,35 +39,64 @@ class FlashcardDeckControls extends StatelessWidget {
   final VoidCallback onNext;
 
   @override
+  State<FlashcardDeckControls> createState() => _FlashcardDeckControlsState();
+}
+
+class _FlashcardDeckControlsState extends State<FlashcardDeckControls> {
+  bool _previousStanding = false;
+  bool _nextStanding = false;
+
+  /// A control's share of the row — the design's `flex: kbd ? 1 : '0 0 1px'`.
+  ///
+  /// Collapsed, it takes no room, so Finish has the whole row on the last
+  /// card; standing, it splits the row with whatever is beside it.
+  Widget _share({required bool standing, required Widget child}) =>
+      Flexible(flex: standing ? 1 : 0, fit: FlexFit.tight, child: child);
+
+  @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final ring = Color.lerp(mood.rule, mood.accent, _ringShare)!;
+    final ring = Color.lerp(
+      mood.rule,
+      mood.accent,
+      FlashcardDeckControls._ringShare,
+    )!;
 
     return Row(
       children: [
-        if (!isOnFirst)
-          Expanded(
+        if (!widget.isOnFirst) ...[
+          _share(
+            standing: _previousStanding,
             child: FocusRevealedButton(
               label: FlashcardsCopy.previousCard,
               ring: ring,
-              height: revealedHeight,
-              onPressed: onPrevious,
+              height: FlashcardDeckControls.revealedHeight,
+              onPressed: widget.onPrevious,
+              onFocusChange: (standing) =>
+                  setState(() => _previousStanding = standing),
             ),
           ),
-        if (!isOnFirst) const SizedBox(width: AppSpacing.xs),
-        Expanded(
-          child: isOnLast
-              ? PrimaryButton(
-                  label: FlashcardsCopy.finish,
-                  onPressed: onNext,
-                )
-              : FocusRevealedButton(
-                  label: FlashcardsCopy.nextCard,
-                  ring: ring,
-                  height: revealedHeight,
-                  onPressed: onNext,
-                ),
-        ),
+          const SizedBox(width: AppSpacing.xs),
+        ],
+        if (widget.isOnLast)
+          Expanded(
+            child: PrimaryButton(
+              label: FlashcardsCopy.finish,
+              onPressed: widget.onNext,
+            ),
+          )
+        else
+          _share(
+            standing: _nextStanding,
+            child: FocusRevealedButton(
+              label: FlashcardsCopy.nextCard,
+              ring: ring,
+              height: FlashcardDeckControls.revealedHeight,
+              onPressed: widget.onNext,
+              onFocusChange: (standing) =>
+                  setState(() => _nextStanding = standing),
+            ),
+          ),
       ],
     );
   }

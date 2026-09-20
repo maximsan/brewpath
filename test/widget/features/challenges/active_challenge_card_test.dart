@@ -190,6 +190,24 @@ void main() {
       );
       await tester.pumpAndSettle();
     });
+
+    testWidgets('and stays gone once it has landed, however long the store '
+        'takes', (tester) async {
+      await pump(tester);
+
+      await tester.drag(card(), const Offset(challengeParkAt + 10, 0));
+      await tester.pump();
+      // The flight is over and the queue write has not landed: the store
+      // never answers under the fake clock, which is the window a device has
+      // for a frame or more. The card that just left must not be back.
+      await tester.pump(
+        challengeParkExitDuration + const Duration(milliseconds: 20),
+      );
+      await tester.pump();
+
+      expect(card(), findsNothing);
+      expect(find.text('Log Result'), findsNothing);
+    });
   });
 
   group('the chevron', () {
@@ -291,7 +309,9 @@ void main() {
     );
 
     expect(await parked(), contains(testChallenge().id));
-    expect(find.text('Log Result'), findsOneWidget);
+    // The sheet is titled with the challenge; so is the card, which has
+    // left. Nothing on screen names it, so no sheet was raised.
+    expect(find.text(testChallenge().title), findsNothing);
   });
 
   testWidgets('is identical under reduced motion, having no motion', (

@@ -38,7 +38,7 @@ const double _chevronClearance = _chevronInset + ChallengeParkChevron.width;
 /// A **sibling** of the day's lesson card rather than a state of it. The two
 /// answer different questions — what to learn next, and what to go and brew —
 /// and a learner can have both at once.
-class ActiveChallengeCard extends ConsumerWidget {
+class ActiveChallengeCard extends ConsumerStatefulWidget {
   /// Creates an [ActiveChallengeCard].
   const ActiveChallengeCard({required this.challenge, super.key});
 
@@ -62,46 +62,71 @@ class ActiveChallengeCard extends ConsumerWidget {
   /// The challenge currently in play.
   final BrewChallenge challenge;
 
+  @override
+  ConsumerState<ActiveChallengeCard> createState() =>
+      _ActiveChallengeCardState();
+}
+
+class _ActiveChallengeCardState extends ConsumerState<ActiveChallengeCard> {
+  /// Whether the card has parked and is waiting for Today to let it go.
+  ///
+  /// The queue write lands a frame or more after the flight does, and the
+  /// swipe springs its content home to wait — so without this the card that
+  /// just left would sit back at centre until the store answered.
+  bool _parked = false;
+
+  @override
+  void didUpdateWidget(ActiveChallengeCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.challenge.id != widget.challenge.id) _parked = false;
+  }
+
   /// Parks the challenge, and retires the hint that taught the gesture.
   ///
   /// One place, because every way to park — the swipe, the focus-revealed
   /// control — owes both halves.
-  void _park(WidgetRef ref, SwipeHintState hint) {
+  void _park(SwipeHintState hint) {
     hint.markUsed();
-    unawaited(parkChallengeForLater(ref, challenge));
+    setState(() => _parked = true);
+    unawaited(parkChallengeForLater(ref, widget.challenge));
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => SwipeHint(
-    surface: SwipeSurface.challenge,
-    nudge: challengeParkNudge,
-    builder: (context, hint) => Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        HorizontalSwipe(
-          motion: _motion,
-          // Left has nowhere to go, so it damps rather than moving.
-          canAdvance: false,
-          onBack: () => _park(ref, hint),
-          behind: (context, drag) => ChallengeParkTrack(
-            offset: math.max(drag.offset, hint.offset),
-            radius: _cardRadius,
-          ),
-          builder: (context, drag) => SwipeNudge(
-            offset: hint.offset,
-            child: _card(context, ref, hint),
-          ),
-        ),
-        SwipeHintCaption(
-          show: hint.showing,
-          aim: SwipeAim.back,
-          label: _hint,
-        ),
-      ],
-    ),
-  );
+  Widget build(BuildContext context) {
+    if (_parked) return const SizedBox.shrink();
 
-  Widget _card(BuildContext context, WidgetRef ref, SwipeHintState hint) {
+    return SwipeHint(
+      surface: SwipeSurface.challenge,
+      nudge: challengeParkNudge,
+      builder: (context, hint) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          HorizontalSwipe(
+            motion: ActiveChallengeCard._motion,
+            // Left has nowhere to go, so it damps rather than moving.
+            canAdvance: false,
+            onBack: () => _park(hint),
+            behind: (context, drag) => ChallengeParkTrack(
+              offset: math.max(drag.offset, hint.offset),
+              radius: _cardRadius,
+            ),
+            builder: (context, drag) => SwipeNudge(
+              offset: hint.offset,
+              child: _card(context, hint),
+            ),
+          ),
+          SwipeHintCaption(
+            show: hint.showing,
+            aim: SwipeAim.back,
+            label: ActiveChallengeCard._hint,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _card(BuildContext context, SwipeHintState hint) {
+    final challenge = widget.challenge;
     final theme = Theme.of(context);
     final mood = context.mood;
     final effort = effortParts(challenge.effort);
@@ -157,10 +182,14 @@ class ActiveChallengeCard extends ConsumerWidget {
                     ),
                   ),
                   FocusRevealedButton(
-                    label: _parkLabel,
+                    label: ActiveChallengeCard._parkLabel,
                     // `color-mix(in oklab, var(--accent) 30%, var(--rule))`.
-                    ring: Color.lerp(mood.rule, mood.accent, _ringShare)!,
-                    onPressed: () => _park(ref, hint),
+                    ring: Color.lerp(
+                      mood.rule,
+                      mood.accent,
+                      ActiveChallengeCard._ringShare,
+                    )!,
+                    onPressed: () => _park(hint),
                   ),
                 ],
               ),
@@ -209,8 +238,8 @@ class ActiveChallengeCard extends ConsumerWidget {
 
   String _semanticsLabel(ChallengeEffort effort) => [
     'Coffee Challenge.',
-    '${challenge.title}.',
-    challenge.instruction,
+    '${widget.challenge.title}.',
+    widget.challenge.instruction,
     ?effort.trigger,
     ?effort.duration,
   ].join(' ');

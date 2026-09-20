@@ -17,6 +17,7 @@ class FocusRevealedButton extends StatefulWidget {
     required this.onPressed,
     required this.ring,
     this.height = _defaultHeight,
+    this.onFocusChange,
     super.key,
   });
 
@@ -35,6 +36,10 @@ class FocusRevealedButton extends StatefulWidget {
 
   /// How tall it stands when focused.
   final double height;
+
+  /// Told when it reveals or collapses, for a row that gives it room only
+  /// while it is standing — the design's `flex: kbd ? 1 : '0 0 1px'`.
+  final ValueChanged<bool>? onFocusChange;
 
   @override
   State<FocusRevealedButton> createState() => _FocusRevealedButtonState();
@@ -62,7 +67,10 @@ class _FocusRevealedButtonState extends State<FocusRevealedButton> {
           // keyboard equivalent, it is a control that does not exist.
           alwaysIncludeSemantics: true,
           child: OutlinedButton(
-            onFocusChange: (value) => setState(() => _hasFocus = value),
+            onFocusChange: (value) {
+              setState(() => _hasFocus = value);
+              widget.onFocusChange?.call(value);
+            },
             onPressed: widget.onPressed,
             style: OutlinedButton.styleFrom(
               foregroundColor: mood.accentText,
