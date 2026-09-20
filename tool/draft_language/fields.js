@@ -83,10 +83,12 @@ const STRUCTURAL = {
  * An answer held as one of its options' words, not as an index.
  *
  * Translating the options without it leaves the card unanswerable, so the
- * answer takes whatever its option became. Every other correct-answer marker
- * in the banks is an index, a flag on the choice, or a boolean.
+ * answer takes whatever its option became. A predict card holds the same
+ * thing under `a`. Every other correct-answer marker in the banks is an
+ * index, a flag on the choice, or a boolean.
  */
 const MIRRORS = {
+  "lessons.cards[].a": "lessons.cards[].options[]",
   "lessons.cards[].answer": "lessons.cards[].options[]",
   "lessons.cards[].fill[].a": "lessons.cards[].fill[].o[]",
   "mini_game_content.rounds[].answer": "mini_game_content.rounds[].options[]",

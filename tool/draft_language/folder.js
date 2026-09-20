@@ -130,6 +130,11 @@ function aliasWork({ bank, master, folder }) {
  * the new words yet (ADR-0026).
  */
 function applyBank({ bank, master, folder, translations }) {
+  // A bank with no prose at all still gets a file: the app reads one for
+  // every bank, and an entry that is only its id lays nothing over the master.
+  if (!master.some((record) => translatableIn(bank, record).length)) {
+    return master.map((record) => ({ id: record.id }));
+  }
   const held = byId(folder);
   const out = [];
   for (const record of master) {
@@ -158,6 +163,7 @@ function applyBank({ bank, master, folder, translations }) {
 
     copySearchKeys({ bank, record, previous, entry, translations });
     mirrorAnswers({ bank, record, entry });
+    padLists(entry, record);
 
     if (Object.keys(entry).length === 1) continue;
     if (Object.keys(marks).length) entry[TRANSLATED_FROM] = marks;
@@ -195,6 +201,34 @@ function mirrorAnswers({ bank, record, entry }) {
     const translated = at(entry, chosen);
     if (translated !== undefined) put(entry, pointer, translated);
   }
+}
+
+/**
+ * Pads every list in [entry] to the master's length with nulls.
+ *
+ * `put` grows a list only as far as the last field written into it, so a
+ * trailing element with no prose — a card that is only a guide — would leave
+ * the list short, and the overlay refuses a short list. A null lands on the
+ * master's element and leaves it as it is.
+ */
+function padLists(entry, record) {
+  for (const [key, ours] of Object.entries(entry)) {
+    const theirs = record[key];
+    if (Array.isArray(ours) && Array.isArray(theirs)) {
+      for (let index = 0; index < theirs.length; index += 1) {
+        if (ours[index] === undefined) ours[index] = null;
+        else if (isObject(ours[index]) && isObject(theirs[index])) {
+          padLists(ours[index], theirs[index]);
+        }
+      }
+    } else if (isObject(ours) && isObject(theirs)) {
+      padLists(ours, theirs);
+    }
+  }
+}
+
+function isObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 /** What stops [folder] being called complete: every prose field must be there. */

@@ -219,6 +219,11 @@ function warnAboutPubspec(code) {
 function check(code) {
   const problems = [];
   for (const bank of bankNames()) {
+    // The app reads a folder file for every bank and refuses a missing one,
+    // so a bank with nothing to translate still owes its file.
+    if (!fs.existsSync(path.join(FOLDERS, code, `${bank}.json`))) {
+      problems.push(`${bank}.json is missing — the app reads one for every bank`);
+    }
     const master = masterItems(bank);
     const folder = folderItems(code, bank);
     problems.push(...checkBank({ bank, master, folder }));

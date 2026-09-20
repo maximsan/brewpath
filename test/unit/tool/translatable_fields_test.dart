@@ -101,6 +101,58 @@ void main() {
     );
   });
 
+  test('an answer held as one of its options is a registered mirror', () {
+    // Translating the options without the answer leaves the card unanswerable,
+    // and nothing on screen says so. Reads every string beside a list that
+    // contains it, and asks the tool whether it knows to follow the option.
+    final suspects = <String>{};
+    void walk(Object? value, String path) {
+      if (value is Map) {
+        final lists = value.entries.where((entry) => entry.value is List);
+        value.forEach((key, item) {
+          final here = path.isEmpty ? '$key' : '$path.$key';
+          if (item is String) {
+            for (final list in lists) {
+              if ((list.value as List).contains(item)) {
+                suspects.add('$here = one of $path.${list.key}[]');
+              }
+            }
+          }
+          walk(item, here);
+        });
+      } else if (value is List) {
+        for (final item in value) {
+          walk(item, '$path[]');
+        }
+      }
+    }
+
+    for (final file in Directory(_generated).listSync().whereType<File>()) {
+      final bank = p.basenameWithoutExtension(file.path);
+      final envelope =
+          jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+      for (final record in envelope['items']! as List) {
+        walk(record, bank);
+      }
+    }
+    String pathOf(String suspect) => suspect.split(' = ').first;
+    final classes = _classify(suspects.map(pathOf).toSet().toList());
+    final unregistered =
+        suspects
+            .where((suspect) => classes[pathOf(suspect)] == 'prose')
+            .toList()
+          ..sort();
+
+    expect(
+      unregistered,
+      isEmpty,
+      reason:
+          'these answers name one of their options but the tool would '
+          'translate them apart — add each to MIRRORS in '
+          'tool/draft_language/fields.js',
+    );
+  });
+
   test('no string that reads like a key is heading for translation', () {
     final byPath = _stringsByPath();
     final classes = _classify(byPath.keys.toList());

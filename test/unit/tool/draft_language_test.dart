@@ -150,6 +150,68 @@ void main() {
       expect(card['answer'], 'myte');
     });
 
+    test('a predict card’s answer follows its option too', () {
+      final master = [
+        {
+          'id': 'm1l1',
+          'title': 'What coffee actually is',
+          'cards': [
+            {
+              'kind': 'predict',
+              'prompt': 'Which part is the seed?',
+              'options': ['Seed', 'Skin'],
+              'a': 'Seed',
+            },
+          ],
+        },
+      ];
+
+      final card = _onlyCard(
+        _draft(master, [], {
+          'm1l1|cards[0].options[0]': 'Nasiono',
+          'm1l1|cards[0].options[1]': 'Skórka',
+        }),
+      );
+
+      expect(card['a'], 'Nasiono');
+    });
+
+    test('a trailing card with no prose still holds its place', () {
+      final master = _master()
+        ..first['cards'] = [
+          ...(_master().first['cards']! as List),
+          {'kind': 'guide', 'visualGuide': 'roast'},
+        ];
+
+      final cards =
+          (_draft(master, [], _polish()).single!
+                  as Map<String, dynamic>)['cards']!
+              as List;
+
+      expect(cards, hasLength(2));
+      expect(cards.last, isNull);
+    });
+
+    test('a bank with no prose is written as its ids alone', () {
+      final folder = _run(
+        'applyBank',
+        bank: 'collectibles',
+        master: [
+          {
+            'id': 'c1',
+            'kind': 'q',
+            'unlock': {'lesson': 'm1l1'},
+          },
+        ],
+        folder: const [],
+        translations: const {},
+      );
+
+      expect(folder, [
+        {'id': 'c1'},
+      ]);
+    });
+
     test('a field whose English held still keeps its review mark', () {
       final reviewed = [
         {
