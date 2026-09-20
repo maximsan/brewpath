@@ -14,7 +14,7 @@ doc conflict.
 | [`docs/adr/`](adr/README.md) | **All new decisions**, product and engineering — one numbered file per ruling. |
 | [`docs/decisions.md`](decisions.md) | The **frozen ledger** of product-owner rulings up to Aug 2026. Stable `§` numbering; never grows. |
 | [`CONTEXT.md`](../CONTEXT.md) | The domain glossary — the vocabulary rulings and code must share. |
-| `docs/02, 09–15, 18–19` | Live single-owner docs: architecture, the deferred Firebase/payments/ads plans, testing, CI, release, platform plans, git workflow, universal-links setup. |
+| [`architecture.md`](architecture.md) · [`firebase.md`](firebase.md) · [`payments.md`](payments.md) · [`ads.md`](ads.md) · [`testing.md`](testing.md) · [`ci-cd.md`](ci-cd.md) · [`releasing.md`](releasing.md) · [`future-android-web-plan.md`](future-android-web-plan.md) · [`git-and-github-workflow.md`](git-and-github-workflow.md) · [`universal-links-setup.md`](universal-links-setup.md) · [`localization.md`](localization.md) · [`schema-migrations.md`](schema-migrations.md) · [`quality-checks.md`](quality-checks.md) · [`content-pipeline.md`](content-pipeline.md) | Live single-owner docs, one per subject, named for what they are. |
 | [`docs/agents/`](agents/) | How agent skills consume this repo (issue tracker, triage labels, domain docs). |
 | [`docs/archive/`](archive/README.md) | The tombstone ledger for removed docs — nothing in it is current. |
 | [`docs/CHANGELOG.md`](CHANGELOG.md) | What actually changed, release by release, plus the build-milestone history. |
@@ -43,16 +43,35 @@ the same PR that found it.
 See [`docs/adr/README.md`](adr/README.md) — it owns the process. In one line:
 argue in the owning issue, record as a new ADR; the frozen ledger never grows.
 
+## A workflow gets one how-to
+
+Anything someone *operates* — commands to run, files to fill in, a loop to
+repeat — gets one how-to in `docs/`, named for what it is, that collects
+everything about it: where the files live, what each command does, what you
+will see, and how it is maintained afterwards. [`localization.md`](localization.md)
+is the shape. The README's command section stays a summary that points there;
+the rulings stay in their ADRs and are linked, never restated; and the how-to
+is written for someone who has never seen the feature. Nobody should have to
+ask in chat, or read the tool's source, to learn how we do a thing.
+
 ## Doc changes must leave every reference correct
 
 Any change that adds, moves, renames or deletes documentation must verify — in
 the same PR — that every link, path, name and `§`-reference it touches, or that
 points at the touched files, still resolves.
 
-## Renames worth knowing (Aug 2026)
+## Renames worth knowing
 
-- `prototype/` was `brew-path/`
-- `docs/decisions.md` was `docs/decisions-1.md`
+- `prototype/` was `brew-path/` (Aug 2026)
+- `docs/decisions.md` was `docs/decisions-1.md` (Aug 2026)
+- The single-owner docs dropped their numbers (20 Sep 2026): `docs/architecture.md`
+  was `02-architecture.md`, and likewise `09-firebase`, `10-payments`, `11-ads`,
+  `12-testing`, `13-ci-cd`, `14-ios-release-checklist`,
+  `15-future-android-web-plan`, `18-git-and-github-workflow`,
+  `19-universal-links-setup`. Deprecations had left the sequence full of holes,
+  and a number said nothing a name does not.
+- `docs/releasing.md` was `docs/ios-release-checklist.md` (21 Sep 2026): it
+  took the versioning policy from the README and is no longer only a checklist.
 
 Older issues, PRs and CHANGELOG entries use the old paths; resolve them to the
 new ones.

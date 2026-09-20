@@ -11,9 +11,9 @@ SQLite (offline persistence) · Freezed 3 + json_serializable (content models).
 `riverpod_lint` + `dart_code_linter` enabled via the `plugins:` block in
 `analysis_options.yaml` (native analysis_server_plugins — not dependencies, no
 `custom_lint`). `dart_code_linter` adds `no-magic-number` plus a CI metrics gate
-(`dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning`,
-exactly as CI runs it — without the flag a warning prints but does not fail) for per-function size &
-complexity.
+for per-function size & complexity; the command, exactly as CI runs it, is in
+[docs/git-and-github-workflow.md](docs/git-and-github-workflow.md) under
+_Reproducing CI locally_.
 
 Architecture and conventions live in [`CLAUDE.md`](CLAUDE.md); the doc map and
 source-precedence rules are at [`docs/README.md`](docs/README.md), and deeper
@@ -34,13 +34,13 @@ Run all Flutter/Dart commands from the repo root.
 | `flutter test test/widget/<file>`           | Run a single widget test.                                                                                                                                                           |
 | `flutter run -d "iPhone 17"`                | Launch on the iOS simulator.                                                                                                                                                        |
 | `flutter build ios --release --no-codesign` | Release iOS build without signing (mirrors CI).                                                                                                                                     |
-| `tool/install_hooks.sh`                     | Install the git hooks, once per clone (Claude Code does it at session start). What they run: _Quality checks_ below.                                                                 |
+| `tool/install_hooks.sh`                     | Install the git hooks, once per clone (Claude Code does it at session start). What they run: [docs/quality-checks.md](docs/quality-checks.md).                                        |
 
 ### Tests
 
-Drift tests use an in-memory database (`AppDatabase(NativeDatabase.memory())`),
-so no native binary copy is needed. Unit tests live in `test/unit/`, widget tests
-in `test/widget/`, integration tests in `integration_test/`.
+Drift tests use an in-memory database, so no native binary copy is needed.
+What each suite covers, where a new test goes, and the rules the smoke walk
+obeys are in [docs/testing.md](docs/testing.md).
 
 ### iOS build (Swift Package Manager)
 
@@ -59,37 +59,10 @@ Troubleshooting:
 
 ## Quality checks
 
-The repo's own rules run at four moments, earliest first. `flutter analyze`,
-the full suite and the iOS build stay in CI, which runs them on every push.
-
-| When | What runs |
-| --- | --- |
-| Claude Code writes a Dart file | `dart format` on that file, then the comment cap on it (`.claude/settings.json`, `PostToolUse`); a failure goes straight back to the agent |
-| `git commit` | `dart format --set-exit-if-changed` and the comment cap on the staged Dart files (sub-second) |
-| `git push` | the format check, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about half a minute) |
-| CI, on a pull request | the same as push, split into jobs, plus `flutter analyze`, `flutter test` and the iOS build ([`docs/13-ci-cd.md`](docs/13-ci-cd.md)) |
-
-**The comment cap** is `tool/check_comments.dart`: no comment block over six
-lines in any Dart file the branch touches, and in a test file no doc comment
-on `main` or on a test body. There is no allow-list — a file
-you touch is a file you clean, so older overruns drain with ordinary work.
-Anything that needs more than six lines is documentation: put it in `docs/` or
-an ADR and leave one line pointing there. The rule itself is in
-[`CLAUDE.md`](CLAUDE.md) under _Code Conventions_.
-The changed-files form diffs against your local `origin/main`, so `git fetch`
-first. To see what is left across the whole tree:
-
-```bash
-find lib test integration_test -name '*.dart' | xargs dart tool/check_comments.dart
-```
-
-**Hooks** live in `tool/git-hooks/`; `tool/install_hooks.sh` links them into
-the repository's shared hooks directory, so every worktree runs them and a
-machine-wide `commit-msg` hook is left alone. Claude Code runs the installer at
-session start. Escapes: `git push --no-verify` skips the whole pre-push;
-`NO_CHANGELOG=1 git push` skips only the changelog check, for a PR that will
-carry the `no-changelog` label; a branch stacked on another names its base
-with `BASE_REF=origin/<branch>`, which is what CI compares against too.
+The repo's own rules run when Claude Code writes a Dart file, on `git commit`,
+on `git push` and in CI. Install the hooks once per clone with
+`tool/install_hooks.sh`; what runs at each moment, the escapes, and what to
+do when a check fails are in [docs/quality-checks.md](docs/quality-checks.md).
 
 ## Run-time flags (`--dart-define`)
 
@@ -115,33 +88,10 @@ release builds are unaffected.
 
 ## Versioning
 
-`pubspec.yaml` uses Flutter's `version: X.Y.Z+B` format — two independent
-counters joined by `+`:
-
-- **`X.Y.Z`** — the semantic version: the user-facing "marketing" version shown
-  in the App Store / Play Store (iOS `CFBundleShortVersionString`, Android
-  `versionName`). Bump per [semver](https://semver.org) — patch for fixes, minor
-  for features, major for breaking changes.
-- **`+B`** — the **build number** (iOS `CFBundleVersion`, Android `versionCode`).
-  The stores reject any upload whose build number isn't higher than the last, so
-  it must increase on **every** binary — independent of `X.Y.Z`.
-
-Unlike an npm package (one semver string), a mobile app carries two numbers: one
-for humans, one for the store.
-
-`tool/release.js` (below, run with `node`) **always increments `+B`**, and changes
-`X.Y.Z` only when you pass an argument:
-
-| Command            | From `1.0.0+3` → | What changed                           |
-| ------------------ | ---------------- | -------------------------------------- |
-| `release.js`       | `1.0.0+4`        | build number only                      |
-| `release.js patch` | `1.0.1+4`        | patch + build                          |
-| `release.js minor` | `1.1.0+4`        | minor (patch reset to 0) + build       |
-| `release.js major` | `2.0.0+4`        | major (minor/patch reset to 0) + build |
-| `release.js 2.3.1` | `2.3.1+4`        | explicit version + build               |
-
-Pre-launch it's normal to stay on `1.0.0` and bump only the build number across
-TestFlight builds; start moving `X.Y.Z` once you ship user-facing updates.
+`pubspec.yaml` carries two numbers, `X.Y.Z+B` — the store's marketing version
+and the build number that must rise on every upload — and `tool/release.js`
+moves them. What each means and how a release is cut is
+[docs/releasing.md](docs/releasing.md).
 
 ## Tooling scripts (`tool/`)
 
@@ -175,26 +125,13 @@ Archives and package caches are refused by an allow-list.
 `--worktrees` forces a full rebuild for anyone working in one; leave it off
 while another session is mid-build.
 
-### `tool/extract_content.js` — regenerate bundled content
+### `tool/extract_content.js` — regenerate the content banks
 
-Node script (no dependencies). Run after the design prototype's (`prototype/`)
-authored content changes. Writes ten banks — modules, lessons, collectibles,
-dictionary terms, Coffee Challenges, mini games, card-kind help, mini-game
-content, grove varieties and grove lights — validating the whole
-cross-reference graph first, and only then writing `assets/content/generated/`.
-
-Validating and refusing to write is the point: on any violation it names the
-offending card and the broken reference, writes **nothing**, and exits non-zero,
-so a run can never leave a stale mixture of old and new files behind. Its output
-is generated — regenerate it, never hand-edit it. `prototype/` is opened for
-reading only.
-
-Every bank carries a `schemaVersion`, and the app refuses one it was not built
-to read. Before changing what the extractor emits, read _Bumping the schema
-version_ in the script's header — a rename or a change of meaning is breaking
-even when the shape is unchanged, and the number has to move on both the
-JavaScript and the Dart side. Why the prototype authors content at all, and what
-would end that, is [ADR-0006](docs/adr/0006-the-prototype-authors-v1-and-the-extracted-json-is-the-contract.md).
+Node script (no dependencies). Run after a prototype drop changes the authored
+content. Validates the whole cross-reference graph and writes
+`assets/content/generated/`, or refuses and writes nothing. The pipeline it
+belongs to — the shared contract, the order after a drop, the schema version
+rule — is [docs/content-pipeline.md](docs/content-pipeline.md).
 
 ```bash
 node tool/extract_content.js                          # the usual run
@@ -203,55 +140,14 @@ node tool/extract_content.js --source DIR --out DIR   # used by the tests
 
 ### `tool/draft_language.js` — draft and check a language folder
 
-Node script (no dependencies). Reads the generated English banks — never
-`prototype/`, because [ADR-0008](docs/adr/0008-a-language-is-a-folder.md) puts
-translation after extraction — and writes `assets/content/l10n/<code>/` plus
-`lib/l10n/app_<code>.arb`.
-
-The words are agent-drafted, so the work splits in two: `plan` queues every
-piece of prose that is absent or whose English has changed since it was
-translated, an agent fills each `text` in the queue, and `apply` writes the
-folder with a fingerprint per field. `check` is what
-[ADR-0026](docs/adr/0026-a-language-ships-once-complete-and-native-review-follows.md)
-means by complete, and `language_folders_complete_test.dart` re-runs it in CI.
-
-```bash
-node tool/draft_language.js plan  pl    # → build/l10n/pl.queue.json
-node tool/draft_language.js apply pl    # writes the folder from that queue
-node tool/draft_language.js check pl    # non-zero while anything is missing
-```
-
-A new folder needs its own `- assets/content/l10n/<code>/` line under `assets:`
-in `pubspec.yaml`; `apply` says so when it is missing, because a directory
-entry does not bundle its subdirectories.
+Node script (no dependencies). How a language is made, from the first
+`plan` to a reader picking it, is [docs/localization.md](docs/localization.md).
 
 ### `tool/extract_icons.js` — regenerate the icon family
 
-Node script (no dependencies). Run after the design prototype's icon family
-changes. Writes the design's 43 marks as SVG into `assets/icons/`, plus the
-`index.json` that describes the family, and gives five of them a second file
-for the state the design draws them in when active.
-
-The marks carry arcs, transforms, per-element opacity and nine stroke widths
-across four element types, which is why they are rendered rather than
-transcribed into painters. Colour is not baked in: a mark paints in
-`currentColor`, which `IconMark` resolves to a mood token, or in a sentinel
-magenta standing in for a CSS variable, which it maps back to a token.
-
-Like the content extractor, it validates and refuses to write — an unmappable
-colour, two sets drawing one name differently, or a state transcription the
-catalogue no longer matches all fail the run and write **nothing**. Its output
-is generated: regenerate it, never hand-edit it. `prototype/` is opened for
-reading only.
-
-Three sources, per [ADR-0009](docs/adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md):
-geometry comes from the catalogue (`prototype/ds-content.js`); the paint of
-each active state from the running components (`prototype/flavor-wheel.jsx`),
-which the catalogue does not draw; and the four game-kind marks the catalogue
-has not got at all from `ReplayIcon` in `prototype/screens.jsx`. The last of
-those is why the sentinel list carries `--bg` and `--accent`: those marks are
-the family's first two-tone ones, drawn muted with a single detail in the
-accent that stays accent whatever ink the call site gives the mark.
+Node script (no dependencies). Run after a drop changes the design's icons.
+Writes the 43 marks as SVG into `assets/icons/`, or refuses and writes nothing
+([docs/content-pipeline.md](docs/content-pipeline.md)).
 
 ```bash
 node tool/extract_icons.js                          # the usual run
@@ -260,30 +156,9 @@ node tool/extract_icons.js --source DIR --out DIR   # used by the tests
 
 ### `tool/extract_card_art.js` — regenerate the collectible artwork
 
-Node script (no dependencies). Run after the design prototype's card art
-changes. Writes the design's 37 collectible illustrations as SVG into
-`assets/card_art/`, plus the `index.json` naming each kind and its file, and
-sweeps any drawing the design has dropped.
-
-**It runs the source rather than reading it.** Unlike the icons, these are not
-flat markup: five arts compose a prop-taking frame and eight compute their
-geometry with `Array.from` and `Math`, so the components have to be executed.
-The prototype executes them with React and Babel from a CDN, which is not
-available offline and would be this repo's first npm dependency — so
-`tool/extract_card_art/jsx.js` reads that one dialect and refuses anything
-outside it.
-
-Colour is not baked in. Mood tokens (`--sage`, `--ink`, …) become sentinel
-magentas that `CardArtMark` maps to `MoodColors`; the `--art-*` family, which
-the design declares once for both moods, maps to `ArtColors`. A paint
-belonging to neither fails the run — as does a moved art block, an art that
-draws nothing, and any JSX construct the reader does not know. Its output is
-generated: regenerate it, never hand-edit it. `prototype/` is opened for
-reading only.
-
-Computed coordinates are rounded to four decimal places, because `Math.cos`
-and `Math.sin` disagree in their last bits between platforms and the assets
-would otherwise carry whichever machine wrote them.
+Node script (no dependencies). Run after a drop changes the card art. Writes
+the 37 illustrations as SVG into `assets/card_art/`, or refuses and writes
+nothing ([docs/content-pipeline.md](docs/content-pipeline.md)).
 
 ```bash
 node tool/extract_card_art.js                          # the usual run
@@ -294,10 +169,9 @@ node tool/extract_card_art.js --source DIR --out DIR   # used by the tests
 ### `tool/release.js` — cut a release
 
 Node script (no dependencies). Run when shipping a build to TestFlight / the App
-Store. Bumps the version in `pubspec.yaml`, stamps `docs/CHANGELOG.md` with the
-version + date, and (with `--commit`) tags the release. Draft the changelog first
-with the `/changelog` skill. Refuses to run when `[Unreleased]` is empty — pass
-`--allow-empty` for a build-only rebuild.
+Store: bumps `pubspec.yaml`, stamps `docs/CHANGELOG.md`, and with `--commit`
+tags the release. Every argument and the whole release walk are in
+[docs/releasing.md](docs/releasing.md).
 
 ```bash
 node tool/release.js                  # build number only: 1.0.0+1 → 1.0.0+2
@@ -308,48 +182,6 @@ node tool/release.js --dry-run        # preview, writes nothing
 
 ## Database schema migrations
 
-Drift schema snapshots (`drift_schemas/`) and generated test helpers
-(`test/generated/`) are committed. When you change the schema:
-
-1. Bump `schemaVersion` in `lib/shared/storage/app_database.dart` and add the
-   migration in `MigrationStrategy.onUpgrade`.
-
-   ⚠️ **Guard each step by the version it landed in, never by
-   `schemaVersion`.** A step written as `if (from < schemaVersion)` is correct
-   only until the next bump, after which it re-runs on a database that already
-   has those columns and fails on the duplicate. The failure is invisible until
-   someone else changes the schema, so it is found by the person who did not
-   cause it. Name a constant per step — `_onboardingColumnsVersion`,
-   `_themeModeVersion` — and let `schemaVersion` be the latest of them.
-2. `dart run drift_dev schema dump lib/shared/storage/app_database.dart drift_schemas/`
-3. `dart run drift_dev schema generate drift_schemas/ test/generated/`
-
-   This rewrites **every** file in `test/generated/`, not just the new one.
-   Expect no diff on the existing versions: they are generated by the pinned
-   `drift_dev`, so output matches. If they do change, the generator version
-   moved — regenerate them deliberately on their own branch rather than letting
-   the churn ride along with a schema change.
-4. Add a previous→new migration test (see `test/database/schema_smoke_test.dart`
-   for the `SchemaVerifier` pattern), then `flutter test`.
-
-   Target `db.schemaVersion`, not a literal version number. `migrateAndValidate`
-   then checks the migrated database against the committed snapshot for whatever
-   the current version is, and the test stops going stale on every bump.
-
-   ⚠️ **`testWithDataIntegrity` cannot do that, so retarget its `newVersion`
-   and `createNew` to the version you just added.** It takes the target as a
-   literal and a snapshot class, while `openTestedDatabase` is the real
-   `AppDatabase` — which always migrates as far as it goes. A test left pointing
-   at the previous version fails with "Schema does not match" the moment a new
-   one exists, naming the columns you changed, and it reads like your migration
-   is broken when it is the assertion that is stale. The existing ones are
-   deliberately aimed at the current version for this reason.
-
-   Remove a column with `dropColumn`, by name, and a table with `deleteTable`,
-   which drops if-exists. Not `TableMigration`: a rebuild copies the table's
-   *current* definition and so breaks on the next column anyone adds
-   ([#273](https://github.com/maximsan/brewpath/issues/273)). Cover either with
-   a data-integrity test that seeds the state the step must **keep** and
-   asserts it survives — a drop that took the wrong thing with it resets
-   whatever it hit in silence.
-5. Commit the new snapshot + regenerated helpers with the schema change.
+Every change to the Drift schema — the version bump, the snapshot dump, the
+regenerated helpers and the migration test — is
+[docs/schema-migrations.md](docs/schema-migrations.md).

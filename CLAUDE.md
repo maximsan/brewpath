@@ -34,11 +34,11 @@ first, then resume.
 | State             | flutter_riverpod 3.x + riverpod_generator | `@riverpod` annotation; ref type is `Ref`                                                                                                                                          |
 | Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
 | Persistence       | Drift (SQLite) 2.33.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
-| Content models    | Freezed + json_serializable               | Loaded from `assets/content/*.json` at startup                                                                                                                                     |
-| Localization      | `flutter_localizations` + gen_l10n         | English only. Interface strings in `lib/l10n/*.arb`, read as `context.strings`; content banks take a language folder over the master (ADR-0008). A migrated surface keeps no `*_copy.dart`. |
-| Payments          | `NoOpPaymentsService` stub                | Real `in_app_purchase` deferred                                                                                                                                                    |
-| Ads               | `NoOpAdsService` stub                     | Real AdMob deferred                                                                                                                                                                |
-| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped                                                                                                                                           |
+| Content models    | Freezed + json_serializable               | Loaded from `assets/content/generated/*.json` at startup                                                                                                                           |
+| Localization      | `flutter_localizations` + gen_l10n         | English only. How it works and how a language is made: [`docs/localization.md`](docs/localization.md). |
+| Payments          | RevenueCat behind `PaymentsService`       | A build with no `REVENUECAT_KEY` runs the no-op store, so the app is free by construction: [`docs/payments.md`](docs/payments.md)                                                  |
+| Ads               | `NoOpAdsService`                          | AdMob deferred: [`docs/ads.md`](docs/ads.md)                                                                                                                                       |
+| Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped: [`docs/firebase.md`](docs/firebase.md)                                                                                                   |
 
 ## Critical Rules
 
@@ -57,13 +57,12 @@ first, then resume.
   it before resolving any documentation conflict. Any doc change must leave
   every link, path, name and `§`-reference that touches it still resolving —
   verified in the same PR.
-- **Firebase is gated off.** The `firebase_*` deps and service code exist, but
-  stay **inactive** behind `kUseFirebase` in `lib/core/config/firebase_flags.dart`
-  (currently `false`). All Firebase access is behind the `AnalyticsService` /
-  `CrashReportingService` / `RemoteConfigService` abstractions — never call
-  `Firebase*.instance` from feature code. Activation (real project,
-  `flutterfire configure`, plist, flip the flag + three provider one-liners) is a
-  manual user step.
+- **Firebase is gated off** behind `kUseFirebase` in
+  `lib/core/config/firebase_flags.dart` (currently `false`). All Firebase access
+  goes through the `AnalyticsService` / `CrashReportingService` /
+  `RemoteConfigService` abstractions — never call `Firebase*.instance` from
+  feature code. Activation is the owner's; the steps are in
+  [`docs/firebase.md`](docs/firebase.md).
 - **Package imports within `lib/`.** Use `package:brew_path/…` instead of
   `../…` for all imports inside the `lib/` directory.
 - **Regenerate after model changes.** Run `dart run build_runner build` whenever
@@ -89,14 +88,10 @@ first, then resume.
 
 ## Change History
 
-Major app changes and the completed build milestones (Phases 0–11) live in
-[`docs/CHANGELOG.md`](docs/CHANGELOG.md). The workflow is documented at the top
-of that file:
-
-- **After meaningful work:** run the `/changelog` skill — it drafts Unreleased
-  entries from the actual code diffs for review.
-- **At release time:** run `node tool/release.js` — it stamps the
-  version + date, bumps `pubspec.yaml`, and tags the release.
+Major app changes and the completed build milestones live in
+[`docs/CHANGELOG.md`](docs/CHANGELOG.md); when and how to update it — the
+`/changelog` skill after meaningful work, `node tool/release.js` at release —
+is at the top of that file.
 
 ## Development commands
 
@@ -115,7 +110,7 @@ explanations — plus test and iOS/SPM build notes — lives in
   most**: `tool/check_comments.dart` checks every Dart file a branch touches —
   on the agent's write, on commit, on push and in the `comments` CI job — so a
   file you touch is a file you clean, and older overruns drain as files are
-  touched (README _Quality checks_). Anything longer is documentation: put it
+  touched ([`docs/quality-checks.md`](docs/quality-checks.md)). Anything longer is documentation: put it
   in `docs/` or an ADR and leave one line pointing there. The argument for a
   decision lives in the ADR or issue the code cites, never above the constant;
   a design value is quoted, not explained. Test files carry no doc comment on
@@ -135,7 +130,7 @@ explanations — plus test and iOS/SPM build notes — lives in
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
 - **Lints:** see `analysis_options.yaml` (the config is the truth) and the README _Toolchain_ paragraph
 - **Screens:** read [`docs/design/03-design-system.md`](docs/design/03-design-system.md)
-  before building one — it indexes all 57 components and patterns. Many are rules,
+  before building one — it indexes the components and patterns. Many are rules,
   not widgets, so no ticket will ever carry them.
 
 ## Code Quality Rules
@@ -191,5 +186,5 @@ Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See
 The body follows
 [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md); how a
 body file gets there is in
-[`docs/18-git-and-github-workflow.md`](docs/18-git-and-github-workflow.md)
+[`docs/git-and-github-workflow.md`](docs/git-and-github-workflow.md)
 under _Pull requests_.
