@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:brew_path/shared/storage/app_database.dart';
@@ -26,13 +27,16 @@ class SnapshotRepository {
     return _parse(row);
   }
 
-  /// The snapshot, and every later version of it — for a **screen**.
+  /// Every version written after a listener subscribes — for a **screen**,
+  /// which pairs it with one [read] for what is stored now.
   ///
-  /// Drift re-runs the query when a write touches the row's table, so nothing
-  /// has to announce a change and nothing can forget to. Opens on what is
-  /// stored, so a listener never waits for a write to learn the current value
-  /// (ADR-0030).
-  Stream<ProgressSnapshot> watch() => _row().watchSingleOrNull().map(_parse);
+  /// Announced by [write], the one door every change goes through, so no
+  /// caller owes an announcement and none can forget one. Static because two
+  /// instances address the same row and must be the same conversation.
+  Stream<ProgressSnapshot> get changes => _changes.stream;
+
+  static final StreamController<ProgressSnapshot> _changes =
+      StreamController<ProgressSnapshot>.broadcast();
 
   SimpleSelectStatement<$ProgressSnapshotsTable, SnapshotRow> _row() =>
       _db.select(_db.progressSnapshots)
@@ -52,7 +56,7 @@ class SnapshotRepository {
     }
   }
 
-  /// Writes [snapshot] over the stored one.
+  /// Writes [snapshot] over the stored one, and says so on [changes].
   ///
   /// Whole-value, never field-by-field: the snapshot *is* the record, so there
   /// is no partial write to get wrong and nothing to reconcile between columns.
@@ -65,5 +69,6 @@ class SnapshotRepository {
             payload: jsonEncode(snapshot.toJson()),
           ),
         );
+    _changes.add(snapshot);
   }
 }

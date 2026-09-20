@@ -21,24 +21,23 @@ SnapshotRepository snapshotRepository(Ref ref) => SnapshotRepository();
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens to the database (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0030). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
-/// waiting on a subscription, and goes with its last watcher, so no
-/// subscription outlives the database it reads.
-@riverpod
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
+@Riverpod(keepAlive: true)
 class ProgressSnapshotState extends _$ProgressSnapshotState {
   @override
-  Future<ProgressSnapshot> build() async {
+  Future<ProgressSnapshot> build() {
     final repository = ref.watch(snapshotRepositoryProvider);
-    // Read first, and only then listen: a value pushed into `state` before the
-    // build it belongs to has resolved rebuilds this provider from inside its
-    // own construction.
-    final stored = await repository.read();
-    final changes = repository.watch().skip(1).listen((snapshot) {
+    // Listening first leaves no gap for a write to fall through, and costs
+    // nothing: the stream carries later versions only, so nothing arrives
+    // before the read below resolves.
+    final changes = repository.changes.listen((snapshot) {
       state = AsyncData(snapshot);
     });
     ref.onDispose(changes.cancel);
-    return stored;
+    return repository.read();
   }
 }
 

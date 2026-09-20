@@ -57,9 +57,9 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The database announces its own changes, so no screen can be left showing
   stale progress.** Progress was read once and cached, and every write had to
   remember to say it had happened — a duty forgotten twice in code that shipped,
-  once leaving a wiped Saved shelf still showing its old count. Screens now read
-  the snapshot through a stream that re-runs when the row changes, and the
-  twenty-odd hand-written refreshes are gone. A read taken straight after a
+  once leaving a wiped Saved shelf still showing its old count. The one method
+  every write goes through now announces itself, screens follow that, and the
+  twenty-two hand-written refreshes are gone. A read taken straight after a
   write still asks the database directly, which two places do and say so
   (ADR-0030).
 

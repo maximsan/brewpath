@@ -25,30 +25,48 @@ void main() {
     addTearDown(db.close);
   });
 
-  test('the stream opens on what is stored, empty install included', () async {
-    final snapshots = SnapshotRepository();
-
-    expect(await snapshots.watch().first, ProgressSnapshot.empty);
+  test('a fresh install reads as empty', () async {
+    expect(await SnapshotRepository().read(), ProgressSnapshot.empty);
   });
 
   test('a write reaches the stream with nobody announcing it', () async {
     final snapshots = SnapshotRepository();
     final seen = <Set<String>>[];
-    final subscription = snapshots.watch().listen(
+    final subscription = snapshots.changes.listen(
       (snapshot) => seen.add(snapshot.clearedByReset.favourites.value),
     );
     addTearDown(subscription.cancel);
 
-    await pumpEventQueue();
     await snapshots.write(
       _withFavourites(await snapshots.read(), {'t:arabica'}),
     );
     await pumpEventQueue();
 
     expect(seen, [
-      <String>{},
       {'t:arabica'},
     ]);
+  });
+
+  test('a write by another instance reaches the same listeners', () async {
+    final seen = <Set<String>>[];
+    final subscription = SnapshotRepository().changes.listen(
+      (snapshot) => seen.add(snapshot.clearedByReset.favourites.value),
+    );
+    addTearDown(subscription.cancel);
+
+    final writer = SnapshotRepository();
+    await writer.write(_withFavourites(await writer.read(), {'t:robusta'}));
+    await pumpEventQueue();
+
+    expect(
+      seen,
+      [
+        {'t:robusta'},
+      ],
+      reason:
+          'the repository is a façade over one row, not one conversation '
+          'per instance — AccountWipe holds its own',
+    );
   });
 
   test('a provider follows the database with no invalidate', () async {

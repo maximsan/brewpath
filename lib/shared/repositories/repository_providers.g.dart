@@ -162,35 +162,35 @@ String _$snapshotRepositoryHash() =>
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens to the database (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0030). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
-/// waiting on a subscription, and goes with its last watcher, so no
-/// subscription outlives the database it reads.
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
 
 @ProviderFor(ProgressSnapshotState)
 final progressSnapshotStateProvider = ProgressSnapshotStateProvider._();
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens to the database (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0030). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
-/// waiting on a subscription, and goes with its last watcher, so no
-/// subscription outlives the database it reads.
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
 final class ProgressSnapshotStateProvider
     extends $AsyncNotifierProvider<ProgressSnapshotState, ProgressSnapshot> {
   /// The stored progress, and every later version of it.
   ///
-  /// The one place the app listens to the database (ADR-0030). It opens on a
+  /// The one place the app listens for progress (ADR-0030). It opens on a
   /// one-shot read, so a caller that only wants the value now is not left
-  /// waiting on a subscription, and goes with its last watcher, so no
-  /// subscription outlives the database it reads.
+  /// waiting on an announcement, and outlives every screen, because a write
+  /// nobody is listening for is an announcement lost.
   ProgressSnapshotStateProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'progressSnapshotStateProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -204,14 +204,14 @@ final class ProgressSnapshotStateProvider
 }
 
 String _$progressSnapshotStateHash() =>
-    r'7f208de1c1c08ba8a95867ba39ec2e3aa263efbf';
+    r'a85219f004f71bab471990540f1f6672a1491929';
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens to the database (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0030). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
-/// waiting on a subscription, and goes with its last watcher, so no
-/// subscription outlives the database it reads.
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
 
 abstract class _$ProgressSnapshotState
     extends $AsyncNotifier<ProgressSnapshot> {

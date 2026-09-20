@@ -40,10 +40,16 @@ void main() {
     mastery: const MasteryResult(correct: 1, total: 1),
   );
 
-  Future<DateTime?> joined() {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
-    return container.read(joinedDateProvider.future);
+  /// Resolved the way a screen does, holding the watch open while the chain
+  /// settles. A bare read can lose a race with autoDispose, which tears the
+  /// chain down while its future is still in flight.
+  Future<DateTime?> joined([ProviderContainer? existing]) async {
+    final container = existing ?? ProviderContainer();
+    if (existing == null) addTearDown(container.dispose);
+    final held = container.listen(joinedDateProvider, (_, _) {});
+    final date = await container.read(joinedDateProvider.future);
+    held.close();
+    return date;
   }
 
   test('a fresh install reads its own first run', () async {
@@ -86,14 +92,11 @@ void main() {
 
     final container = ProviderContainer();
     addTearDown(container.dispose);
-    expect(
-      await container.read(joinedDateProvider.future),
-      DateTime(2026, 7, 2),
-    );
+    expect(await joined(container), DateTime(2026, 7, 2));
 
     await AccountWipe().resetProgress();
     container.invalidate(completedLessonsProvider);
 
-    expect(await container.read(joinedDateProvider.future), isNull);
+    expect(await joined(container), isNull);
   });
 }

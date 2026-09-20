@@ -16,23 +16,32 @@ announcement is a queued thing that arrives at a moment nobody chose, one of
 them landed inside a route transition's build and tripped a framework assertion
 ([#299](https://github.com/maximsan/brewpath/issues/299)).
 
-Drift can watch a query and re-run it when a write touches a table it read.
-Nothing in the app used it.
-
 ## Decision
 
-A screen reads progress through `SnapshotRepository.watch()`, a stream, and
-never invalidates anything to see its own write. `ProgressSnapshotState` holds
-the single subscription; every display provider derives from it.
+The repository announces its own writes. `SnapshotRepository.write()` publishes
+the new snapshot on `changes`, and `ProgressSnapshotState` holds the single
+subscription; every display provider derives from it and never invalidates
+anything to see a write.
 
-It opens on `read()` rather than on the stream's first delivery. A provider
-whose value arrives only by subscription cannot answer a caller that merely
-wants the value now: nothing subscribes for a one-shot read, so its future
-never completes. Seeding from the one-shot read makes both kinds of caller work
-against the same provider, and the stream then pushes each later version into
-its state.
+The announcement lives in `write()` because that is the one door: nothing else
+in the app touches the snapshot row. A caller cannot forget a duty it does not
+have, which is the whole of what #289 was.
 
-`SnapshotRepository.read()` stays, for two cases that a stream cannot serve:
+The provider opens on `read()` and takes later versions from the stream. A
+value that arrives only by subscription cannot answer a caller that merely
+wants it now — nothing subscribes for a one-shot read, so its future never
+completes — and several callers want exactly that.
+
+**Not Drift's `watchSingle`**, which was the obvious mechanism and is the one
+this started as. Cancelling a Drift query stream schedules a zero-duration
+timer to close the query, and `testWidgets` asserts no timer is pending once
+the widget tree is disposed. That check runs before any `tearDown`, so there is
+no point at which the timer can be flushed; nineteen widget tests failed on it,
+and neither keeping the provider alive nor pumping in teardown moved it. The
+alternative was to relax the invariant for the whole widget suite, which trades
+a real check in every test for one provider's convenience.
+
+`SnapshotRepository.read()` stays, for two cases the stream cannot serve:
 
 - **A read-modify-write.** It needs the value at the instant it edits it, and a
   stream's latest delivered value may already be behind. `LessonCompletionService`
@@ -46,8 +55,8 @@ its state.
 
 What is not stored in the snapshot keeps its explicit refresh: the content bank
 loaded from assets, the clock behind `currentDayProvider`, entitlement from the
-payments service, and the settings row, which is a second table no snapshot
-stream covers.
+payments service, and the settings row, which is a second table the snapshot's
+announcement does not cover.
 
 ## Consequences
 
@@ -61,5 +70,12 @@ two places do. That is a narrower duty than the one it replaces: it binds
 the code doing the reading, which can see the problem, rather than every write
 site in the app, which cannot.
 
-Drift's own change tracking is now load-bearing. It is in-process and local:
-no network, no connection, no reconnect.
+What this does not buy, which watching the query would have: a change made to
+the database from outside app code — a cloud restore, a background sync, a
+second device — is still invisible. Nothing writes the snapshot that way today,
+and the sync transport is deliberately absent, so the gap is theoretical until
+one arrives. When it does, it arrives with a write path of its own, and that
+path announces on `changes` like every other.
+
+The mechanism is in-process and local: one broadcast stream, no network, no
+connection, no reconnect.
