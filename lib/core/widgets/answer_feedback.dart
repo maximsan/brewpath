@@ -3,6 +3,7 @@ import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// What a graded surface says when the answer was not right.
@@ -47,12 +48,18 @@ enum Verdict {
 
 /// Where the block is standing — the whole of what varies between its hosts.
 ///
-/// A mascot size, a body step and a wrong-answer tone, travelling as one
-/// value: the design moves them together, and passing them loose is what let
-/// five copies drift into combinations it never draws.
+/// A mascot size, a body step, a wrong-answer tone and the room above the
+/// block, travelling as one value: the design moves them together, and passing
+/// them loose is what let five copies drift into combinations it never draws.
 enum VerdictPlacement {
   /// A graded card in the lesson player.
   card(mascot: _mascotOnCard, speaksInBody: false),
+
+  /// A mini-game's round — `bagpick` and `tastefix`.
+  ///
+  /// A graded card in every other respect; the design simply closes a
+  /// mini-game a shade tighter than a lesson card.
+  miniGame(mascot: _mascotOnCard, speaksInBody: false),
 
   /// The cards the design sets a step larger — `decision` and `recall`, which
   /// pass `bodySize="body"`.
@@ -67,7 +74,19 @@ enum VerdictPlacement {
   /// A term entry is reference rather than a graded run: berry is the colour
   /// the lesson player spends on a wrong answer, and a look-up that answers
   /// back in it reads as a worse failure than missing a self-check is.
-  reference(mascot: _mascotInReference, speaksInBody: false),
+  reference(
+    mascot: _mascotInReference,
+    speaksInBody: false,
+    wrongInAccent: true,
+  ),
+
+  /// A vocab quiz round, which reads as reference for the same reason and is
+  /// drawn the same way. The design closes it tighter still.
+  vocabRound(
+    mascot: _mascotInReference,
+    speaksInBody: false,
+    wrongInAccent: true,
+  ),
 
   /// The predict card's held guess — the design's `size={64} bodySize="body"`.
   ///
@@ -88,6 +107,7 @@ enum VerdictPlacement {
     required this.mascot,
     required this.speaksInBody,
     this.rulesOff = false,
+    this.wrongInAccent = false,
   });
 
   /// The design's mascot size on a graded card, holding a guess, and inside a
@@ -102,6 +122,22 @@ enum VerdictPlacement {
   /// Whether a rule sits above the block, separating it from what it follows.
   final bool rulesOff;
 
+  /// Whether a wrong answer is named in the accent rather than berry.
+  final bool wrongInAccent;
+
+  /// The room the design leaves above the block here.
+  ///
+  /// On the placement rather than in each host, because the design carries it
+  /// as a prop of the block and twelve hosts each spacing it by hand is how
+  /// none of them ended up at the design's value.
+  double get room => switch (this) {
+    card || conversational || heldGuess => OffTokens.verdictRoomOnCard.value,
+    miniGame => OffTokens.verdictRoomInMiniGame.value,
+    reference => OffTokens.verdictRoomInReference.value,
+    vocabRound => OffTokens.verdictRoomInVocabRound.value,
+    openingGuess => OffTokens.verdictRoomOnPayoff.value,
+  };
+
   /// Whether the verdict announces itself on arrival.
   ///
   /// True everywhere but the payoff, which mounts on the same commit as the
@@ -114,8 +150,7 @@ enum VerdictPlacement {
   final bool speaksInBody;
 
   /// The colour a wrong answer is named in.
-  Color wrongTone(MoodColors mood) =>
-      this == VerdictPlacement.reference ? mood.accent : mood.berry;
+  Color wrongTone(MoodColors mood) => wrongInAccent ? mood.accent : mood.berry;
 
   /// How the explanation is set here.
   ///
@@ -206,14 +241,19 @@ class AnswerFeedback extends StatelessWidget {
       ],
     );
 
-    if (!placement.rulesOff) return block;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: AppSpacing.md),
-      decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: mood.rule)),
-      ),
-      child: block,
+    return Padding(
+      padding: EdgeInsets.only(top: placement.room),
+      child: placement.rulesOff ? _ruledOff(block, mood) : block,
     );
   }
+
+  /// The rule the payoff opens on, with the design's room under it.
+  Widget _ruledOff(Widget block, MoodColors mood) => Container(
+    width: double.infinity,
+    padding: EdgeInsets.only(top: OffTokens.verdictRuleGap.value),
+    decoration: BoxDecoration(
+      border: Border(top: BorderSide(color: mood.rule)),
+    ),
+    child: block,
+  );
 }

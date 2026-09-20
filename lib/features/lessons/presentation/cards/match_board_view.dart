@@ -200,7 +200,6 @@ class _MatchBoardViewState extends State<MatchBoardView>
             child: const SizedBox.shrink(),
           ),
         if (_cleared) ...[
-          const SizedBox(height: AppSpacing.md),
           AnswerFeedback(
             verdict: matchBoardVerdict(_wrongDrops),
             outcome: _faulted ? Verdict.wrong : Verdict.right,

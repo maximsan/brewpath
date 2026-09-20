@@ -4,6 +4,7 @@ import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -32,6 +33,20 @@ bool _announces(WidgetTester tester, String verdict) => tester
 
 Color? _verdictColour(WidgetTester tester, String rendered) =>
     tester.widget<Text>(find.text(rendered)).style?.color;
+
+/// The room the block leaves above itself, which it owns rather than its host.
+double _roomAbove(WidgetTester tester) => tester
+    .widget<Padding>(
+      find
+          .descendant(
+            of: find.byType(AnswerFeedback),
+            matching: find.byType(Padding),
+          )
+          .first,
+    )
+    .padding
+    .resolve(TextDirection.ltr)
+    .top;
 
 void main() {
   group('a right verdict', () {
@@ -248,5 +263,45 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(Roasty), findsOneWidget);
+  });
+
+  testWidgets('opens on the room its placement carries', (tester) async {
+    // The block spaces itself off what it follows, so no host has to — twelve
+    // that did left none of them at the design's value (#594).
+    for (final placement in VerdictPlacement.values) {
+      await tester.pumpWidget(
+        _host(
+          AnswerFeedback(
+            verdict: 'Not quite',
+            outcome: Verdict.wrong,
+            placement: placement,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(_roomAbove(tester), placement.room, reason: '$placement');
+    }
+  });
+
+  testWidgets('the payoff keeps the design gap under its rule', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        const AnswerFeedback(
+          verdict: 'You guessed seed',
+          outcome: Verdict.right,
+          placement: VerdictPlacement.openingGuess,
+        ),
+      ),
+    );
+
+    expect(
+      tester
+          .widget<Container>(find.byType(Container).first)
+          .padding
+          ?.resolve(TextDirection.ltr)
+          .top,
+      OffTokens.verdictRuleGap.value,
+    );
   });
 }

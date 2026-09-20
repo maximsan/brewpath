@@ -41,6 +41,7 @@ class CardShell extends StatelessWidget {
     this.title,
     this.commit,
     this.continueLabel = AppLabels.continueLabel,
+    this.buttonGap = AppSpacing.xl,
     super.key,
   });
 
@@ -72,6 +73,10 @@ class CardShell extends StatelessWidget {
   /// What the way forward says: Continue, unless the design words this card's
   /// gate itself — the predict card's *Make a guess*, then *Find out*.
   final String continueLabel;
+
+  /// The room the button block opens on, off the content above it. The design
+  /// sets 32 on every kind but predict and decision (30) and recall (26).
+  final double buttonGap;
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +120,9 @@ class CardShell extends StatelessWidget {
         // The lesson's own CTA, so it is the design's `.btn-primary` at full
         // width and 52 — not Material's 40, which left the most-pressed button
         // in the app shorter than the Continue on the screen after it. The
-        // design pads it `paddingTop: 32` off the content.
+        // design pads it off the content — [buttonGap] says by how much.
         Padding(
-          padding: const EdgeInsets.only(top: AppSpacing.xl),
+          padding: EdgeInsets.only(top: buttonGap),
           child: commit != null && !latched
               ? PrimaryButton(label: commit!.label, onPressed: commit!.onCommit)
               : PrimaryButton(
