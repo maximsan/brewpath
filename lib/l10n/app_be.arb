@@ -1,0 +1,19 @@
+{
+  "@@locale": "be",
+  "nameTitle": "А вы кто…?",
+  "@nameTitle": {
+    "x-translatedFrom": "fae91737d174"
+  },
+  "nameSupport": "Зараз толькі імя — так Roasty вас вітае.",
+  "@nameSupport": {
+    "x-translatedFrom": "cc9b96202080"
+  },
+  "nameContinue": "Далей",
+  "@nameContinue": {
+    "x-translatedFrom": "31fbef162594"
+  },
+  "nameSkip": "Прапусціць пакуль што",
+  "@nameSkip": {
+    "x-translatedFrom": "b58eb52c8810"
+  }
+}

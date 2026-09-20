@@ -1,0 +1,119 @@
+{
+  "drafted": "Drafted by tool/draft_language.js from the English master. Edit the queue and rerun, or fix a word here and clear its translatedFrom mark.",
+  "bank": "collectibles",
+  "language": "be",
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "c1"
+    },
+    {
+      "id": "c2"
+    },
+    {
+      "id": "c3"
+    },
+    {
+      "id": "cM1"
+    },
+    {
+      "id": "c-m2l1"
+    },
+    {
+      "id": "c-m2l2"
+    },
+    {
+      "id": "c-m2l3"
+    },
+    {
+      "id": "c-m3l1"
+    },
+    {
+      "id": "c-m3l2"
+    },
+    {
+      "id": "c-m3l3"
+    },
+    {
+      "id": "c-m4l1"
+    },
+    {
+      "id": "c-m4l2"
+    },
+    {
+      "id": "c-m4l3"
+    },
+    {
+      "id": "c-m5l1"
+    },
+    {
+      "id": "c-m5l2"
+    },
+    {
+      "id": "c-m5l3"
+    },
+    {
+      "id": "cM2"
+    },
+    {
+      "id": "cM3"
+    },
+    {
+      "id": "cM4"
+    },
+    {
+      "id": "cM5"
+    },
+    {
+      "id": "c-m1l4"
+    },
+    {
+      "id": "c-m1l5"
+    },
+    {
+      "id": "c-m1l7"
+    },
+    {
+      "id": "c-m1l6"
+    },
+    {
+      "id": "c-m2l4"
+    },
+    {
+      "id": "c-m2l5"
+    },
+    {
+      "id": "c-m2l6"
+    },
+    {
+      "id": "c-m3l4"
+    },
+    {
+      "id": "c-m3l5"
+    },
+    {
+      "id": "c-m3l6"
+    },
+    {
+      "id": "c-m4l5"
+    },
+    {
+      "id": "c-m4l6"
+    },
+    {
+      "id": "c-m4l7"
+    },
+    {
+      "id": "c-m5l4"
+    },
+    {
+      "id": "c-m5l5"
+    },
+    {
+      "id": "c-m5l7"
+    },
+    {
+      "id": "c-m5l6"
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "drafted": "Drafted by tool/draft_language.js from the English master. Edit the queue and rerun, or fix a word here and clear its translatedFrom mark.",
+  "bank": "modules",
+  "language": "be",
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "m1",
+      "label": "ЗЕРНЫ",
+      "title": "Зерны",
+      "lessons": [
+        {
+          "title": "Што такое кава на самай справе"
+        },
+        {
+          "title": "Арабіка і рабуста"
+        },
+        {
+          "title": "Што значыць паходжанне"
+        },
+        {
+          "title": "Чаму вышыня мае значэнне"
+        },
+        {
+          "title": "Што абяцае паліца"
+        },
+        {
+          "title": "Чаму дзве Эфіопіі маюць розны смак"
+        },
+        {
+          "title": "Унутры кававай ягады, пласт за пластом"
+        }
+      ],
+      "reward": {
+        "title": "Даведнік па відах зерна",
+        "summary": "Арабіка ці рабуста, дзе яна расла, як яе апрацоўвалі.",
+        "fact": "Гэты пакет кавы — ужо не проста этыкеткі: вы ведаеце, што яны азначаюць.",
+        "badge": "ЗЕРНЫ · ЗАКОНЧАНА"
+      },
+      "translatedFrom": {
+        "label": "91bd6037274b",
+        "title": "122aa2f74d0d",
+        "lessons[0].title": "716895415dab",
+        "lessons[1].title": "4a82fc5b1bc5",
+        "lessons[2].title": "d6675d89ba5b",
+        "lessons[3].title": "c993ff063b06",
+        "lessons[4].title": "e53e877c9805",
+        "lessons[5].title": "5ceb2f40e7c5",
+        "lessons[6].title": "c418612d609b",
+        "reward.title": "7bd38c90749e",
+        "reward.summary": "ce8491ef65fd",
+        "reward.fact": "fe29a03290e3",
+        "reward.badge": "e4ea7c1dccd6"
+      }
+    },
+    {
+      "id": "m2",
+      "label": "АПРАЦОЎКА",
+      "title": "Апрацоўка",
+      "lessons": [
+        {
+          "title": "Мытая, натуральная, хані"
+        },
+        {
+          "title": "Чаму апрацоўка мае значэнне"
+        },
+        {
+          "title": "Як чытаць этыкетку на пакеце"
+        },
+        {
+          "title": "Сушка кавы"
+        },
+        {
+          "title": "Што адбываецца ў рэзервуары"
+        },
+        {
+          "title": "Дэкаф, на самай справе"
+        }
+      ],
+      "reward": {
+        "title": "Даведнік па апрацоўцы",
+        "summary": "Вы можаце адрозніць мытую апрацоўку ад натуральнай тылько па смаку — на рэшце.",
+        "fact": "Мытая, натуральная, хані — цяпер вы ведаеце чаму гэта важна.",
+        "badge": "АПРАЦОЎКА · ЗАКОНЧАНА"
+      },
+      "translatedFrom": {
+        "label": "076b56745ed6",
+        "title": "c8e3e92a62ec",
+        "lessons[0].title": "17b923c9bc2d",
+        "lessons[1].title": "a3f60095b318",
+        "lessons[2].title": "64b7579838aa",
+        "lessons[3].title": "f0c7de716975",
+        "lessons[4].title": "8f2784ef5bae",
+        "lessons[5].title": "27bbf7cc21fb",
+        "reward.title": "78a5eb2952aa",
+        "reward.summary": "9721261608a1",
+        "reward.fact": "8f7704d7caf7",
+        "reward.badge": "e6b1b629848d"
+      }
+    },
+    {
+      "id": "m3",
+      "label": "АБСМАЖВАННЕ",
+      "title": "Абсмажванне",
+      "lessons": [
+        {
+          "title": "Што робіць абсмажванне"
+        },
+        {
+          "title": "Светлае, сярэдняе, цёмнае"
+        },
+        {
+          "title": "Першы і другі крэк"
+        },
+        {
+          "title": "Як чытаць дату абсмажвання"
+        },
+        {
+          "title": "Светлае і цёмнае, побач"
+        },
+        {
+          "title": "Колькі кафеіну вы насамрэч п’еце?"
+        }
+      ],
+      "reward": {
+        "title": "Даведнік па абсмажванні",
+        "summary": "Вы ўмееце чытаць дату абсмажвання і ведаеце, наколькі свежая — дастаткова свежая.",
+        "fact": "Светлае, сярэдняе, цёмнае — цяпер вы ведаеце, што кажа вам абсмажванне.",
+        "badge": "АБСМАЖВАННЕ · ЗАКОНЧАНА"
+      },
+      "translatedFrom": {
+        "label": "2e176c900722",
+        "title": "6eda3f8a3629",
+        "lessons[0].title": "67588675a4f0",
+        "lessons[1].title": "b18dff6492ce",
+        "lessons[2].title": "649b225e23ea",
+        "lessons[3].title": "4fe437e3029a",
+        "lessons[4].title": "b988cb845f82",
+        "lessons[5].title": "8b895656ee83",
+        "reward.title": "d721a7523425",
+        "reward.summary": "1cf208d2fe49",
+        "reward.fact": "bb188c7e0f68",
+        "reward.badge": "0ec12d161a01"
+      }
+    },
+    {
+      "id": "m4",
+      "label": "ПАМОЛ",
+      "title": "Памол",
+      "lessons": [
+        {
+          "title": "Памер часціц, простымі словамі"
+        },
+        {
+          "title": "Жорны ці нажы"
+        },
+        {
+          "title": "Які памол для якога спосабу заварвання"
+        },
+        {
+          "title": "Падбор паводле смаку"
+        },
+        {
+          "title": "Чаму молатая загадзя кава заўсёды такая не смачная"
+        },
+        {
+          "title": "Як выбраць першую кавамолку"
+        }
+      ],
+      "reward": {
+        "title": "Даведнік па памолу",
+        "summary": "Вы ведаеце, чаму памер памолу і тып кавамолкі непрыкметна кіруюць чашкай.",
+        "fact": "Грубы, сярэдні, дробны — цяпер вы ведаеце, у які бок паварочваць рэгулятар.",
+        "badge": "ПАМОЛ · ЗАКОНЧАНА"
+      },
+      "translatedFrom": {
+        "label": "a932ce0b791f",
+        "title": "f91feeaadd8d",
+        "lessons[0].title": "9905dfcba63a",
+        "lessons[1].title": "9305236f538a",
+        "lessons[2].title": "04d1da4422ca",
+        "lessons[3].title": "fce6caf18393",
+        "lessons[4].title": "2463d904898f",
+        "lessons[5].title": "8aef5d3bc14e",
+        "reward.title": "7d7b3073e58c",
+        "reward.summary": "17832ed8d224",
+        "reward.fact": "687a6a7d3b81",
+        "reward.badge": "ed24d48f0df4"
+      }
+    },
+    {
+      "id": "m5",
+      "label": "ЗАВАРВАННЕ",
+      "title": "Заварванне",
+      "lessons": [
+        {
+          "title": "Прапорцыя заварвання"
+        },
+        {
+          "title": "Вада — пераменная"
+        },
+        {
+          "title": "Экстракцыя простымі словамі"
+        },
+        {
+          "title": "Як выбраць фільтр?"
+        },
+        {
+          "title": "Як дэгуставаць сваю чашку?"
+        },
+        {
+          "title": "Эспрэса ў адной маленькай чашке"
+        },
+        {
+          "title": "Ваша першая добрая чашка"
+        }
+      ],
+      "reward": {
+        "title": "Даведнік па прыгатаванні кавы",
+        "summary": "Вы ўмееце задаць прапорцыю, падрыхтаваць ваду, палепшыць смак напою шляхам эксперыментаў — і «прачытаць» эспрэса",
+        "fact": "Вы ўжо не проста робіце каву — вы ведаеце, што змяняе чашку.",
+        "badge": "ЗАВАРВАННЕ · ЗАКОНЧАНА"
+      },
+      "translatedFrom": {
+        "label": "e72ba8dd24e3",
+        "title": "ab205b3f6294",
+        "lessons[0].title": "c883f525113c",
+        "lessons[1].title": "b5fe7e5e0352",
+        "lessons[2].title": "2b48e046e3ee",
+        "lessons[3].title": "721af42456bb",
+        "lessons[4].title": "76f458618209",
+        "lessons[5].title": "1ad181e59ee7",
+        "lessons[6].title": "03f083833469",
+        "reward.title": "5bbd3cb060ea",
+        "reward.summary": "c9ec385c27a7",
+        "reward.fact": "d70ae38aa478",
+        "reward.badge": "6766789a6201"
+      }
+    }
+  ]
+}
