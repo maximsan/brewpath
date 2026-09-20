@@ -93,6 +93,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   reserved width to wrap into
   ([#584](https://github.com/maximsan/brewpath/issues/584)).
 
+- **Every graded surface closes at the spacing the design gives it.** The
+  verdict block was spaced by each of its twelve hosts and no host matched the
+  design: most sat tight, the concept card and the vocab quiz loose, and the
+  sequence round had no room at all. The block now carries that room itself,
+  from where it is standing, so a lesson card, a mini-game, a term's
+  self-check and a vocab round each get their own. The button under predict
+  and decision moves 2px closer to the card, and under recall 6px
+  ([#594](https://github.com/maximsan/brewpath/issues/594)).
+
 - **A screen mounted without the app's theme now fails at once.** `context.mood`
   used to fall back to Dark Roast when the theme carried no mood, so a widget
   test or a throwaway walk that pumped a bare `MaterialApp` painted dark tokens
