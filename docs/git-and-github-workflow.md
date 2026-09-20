@@ -37,8 +37,11 @@ Names follow the conventional prefixes `feat/`, `fix/`, `chore/`, `docs/`,
 to `main` through a PR, squashed (see _Merging_).
 
 ⚠️ `main` has **no branch protection**, so nothing refuses a merge with red
-checks; check them first, the discipline is manual. Enabling it is
-[#629](https://github.com/maximsan/brewpath/issues/629).
+checks, a direct push, or a force-push. It cannot be enabled: the repository is
+private on a free GitHub plan, and GitHub locks both branch protection and
+rulesets behind Pro or a public repository. The ruling to stay unprotected is
+[#629](https://github.com/maximsan/brewpath/issues/629). Check the runs first;
+the discipline is manual.
 
 ## Staging with exclusions
 
@@ -177,7 +180,8 @@ gh run view <run-id> --repo maximsan/brewpath --log-failed
 `--log-failed` prints only the failing job's log instead of the whole run —
 usually the difference between reading 40 lines and 4,000.
 
-`main` is unprotected (_Branches_ above), so read these before merging.
+`main` is unprotected and cannot be protected on this plan (_Branches_
+above), so read these before merging.
 
 Note that `pull_request` runs use the workflow file from the *merge* of head
 into base. A CI fix landing on `main` therefore takes effect on open PRs as soon
