@@ -18,6 +18,7 @@ import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -356,6 +357,43 @@ void main() {
         ),
       );
       expect((deck.trailing! as Text).data, '$vocabMinimumPool');
+    });
+
+    testWidgets('a deck no length fits offers the whole of it, centred', (
+      tester,
+    ) async {
+      // Four saved terms: enough to open the deck, one short of the shortest
+      // authored round, so the only card on offer is the deck itself.
+      await _pump(tester, pools: _pools(saved: vocabMinimumPool));
+
+      for (final length in vocabLengths) {
+        expect(_lengthCard(length), findsNothing);
+      }
+      final whole = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.text(VocabCopy.wholeDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+      expect(whole.selected, isTrue);
+      expect(whole.onTap, isNull);
+      expect(whole.titleFace, AppFace.mono);
+      expect(
+        tester.getCenter(find.text(VocabCopy.wholeDeck)).dx,
+        moreOrLessEquals(
+          tester
+              .getCenter(
+                find.descendant(
+                  of: find.ancestor(
+                    of: find.text(VocabCopy.wholeDeck),
+                    matching: find.byType(PickCard),
+                  ),
+                  matching: find.text('$vocabMinimumPool'),
+                ),
+              )
+              .dx,
+        ),
+      );
     });
 
     testWidgets('the three round lengths sit in one row of centred cards', (

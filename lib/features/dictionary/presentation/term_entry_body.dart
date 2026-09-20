@@ -12,9 +12,8 @@ import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart'
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/features/dictionary/presentation/term_sources_section.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
-import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -244,7 +243,7 @@ class _PathBlock extends ConsumerWidget {
     final title = place?.title ?? '';
     final open = id == null
         ? null
-        : () => unawaited(context.pushActivity(lessonRun(id)));
+        : () => unawaited(context.pushLessonAskingReview(id));
 
     return _Block(
       label: status.pathLabel,

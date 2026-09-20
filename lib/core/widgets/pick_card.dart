@@ -84,8 +84,13 @@ class PickCard extends StatelessWidget {
 
   Widget _card(BuildContext context) {
     final mood = context.mood;
+    final corner = BorderRadius.circular(AppRadii.chrome);
     return Material(
       color: mood.surface,
+      // The surface and the press highlight take the corner too: left square
+      // they show past the stroke, which is visible at this radius.
+      borderRadius: corner,
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
@@ -100,7 +105,7 @@ class PickCard extends StatelessWidget {
               color: selected ? mood.accent : mood.rule,
               width: selected ? _selectedStroke : 1,
             ),
-            borderRadius: BorderRadius.circular(AppRadii.chrome),
+            borderRadius: corner,
           ),
           child: _centred ? _centredBody(mood) : _rowBody(mood),
         ),

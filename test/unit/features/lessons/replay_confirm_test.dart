@@ -6,8 +6,8 @@ final _today = DateTime(2026, 9, 20);
 int _daysBefore(int days) => epochDay(_today) - days;
 
 List<ReplayConfirmLine> _lines({
-  int minutes = 4,
-  int cards = 7,
+  int minutes = 9,
+  int cards = 3,
   bool dayAlreadyEarned = false,
   int? lastCompletedDay,
 }) => replayConfirmLines(
@@ -41,7 +41,7 @@ void main() {
 
     test('length gives the time and the card count', () {
       expect(
-        _valueOf(_lines(), 'Length'),
+        _valueOf(_lines(minutes: 4, cards: 7), 'Length'),
         '~4 min · 7 cards',
       );
       expect(

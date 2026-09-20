@@ -74,15 +74,7 @@ String lengthLine(int minutes, int cards) =>
 
 /// [day] as a learner would name it, against [today].
 ///
-/// Named days while one is in living memory, then the date: *last Tuesday* is
-/// a day someone can place, and *87 days ago* is arithmetic.
-String dayName(int day, {required DateTime today}) {
-  final daysAgo = epochDay(today) - day;
-  if (daysAgo <= 0) return 'Today';
-  if (daysAgo == 1) return 'Yesterday';
-  if (daysAgo < weekdayNames.length) {
-    final todayPosition = today.weekday - DateTime.monday;
-    return weekdayNames[(todayPosition - daysAgo) % weekdayNames.length];
-  }
-  return shortDate(dateFromEpochDay(day));
-}
+/// A named day while one is in living memory, then the date: *last Tuesday*
+/// is a day someone can place, and *87 days ago* is arithmetic.
+String dayName(int day, {required DateTime today}) =>
+    recentDayName(day, today: today) ?? shortDate(dateFromEpochDay(day));

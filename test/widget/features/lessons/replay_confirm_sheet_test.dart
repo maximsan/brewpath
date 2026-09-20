@@ -3,6 +3,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
 import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
@@ -23,10 +24,18 @@ import '../../../support/progress_seed.dart';
 import '../../../support/widget_harness.dart';
 
 const _lessonId = 'm1l1';
+
+/// A shipped term whose entry names [_lessonId] as where it was learned.
+const _termId = 'cherry';
 const _openLabel = 'open the lesson';
 const _running = 'the lesson is running';
 
-Future<ProviderContainer> _pump(
+/// A container over a fresh database, with the lesson already finished
+/// unless [finished] says otherwise.
+///
+/// The seed goes through `runAsync`: it is real drift I/O, which never
+/// progresses under the test's fake clock.
+Future<ProviderContainer> _container(
   WidgetTester tester, {
   bool finished = true,
   DateTime? finishedAt,
@@ -34,14 +43,28 @@ Future<ProviderContainer> _pump(
   await useInMemoryDatabase();
   final container = ProviderContainer();
   addTearDown(container.dispose);
-
   if (finished) {
-    await seedCompletedLesson(
-      container.read(snapshotRepositoryProvider),
-      _lessonId,
-      at: finishedAt ?? DateTime.now().subtract(const Duration(days: 3)),
+    await tester.runAsync(
+      () => seedCompletedLesson(
+        container.read(snapshotRepositoryProvider),
+        _lessonId,
+        at: finishedAt ?? DateTime.now().subtract(const Duration(days: 3)),
+      ),
     );
   }
+  return container;
+}
+
+Future<ProviderContainer> _pump(
+  WidgetTester tester, {
+  bool finished = true,
+  DateTime? finishedAt,
+}) async {
+  final container = await _container(
+    tester,
+    finished: finished,
+    finishedAt: finishedAt,
+  );
 
   final router = GoRouter(
     initialLocation: AppRoutes.learn.path,
@@ -92,22 +115,6 @@ Future<void> _drain(WidgetTester tester) async {
 Future<void> _tapOpen(WidgetTester tester) async {
   await tester.tap(find.text(_openLabel));
   await _drain(tester);
-}
-
-/// A container over a database where the lesson is already finished, for the
-/// two lists that reach one.
-Future<ProviderContainer> _pumpFinished(WidgetTester tester) async {
-  await useInMemoryDatabase();
-  final container = ProviderContainer();
-  addTearDown(container.dispose);
-  await tester.runAsync(
-    () => seedCompletedLesson(
-      container.read(snapshotRepositoryProvider),
-      _lessonId,
-      at: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-  );
-  return container;
 }
 
 /// The shipped lesson the rows are built from, so a row's title is the one a
@@ -197,7 +204,7 @@ void main() {
   });
 
   testWidgets('the Path asks before it replays a row', (tester) async {
-    final container = await _pumpFinished(tester);
+    final container = await _container(tester);
     final lesson = await _realLesson(tester, container);
     await tester.pumpWidget(
       UncontrolledProviderScope(
@@ -227,10 +234,35 @@ void main() {
     expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
   });
 
+  testWidgets("a term's lesson row asks before it replays", (tester) async {
+    // The fourth route to a finished lesson, and the one #573 never named:
+    // a dictionary term says where it was learned, and that is usually a
+    // lesson the learner has already been through.
+    final container = await _container(tester);
+    final lesson = await _realLesson(tester, container);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const TermDetailScreen(termId: _termId),
+        ),
+      ),
+    );
+    await settleLoaders(tester);
+
+    await tester.ensureVisible(find.text(lesson.title));
+    await tester.tap(find.text(lesson.title));
+    await _drain(tester);
+
+    expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
+  });
+
   testWidgets('Saved asks before it replays a bookmarked lesson', (
     tester,
   ) async {
-    final container = await _pumpFinished(tester);
+    final container = await _container(tester);
     final lesson = await _realLesson(tester, container);
     await tester.runAsync(
       () => toggleSaved(

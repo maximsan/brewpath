@@ -4,7 +4,8 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_search_copy.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_search_results.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
@@ -235,8 +236,11 @@ void main() {
       await tester.enterText(find.byType(TextField), 'zzzz');
       await tester.pumpAndSettle();
 
-      expect(find.text(DictionarySearchCount.label(0)), findsOneWidget);
-      expect(find.text(DictionaryNoMatches.message('zzzz')), findsOneWidget);
+      expect(find.text(DictionarySearchCopy.count(0)), findsOneWidget);
+      expect(
+        find.text(DictionarySearchCopy.noMatches('zzzz').line),
+        findsOneWidget,
+      );
       expect(find.textContaining('zzzz'), findsWidgets);
     });
 
@@ -247,7 +251,7 @@ void main() {
       await tester.enterText(find.byType(TextField), 'arab');
       await tester.pumpAndSettle();
 
-      expect(find.text(DictionarySearchCount.label(1)), findsOneWidget);
+      expect(find.text(DictionarySearchCopy.count(1)), findsOneWidget);
       expect(find.byType(DictionaryNoMatches), findsNothing);
     });
 
@@ -484,7 +488,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('TDS'), findsNothing);
-      expect(find.text(DictionaryNoMatches.message('tds')), findsOneWidget);
+      expect(
+        find.text(DictionarySearchCopy.noMatches('tds').line),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a link to a reference term lands on nothing', (tester) async {
