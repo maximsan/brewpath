@@ -68,4 +68,40 @@ void main() {
       );
     });
   });
+
+  group('the wait to the next local midnight', () {
+    test('five minutes before midnight is five minutes', () {
+      expect(
+        untilNextMidnight(DateTime(2026, 8, 20, 23, 55)),
+        const Duration(minutes: 5),
+      );
+    });
+
+    test('lands exactly on the next midnight from any time of day', () {
+      final now = DateTime(2026, 8, 20, 9, 17, 42, 500);
+      expect(now.add(untilNextMidnight(now)), DateTime(2026, 8, 21));
+    });
+
+    test('on the boundary it waits the whole next day, never zero', () {
+      // A zero-length timer armed at midnight would re-arm on itself and spin.
+      expect(
+        untilNextMidnight(DateTime(2026, 8, 20)),
+        const Duration(days: 1),
+      );
+    });
+
+    test('it is always positive', () {
+      for (final hour in [0, 1, 11, 12, 23]) {
+        expect(
+          untilNextMidnight(DateTime(2026, 8, 20, hour)),
+          greaterThan(Duration.zero),
+        );
+      }
+    });
+
+    test('the last day of a month rolls into the next month', () {
+      final now = DateTime(2026, 8, 31, 23, 30);
+      expect(now.add(untilNextMidnight(now)), DateTime(2026, 9));
+    });
+  });
 }

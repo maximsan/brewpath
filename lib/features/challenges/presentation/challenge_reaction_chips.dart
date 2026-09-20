@@ -73,6 +73,7 @@ class _Chip extends StatelessWidget {
       button: true,
       selected: selected,
       label: label,
+      onTap: onTap,
       excludeSemantics: true,
       child: InkWell(
         borderRadius: BorderRadius.circular(AppRadii.pill),

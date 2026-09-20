@@ -242,17 +242,22 @@ class _PathBlock extends ConsumerWidget {
     // Until the place resolves there is nothing honest to show — an id is not
     // an answer, so the row simply has no text yet.
     final title = place?.title ?? '';
+    final open = id == null
+        ? null
+        : () => unawaited(context.pushActivity(lessonRun(id)));
 
     return _Block(
       label: status.pathLabel,
       child: Semantics(
-        button: true,
+        // Only a button once there is an id to open: before the place
+        // resolves there is nothing to press, and saying otherwise is the
+        // announcement this row is being fixed for (#487).
+        button: open != null,
         label: '$title, ${accessible ? 'opens the lesson' : 'locked'}',
+        onTap: open,
         excludeSemantics: true,
         child: InkWell(
-          onTap: id == null
-              ? null
-              : () => unawaited(context.pushActivity(lessonRun(id))),
+          onTap: open,
           child: Row(
             children: [
               ClipRRect(

@@ -26,11 +26,9 @@ class OnboardingRepository {
 
   /// Marks onboarding complete, keeping [name] when the learner gave one.
   ///
-  /// A null [name] — the learner skipped — leaves the stored name **alone**
-  /// rather than clearing it. Skipping is declining to answer, not asking for
-  /// the answer to be forgotten, and the two differ for anyone who already has
-  /// a name: Settings' *Restart onboarding* replays the flow without touching
-  /// `learnerName`, so a clear here would erase a name they set on purpose.
+  /// A null [name] — the learner skipped — leaves the stored name **alone**:
+  /// skipping is declining to answer, not asking to be forgotten, and
+  /// *Restart onboarding* replays the flow without touching `learnerName`.
   /// Clearing one is Settings' job (#406).
   Future<void> markOnboardingComplete({String? name}) async {
     final s = await _settings.getSettings()
@@ -39,21 +37,19 @@ class OnboardingRepository {
     await _settings.saveSettings(s);
   }
 
-  /// Clears the onboarding gate so the next launch (or redirect
-  /// re-evaluation) sends the user back through Welcome.
-  /// Intended for the debug-only "Reset onboarding" action.
+  /// Clears the onboarding gate, so the next launch sends the learner back
+  /// through Welcome. The debug-only "Reset onboarding" action.
   ///
-  /// `tourSeen` and the micro-tips' seen list go with the gate. This action
-  /// exists to replay the app's introductions from the start, and the Tour and
-  /// the tips are the rest of them — leaving either set would send the tester
-  /// back through Welcome and then drop them on a Learn tab with no Tour and no
-  /// tips, which is a state no real device reaches.
+  /// `tourSeen`, the micro-tips' seen list and the swipe surfaces' used list
+  /// go with it: this replays the app's introductions, and leaving a set would
+  /// drop the tester on a Learn tab with no Tour, no tips and no swipe hints.
   Future<void> resetOnboarding() async {
     final s = await _settings.getSettings();
     s
       ..onboardingCompleted = false
       ..tourSeen = false
-      ..tipsSeen = '';
+      ..tipsSeen = ''
+      ..swipesUsed = '';
     await _settings.saveSettings(s);
   }
 }

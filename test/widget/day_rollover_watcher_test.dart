@@ -182,6 +182,95 @@ void main() {
     );
   });
 
+  testWidgets('midnight recomputes the surfaces with no resume at all', (
+    tester,
+  ) async {
+    final container = containerWithStubs();
+    addTearDown(container.dispose);
+
+    var now = DateTime(2026, 8, 20, 23, 55);
+    await pumpWatcher(tester, container: container, clock: () => now);
+    await primeAndHold(container);
+    expect(streakBuilds, 1);
+
+    // The app is left open: no lifecycle event fires, so only the timer armed
+    // for the next local midnight can notice the day turned over.
+    now = DateTime(2026, 8, 21, 0, 0, 1);
+    await tester.pump(const Duration(minutes: 5));
+
+    await container.read(streakStatusProvider.future);
+    await container.read(keepSharpRecommendationProvider.future);
+    await container.read(keepSharpAcknowledgedTodayProvider.future);
+    expect(dayBuilds, 2, reason: 'the header would otherwise show yesterday');
+    expect(streakBuilds, 2, reason: 'the streak is folded against a new today');
+    expect(recommendationBuilds, 2, reason: 'the rotation moved on');
+    expect(acknowledgedBuilds, 2);
+  });
+
+  testWidgets('the timer leaves the surfaces alone before midnight', (
+    tester,
+  ) async {
+    final container = containerWithStubs();
+    addTearDown(container.dispose);
+
+    final now = DateTime(2026, 8, 20, 23, 55);
+    await pumpWatcher(tester, container: container, clock: () => now);
+    await primeAndHold(container);
+
+    await tester.pump(const Duration(minutes: 4));
+
+    await container.read(streakStatusProvider.future);
+    expect(streakBuilds, 1, reason: 'the day has not turned over yet');
+  });
+
+  testWidgets('the timer re-arms, so a second midnight also fires', (
+    tester,
+  ) async {
+    final container = containerWithStubs();
+    addTearDown(container.dispose);
+
+    var now = DateTime(2026, 8, 20, 23, 55);
+    await pumpWatcher(tester, container: container, clock: () => now);
+    await primeAndHold(container);
+
+    now = DateTime(2026, 8, 21, 0, 0, 1);
+    await tester.pump(const Duration(minutes: 5));
+    await container.read(streakStatusProvider.future);
+    expect(streakBuilds, 2);
+
+    now = DateTime(2026, 8, 22, 0, 0, 1);
+    await tester.pump(const Duration(days: 1));
+    await container.read(streakStatusProvider.future);
+    expect(streakBuilds, 3, reason: 'one midnight must not be the only one');
+  });
+
+  testWidgets('the timer is dropped with the widget, not left running', (
+    tester,
+  ) async {
+    final container = containerWithStubs();
+    addTearDown(container.dispose);
+
+    var now = DateTime(2026, 8, 20, 23, 55);
+    await pumpWatcher(tester, container: container, clock: () => now);
+    await primeAndHold(container);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const SizedBox(),
+      ),
+    );
+    now = DateTime(2026, 8, 21, 0, 5);
+    await tester.pump(const Duration(days: 2));
+
+    await container.read(streakStatusProvider.future);
+    expect(
+      streakBuilds,
+      1,
+      reason: 'a timer outliving its widget would invalidate on a dead ref',
+    );
+  });
+
   testWidgets('it renders its child untouched', (tester) async {
     final container = containerWithStubs();
     addTearDown(container.dispose);

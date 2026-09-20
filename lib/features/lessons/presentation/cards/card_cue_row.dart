@@ -68,13 +68,15 @@ class _HelpButton extends ConsumerWidget {
     final mood = context.mood;
     final help = ref.watch(cardKindHelpProvider(cue)).asData?.value;
     if (help == null) return const SizedBox.shrink();
+    void openHelp() => showHelpDrawer(context, help);
 
     return Semantics(
       button: true,
       label: howToPlayLabel,
+      onTap: openHelp,
       excludeSemantics: true,
       child: InkResponse(
-        onTap: () => showHelpDrawer(context, help),
+        onTap: openHelp,
         radius: _target / 2,
         child: SizedBox(
           width: _target,

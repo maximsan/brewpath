@@ -132,11 +132,17 @@ class Disclosure extends StatelessWidget {
     }
     if (onToggle == null) return row;
 
+    // The tap is carried here only when the child's own is being dropped with
+    // its text (#487). Beside a live InkWell it would split the row into two
+    // nodes, taking the button flag off the one that carries the label.
+    final announcesAlone = semanticsLabel != null;
+
     return Semantics(
       button: true,
       expanded: collapsible ? isOpen : null,
       label: semanticsLabel,
-      excludeSemantics: semanticsLabel != null,
+      onTap: announcesAlone ? onToggle : null,
+      excludeSemantics: announcesAlone,
       child: InkWell(onTap: onToggle, child: row),
     );
   }

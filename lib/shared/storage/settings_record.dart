@@ -13,6 +13,7 @@ class UserSettingsRecord {
     this.themeMode = AppThemeMode.fallback,
     this.tourSeen = false,
     this.tipsSeen = '',
+    this.swipesUsed = '',
     this.learnerName,
     this.notificationsEnabled = false,
     this.dailyReminderTime,
@@ -25,6 +26,7 @@ class UserSettingsRecord {
   AppThemeMode themeMode;
   bool tourSeen;
   String tipsSeen;
+  String swipesUsed;
   String? learnerName;
   bool notificationsEnabled;
   String? dailyReminderTime;

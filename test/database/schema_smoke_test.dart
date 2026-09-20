@@ -9,6 +9,7 @@ import '../generated/schema_v1.dart' show DatabaseAtV1;
 import '../generated/schema_v10.dart' show DatabaseAtV10;
 import '../generated/schema_v11.dart' show DatabaseAtV11;
 import '../generated/schema_v12.dart' show DatabaseAtV12;
+import '../generated/schema_v13.dart' show DatabaseAtV13;
 import '../generated/schema_v2.dart' show DatabaseAtV2;
 import '../generated/schema_v3.dart' show DatabaseAtV3;
 import '../generated/schema_v4.dart' show DatabaseAtV4;
@@ -786,6 +787,50 @@ void main() {
         expect(row.read<String>('learner_name'), 'Maya');
         expect(row.read<bool>('notifications_enabled'), true);
         expect(row.read<String>('daily_reminder_time'), '08:00');
+      },
+    );
+  });
+
+  test('a v13 database upgrades having used no gesture', () async {
+    // The added column defaults rather than backfills: a device that predates
+    // the gesture layer has used none of it, so it is owed every first-run
+    // hint. The device-local bits it sits beside are asserted with it, because
+    // an additive step that rewrote one would look identical from the new
+    // column's side.
+    await verifier.testWithDataIntegrity(
+      oldVersion: 13,
+      newVersion: _currentVersion,
+      createOld: DatabaseAtV13.new,
+      createNew: (executor) =>
+          GeneratedHelper().databaseForVersion(executor, _currentVersion),
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) => batch.insert(
+        oldDb.userSettings,
+        const RawValuesInsertable<dynamic>({
+          'id': Variable<int>(1),
+          'haptics_enabled': Variable<bool>(true),
+          'sound_enabled': Variable<bool>(true),
+          'onboarding_completed': Variable<bool>(true),
+          'theme_mode': Variable<String>('light'),
+          'tour_seen': Variable<bool>(true),
+          'tips_seen': Variable<String>('path,saved'),
+          'learner_name': Variable<String>('Sam'),
+        }),
+      ),
+      validateItems: (newDb) async {
+        final settings = await newDb
+            .customSelect(
+              'SELECT swipes_used, tips_seen, tour_seen, learner_name '
+              'FROM user_settings',
+            )
+            .get();
+
+        expect(settings, hasLength(1));
+        final row = settings.single;
+        expect(row.read<String>('swipes_used'), '');
+        expect(row.read<String>('tips_seen'), 'path,saved');
+        expect(row.read<bool>('tour_seen'), true);
+        expect(row.read<String>('learner_name'), 'Sam');
       },
     );
   });

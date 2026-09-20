@@ -3,12 +3,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'current_day.g.dart';
 
+/// The app's clock, handed out as a function so the caller decides *when* to
+/// read it.
+///
+/// One seam: override this and every day and every window in the app moves
+/// with it. A function rather than an instant because elapsed time and the
+/// calendar day want opposite things — see [currentDayProvider] (ADR-0030).
+@riverpod
+DateTime Function() appClock(Ref ref) => DateTime.now;
+
 /// The local calendar day the app is currently showing.
 ///
-/// A provider rather than a `DateTime.now()` at the point of use, because the
-/// day is **the fourth day-dependent surface** `invalidateDaySurfaces` warns
-/// about: derived at build time, only ever as fresh as the last build, and
-/// silently wrong for a learner who left the app backgrounded overnight. It
-/// joins that list so the rollover recomputes it with the rest.
+/// Read once and cached until the rollover refreshes it, so every surface
+/// derived against today agrees on which day that is. A window measured in
+/// elapsed hours calls [appClockProvider] per read instead: it wants the
+/// moment, not the day the app settled on (ADR-0030).
 @riverpod
-DateTime currentDay(Ref ref) => dateOnly(DateTime.now());
+DateTime currentDay(Ref ref) => dateOnly(ref.watch(appClockProvider)());

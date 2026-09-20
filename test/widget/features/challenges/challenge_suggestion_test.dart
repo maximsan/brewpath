@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/widgets/reward_row.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
@@ -10,6 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
 import '../../../support/widget_harness.dart';
+
+/// The instant the challenge window is read against. A challenge started here
+/// is inside its 48 hours whenever the suite runs.
+final _now = DateTime(2026, 8, 20, 9);
 
 // The lesson-complete offer as a reward-list row, and — the part worth
 // guarding — whether there is an offer at all.
@@ -35,7 +40,10 @@ void main() {
   /// list asks before it builds a row.
   Future<BrewChallenge?> offerFor(WidgetTester tester, String lessonId) async {
     final container = ProviderContainer(
-      overrides: [challengeBankProvider.overrideWith((ref) async => bank)],
+      overrides: [
+        challengeBankProvider.overrideWith((ref) async => bank),
+        appClockProvider.overrideWithValue(() => _now),
+      ],
     );
     addTearDown(container.dispose);
     return tester.runAsync<BrewChallenge?>(
@@ -57,15 +65,13 @@ void main() {
     testWidgets('a challenge already in play is no longer an offer', (
       tester,
     ) async {
-      // Started *now*, not on a fixed date: what makes a challenge active is
-      // its 48-hour window measured against the clock, so a hardcoded start
-      // stops being active two days after it was written and the test begins
-      // passing for the wrong reason — then failing outright.
+      // Started from the same instant the window is measured against, so the
+      // 48 hours are a fixed span rather than a race with the wall clock.
       await tester.runAsync(
         () => startChallenge(
           SnapshotRepository(),
           id: challenge.id,
-          now: DateTime.now(),
+          now: _now,
         ),
       );
 

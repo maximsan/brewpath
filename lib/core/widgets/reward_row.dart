@@ -9,14 +9,9 @@ import 'package:flutter/material.dart';
 /// One occasional beat on a reward screen: what happened, and a quiet line
 /// saying what it means.
 ///
-/// **The one anatomy for every reward-list row** — a label, a muted detail,
-/// and at most one trailing affordance. The freeze earn, a new card and the
-/// Coffee Challenge offer are all this shape, which is what makes them read as
-/// one list rather than three unrelated announcements.
-///
-/// Deliberately plain: no well, no accent kicker, no card of its own. The
-/// screen already carries the celebration; a row that decorated itself would
-/// compete with the tree above it.
+/// The one anatomy for every reward-list row — a label, a muted detail and at
+/// most one trailing affordance — so the freeze earn, a new card and the
+/// Coffee Challenge offer read as one list rather than three announcements.
 class RewardRow extends StatelessWidget {
   /// Creates a [RewardRow].
   const RewardRow({
@@ -98,6 +93,7 @@ class RewardRow extends StatelessWidget {
     return Semantics(
       button: true,
       label: detail == null ? label : '$label. $detail',
+      onTap: onPress,
       excludeSemantics: true,
       child: InkWell(onTap: onPress, child: row),
     );

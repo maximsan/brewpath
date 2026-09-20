@@ -102,6 +102,7 @@ release builds are unaffected.
 | `GRANT_COURSE`  | Hands the learner the course entitlement, so the paid lessons open | `flutter run -d "iPhone 17" --dart-define=GRANT_COURSE=true`  |
 | `MONETIZATION_MODEL` | Puts the development store on one experiment arm — `subscription` or `hybrid` — so its paywall can be driven; unpriced, since no store has those SKUs | `flutter run -d "iPhone 17" --dart-define=MONETIZATION_MODEL=hybrid` |
 | `REVENUECAT_KEY` | The RevenueCat public SDK key. With one the app talks to the real store; without one it cannot take money at all | `flutter run -d "iPhone 17" --dart-define=REVENUECAT_KEY=appl_…` |
+| `REPLAY_SWIPE_HINTS` | Replays every first-run swipe hint, whatever this device has already learned. Reads the used-flag rather than clearing it, so nothing is lost | `flutter run -d "iPhone 17" --dart-define=REPLAY_SWIPE_HINTS=true` |
 
 > With **Reduce Motion** enabled, `LOOP_LOADING` holds a static "brewing" frame
 > instead of animating the loop.

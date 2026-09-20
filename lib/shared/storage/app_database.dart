@@ -67,6 +67,12 @@ class UserSettings extends Table {
   /// from "chose 8:00 AM", and the row reads *Off* for the first.
   TextColumn get dailyReminderTime => text().nullable()();
 
+  /// Swipe surfaces whose gesture the learner has used, comma-separated; empty
+  /// for none. The first-run hint stops on use, never after a count, so this
+  /// is the only thing that retires it (#610). Under [tourSeen]'s wipe rule
+  /// like [tipsSeen]: not progress. Device-local.
+  TextColumn get swipesUsed => text().withDefault(const Constant(''))();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -162,8 +168,11 @@ class AppDatabase extends _$AppDatabase {
   /// snapshot replaced, and the points total on `user_settings` with them.
   static const int _dropLegacyStoreVersion = 13;
 
+  /// Schema version that added the swipe surfaces' used list.
+  static const int _swipesUsedVersion = 14;
+
   /// The current version is whichever migration landed last.
-  static const int _schemaVersion = _dropLegacyStoreVersion;
+  static const int _schemaVersion = _swipesUsedVersion;
 
   @override
   int get schemaVersion => _schemaVersion;
@@ -267,6 +276,14 @@ class AppDatabase extends _$AppDatabase {
         await m.deleteTable('module_progress_records');
         await m.deleteTable('card_records');
         await m.dropColumn(userSettings, 'total_xp');
+      }
+
+      // v13 → v14: the swipe surfaces' used list. Additive, and defaulted to
+      // the empty list: a device upgrading into this version has used no
+      // gesture the app was watching, so "none" is the true value for it —
+      // and the cost of being wrong is one more first-run hint.
+      if (from < _swipesUsedVersion) {
+        await m.addColumn(userSettings, userSettings.swipesUsed);
       }
     },
   );

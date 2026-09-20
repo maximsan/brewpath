@@ -96,6 +96,7 @@ class _SpeakChipState extends ConsumerState<_SpeakChip> {
     return Semantics(
       button: true,
       label: 'Pronounce ${widget.word}',
+      onTap: _speak,
       excludeSemantics: true,
       child: InkWell(
         onTap: _speak,

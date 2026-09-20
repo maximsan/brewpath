@@ -50,6 +50,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   queue with a fingerprint per field, and refuses to call a language complete
   while anything is missing. CI re-runs that check on every folder in the tree.
 
+- **One horizontal swipe, for every surface that has one.** A shared gesture
+  carries the direction contract — left advances, right goes back or sets
+  aside, and destructive actions get no swipe — with a blocked direction
+  damping to 22% instead of going dead and a committed swipe flying off before
+  the content changes. The deck's peeked neighbour and the first-run hint ship
+  beside it. The hint stops when the gesture is used, never after a count
+  ([#610](https://github.com/maximsan/brewpath/issues/610)).
+
 ### Changed
 
 - **Roasty can speak a language other than English.** His lines were the one
@@ -57,6 +65,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   like every other content file. Each line carries an id of its own, so a
   language fills the same slots English has and fixing an English typo sends
   only that line back for re-reading (ADR-0029).
+
+- **The five module pictures ship 92% smaller.** They were bundled exactly as
+  the design draws them — 1254×1254 PNGs, 11.7 MB together — and are now
+  1100×1100 JPEGs, 0.88 MB together, still more pixels than the card can draw
+  on a 3x phone. The design source keeps its lossless originals; the extractor
+  names what actually ships when it writes the modules bank.
 
 ### Fixed
 
@@ -66,6 +80,20 @@ You can always edit this file by hand instead — the helpers just save effort.
   keys rather than prose (ADR-0025), so they set their own length.
 - **The card-kind help can be translated at all.** A language folder lands on a
   bank entry by entry by id, and that was the one bank whose entries had none.
+
+- **An app left open across midnight no longer shows yesterday.** The streak,
+  the freeze line, Keep Sharp, the header's date and a Coffee Challenge's
+  window were worked out when a screen last drew and refreshed only when the
+  app came back from the background, so a phone sitting on the counter at
+  midnight kept yesterday's answers until something was tapped. The app now
+  notices midnight itself and moves them all together (ADR-0030).
+
+- **Buttons a screen reader announced but could not press now press.** The
+  idiom that reads a tappable row as one announcement dropped the tap along
+  with the text it hid, leaving twenty-seven controls flagged as buttons with
+  no action to carry — the drill and lesson rows, the studio and appearance
+  pickers, the flashcard, the pronounce button and the welcome sound toggle
+  among them. A guard now reads the sources and fails if the pair comes apart.
 
 - **A half-translated language folder is refused, not shown.** The fallback to
   English reaches every depth of an entry, so a folder can translate one of a

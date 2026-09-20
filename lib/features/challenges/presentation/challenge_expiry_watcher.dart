@@ -1,22 +1,17 @@
 import 'dart:async';
 
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Parks a Coffee Challenge whose window has run out, on open and on resume.
+/// Parks a Coffee Challenge whose window has run out.
 ///
-/// **No timer.** A challenge's window is elapsed wall clock, so the only
-/// moments that matter are the ones where the app can act: a cold start and a
-/// return to the foreground. A ticking timer would burn cycles to notice
-/// something a single read answers.
-///
-/// It wraps the app rather than living on the Learn tab because all four shell
-/// tabs stay mounted: a learner who resumes on Profile would otherwise never
-/// run the check. And it is a widget rather than a provider because a read
-/// that writes is a side effect on a pure read path — and Riverpod would not
-/// re-run one on resume anyway.
+/// Three moments: a cold start, a resume, and the day turning over under an
+/// app left open — the last by watching the day the rollover refreshes, so one
+/// midnight moves the challenge window and the calendar surfaces together
+/// (ADR-0030). A widget, not a provider: a read that writes is a side effect.
 class ChallengeExpiryWatcher extends ConsumerStatefulWidget {
   /// Creates a [ChallengeExpiryWatcher].
   const ChallengeExpiryWatcher({required this.child, super.key});
@@ -51,7 +46,7 @@ class _ChallengeExpiryWatcherState
   Future<void> _check() async {
     final parked = await parkExpiredChallenge(
       ref.read(snapshotRepositoryProvider),
-      now: DateTime.now(),
+      now: ref.read(appClockProvider)(),
     );
     // Nothing lapsed: no write happened, so nothing downstream is stale.
     if (!parked || !mounted) return;
@@ -61,5 +56,10 @@ class _ChallengeExpiryWatcherState
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    // The rollover refreshes this day; a window that lapsed with it has to be
+    // parked without waiting for a resume that may never come.
+    ref.listen(currentDayProvider, (_, _) => unawaited(_check()));
+    return widget.child;
+  }
 }
