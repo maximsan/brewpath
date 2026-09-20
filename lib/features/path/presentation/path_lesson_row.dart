@@ -4,10 +4,9 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
-import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/path/domain/lesson_node_gauge.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
@@ -105,7 +104,9 @@ class PathLessonRow extends StatelessWidget {
     final row = InkWell(
       onTap: locked
           ? openGate
-          : () => unawaited(context.goToActivity(lessonRun(entry.lesson.id))),
+          : () => unawaited(
+              context.goToLessonAskingReview(entry.lesson.id),
+            ),
       child: Opacity(
         opacity: locked ? _lockedOpacity : 1,
         child: Padding(

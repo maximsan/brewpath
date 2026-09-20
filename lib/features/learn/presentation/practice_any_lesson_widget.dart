@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
-import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -45,8 +44,9 @@ class PracticeAnyLessonWidget extends StatelessWidget {
             // the day (§3), exactly as replaying from the course path does.
             // Where the learner started it has never been what decides
             // whether it counts.
-            onTap: () =>
-                unawaited(context.goToActivity(lessonRun(entry.lesson.id))),
+            onTap: () => unawaited(
+              context.goToLessonAskingReview(entry.lesson.id),
+            ),
           ),
       ],
     );

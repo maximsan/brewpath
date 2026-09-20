@@ -58,7 +58,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   beside it. The hint stops when the gesture is used, never after a count
   ([#610](https://github.com/maximsan/brewpath/issues/610)).
 
+- **Replaying a finished lesson asks first.** Tapping one on the Path, in the
+  practice shelf or in Saved now raises a sheet saying what a second run is
+  worth: points do not change, the streak either counts for today or was
+  already earned, and the sheet names the lesson's length and the day it was
+  last finished. *Not now* starts nothing. The lesson ending's practice-again
+  link still starts its run directly, and an unfinished lesson is unaffected
+  anywhere ([#573](https://github.com/maximsan/brewpath/issues/573)).
+
 ### Changed
+
+- **A selected pick card is a double stroke, not a filled dot.** The card drew
+  a ring with a dot in it, which is the one thing the design's selection rule
+  forbids; the edge now turns accent and reads as two, and the indicator is
+  gone. The vocab game's setup puts each deck's count in the column beside its
+  name rather than folding it into the title, and stands the three round
+  lengths in one row of centred cards
+  ([#571](https://github.com/maximsan/brewpath/issues/571)).
 
 - **Reset Progress now asks in a sheet that counts what it clears.** In place
   of a paragraph naming categories, the confirm lists this learner's own
@@ -98,6 +114,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   keys rather than prose (ADR-0025), so they set their own length.
 - **The card-kind help can be translated at all.** A language folder lands on a
   bank entry by entry by id, and that was the one bank whose entries had none.
+
+- **A search that finds nothing now says what it looked for.** The dictionary
+  read *No terms match that search.* whatever was typed; it now quotes the
+  query back and suggests a broader word or the categories, and every search
+  is headed with its result count — `0 RESULTS`, `1 RESULT`, `12 RESULTS` —
+  as the design draws it. The Saved shelf's empty state takes the design's own
+  measurements too: a softer bookmark, more room above it, and a line that
+  wraps where it was drawn to
+  ([#572](https://github.com/maximsan/brewpath/issues/572)).
 
 - **An app left open across midnight no longer shows yesterday.** The streak,
   the freeze line, Keep Sharp, the header's date and a Coffee Challenge's

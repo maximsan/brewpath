@@ -5,9 +5,8 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
-import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
@@ -59,7 +58,7 @@ class SavedScreen extends ConsumerWidget {
       case SavedKind.term:
         unawaited(context.pushDictionaryTerm(item.id));
       case SavedKind.lesson:
-        unawaited(context.pushActivity(lessonRun(item.id)));
+        unawaited(context.pushLessonAskingReview(item.id));
       case SavedKind.guide:
         // Awaited, not read for its current value: nothing has asked for this
         // guide before, so a synchronous read is still unresolved and the

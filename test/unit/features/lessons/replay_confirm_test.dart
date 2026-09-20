@@ -41,7 +41,7 @@ void main() {
 
     test('length gives the time and the card count', () {
       expect(
-        _valueOf(_lines(minutes: 4, cards: 7), 'Length'),
+        _valueOf(_lines(), 'Length'),
         '~4 min · 7 cards',
       );
       expect(
