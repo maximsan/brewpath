@@ -516,6 +516,62 @@ abstract final class OffTokens {
     reason: "a confirm sheet's line sets `padding: '13px 16px'`",
   );
 
+  /// The room inside a pick card.
+  static const OffToken<double> pickCardPadding = OffToken(
+    20,
+    reason: '`.pick-card` sets `padding: 20px`',
+  );
+
+  /// The gutter between the vocab setup's three round-length cards.
+  static const OffToken<double> vocabLengthGap = OffToken(
+    10,
+    reason:
+        "the round-length grid sets `gridTemplateColumns: '1fr 1fr 1fr'` "
+        'at `gap: 10`',
+  );
+
+  /// How far down the page the Saved shelf's empty state opens.
+  static const OffToken<double> savedEmptyTop = OffToken(
+    60,
+    reason: 'the empty shelf opens at `paddingTop: 60`',
+  );
+
+  /// The bookmark the empty shelf heads with.
+  static const OffToken<double> savedEmptyMark = OffToken(
+    44,
+    reason: 'the empty shelf draws its bookmark at `size={44}`',
+  );
+
+  /// How far the mark stands back from full strength.
+  static const OffToken<double> savedEmptyMarkOpacity = OffToken(
+    0.55,
+    reason: 'the mark sits at `opacity: 0.55`',
+  );
+
+  /// The room under that mark.
+  static const OffToken<double> savedEmptyMarkGap = OffToken(
+    18,
+    reason: 'the mark sets `marginBottom: 18`',
+  );
+
+  /// How wide the empty shelf's one line runs before it wraps.
+  static const OffToken<double> savedEmptyLineWidth = OffToken(
+    280,
+    reason: 'the line sits in `maxWidth: 280`',
+  );
+
+  /// The leading an empty state sets its line at, looser than its rung.
+  static const OffToken<double> emptyStateLeading = OffToken(
+    1.6,
+    reason: "an empty state's line sets `lineHeight: 1.6`",
+  );
+
+  /// The room over the dictionary's mono results count.
+  static const OffToken<double> searchCountTop = OffToken(
+    18,
+    reason: "the results count sets `margin: '18px 0 4px'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -593,5 +649,14 @@ abstract final class OffTokens {
     predictQuestionLeading,
     pickTileGap,
     confirmLinePadding,
+    pickCardPadding,
+    vocabLengthGap,
+    savedEmptyTop,
+    savedEmptyMark,
+    savedEmptyMarkOpacity,
+    savedEmptyMarkGap,
+    savedEmptyLineWidth,
+    emptyStateLeading,
+    searchCountTop,
   ];
 }

@@ -75,6 +75,9 @@ void main() {
     // the closing line. Adding one silently is what this fails on.
     expect(ClearedByReset.empty.toJson().keys, [
       'completedLessons',
+      // Ruled under the closing line, not a line of its own (#573): a
+      // per-lesson date is not a measure a learner would recognise.
+      'lastCompletedLessons',
       'bestResults',
       'activeDays',
       'acks',

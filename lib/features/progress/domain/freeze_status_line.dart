@@ -16,6 +16,20 @@ const List<String> weekdayNames = [
   'Sunday',
 ];
 
+/// What [day] is called, against [today], or null once a weekday name stops
+/// naming one day.
+///
+/// Dart's % is non-negative for a positive divisor, so stepping back across a
+/// week boundary lands on the right name without a correction.
+String? recentDayName(int day, {required DateTime today}) {
+  final daysAgo = epochDay(today) - day;
+  if (daysAgo <= 0) return 'Today';
+  if (daysAgo == 1) return 'Yesterday';
+  if (daysAgo >= weekdayNames.length) return null;
+  final todayPosition = today.weekday - DateTime.monday;
+  return weekdayNames[(todayPosition - daysAgo) % weekdayNames.length];
+}
+
 /// The one line that carries the whole freeze state.
 ///
 /// Three branches, first match wins (#26 §4): a day this week was covered —

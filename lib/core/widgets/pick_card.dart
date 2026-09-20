@@ -2,23 +2,37 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// Bordered selectable tile — the design's `.pick-card`: title and
-/// description on the left, a circular indicator on the right that fills when
-/// selected.
+/// Bordered selectable tile — the design's `.pick-card`: a two-column grid of
+/// title and description against whatever the caller puts on the right.
 ///
-/// Built for the onboarding goal and brewer screens, which ADR-0010 moved to
-/// v2 and #407 parked; the vocab game's deck picker is the live caller.
+/// Selection is the design system's *"Selection = double stroke … never a
+/// fill"*: the edge turns accent and reads as two, and nothing else moves.
 class PickCard extends StatelessWidget {
-  /// Creates a [PickCard].
+  /// Creates a [PickCard] — title and description left, [trailing] right.
   const PickCard({
     required this.title,
     required this.description,
     required this.selected,
     required this.onTap,
+    this.trailing,
     super.key,
-  });
+  }) : _centred = false,
+       titleFace = null;
+
+  /// Creates a centred [PickCard] — title over description, both centred, in
+  /// the tighter box the design gives a card that holds a figure.
+  const PickCard.centred({
+    required this.title,
+    required this.description,
+    required this.selected,
+    required this.onTap,
+    this.titleFace,
+    super.key,
+  }) : _centred = true,
+       trailing = null;
 
   /// Card title (the option name).
   final String title;
@@ -34,17 +48,30 @@ class PickCard extends StatelessWidget {
   /// empty callback leaves the row announced as a button that does nothing.
   final VoidCallback? onTap;
 
+  /// What sits in the right column — a count, a mark, nothing.
+  final Widget? trailing;
+
+  /// The face a centred card sets its title in, where the design asks for one
+  /// the step does not carry: the whole-deck card's figure is `pc-title
+  /// ff-mono` while the round lengths beside it stay on the display face.
+  final AppFace? titleFace;
+
+  /// Whether the card is laid out centred rather than as two columns.
+  final bool _centred;
+
   /// The design's wash over a card the learner cannot choose — its `dim()`.
   static const double _unavailableOpacity = 0.45;
 
+  /// What a selected edge reads as: the design's `1px` border plus its
+  /// `inset 0 0 0 1px` in the same colour.
+  static const double _selectedStroke = 2;
+
   /// Whether to draw this card as unavailable.
   ///
-  /// Untappable is **not** the same as unavailable, and the design draws the
-  /// difference: it dims a deck below its minimum and a round length the pool
-  /// cannot fill, but leaves the whole-deck card — `pick-card selected` at
-  /// `cursor: default` — at full strength. A card that is already the answer
-  /// is a statement, not a refused choice, so only an unselected card with
-  /// nowhere to go is dimmed.
+  /// Untappable is **not** unavailable: the design dims a deck below its
+  /// minimum, but leaves the whole-deck card — `pick-card selected` at
+  /// `cursor: default` — at full strength, because a card that is already the
+  /// answer states what you get rather than refusing a choice.
   bool get _isUnavailable => onTap == null && !selected;
 
   @override
@@ -57,75 +84,67 @@ class PickCard extends StatelessWidget {
 
   Widget _card(BuildContext context) {
     final mood = context.mood;
-    final borderColor = selected ? mood.accent : mood.rule;
+    final corner = BorderRadius.circular(AppRadii.chrome);
     return Material(
       color: mood.surface,
+      // The surface and the press highlight take the corner too: left square
+      // they show past the stroke, which is visible at this radius.
+      borderRadius: corner,
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.md,
-          ),
+          padding: _centred
+              ? const EdgeInsets.symmetric(
+                  vertical: AppSpacing.md,
+                  horizontal: AppSpacing.xs,
+                )
+              : EdgeInsets.all(OffTokens.pickCardPadding.value),
           decoration: BoxDecoration(
-            border: Border.all(color: borderColor),
-            borderRadius: BorderRadius.circular(AppRadii.editorial),
+            border: Border.all(
+              color: selected ? mood.accent : mood.rule,
+              width: selected ? _selectedStroke : 1,
+            ),
+            borderRadius: corner,
           ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppText.heading(mood: mood),
-                    ),
-                    const SizedBox(height: AppSpacing.xxs),
-                    Text(description, style: AppText.support(mood: mood)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              _PickIndicator(selected: selected),
-            ],
-          ),
+          child: _centred ? _centredBody(mood) : _rowBody(mood),
         ),
       ),
     );
   }
-}
 
-class _PickIndicator extends StatelessWidget {
-  const _PickIndicator({required this.selected});
+  Widget _rowBody(MoodColors mood) => Row(
+    children: [
+      Expanded(child: _text(mood, AppText.heading(mood: mood))),
+      if (trailing case final trailing?) ...[
+        const SizedBox(width: AppSpacing.md),
+        trailing,
+      ],
+    ],
+  );
 
-  static const double _size = 28;
-  static const double _innerDotSize = 14;
+  Widget _centredBody(MoodColors mood) => _text(
+    mood,
+    AppText.title(mood: mood, face: titleFace),
+    align: TextAlign.center,
+  );
 
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    return Container(
-      width: _size,
-      height: _size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: selected ? mood.accent : mood.rule),
+  Widget _text(
+    MoodColors mood,
+    TextStyle titleStyle, {
+    TextAlign align = TextAlign.start,
+  }) => Column(
+    crossAxisAlignment: align == TextAlign.center
+        ? CrossAxisAlignment.center
+        : CrossAxisAlignment.start,
+    children: [
+      Text(title, style: titleStyle, textAlign: align),
+      const SizedBox(height: AppSpacing.xxs),
+      Text(
+        description,
+        style: AppText.support(mood: mood),
+        textAlign: align,
       ),
-      child: selected
-          ? Center(
-              child: Container(
-                width: _innerDotSize,
-                height: _innerDotSize,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: mood.accent,
-                ),
-              ),
-            )
-          : null,
-    );
-  }
+    ],
+  );
 }

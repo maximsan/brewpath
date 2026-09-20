@@ -11,6 +11,7 @@ import 'package:brew_path/features/dictionary/presentation/dictionary_filter_con
 import 'package:brew_path/features/dictionary/presentation/dictionary_masthead.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_search_field.dart';
+import 'package:brew_path/features/dictionary/presentation/dictionary_search_results.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
@@ -160,13 +161,17 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                     selected: _filter,
                     onSelected: (filter) => setState(() => _filter = filter),
                   ),
+                // The design heads every search with its count, whether or
+                // not anything matched; a category drill-down has none.
+                if (_query.isNotEmpty)
+                  DictionarySearchCount(count: visible.length),
                 if (_onIndex) _index(),
               ],
             ),
           ),
           if (!_onIndex)
             if (visible.isEmpty)
-              const SliverToBoxAdapter(child: DictionaryNoMatches())
+              SliverToBoxAdapter(child: DictionaryNoMatches(query: _query))
             else
               DictionaryTermList(
                 view: widget.view,

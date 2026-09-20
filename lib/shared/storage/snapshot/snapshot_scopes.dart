@@ -19,6 +19,7 @@ class ClearedByReset {
   /// Creates a [ClearedByReset].
   const ClearedByReset({
     this.completedLessons = const {},
+    this.lastCompletedLessons = const {},
     this.bestResults = const {},
     this.activeDays = const {},
     this.acks = const {},
@@ -40,6 +41,7 @@ class ClearedByReset {
   /// snapshot decodes without special-casing.
   factory ClearedByReset.fromJson(Map<String, dynamic> json) => ClearedByReset(
     completedLessons: dayMapFromJson(json['completedLessons']),
+    lastCompletedLessons: dayMapFromJson(json['lastCompletedLessons']),
     bestResults: masteryMapFromJson(json['bestResults']),
     activeDays: intSetFromJson(json['activeDays']),
     acks: dayMapFromJson(json['acks']),
@@ -71,6 +73,7 @@ class ClearedByReset {
 
   static const _knownKeys = {
     'completedLessons',
+    'lastCompletedLessons',
     'bestResults',
     'activeDays',
     'acks',
@@ -94,6 +97,13 @@ class ClearedByReset {
   /// keeps the **earliest** of two devices' answers. It does not feed the free
   /// daily allowance (#115) — `canStartActivity` counts [dailyActivity].
   final Map<String, int> completedLessons;
+
+  /// Lesson id → the day it was **last** finished, first run or replay.
+  ///
+  /// The replay confirm sheet's only source: the first day cannot answer it
+  /// and `dailyActivity` prunes to two days. Merging keeps the **later** day,
+  /// the law [bestResults] already follows, so it never walks backwards.
+  final Map<String, int> lastCompletedLessons;
 
   /// Lesson id → best graded result, never downgraded.
   final Map<String, MasteryResult> bestResults;
@@ -219,17 +229,33 @@ class ClearedByReset {
         ...completedLessons,
         lessonId: first == null || day < first ? day : first,
       },
+      lastCompletedLessons: _lastCompletedWith(lessonId, day),
       bestResults: _bestResultsWith(lessonId, mastery),
     );
   }
 
-  /// A copy with [mastery] folded into [lessonId]'s stored best.
+  /// A copy recording a **replay** of [lessonId] on [day], scoring [mastery].
   ///
-  /// What a replay writes, and all it writes: it pays nothing and collects
-  /// nothing, but it can lift a result. Raise-only, so a bad run never takes
-  /// back a good one.
-  ClearedByReset withBestResult(String lessonId, MasteryResult mastery) =>
-      _copy(bestResults: _bestResultsWith(lessonId, mastery));
+  /// All a replay writes: it pays nothing and collects nothing, but it can
+  /// lift a result and it always dates the run. Both folds are raise-only, so
+  /// a bad run never takes back a good one and the day never goes backwards.
+  ClearedByReset withLessonReplayed(
+    String lessonId, {
+    required int day,
+    required MasteryResult mastery,
+  }) => _copy(
+    lastCompletedLessons: _lastCompletedWith(lessonId, day),
+    bestResults: _bestResultsWith(lessonId, mastery),
+  );
+
+  /// [lastCompletedLessons] with [day] folded in at [lessonId], never earlier.
+  Map<String, int> _lastCompletedWith(String lessonId, int day) {
+    final stored = lastCompletedLessons[lessonId];
+    return {
+      ...lastCompletedLessons,
+      lessonId: stored == null ? day : max(stored, day),
+    };
+  }
 
   /// [bestResults] with [mastery] folded in at [lessonId], never downgraded.
   Map<String, MasteryResult> _bestResultsWith(
@@ -358,6 +384,7 @@ class ClearedByReset {
   ClearedByReset _copy({
     Map<String, int>? acks,
     Map<String, int>? completedLessons,
+    Map<String, int>? lastCompletedLessons,
     Map<String, MasteryResult>? bestResults,
     Set<String>? ownedCollectibles,
     int? treeStage,
@@ -371,6 +398,7 @@ class ClearedByReset {
     Timestamped<Set<String>>? favourites,
   }) => ClearedByReset(
     completedLessons: completedLessons ?? this.completedLessons,
+    lastCompletedLessons: lastCompletedLessons ?? this.lastCompletedLessons,
     bestResults: bestResults ?? this.bestResults,
     activeDays: activeDays ?? this.activeDays,
     acks: acks ?? this.acks,
@@ -392,6 +420,7 @@ class ClearedByReset {
   Map<String, dynamic> toJson() => {
     ...unknown,
     'completedLessons': completedLessons,
+    'lastCompletedLessons': lastCompletedLessons,
     'bestResults': masteryMapToJson(bestResults),
     'activeDays': sortedList(activeDays),
     'acks': acks,
@@ -413,6 +442,7 @@ class ClearedByReset {
       identical(this, other) ||
       other is ClearedByReset &&
           mapEquals(other.completedLessons, completedLessons) &&
+          mapEquals(other.lastCompletedLessons, lastCompletedLessons) &&
           mapEquals(other.bestResults, bestResults) &&
           setEquals(other.activeDays, activeDays) &&
           mapEquals(other.acks, acks) &&
@@ -432,6 +462,7 @@ class ClearedByReset {
   @override
   int get hashCode => Object.hash(
     Object.hashAllUnordered(completedLessons.keys),
+    Object.hashAllUnordered(lastCompletedLessons.keys),
     Object.hashAllUnordered(bestResults.keys),
     Object.hashAllUnordered(activeDays),
     Object.hashAllUnordered(acks.keys),

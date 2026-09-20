@@ -7,6 +7,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// What a learner has picked so far — the two choices travel together because
@@ -137,12 +138,16 @@ class _DeckCard extends StatelessWidget {
     );
 
     return PickCard(
-      title: '${row.title} · $size',
+      title: row.title,
       description: row.note,
       selected: choice.deck == deck,
       onTap: available
           ? () => onChoice((deck: deck, length: choice.length))
           : null,
+      trailing: Text(
+        '$size',
+        style: AppText.support(mood: context.mood, face: AppFace.mono),
+      ),
     );
   }
 }
@@ -164,11 +169,12 @@ class _Lengths extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (fits.isEmpty) {
-      return PickCard(
+      return PickCard.centred(
         title: '$poolSize',
         description: VocabCopy.wholeDeck,
         selected: true,
         onTap: null,
+        titleFace: AppFace.mono,
       );
     }
 
@@ -176,22 +182,27 @@ class _Lengths extends StatelessWidget {
       chosen: choice.length,
       poolSize: poolSize,
     );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final length in vocabLengths)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-            child: PickCard(
-              title: '$length',
-              description: VocabCopy.lengthNames[length] ?? '',
-              selected: active == length,
-              onTap: fits.contains(length)
-                  ? () => onChoice((deck: choice.deck, length: length))
-                  : null,
+    // A grid row, so three cards of unequal copy still stand the same height.
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final length in vocabLengths) ...[
+            if (length != vocabLengths.first)
+              SizedBox(width: OffTokens.vocabLengthGap.value),
+            Expanded(
+              child: PickCard.centred(
+                title: '$length',
+                description: VocabCopy.lengthNames[length] ?? '',
+                selected: active == length,
+                onTap: fits.contains(length)
+                    ? () => onChoice((deck: choice.deck, length: length))
+                    : null,
+              ),
             ),
-          ),
-      ],
+          ],
+        ],
+      ),
     );
   }
 }

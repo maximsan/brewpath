@@ -18,6 +18,7 @@ import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -200,6 +201,13 @@ Future<void> playThrough(
   }
 }
 
+/// The round-length card for [length], found by its label rather than by its
+/// figure: a deck's count in the column beside it can be the same number.
+Finder _lengthCard(int length) => find.ancestor(
+  of: find.text(VocabCopy.lengthNames[length]!),
+  matching: find.byType(PickCard),
+);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -268,12 +276,15 @@ void main() {
       await _pump(tester);
 
       for (final length in vocabLengths) {
-        expect(find.text('$length'), findsOneWidget);
+        expect(_lengthCard(length), findsOneWidget);
+        expect(
+          find.descendant(
+            of: _lengthCard(length),
+            matching: find.text('$length'),
+          ),
+          findsOneWidget,
+        );
       }
-      expect(
-        find.text(VocabCopy.lengthNames[vocabLengths.first]!),
-        findsOneWidget,
-      );
     });
 
     testWidgets('the saved deck is unavailable until four are saved', (
@@ -337,9 +348,70 @@ void main() {
       await _pump(tester, pools: _pools(missed: vocabMinimumPool));
 
       expect(find.textContaining(VocabCopy.missesDeckReady), findsOneWidget);
+      expect(find.text(VocabCopy.missesDeck), findsOneWidget);
+
+      final deck = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.text(VocabCopy.missesDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+      expect((deck.trailing! as Text).data, '$vocabMinimumPool');
+    });
+
+    testWidgets('a deck no length fits offers the whole of it, centred', (
+      tester,
+    ) async {
+      // Four saved terms: enough to open the deck, one short of the shortest
+      // authored round, so the only card on offer is the deck itself.
+      await _pump(tester, pools: _pools(saved: vocabMinimumPool));
+
+      for (final length in vocabLengths) {
+        expect(_lengthCard(length), findsNothing);
+      }
+      final whole = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.text(VocabCopy.wholeDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+      expect(whole.selected, isTrue);
+      expect(whole.onTap, isNull);
+      expect(whole.titleFace, AppFace.mono);
       expect(
-        find.text('${VocabCopy.missesDeck} · $vocabMinimumPool'),
-        findsOneWidget,
+        tester.getCenter(find.text(VocabCopy.wholeDeck)).dx,
+        moreOrLessEquals(
+          tester
+              .getCenter(
+                find.descendant(
+                  of: find.ancestor(
+                    of: find.text(VocabCopy.wholeDeck),
+                    matching: find.byType(PickCard),
+                  ),
+                  matching: find.text('$vocabMinimumPool'),
+                ),
+              )
+              .dx,
+        ),
+      );
+    });
+
+    testWidgets('the three round lengths sit in one row of centred cards', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(saved: vocabLengths.last));
+
+      for (final length in vocabLengths) {
+        expect(tester.widget<PickCard>(_lengthCard(length)).trailing, isNull);
+      }
+      expect(
+        tester.getTopLeft(_lengthCard(vocabLengths.first)).dy,
+        tester.getTopLeft(_lengthCard(vocabLengths.last)).dy,
+        reason: 'the lengths are a row, not a column',
+      );
+      expect(
+        tester.getTopLeft(_lengthCard(vocabLengths.last)).dx,
+        greaterThan(tester.getTopLeft(_lengthCard(vocabLengths.first)).dx),
       );
     });
 
@@ -390,12 +462,7 @@ void main() {
       // button that does nothing.
       await _pump(tester);
 
-      final deep = tester.widget<PickCard>(
-        find.ancestor(
-          of: find.text('${vocabLengths.last}'),
-          matching: find.byType(PickCard),
-        ),
-      );
+      final deep = tester.widget<PickCard>(_lengthCard(vocabLengths.last));
       final savedDeck = tester.widget<PickCard>(
         find.ancestor(
           of: find.textContaining(VocabCopy.savedDeck),

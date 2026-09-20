@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
@@ -11,6 +12,7 @@ import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -110,6 +112,33 @@ void main() {
 
       expect(find.byType(SavedEmptyView), findsOneWidget);
       expect(find.text(SavedEmptyView.message), findsOneWidget);
+
+      // The design stands the mark back rather than drawing it at full
+      // strength: `opacity: 0.55` over a `size={44}` bookmark.
+      final mark = tester.widget<Opacity>(
+        find
+            .descendant(
+              of: find.byType(SavedEmptyView),
+              matching: find.byType(Opacity),
+            )
+            .first,
+      );
+      expect(mark.opacity, OffTokens.savedEmptyMarkOpacity.value);
+      expect(
+        tester
+            .getSize(
+              find.descendant(
+                of: find.byType(SavedEmptyView),
+                matching: find.byType(IconMark),
+              ),
+            )
+            .width,
+        OffTokens.savedEmptyMark.value,
+      );
+      expect(
+        tester.getSize(find.text(SavedEmptyView.message)).width,
+        lessThanOrEqualTo(OffTokens.savedEmptyLineWidth.value),
+      );
     },
   );
 

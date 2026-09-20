@@ -63,32 +63,6 @@ class DictionaryTermList extends StatelessWidget {
   }
 }
 
-/// Shown when a search matches nothing, so the learner knows the word is
-/// absent rather than the app broken.
-class DictionaryNoMatches extends StatelessWidget {
-  /// Creates a [DictionaryNoMatches].
-  const DictionaryNoMatches({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      label: 'No terms match that search',
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Text(
-            'No terms match that search.',
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: context.mood.inkMute),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 /// A category's glyph and its one-line description, under the section header.
 ///
 /// [moduleMark] is the mapping — the same one the Path headers use, because a

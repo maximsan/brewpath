@@ -5,6 +5,7 @@ import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
+import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
@@ -152,6 +153,11 @@ void main() {
       expect(rows, findsNWidgets(freeLessonIds.length));
 
       await tester.tap(rows.first);
+      await settleLoaders(tester);
+
+      // Every row here is a finished lesson, so the shelf asks first (#573).
+      expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
+      await tester.tap(find.text(ReplayConfirmCopy.confirm));
       await settleLoaders(tester);
 
       expect(find.byType(LessonScreen), findsOneWidget);

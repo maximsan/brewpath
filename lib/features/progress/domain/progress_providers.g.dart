@@ -304,7 +304,7 @@ final class CompletedLessonsProvider
   }
 }
 
-String _$completedLessonsHash() => r'27c0b9a3eca79b107fe45bfa8162243ac7ccb19d';
+String _$completedLessonsHash() => r'a5a4ad46f27ad3c22ba34f67f192df54d3161423';
 
 /// The ids of the lessons the learner has finished.
 ///
