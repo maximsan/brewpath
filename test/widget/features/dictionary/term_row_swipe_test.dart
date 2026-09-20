@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/swipe/horizontal_swipe.dart';
 import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
@@ -260,6 +261,43 @@ void main() {
 
       expect(label(tester), TermSaveTrack.alreadySaved);
       expect(find.text('ALREADY SAVED'), findsOneWidget);
+    });
+
+    testWidgets('leads with the mark, which fits what the damping uncovers', (
+      tester,
+    ) async {
+      await pump(tester, [_term('crema')], saved: const {'crema'});
+
+      final swipe = find.byType(HorizontalSwipe);
+      final atRest = tester.getTopLeft(find.text('crema')).dx;
+
+      final gesture = await tester.startGesture(tester.getCenter(swipe));
+      await gesture.moveBy(const Offset(30, 0));
+      await tester.pump();
+      // Far enough that a save would have committed twice over — what a
+      // finger does when the row resists is push harder.
+      await gesture.moveBy(const Offset(100, 0));
+      await tester.pump();
+
+      // The row is opaque, so the strip it has moved off is all that can be
+      // read — how far the row travelled, not where its text sits. The words
+      // never fit in that strip; the mark has to.
+      final uncovered = tester.getTopLeft(find.text('crema')).dx - atRest;
+      final mark = find.descendant(
+        of: find.byType(TermSaveTrack),
+        matching: find.byType(IconMark),
+      );
+      expect(mark, findsOneWidget);
+      expect(
+        tester.getTopRight(mark).dx - tester.getTopLeft(swipe).dx,
+        lessThanOrEqualTo(uncovered),
+        reason:
+            'the mark must clear the row at a natural drag; only '
+            '${uncovered.toStringAsFixed(1)}px is uncovered here',
+      );
+
+      await gesture.up();
+      await tester.pumpAndSettle();
     });
 
     testWidgets('an unsaved row says save', (tester) async {
