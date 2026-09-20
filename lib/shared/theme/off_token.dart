@@ -516,6 +516,20 @@ abstract final class OffTokens {
     reason: "a confirm sheet's line sets `padding: '13px 16px'`",
   );
 
+  /// The room inside a pick card.
+  static const OffToken<double> pickCardPadding = OffToken(
+    20,
+    reason: '`.pick-card` sets `padding: 20px`',
+  );
+
+  /// The gutter between the vocab setup's three round-length cards.
+  static const OffToken<double> vocabLengthGap = OffToken(
+    10,
+    reason:
+        "the round-length grid sets `gridTemplateColumns: '1fr 1fr 1fr'` "
+        'at `gap: 10`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -593,5 +607,7 @@ abstract final class OffTokens {
     predictQuestionLeading,
     pickTileGap,
     confirmLinePadding,
+    pickCardPadding,
+    vocabLengthGap,
   ];
 }

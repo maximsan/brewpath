@@ -200,6 +200,13 @@ Future<void> playThrough(
   }
 }
 
+/// The round-length card for [length], found by its label rather than by its
+/// figure: a deck's count in the column beside it can be the same number.
+Finder _lengthCard(int length) => find.ancestor(
+  of: find.text(VocabCopy.lengthNames[length]!),
+  matching: find.byType(PickCard),
+);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -268,12 +275,15 @@ void main() {
       await _pump(tester);
 
       for (final length in vocabLengths) {
-        expect(find.text('$length'), findsOneWidget);
+        expect(_lengthCard(length), findsOneWidget);
+        expect(
+          find.descendant(
+            of: _lengthCard(length),
+            matching: find.text('$length'),
+          ),
+          findsOneWidget,
+        );
       }
-      expect(
-        find.text(VocabCopy.lengthNames[vocabLengths.first]!),
-        findsOneWidget,
-      );
     });
 
     testWidgets('the saved deck is unavailable until four are saved', (
@@ -337,9 +347,33 @@ void main() {
       await _pump(tester, pools: _pools(missed: vocabMinimumPool));
 
       expect(find.textContaining(VocabCopy.missesDeckReady), findsOneWidget);
+      expect(find.text(VocabCopy.missesDeck), findsOneWidget);
+
+      final deck = tester.widget<PickCard>(
+        find.ancestor(
+          of: find.text(VocabCopy.missesDeck),
+          matching: find.byType(PickCard),
+        ),
+      );
+      expect((deck.trailing! as Text).data, '$vocabMinimumPool');
+    });
+
+    testWidgets('the three round lengths sit in one row of centred cards', (
+      tester,
+    ) async {
+      await _pump(tester, pools: _pools(saved: vocabLengths.last));
+
+      for (final length in vocabLengths) {
+        expect(tester.widget<PickCard>(_lengthCard(length)).trailing, isNull);
+      }
       expect(
-        find.text('${VocabCopy.missesDeck} · $vocabMinimumPool'),
-        findsOneWidget,
+        tester.getTopLeft(_lengthCard(vocabLengths.first)).dy,
+        tester.getTopLeft(_lengthCard(vocabLengths.last)).dy,
+        reason: 'the lengths are a row, not a column',
+      );
+      expect(
+        tester.getTopLeft(_lengthCard(vocabLengths.last)).dx,
+        greaterThan(tester.getTopLeft(_lengthCard(vocabLengths.first)).dx),
       );
     });
 
@@ -390,12 +424,7 @@ void main() {
       // button that does nothing.
       await _pump(tester);
 
-      final deep = tester.widget<PickCard>(
-        find.ancestor(
-          of: find.text('${vocabLengths.last}'),
-          matching: find.byType(PickCard),
-        ),
-      );
+      final deep = tester.widget<PickCard>(_lengthCard(vocabLengths.last));
       final savedDeck = tester.widget<PickCard>(
         find.ancestor(
           of: find.textContaining(VocabCopy.savedDeck),
