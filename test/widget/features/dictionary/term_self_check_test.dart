@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -14,6 +15,7 @@ const _check = DictionaryCheck(
 );
 
 Widget _harness({required bool disableAnimations}) => MaterialApp(
+  theme: AppTheme.cupping,
   home: MediaQuery(
     data: MediaQueryData(disableAnimations: disableAnimations),
     child: const Scaffold(body: TermSelfCheck(check: _check)),

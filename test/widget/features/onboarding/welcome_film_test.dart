@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/sound_toggle.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
@@ -21,6 +22,7 @@ Future<FakeVideoPlayerPlatform> _pumpWelcome(
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp.router(
+        theme: AppTheme.cupping,
         routerConfig: introRouter(initialLocation: '/welcome'),
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(

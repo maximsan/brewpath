@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/onboarding/data/onboarding_repository.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
@@ -41,7 +42,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [onboardingRepositoryProvider.overrideWithValue(fake)],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: router,
+        ),
       ),
     );
 
@@ -93,6 +97,7 @@ void main() {
           ),
         ],
         child: MaterialApp.router(
+          theme: AppTheme.cupping,
           routerConfig: router,
           builder: (context, child) => MediaQuery(
             data: MediaQuery.of(context).copyWith(disableAnimations: true),

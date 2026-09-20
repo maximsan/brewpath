@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
@@ -30,7 +31,10 @@ void main() {
             FakeOnboardingRepository(),
           ),
         ],
-        child: MaterialApp.router(routerConfig: introRouter()),
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: introRouter(),
+        ),
       ),
     );
 

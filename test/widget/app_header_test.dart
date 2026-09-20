@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_header.dart';
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
@@ -47,6 +48,7 @@ Widget _harness({
       ),
     ],
     child: MaterialApp(
+      theme: AppTheme.cupping,
       home: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
         // In a stack, as the shell places it: the header floats over the tab

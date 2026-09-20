@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_scroll.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
@@ -10,6 +11,7 @@ const double _buttonGap = 32;
 final Key _content = UniqueKey();
 
 Widget _host({required double contentHeight}) => MaterialApp(
+  theme: AppTheme.cupping,
   home: Scaffold(
     body: CardScroll(
       padding: const EdgeInsets.all(_inset),

@@ -69,8 +69,11 @@ void main() {
       await tester.pumpWidget(
         // Scoped because the row's Flashcards chip counts a deck (#97). It
         // resolves to nothing here, which is what a chip with no count draws.
-        const ProviderScope(
-          child: MaterialApp(home: Scaffold(body: DictionaryQuickChips())),
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.cupping,
+            home: const Scaffold(body: DictionaryQuickChips()),
+          ),
         ),
       );
 
@@ -85,8 +88,11 @@ void main() {
       await tester.pumpWidget(
         // Scoped because the row's Flashcards chip counts a deck (#97). It
         // resolves to nothing here, which is what a chip with no count draws.
-        const ProviderScope(
-          child: MaterialApp(home: Scaffold(body: DictionaryQuickChips())),
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.cupping,
+            home: const Scaffold(body: DictionaryQuickChips()),
+          ),
         ),
       );
 
@@ -107,9 +113,10 @@ void main() {
       // ADR-0004: the drills are content-scoped, never feature-gated. A lock
       // mark here would say the opposite of what is true.
       await tester.pumpWidget(
-        const ProviderScope(
+        ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: PracticeDrillsWidget(hasCourse: false)),
+            theme: AppTheme.cupping,
+            home: const Scaffold(body: PracticeDrillsWidget(hasCourse: false)),
           ),
         ),
       );

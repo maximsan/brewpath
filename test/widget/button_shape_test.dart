@@ -56,6 +56,7 @@ void main() {
     // Material's pill. Both read `AppRadii.chrome`, so the two cannot drift.
     await tester.pumpWidget(
       MaterialApp(
+        theme: AppTheme.cupping,
         home: Scaffold(
           body: PrimaryButton(label: 'x', onPressed: () {}),
         ),

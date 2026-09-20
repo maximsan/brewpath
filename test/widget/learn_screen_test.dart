@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
@@ -42,7 +43,7 @@ Future<void> _pumpLearn(WidgetTester tester, {LessonModel? today}) async {
         keepSharpRecommendationProvider.overrideWith((ref) async => null),
         keepSharpAcknowledgedTodayProvider.overrideWith((ref) async => false),
       ],
-      child: const MaterialApp(home: LearnScreen()),
+      child: MaterialApp(theme: AppTheme.cupping, home: const LearnScreen()),
     ),
   );
   await tester.pumpAndSettle();

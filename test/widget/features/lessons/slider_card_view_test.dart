@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/lessons/presentation/cards/grinder_dial_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
@@ -61,6 +62,7 @@ Future<void> _pumpCard(
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp(
+        theme: AppTheme.cupping,
         home: Scaffold(
           body: SingleChildScrollView(
             child: SliderCardView(
@@ -248,6 +250,7 @@ void main() {
           // The largest step iOS offers without the accessibility sizes.
           data: const MediaQueryData(textScaler: TextScaler.linear(2)),
           child: MaterialApp(
+            theme: AppTheme.cupping,
             home: Scaffold(
               body: SingleChildScrollView(
                 child: SliderCardView(

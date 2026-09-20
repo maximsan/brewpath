@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
@@ -34,6 +35,7 @@ void main() {
   setUp(useInMemoryDatabase);
 
   Widget wrap(VisualCard card, {VoidCallback? onContinue}) => MaterialApp(
+    theme: AppTheme.cupping,
     home: Scaffold(
       body: SingleChildScrollView(
         child: VisualCardView(

@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
@@ -26,6 +27,7 @@ Future<void> _pump(
     MediaQuery(
       data: MediaQueryData(disableAnimations: disableAnimations),
       child: MaterialApp(
+        theme: AppTheme.cupping,
         home: Scaffold(
           body: Center(
             child: WeekStrip(days: _week, size: size),

@@ -113,8 +113,9 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const MaterialApp(
-          home: Scaffold(
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const Scaffold(
             body: SavedBookmarkButton(savedKey: 't:arabica', label: 'Arabica'),
           ),
         ),

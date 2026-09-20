@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ Future<void> _pumpMeetRoasty(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp.router(
+        theme: AppTheme.cupping,
         routerConfig: introRouter(initialLocation: '/meet-roasty'),
       ),
     ),
