@@ -85,6 +85,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The floating top bar fades under its hairline, and two screens seal
+  sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
+  both endings now draws the same soft band below its edge that every other
+  top bar draws, so nothing is seen crossing a bare line — it composes the
+  shared chrome rather than painting its own. Term of the Day and the
+  mini-game intro take their chrome after 8 pixels instead of 40, because
+  those pages run to the top of the screen and a long one used to travel under
+  the close control and the clock first
+  ([#583](https://github.com/maximsan/brewpath/issues/583)).
+
 - **A selected pick card is a double stroke, not a filled dot.** The card drew
   a ring with a dot in it, which is the one thing the design's selection rule
   forbids; the edge now turns accent and reads as two, and the indicator is

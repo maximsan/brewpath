@@ -566,6 +566,16 @@ abstract final class OffTokens {
     reason: "an empty state's line sets `lineHeight: 1.6`",
   );
 
+  /// How far a page that runs full-bleed to the top scrolls before its
+  /// floating bar seals — shorter than the hook's default 40, because the
+  /// close control, the bookmark and the clock sit over the first line.
+  static const OffToken<double> floatBarScrollFlag = OffToken(
+    8,
+    reason:
+        'the two screens set `window.useScrollFlag(8, term && term.id)` and '
+        '`window.useScrollFlag(8, game && game.id)`',
+  );
+
   /// The room over the dictionary's mono results count.
   static const OffToken<double> searchCountTop = OffToken(
     18,
@@ -657,6 +667,7 @@ abstract final class OffTokens {
     savedEmptyMarkGap,
     savedEmptyLineWidth,
     emptyStateLeading,
+    floatBarScrollFlag,
     searchCountTop,
   ];
 }
