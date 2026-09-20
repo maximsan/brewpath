@@ -1,5 +1,6 @@
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/dictionary/presentation/term_linked_text.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -113,6 +114,12 @@ enum VerdictPlacement {
   /// Whether the explanation takes the body step rather than support.
   final bool speaksInBody;
 
+  /// Whether the explanation links the glossary terms it says.
+  ///
+  /// Everywhere but a term entry's self-check: the design links lesson copy,
+  /// and an entry that linked out to entries would circle.
+  bool get linksTerms => this != VerdictPlacement.reference;
+
   /// The colour a wrong answer is named in.
   Color wrongTone(MoodColors mood) =>
       this == VerdictPlacement.reference ? mood.accent : mood.berry;
@@ -192,12 +199,15 @@ class AnswerFeedback extends StatelessWidget {
                   ),
                 ),
               ),
-              if (explanation != null) ...[
+              if (explanation case final explanation?) ...[
                 const SizedBox(height: AppSpacing.xs),
-                Text(
-                  explanation!,
-                  style: placement.explanationStyle(mood),
-                ),
+                if (placement.linksTerms)
+                  TermLinkedText(
+                    text: explanation,
+                    style: placement.explanationStyle(mood),
+                  )
+                else
+                  Text(explanation, style: placement.explanationStyle(mood)),
               ],
               ?extra,
             ],

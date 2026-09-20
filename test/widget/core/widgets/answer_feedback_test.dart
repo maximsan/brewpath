@@ -2,9 +2,11 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The verdict block that closes every graded surface (#390).
@@ -13,12 +15,27 @@ import 'package:flutter_test/flutter_test.dart';
 /// wrong-state colour, which is the failure one component exists to make
 /// impossible — so these assert the things that drifted, not only that it
 /// renders.
-Widget _host(Widget child, {bool reduceMotion = false}) => MaterialApp(
-  theme: AppTheme.cupping,
-  home: MediaQuery(
-    data: MediaQueryData(disableAnimations: reduceMotion),
-    child: Scaffold(body: child),
+Widget _host(Widget child, {bool reduceMotion = false}) => ProviderScope(
+  overrides: [
+    dictionaryViewProvider.overrideWith((ref) async => _emptyDictionary),
+  ],
+  child: MaterialApp(
+    theme: AppTheme.cupping,
+    home: MediaQuery(
+      data: MediaQueryData(disableAnimations: reduceMotion),
+      child: Scaffold(body: child),
+    ),
   ),
+);
+
+/// A learner whose dictionary says nothing: the block links the glossary
+/// terms its explanation says (#99), and these assertions are about the block
+/// rather than about which words happen to be terms.
+const DictionaryView _emptyDictionary = DictionaryView(
+  terms: [],
+  categories: [],
+  completedLessonIds: {},
+  hasCourse: true,
 );
 
 /// The mood the host paints in, so a test can name the colours it expects.
