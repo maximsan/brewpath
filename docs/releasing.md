@@ -1,8 +1,11 @@
-# BrewPath — iOS Release Checklist
+# Releasing — versioning, and the iOS checklist
 
 ## Overview
 
-This checklist covers everything needed to publish BrewPath to the App Store and distribute via TestFlight. Steps are ordered from first-time setup through submission.
+How a version is numbered, and everything needed to publish BrewPath to the
+App Store and distribute via TestFlight, ordered from first-time setup through
+submission. iOS is the only platform today; Android joins as its own section
+when it ships ([`future-android-web-plan.md`](future-android-web-plan.md)).
 
 ---
 
@@ -145,7 +148,7 @@ time, not from this table — Google's list changes between releases, and a
 manifest that over-declares is as wrong as one that under-declares.
 
 "Ads" here means an ad network's SDK — AdMob, currently commented out in
-`pubspec.yaml`, see [`docs/11-ads.md`](11-ads.md) — filling a slot on our own
+`pubspec.yaml`, see [`docs/ads.md`](ads.md) — filling a slot on our own
 screen. The privacy cost is not the banner. It is the advertising identifier the
 SDK reads in order to aim and measure, which is what makes it tracking.
 
@@ -189,12 +192,11 @@ itself a rejection.
 
 ## 9. Build for Release
 
-```bash
-# Increment build number for each submission
-flutter build ios --release --build-number 1
-```
+The version and build number come from `pubspec.yaml`, which
+`node tool/release.js` bumps and tags (§12 below) — never pass
+`--build-number` by hand.
 
-- [ ] Run `flutter build ios --release` — no errors
+- [ ] Run `node tool/release.js` for this submission, then `flutter build ios --release` — no errors
 - [ ] In Xcode: Product → Archive
   - Select `Any iOS Device (arm64)` as the destination (not a Simulator)
   - Wait for archive to complete
@@ -259,12 +261,37 @@ Before submitting for App Review:
 
 ## 12. Version and Build Number Policy
 
-| Field   | Location                          | Maps to                        |
-| ------- | --------------------------------- | ------------------------------ |
-| Version | `pubspec.yaml` → `version: X.Y.Z+N` | `X.Y.Z` (CFBundleShortVersionString) |
-| Build   | `pubspec.yaml` → `version: X.Y.Z+N` | `N` (CFBundleVersion)          |
+`pubspec.yaml` uses Flutter's `version: X.Y.Z+B` format — two independent
+counters joined by `+`:
 
-Increment the build number (`+1`, `+2`, etc.) for every upload to App Store Connect. The version string (`1.0.0`) changes only for user-facing releases.
+- **`X.Y.Z`** — the semantic version: the user-facing "marketing" version shown
+  in the App Store / Play Store (iOS `CFBundleShortVersionString`, Android
+  `versionName`). Bump per [semver](https://semver.org) — patch for fixes, minor
+  for features, major for breaking changes.
+- **`+B`** — the **build number** (iOS `CFBundleVersion`, Android `versionCode`).
+  The stores reject any upload whose build number isn't higher than the last, so
+  it must increase on **every** binary — independent of `X.Y.Z`.
+
+Unlike an npm package (one semver string), a mobile app carries two numbers: one
+for humans, one for the store.
+
+`tool/release.js` (run with `node`) **always increments `+B`**, and changes
+`X.Y.Z` only when you pass an argument. It also stamps `docs/CHANGELOG.md` with
+the version and date — draft the changelog first with the `/changelog` skill;
+it refuses to run when `[Unreleased]` is empty, unless `--allow-empty` for a
+build-only rebuild — and with `--commit` it commits and tags.
+
+| Command            | From `1.0.0+3` → | What changed                           |
+| ------------------ | ---------------- | -------------------------------------- |
+| `release.js`       | `1.0.0+4`        | build number only                      |
+| `release.js patch` | `1.0.1+4`        | patch + build                          |
+| `release.js minor` | `1.1.0+4`        | minor (patch reset to 0) + build       |
+| `release.js major` | `2.0.0+4`        | major (minor/patch reset to 0) + build |
+| `release.js 2.3.1` | `2.3.1+4`        | explicit version + build               |
+| `release.js --dry-run` | —            | preview, writes nothing                |
+
+Pre-launch it's normal to stay on `1.0.0` and bump only the build number across
+TestFlight builds; start moving `X.Y.Z` once you ship user-facing updates.
 
 ---
 
