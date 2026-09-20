@@ -133,6 +133,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The app stopped offering a language it has two banks of.** An interface
+  translation beside `app_en.arb` is all it takes for Flutter to advertise a
+  locale, so Belarusian was on offer to any phone set to it while the course
+  still reads English — the mixed-language app ADR-0008 forbids. The draft
+  moves to `lib/l10n/pending/`, where `gen_l10n` leaves it, and comes back the
+  day its content folder is complete. The four translated strings are kept.
+
 - **A term can carry its own inflected forms.** A Polish folder whose aliases
   held *kawa, kawy, kawie, kawę* was refused at startup, because the overlay
   wanted every translated list to match English's length. Aliases are search
