@@ -1,7 +1,8 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// What an empty shelf says.
@@ -20,29 +21,40 @@ class SavedEmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
+
     return Semantics(
       label: 'Your saved shelf is empty',
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconMark(
+      // The shelf's own gutter is the screen's; only the design's opening
+      // room belongs to the block.
+      child: Padding(
+        padding: EdgeInsets.only(top: OffTokens.savedEmptyTop.value),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Opacity(
+              opacity: OffTokens.savedEmptyMarkOpacity.value,
+              child: IconMark(
                 AppIcon.bookmark,
-                size: AppSpacing.xxl,
-                color: context.mood.inkMute,
+                size: OffTokens.savedEmptyMark.value,
+                color: mood.inkMute,
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text(
+            ),
+            SizedBox(height: OffTokens.savedEmptyMarkGap.value),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: OffTokens.savedEmptyLineWidth.value,
+              ),
+              child: Text(
                 message,
                 textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: context.mood.inkMute),
+                style: AppText.body(
+                  mood: mood,
+                  color: mood.inkMute,
+                ).copyWith(height: OffTokens.emptyStateLeading.value),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

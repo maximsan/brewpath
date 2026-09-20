@@ -7,7 +7,9 @@ import 'package:brew_path/features/dictionary/presentation/term_row.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
+import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
 /// The visible terms, grouped under their categories in bank order.
@@ -63,26 +65,78 @@ class DictionaryTermList extends StatelessWidget {
   }
 }
 
+/// How many terms a search turned up, over the results — the mono count the
+/// design draws whether or not there are any.
+class DictionarySearchCount extends StatelessWidget {
+  /// Creates a [DictionarySearchCount].
+  const DictionarySearchCount({required this.count, super.key});
+
+  /// How many terms survived the query.
+  final int count;
+
+  /// What the count reads, singular or plural.
+  static String label(int count) =>
+      '$count ${count == 1 ? 'RESULT' : 'RESULTS'}';
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: OffTokens.searchCountTop.value,
+        bottom: AppSpacing.xxs,
+        left: AppSpacing.gutter,
+        right: AppSpacing.gutter,
+      ),
+      child: Text(
+        label(count),
+        style: AppText.label(
+          mood: context.mood,
+          face: AppFace.mono,
+          tracking: AppTracking.hint,
+        ),
+      ),
+    );
+  }
+}
+
 /// Shown when a search matches nothing, so the learner knows the word is
 /// absent rather than the app broken.
 class DictionaryNoMatches extends StatelessWidget {
   /// Creates a [DictionaryNoMatches].
-  const DictionaryNoMatches({super.key});
+  const DictionaryNoMatches({required this.query, super.key});
+
+  /// What was typed, quoted back so the line is about this search.
+  final String query;
+
+  /// The line, named so a test can assert it without re-spelling it.
+  ///
+  /// An empty [query] is the category filter having emptied the list
+  /// rather than a search. The design draws no state there at all, so
+  /// that case keeps the line the app already had.
+  static String message(String query) => query.isEmpty
+      ? 'No terms match that search.'
+      : 'No terms match \u201C$query\u201D. Try a broader word \u2014 or '
+            'browse by category.';
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
+
     return Semantics(
-      label: 'No terms match that search',
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Text(
-            'No terms match that search.',
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: context.mood.inkMute),
-          ),
+      label: query.isEmpty
+          ? 'No terms match that search'
+          : 'No terms match that search: $query',
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.lg,
+          left: AppSpacing.gutter,
+          right: AppSpacing.gutter,
+        ),
+        child: Text(
+          message(query),
+          style: AppText.support(
+            mood: mood,
+          ).copyWith(height: OffTokens.emptyStateLeading.value),
         ),
       ),
     );

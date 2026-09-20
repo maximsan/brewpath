@@ -160,13 +160,17 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                     selected: _filter,
                     onSelected: (filter) => setState(() => _filter = filter),
                   ),
+                // The design heads every search with its count, whether or
+                // not anything matched; a category drill-down has none.
+                if (_query.isNotEmpty)
+                  DictionarySearchCount(count: visible.length),
                 if (_onIndex) _index(),
               ],
             ),
           ),
           if (!_onIndex)
             if (visible.isEmpty)
-              const SliverToBoxAdapter(child: DictionaryNoMatches())
+              SliverToBoxAdapter(child: DictionaryNoMatches(query: _query))
             else
               DictionaryTermList(
                 view: widget.view,

@@ -301,7 +301,14 @@ state, its demo, when it applies, and its token spec):
 | Games | Card cue · Round length |
 | Brand & boot | Roasty, the companion · Intro screen skeleton · Tap to continue · Brand mark · Loading sequence |
 
-**Empty states are specified there and nowhere in this doc** — the ticket for them is [#572](https://github.com/maximsan/brewpath/issues/572).
+**Empty states have an entry there, and the screens overrule it.** Its rule —
+*"always three parts: a muted glyph, one Fraunces line, a ghost button that
+clears the cause"* — is not what v1 draws: the Saved shelf, the dictionary's
+no-matches line and the flashcards empty deck each carry their own values, and
+only flashcards has a button. The screens win, as
+[ADR-0009](../adr/0009-the-running-prototype-wins-over-the-design-system-catalogue.md)
+settles a radius. Ported by
+[#572](https://github.com/maximsan/brewpath/issues/572).
 
 **The `FLAGS` register.** The design-system site carries its own audit register
 (severity `high` → "NEEDS DECISION", `med` → "SHOULD FIX", `low` → "POLISH",

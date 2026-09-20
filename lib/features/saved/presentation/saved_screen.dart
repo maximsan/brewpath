@@ -123,7 +123,6 @@ class _Empty extends StatelessWidget {
           scrollPadding,
       children: const [
         PageLargeTitle(SavedScreen.title),
-        SizedBox(height: AppSpacing.lg),
         SavedEmptyView(),
       ],
     );
