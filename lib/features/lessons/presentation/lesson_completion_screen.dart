@@ -70,7 +70,7 @@ class _LessonCompletionScreenState
 
     // The clock, which no write touches and no stream covers: a run that
     // records a day has to say so. Everything the run wrote follows the
-    // database on its own (ADR-0030).
+    // database on its own (ADR-0031).
     invalidateDaySurfaces(ref);
 
     final card = result.isReplay

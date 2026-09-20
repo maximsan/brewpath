@@ -108,7 +108,7 @@ final class ActiveChallengeProvider
   }
 }
 
-String _$activeChallengeHash() => r'399c007b5e97e36b9a6ec719ba573cd8cc126d05';
+String _$activeChallengeHash() => r'7343874c2bd815c8a90f83a68767beebcd917a2b';
 
 /// Every challenge the learner has logged at least once.
 
@@ -158,9 +158,9 @@ String _$completedChallengesHash() =>
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. One question
-/// because the reward list needs one answer, and a row that rendered itself
-/// empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 
 @ProviderFor(lessonChallengeOffer)
 final lessonChallengeOfferProvider = LessonChallengeOfferFamily._();
@@ -168,9 +168,9 @@ final lessonChallengeOfferProvider = LessonChallengeOfferFamily._();
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. One question
-/// because the reward list needs one answer, and a row that rendered itself
-/// empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 
 final class LessonChallengeOfferProvider
     extends
@@ -183,9 +183,9 @@ final class LessonChallengeOfferProvider
   /// The challenge [lessonId] carries, **only while it is still an offer**.
   ///
   /// Null covers all three ways there is nothing to offer: the lesson carries no
-  /// challenge, the learner started it, or they finished it. One question
-  /// because the reward list needs one answer, and a row that rendered itself
-  /// empty would still take a hairline from the row above it.
+  /// challenge (twenty of the thirty-two do not), the learner started it, or
+  /// they finished it. Resolved as one question because the reward list needs
+  /// one answer — a row rendering itself empty still takes a hairline.
   LessonChallengeOfferProvider._({
     required LessonChallengeOfferFamily super.from,
     required String super.argument,
@@ -236,9 +236,9 @@ String _$lessonChallengeOfferHash() =>
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. One question
-/// because the reward list needs one answer, and a row that rendered itself
-/// empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 
 final class LessonChallengeOfferFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<BrewChallenge?>, String> {
@@ -254,9 +254,9 @@ final class LessonChallengeOfferFamily extends $Family
   /// The challenge [lessonId] carries, **only while it is still an offer**.
   ///
   /// Null covers all three ways there is nothing to offer: the lesson carries no
-  /// challenge, the learner started it, or they finished it. One question
-  /// because the reward list needs one answer, and a row that rendered itself
-  /// empty would still take a hairline from the row above it.
+  /// challenge (twenty of the thirty-two do not), the learner started it, or
+  /// they finished it. Resolved as one question because the reward list needs
+  /// one answer — a row rendering itself empty still takes a hairline.
 
   LessonChallengeOfferProvider call(String lessonId) =>
       LessonChallengeOfferProvider._(argument: lessonId, from: this);
@@ -268,9 +268,9 @@ final class LessonChallengeOfferFamily extends $Family
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
 /// Three states, not two: no challenge, one waiting to be brewed, or one
-/// brewed, drawn dashed and solid. Every unbrewed challenge is an offer, not
-/// only the one in play: the design's `challengeOpen` is *earned, has a
-/// challenge, has not completed it*.
+/// already brewed — the tile draws the last two differently. **Every unbrewed
+/// challenge is an offer**, not only the one in play (the design's
+/// `challengeOpen`), so a learner sees every card that still owes a brew.
 
 @ProviderFor(cardChallengeState)
 final cardChallengeStateProvider = CardChallengeStateFamily._();
@@ -278,9 +278,9 @@ final cardChallengeStateProvider = CardChallengeStateFamily._();
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
 /// Three states, not two: no challenge, one waiting to be brewed, or one
-/// brewed, drawn dashed and solid. Every unbrewed challenge is an offer, not
-/// only the one in play: the design's `challengeOpen` is *earned, has a
-/// challenge, has not completed it*.
+/// already brewed — the tile draws the last two differently. **Every unbrewed
+/// challenge is an offer**, not only the one in play (the design's
+/// `challengeOpen`), so a learner sees every card that still owes a brew.
 
 final class CardChallengeStateProvider
     extends
@@ -295,9 +295,9 @@ final class CardChallengeStateProvider
   /// What [cardId]'s challenge is doing, as a tile shows it.
   ///
   /// Three states, not two: no challenge, one waiting to be brewed, or one
-  /// brewed, drawn dashed and solid. Every unbrewed challenge is an offer, not
-  /// only the one in play: the design's `challengeOpen` is *earned, has a
-  /// challenge, has not completed it*.
+  /// already brewed — the tile draws the last two differently. **Every unbrewed
+  /// challenge is an offer**, not only the one in play (the design's
+  /// `challengeOpen`), so a learner sees every card that still owes a brew.
   CardChallengeStateProvider._({
     required CardChallengeStateFamily super.from,
     required String super.argument,
@@ -348,9 +348,9 @@ String _$cardChallengeStateHash() =>
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
 /// Three states, not two: no challenge, one waiting to be brewed, or one
-/// brewed, drawn dashed and solid. Every unbrewed challenge is an offer, not
-/// only the one in play: the design's `challengeOpen` is *earned, has a
-/// challenge, has not completed it*.
+/// already brewed — the tile draws the last two differently. **Every unbrewed
+/// challenge is an offer**, not only the one in play (the design's
+/// `challengeOpen`), so a learner sees every card that still owes a brew.
 
 final class CardChallengeStateFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<CardChallengeState>, String> {
@@ -366,9 +366,9 @@ final class CardChallengeStateFamily extends $Family
   /// What [cardId]'s challenge is doing, as a tile shows it.
   ///
   /// Three states, not two: no challenge, one waiting to be brewed, or one
-  /// brewed, drawn dashed and solid. Every unbrewed challenge is an offer, not
-  /// only the one in play: the design's `challengeOpen` is *earned, has a
-  /// challenge, has not completed it*.
+  /// already brewed — the tile draws the last two differently. **Every unbrewed
+  /// challenge is an offer**, not only the one in play (the design's
+  /// `challengeOpen`), so a learner sees every card that still owes a brew.
 
   CardChallengeStateProvider call(String cardId) =>
       CardChallengeStateProvider._(argument: cardId, from: this);
@@ -379,27 +379,30 @@ final class CardChallengeStateFamily extends $Family
 
 /// Whether the challenge on [cardId] has been brewed.
 ///
-/// The card's sheet asks twice, for the header seal and the foot stamp, so the
-/// three reads behind the answer live here. A card with no challenge, or a
-/// bank still loading, answers *not tried*.
+/// The card's sheet asks this twice over — for the seal on its header and the
+/// stamp at its foot — so the three reads behind the answer live here rather
+/// than in either widget. A card with no challenge, or a bank still loading,
+/// answers *not tried*.
 
 @ProviderFor(cardChallengeTried)
 final cardChallengeTriedProvider = CardChallengeTriedFamily._();
 
 /// Whether the challenge on [cardId] has been brewed.
 ///
-/// The card's sheet asks twice, for the header seal and the foot stamp, so the
-/// three reads behind the answer live here. A card with no challenge, or a
-/// bank still loading, answers *not tried*.
+/// The card's sheet asks this twice over — for the seal on its header and the
+/// stamp at its foot — so the three reads behind the answer live here rather
+/// than in either widget. A card with no challenge, or a bank still loading,
+/// answers *not tried*.
 
 final class CardChallengeTriedProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
   /// Whether the challenge on [cardId] has been brewed.
   ///
-  /// The card's sheet asks twice, for the header seal and the foot stamp, so the
-  /// three reads behind the answer live here. A card with no challenge, or a
-  /// bank still loading, answers *not tried*.
+  /// The card's sheet asks this twice over — for the seal on its header and the
+  /// stamp at its foot — so the three reads behind the answer live here rather
+  /// than in either widget. A card with no challenge, or a bank still loading,
+  /// answers *not tried*.
   CardChallengeTriedProvider._({
     required CardChallengeTriedFamily super.from,
     required String super.argument,
@@ -448,9 +451,10 @@ String _$cardChallengeTriedHash() =>
 
 /// Whether the challenge on [cardId] has been brewed.
 ///
-/// The card's sheet asks twice, for the header seal and the foot stamp, so the
-/// three reads behind the answer live here. A card with no challenge, or a
-/// bank still loading, answers *not tried*.
+/// The card's sheet asks this twice over — for the seal on its header and the
+/// stamp at its foot — so the three reads behind the answer live here rather
+/// than in either widget. A card with no challenge, or a bank still loading,
+/// answers *not tried*.
 
 final class CardChallengeTriedFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<bool>, String> {
@@ -465,9 +469,10 @@ final class CardChallengeTriedFamily extends $Family
 
   /// Whether the challenge on [cardId] has been brewed.
   ///
-  /// The card's sheet asks twice, for the header seal and the foot stamp, so the
-  /// three reads behind the answer live here. A card with no challenge, or a
-  /// bank still loading, answers *not tried*.
+  /// The card's sheet asks this twice over — for the seal on its header and the
+  /// stamp at its foot — so the three reads behind the answer live here rather
+  /// than in either widget. A card with no challenge, or a bank still loading,
+  /// answers *not tried*.
 
   CardChallengeTriedProvider call(String cardId) =>
       CardChallengeTriedProvider._(argument: cardId, from: this);
@@ -532,7 +537,7 @@ final class SavedChallengesProvider
   }
 }
 
-String _$savedChallengesHash() => r'9e6d00b710b7d058e7fe0b9c67bc03e550111b3d';
+String _$savedChallengesHash() => r'eafa25d032cd0d924836e4960f7215b89e46c6db';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
@@ -622,9 +627,9 @@ final class ModuleChallengeOfferFamily extends $Family
 /// The capstone [moduleId] is offering **right now**, or null.
 ///
 /// Live is the design's `offerLive`: neither in play nor already brewed. A
-/// saved challenge is still live, since parking it was the learner saying *not
-/// yet*. Eligibility is not re-derived here — [moduleChallengeOfferProvider]
-/// owns that gate (#143) and this only narrows what it returns.
+/// saved challenge is still live; parking it was the learner saying *not yet*.
+/// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+/// the gate (#143), and this only narrows what that gate returns.
 
 @ProviderFor(liveModuleChallengeOffer)
 final liveModuleChallengeOfferProvider = LiveModuleChallengeOfferFamily._();
@@ -632,9 +637,9 @@ final liveModuleChallengeOfferProvider = LiveModuleChallengeOfferFamily._();
 /// The capstone [moduleId] is offering **right now**, or null.
 ///
 /// Live is the design's `offerLive`: neither in play nor already brewed. A
-/// saved challenge is still live, since parking it was the learner saying *not
-/// yet*. Eligibility is not re-derived here — [moduleChallengeOfferProvider]
-/// owns that gate (#143) and this only narrows what it returns.
+/// saved challenge is still live; parking it was the learner saying *not yet*.
+/// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+/// the gate (#143), and this only narrows what that gate returns.
 
 final class LiveModuleChallengeOfferProvider
     extends
@@ -647,9 +652,9 @@ final class LiveModuleChallengeOfferProvider
   /// The capstone [moduleId] is offering **right now**, or null.
   ///
   /// Live is the design's `offerLive`: neither in play nor already brewed. A
-  /// saved challenge is still live, since parking it was the learner saying *not
-  /// yet*. Eligibility is not re-derived here — [moduleChallengeOfferProvider]
-  /// owns that gate (#143) and this only narrows what it returns.
+  /// saved challenge is still live; parking it was the learner saying *not yet*.
+  /// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+  /// the gate (#143), and this only narrows what that gate returns.
   LiveModuleChallengeOfferProvider._({
     required LiveModuleChallengeOfferFamily super.from,
     required String super.argument,
@@ -701,9 +706,9 @@ String _$liveModuleChallengeOfferHash() =>
 /// The capstone [moduleId] is offering **right now**, or null.
 ///
 /// Live is the design's `offerLive`: neither in play nor already brewed. A
-/// saved challenge is still live, since parking it was the learner saying *not
-/// yet*. Eligibility is not re-derived here — [moduleChallengeOfferProvider]
-/// owns that gate (#143) and this only narrows what it returns.
+/// saved challenge is still live; parking it was the learner saying *not yet*.
+/// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+/// the gate (#143), and this only narrows what that gate returns.
 
 final class LiveModuleChallengeOfferFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<BrewChallenge?>, String> {
@@ -719,9 +724,9 @@ final class LiveModuleChallengeOfferFamily extends $Family
   /// The capstone [moduleId] is offering **right now**, or null.
   ///
   /// Live is the design's `offerLive`: neither in play nor already brewed. A
-  /// saved challenge is still live, since parking it was the learner saying *not
-  /// yet*. Eligibility is not re-derived here — [moduleChallengeOfferProvider]
-  /// owns that gate (#143) and this only narrows what it returns.
+  /// saved challenge is still live; parking it was the learner saying *not yet*.
+  /// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+  /// the gate (#143), and this only narrows what that gate returns.
 
   LiveModuleChallengeOfferProvider call(String moduleId) =>
       LiveModuleChallengeOfferProvider._(argument: moduleId, from: this);

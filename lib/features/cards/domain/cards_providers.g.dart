@@ -11,7 +11,7 @@ part of 'cards_providers.dart';
 /// Every card the bank holds, paired with whether the learner owns it.
 ///
 /// Reads the collected ids off the snapshot, which follows the database on its
-/// own, so collecting a card reaches every surface showing one (ADR-0030).
+/// own, so collecting a card reaches every surface showing one (ADR-0031).
 
 @ProviderFor(cardsWithCollection)
 final cardsWithCollectionProvider = CardsWithCollectionProvider._();
@@ -19,7 +19,7 @@ final cardsWithCollectionProvider = CardsWithCollectionProvider._();
 /// Every card the bank holds, paired with whether the learner owns it.
 ///
 /// Reads the collected ids off the snapshot, which follows the database on its
-/// own, so collecting a card reaches every surface showing one (ADR-0030).
+/// own, so collecting a card reaches every surface showing one (ADR-0031).
 
 final class CardsWithCollectionProvider
     extends
@@ -34,7 +34,7 @@ final class CardsWithCollectionProvider
   /// Every card the bank holds, paired with whether the learner owns it.
   ///
   /// Reads the collected ids off the snapshot, which follows the database on its
-  /// own, so collecting a card reaches every surface showing one (ADR-0030).
+  /// own, so collecting a card reaches every surface showing one (ADR-0031).
   CardsWithCollectionProvider._()
     : super(
         from: null,

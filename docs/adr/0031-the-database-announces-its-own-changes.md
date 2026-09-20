@@ -1,4 +1,4 @@
-# ADR-0030: The database announces its own changes
+# ADR-0031: The database announces its own changes
 
 - **Status:** accepted
 - **Date:** 2026-09-19

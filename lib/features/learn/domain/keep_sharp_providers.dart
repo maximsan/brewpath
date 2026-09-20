@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
@@ -34,11 +35,11 @@ class KeepSharpRecommendation {
 /// rotation, which returns the type and the one screen its CTA opens. Null
 /// when no registered type has material.
 ///
-/// The reads are what the rule is asked of — playable, played today, finished
-/// — and every decision from them lives in [keepSharpResolutionFor].
+/// The reads are the material the rule is asked of; every decision made from
+/// them lives in [keepSharpResolutionFor].
 @riverpod
 Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
-  final day = keepSharpDayNumber(DateTime.now());
+  final day = keepSharpDayNumber(ref.watch(currentDayProvider));
   // Watches before awaits: a mid-flight rebuild must not reach a watch
   // across an async gap on a disposed ref.
   final formatsFuture = ref.watch(miniGameFormatsProvider.future);
@@ -89,11 +90,11 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
     keepSharpRecommendationProvider.future,
   );
   final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
+  final today = epochDay(ref.watch(currentDayProvider));
   final snapshot = await snapshotFuture;
   final recommendation = await recommendationFuture;
   if (recommendation == null) return false;
 
-  final today = epochDay(DateTime.now());
   // One read, feeding both rules: replays and mini-game runs are entries on
   // the same day record, so neither needs a source of its own.
   final entriesToday = snapshot.clearedByReset.dailyActivity[today] ?? const {};

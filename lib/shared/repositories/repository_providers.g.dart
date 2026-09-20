@@ -162,7 +162,7 @@ String _$snapshotRepositoryHash() =>
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens for progress (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0031). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
 /// waiting on an announcement, and outlives every screen, because a write
 /// nobody is listening for is an announcement lost.
@@ -172,7 +172,7 @@ final progressSnapshotStateProvider = ProgressSnapshotStateProvider._();
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens for progress (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0031). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
 /// waiting on an announcement, and outlives every screen, because a write
 /// nobody is listening for is an announcement lost.
@@ -180,7 +180,7 @@ final class ProgressSnapshotStateProvider
     extends $AsyncNotifierProvider<ProgressSnapshotState, ProgressSnapshot> {
   /// The stored progress, and every later version of it.
   ///
-  /// The one place the app listens for progress (ADR-0030). It opens on a
+  /// The one place the app listens for progress (ADR-0031). It opens on a
   /// one-shot read, so a caller that only wants the value now is not left
   /// waiting on an announcement, and outlives every screen, because a write
   /// nobody is listening for is an announcement lost.
@@ -208,7 +208,7 @@ String _$progressSnapshotStateHash() =>
 
 /// The stored progress, and every later version of it.
 ///
-/// The one place the app listens for progress (ADR-0030). It opens on a
+/// The one place the app listens for progress (ADR-0031). It opens on a
 /// one-shot read, so a caller that only wants the value now is not left
 /// waiting on an announcement, and outlives every screen, because a write
 /// nobody is listening for is an announcement lost.

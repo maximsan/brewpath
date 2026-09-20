@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_expiry_watcher.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
@@ -107,6 +108,35 @@ void main() {
     expect(await activeId(), 'bc-m2');
 
     await backgroundAndResume(tester);
+
+    expect(await activeId(), isNull);
+    expect(await saved(), {'bc-m2'});
+  });
+
+  testWidgets('a challenge that lapsed across midnight is parked unresumed', (
+    tester,
+  ) async {
+    var now = DateTime(2026, 8, 20, 23, 55);
+    final container = ProviderContainer(
+      overrides: [appClockProvider.overrideWithValue(() => now)],
+    );
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const ChallengeExpiryWatcher(child: SizedBox()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await startChallenge(snapshots, id: 'bc-m2', now: longAgo);
+    expect(await activeId(), 'bc-m2');
+
+    // What the midnight timer does to the clock the app reads. No lifecycle
+    // event fires: an app left open never resumes.
+    now = DateTime(2026, 8, 21, 0, 5);
+    container.invalidate(currentDayProvider);
+    await tester.pumpAndSettle();
 
     expect(await activeId(), isNull);
     expect(await saved(), {'bc-m2'});

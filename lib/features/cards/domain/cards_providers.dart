@@ -21,7 +21,7 @@ class CardWithCollection {
 /// Every card the bank holds, paired with whether the learner owns it.
 ///
 /// Reads the collected ids off the snapshot, which follows the database on its
-/// own, so collecting a card reaches every surface showing one (ADR-0030).
+/// own, so collecting a card reaches every surface showing one (ADR-0031).
 @riverpod
 Future<List<CardWithCollection>> cardsWithCollection(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);

@@ -21,7 +21,7 @@ class SnapshotRepository {
   /// A read-modify-write needs the value at the instant it edits it, which a
   /// stream cannot give: its latest delivered value may already be behind. A
   /// screen that reads this instead goes stale the moment anything writes, and
-  /// only a hand-written announcement would bring it back (ADR-0030).
+  /// only a hand-written announcement would bring it back (ADR-0031).
   Future<ProgressSnapshot> read() async {
     final row = await _row().getSingleOrNull();
     return _parse(row);

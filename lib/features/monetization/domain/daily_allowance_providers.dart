@@ -33,7 +33,7 @@ Future<bool> canStartActivity(Ref ref) async {
 ///
 /// Read on a tap, straight after the write that may have spent the allowance,
 /// so it goes back to the database rather than trusting the snapshot stream to
-/// have delivered yet (ADR-0030). Nothing watches this, so nothing else would
+/// have delivered yet (ADR-0031). Nothing watches this, so nothing else would
 /// bring it up to date.
 Future<bool> activityAllowanceNow(ProviderContainer container) {
   container.invalidate(progressSnapshotStateProvider);

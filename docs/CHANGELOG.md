@@ -61,7 +61,7 @@ You can always edit this file by hand instead — the helpers just save effort.
   every write goes through now announces itself, screens follow that, and the
   twenty-two hand-written refreshes are gone. A read taken straight after a
   write still asks the database directly, which two places do and say so
-  (ADR-0030).
+  (ADR-0031).
 
 - **Roasty can speak a language other than English.** His lines were the one
   piece of reader-facing prose no language folder could reach; they now load
@@ -76,6 +76,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   names what actually ships when it writes the modules bank.
 
 ### Fixed
+
+- **An app left open across midnight no longer shows yesterday.** The streak,
+  the freeze line, Keep Sharp, the header's date and a Coffee Challenge's
+  window were worked out when a screen last drew and refreshed only when the
+  app came back from the background, so a phone sitting on the counter at
+  midnight kept yesterday's answers until something was tapped. The app now
+  notices midnight itself and moves them all together (ADR-0031).
 
 - **Buttons a screen reader announced but could not press now press.** The
   idiom that reads a tappable row as one announcement dropped the tap along

@@ -13,7 +13,7 @@ import '../../../support/widget_harness.dart';
 // The walk that used to throw (#299): the badge's subscription is paused while
 // Settings covers the shell, and the reset's queued invalidation flushed on
 // resume, inside a build. Nothing is queued now that the snapshot is a stream
-// (ADR-0030). The resume is the return to the badge's own tab, so leaving
+// (ADR-0031). The resume is the return to the badge's own tab, so leaving
 // Settings alone would not have provoked it.
 void main() {
   setUp(useInMemoryDatabase);

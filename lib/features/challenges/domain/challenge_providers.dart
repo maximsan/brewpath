@@ -1,3 +1,4 @@
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
@@ -29,7 +30,9 @@ Future<BrewChallenge?> activeChallenge(Ref ref) async {
   // already disposed.
   final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final bank = ref.watch(challengeBankProvider.future);
-  final nowMillis = DateTime.now().millisecondsSinceEpoch;
+  // Called per rebuild, not cached: a window is elapsed hours, so it is read
+  // at the moment it is asked about (ADR-0030).
+  final nowMillis = ref.watch(appClockProvider)().millisecondsSinceEpoch;
 
   final stored = (await snapshotFuture).clearedByReset.activeChallenge.value;
   final id = liveChallengeId(stored, nowMillis: nowMillis);
@@ -46,9 +49,9 @@ Future<Set<String>> completedChallenges(Ref ref) async {
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. One question
-/// because the reward list needs one answer, and a row that rendered itself
-/// empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 @riverpod
 Future<BrewChallenge?> lessonChallengeOffer(Ref ref, String lessonId) async {
   final challenge = challengeForLesson(
@@ -67,9 +70,9 @@ Future<BrewChallenge?> lessonChallengeOffer(Ref ref, String lessonId) async {
 /// What [cardId]'s challenge is doing, as a tile shows it.
 ///
 /// Three states, not two: no challenge, one waiting to be brewed, or one
-/// brewed, drawn dashed and solid. Every unbrewed challenge is an offer, not
-/// only the one in play: the design's `challengeOpen` is *earned, has a
-/// challenge, has not completed it*.
+/// already brewed — the tile draws the last two differently. **Every unbrewed
+/// challenge is an offer**, not only the one in play (the design's
+/// `challengeOpen`), so a learner sees every card that still owes a brew.
 @riverpod
 Future<CardChallengeState> cardChallengeState(Ref ref, String cardId) async {
   if (await ref.watch(cardChallengeTriedProvider(cardId).future)) {
@@ -84,9 +87,10 @@ Future<CardChallengeState> cardChallengeState(Ref ref, String cardId) async {
 
 /// Whether the challenge on [cardId] has been brewed.
 ///
-/// The card's sheet asks twice, for the header seal and the foot stamp, so the
-/// three reads behind the answer live here. A card with no challenge, or a
-/// bank still loading, answers *not tried*.
+/// The card's sheet asks this twice over — for the seal on its header and the
+/// stamp at its foot — so the three reads behind the answer live here rather
+/// than in either widget. A card with no challenge, or a bank still loading,
+/// answers *not tried*.
 @riverpod
 Future<bool> cardChallengeTried(Ref ref, String cardId) async {
   final bank = await ref.watch(challengeBankProvider.future);
@@ -123,8 +127,8 @@ Future<bool> _isOfferable(
 Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
   final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final content = ref.watch(contentRepositoryProvider);
+  final nowMillis = ref.watch(appClockProvider)().millisecondsSinceEpoch;
   final bank = await ref.watch(challengeBankProvider.future);
-  final nowMillis = DateTime.now().millisecondsSinceEpoch;
 
   final progress = (await snapshotFuture).clearedByReset;
   final completedLessonIds = progress.completedLessons.keys.toSet();
@@ -171,9 +175,9 @@ Future<BrewChallenge?> moduleChallengeOffer(Ref ref, String moduleId) async {
 /// The capstone [moduleId] is offering **right now**, or null.
 ///
 /// Live is the design's `offerLive`: neither in play nor already brewed. A
-/// saved challenge is still live, since parking it was the learner saying *not
-/// yet*. Eligibility is not re-derived here — [moduleChallengeOfferProvider]
-/// owns that gate (#143) and this only narrows what it returns.
+/// saved challenge is still live; parking it was the learner saying *not yet*.
+/// Eligibility is not re-derived here — [moduleChallengeOfferProvider] owns
+/// the gate (#143), and this only narrows what that gate returns.
 @riverpod
 Future<BrewChallenge?> liveModuleChallengeOffer(
   Ref ref,
@@ -195,9 +199,10 @@ Future<BrewChallenge?> liveModuleChallengeOffer(
 
 /// Puts [id] in play, parking whatever it displaced.
 ///
-/// Returns the challenge that was pushed out, if any: starting a second is not
-/// a way to abandon the first, so it goes into the queue rather than out of
-/// existence. Taking [id] out of the queue is part of the same write.
+/// Returns the challenge that was pushed out, if any. Starting a second
+/// challenge is not a way to abandon the first: it goes into the queue rather
+/// than out of existence. Taking [id] out of the queue is part of the same
+/// write — a challenge cannot be both waiting and in play.
 Future<String?> startChallenge(
   SnapshotRepository repository, {
   required String id,
@@ -326,9 +331,9 @@ Future<bool> parkExpiredChallenge(
 /// Records that [id] was brewed, with the outcome the learner reported.
 ///
 /// One write: the completion, the reaction and clearing the active pair land
-/// together or not at all. Returns the points paid, flat on a first completion
-/// and zero on a replay. Records nothing toward the streak or the allowance: a
-/// Coffee Challenge is reported, not observed, so it is not an activity.
+/// together or not at all. Returns the points paid — the flat award on a first
+/// completion, zero on a replay. **Records nothing toward the streak or the
+/// daily allowance**: a Coffee Challenge is not an activity.
 Future<int> logChallenge(
   SnapshotRepository repository, {
   required String id,

@@ -12,8 +12,8 @@ part of 'keep_sharp_providers.dart';
 /// rotation, which returns the type and the one screen its CTA opens. Null
 /// when no registered type has material.
 ///
-/// The reads are what the rule is asked of — playable, played today, finished
-/// — and every decision from them lives in [keepSharpResolutionFor].
+/// The reads are the material the rule is asked of; every decision made from
+/// them lives in [keepSharpResolutionFor].
 
 @ProviderFor(keepSharpRecommendation)
 final keepSharpRecommendationProvider = KeepSharpRecommendationProvider._();
@@ -22,8 +22,8 @@ final keepSharpRecommendationProvider = KeepSharpRecommendationProvider._();
 /// rotation, which returns the type and the one screen its CTA opens. Null
 /// when no registered type has material.
 ///
-/// The reads are what the rule is asked of — playable, played today, finished
-/// — and every decision from them lives in [keepSharpResolutionFor].
+/// The reads are the material the rule is asked of; every decision made from
+/// them lives in [keepSharpResolutionFor].
 
 final class KeepSharpRecommendationProvider
     extends
@@ -39,8 +39,8 @@ final class KeepSharpRecommendationProvider
   /// rotation, which returns the type and the one screen its CTA opens. Null
   /// when no registered type has material.
   ///
-  /// The reads are what the rule is asked of — playable, played today, finished
-  /// — and every decision from them lives in [keepSharpResolutionFor].
+  /// The reads are the material the rule is asked of; every decision made from
+  /// them lives in [keepSharpResolutionFor].
   KeepSharpRecommendationProvider._()
     : super(
         from: null,
@@ -68,7 +68,7 @@ final class KeepSharpRecommendationProvider
 }
 
 String _$keepSharpRecommendationHash() =>
-    r'66d136facd050fdde6f66359cc8f49140ca2c9f3';
+    r'ada04f3b97045cbef632e87469fd9ce802d4ca40';
 
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.
@@ -123,4 +123,4 @@ final class KeepSharpAcknowledgedTodayProvider
 }
 
 String _$keepSharpAcknowledgedTodayHash() =>
-    r'd80509bd4030e172b881ba247c699b64e2b5e5bb';
+    r'7692ae37e3cba0e1cc63d46067421c9ca9993d0e';

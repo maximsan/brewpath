@@ -93,7 +93,7 @@ Future<String> appVersionShort(Ref ref) async =>
 /// Wipes the learner's progress.
 ///
 /// Every progress surface follows the write on its own, because it reads the
-/// snapshot through a stream (ADR-0030). The settings row is a second table
+/// snapshot through a stream (ADR-0031). The settings row is a second table
 /// that no snapshot stream covers, so it is still told by hand.
 Future<void> resetProgress(WidgetRef ref) async {
   await ref.read(accountWipeProvider).resetProgress();
