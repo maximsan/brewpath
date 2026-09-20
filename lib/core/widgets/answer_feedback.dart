@@ -53,14 +53,14 @@ enum Verdict {
 /// five copies drift into combinations it never draws.
 enum VerdictPlacement {
   /// A graded card in the lesson player.
-  card(mascot: _mascotOnCard, speaksInBody: false),
+  card(mascot: _mascotOnCard, speaksInBody: false, linksTerms: true),
 
   /// The cards the design sets a step larger — `decision` and `recall`, which
   /// pass `bodySize="body"`.
   ///
   /// They talk back rather than mark an answer, and the design gives that
   /// reading the body step the rest of the run reserves for prose.
-  conversational(mascot: _mascotOnCard, speaksInBody: true),
+  conversational(mascot: _mascotOnCard, speaksInBody: true, linksTerms: true),
 
   /// A term entry's self-check, drawn smaller and toned **accent** rather than
   /// berry.
@@ -89,6 +89,7 @@ enum VerdictPlacement {
     required this.mascot,
     required this.speaksInBody,
     this.rulesOff = false,
+    this.linksTerms = false,
   });
 
   /// The design's mascot size on a graded card, holding a guess, and inside a
@@ -114,11 +115,12 @@ enum VerdictPlacement {
   /// Whether the explanation takes the body step rather than support.
   final bool speaksInBody;
 
-  /// Whether the explanation links the glossary terms it says.
+  /// Whether the explanation links the glossary terms it says (#99).
   ///
-  /// Everywhere but a term entry's self-check: the design links lesson copy,
-  /// and an entry that linked out to entries would circle.
-  bool get linksTerms => this != VerdictPlacement.reference;
+  /// Only where the block marks a graded answer. A term entry is reference
+  /// rather than a lesson, and the two guess standings answer a guess rather
+  /// than mark it — the design draws a link in none of the three.
+  final bool linksTerms;
 
   /// The colour a wrong answer is named in.
   Color wrongTone(MoodColors mood) =>

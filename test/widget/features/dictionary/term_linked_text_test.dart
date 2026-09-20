@@ -60,7 +60,7 @@ const _predict = PredictCard(
   question: 'The rise is called the ___.',
   options: ['Bloom', 'Crema'],
   answer: 'Bloom',
-  hold: 'Hold that thought.',
+  hold: 'Hold that thought about the crema.',
 );
 
 DictionaryView _view({List<DictionaryTerm> terms = const [_bloom, _crema]}) =>
@@ -184,6 +184,29 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(_linked(tester), ['bloom']);
+    });
+
+    testWidgets('leaves the guess it holds plain — nothing is graded there', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          PredictCardView(
+            card: _predict,
+            options: _predict.options,
+            onContinue: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Bloom'));
+      // Not `pumpAndSettle`: the block brings Roasty, who idles forever.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      expect(find.text(_predict.hold), findsOneWidget);
       expect(_linked(tester), ['bloom']);
     });
   });

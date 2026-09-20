@@ -33,10 +33,10 @@ class _TermLinkedTextState extends ConsumerState<TermLinkedText> {
   /// The design's `color-mix(in oklab, accent 60%, transparent)` on the rule.
   static const double _underlineOpacity = 0.6;
 
-  /// The design's `1.5px dotted` rule, as the multiple of the font's own
-  /// underline stroke that Flutter takes: Plex Sans Medium strokes 0.077em,
-  /// which is 1.155px at the body step the concept card's prose is set in.
-  static const double _underlineThickness = 1.3;
+  /// The design's `1.5px dotted` rule. Flutter takes a multiple of the font's
+  /// own underline stroke rather than pixels, and Plex Sans Medium strokes
+  /// 0.077em — 1.155px at the body step the concept card's prose is set in.
+  static const double _underlineStrokeMultiple = 1.3;
 
   List<TermTextSegment> _segments = const [];
 
@@ -85,7 +85,7 @@ class _TermLinkedTextState extends ConsumerState<TermLinkedText> {
     decoration: TextDecoration.underline,
     decorationStyle: TextDecorationStyle.dotted,
     decorationColor: mood.accent.withValues(alpha: _underlineOpacity),
-    decorationThickness: _underlineThickness,
+    decorationThickness: _underlineStrokeMultiple,
   );
 
   @override
