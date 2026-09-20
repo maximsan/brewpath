@@ -108,7 +108,7 @@ final class ActiveChallengeProvider
   }
 }
 
-String _$activeChallengeHash() => r'968d319c259fe1f4dff36725e5da71cb5d39d36d';
+String _$activeChallengeHash() => r'7343874c2bd815c8a90f83a68767beebcd917a2b';
 
 /// Every challenge the learner has logged at least once.
 
@@ -153,14 +153,14 @@ final class CompletedChallengesProvider
 }
 
 String _$completedChallengesHash() =>
-    r'2467e35ae3c7023fe8fee777732928b15c86483a';
+    r'96accc2b447a585e0f960dc2b16972b604b4e02f';
 
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. Resolved as one
-/// question because the reward list needs one answer — a row that rendered
-/// itself empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 
 @ProviderFor(lessonChallengeOffer)
 final lessonChallengeOfferProvider = LessonChallengeOfferFamily._();
@@ -168,9 +168,9 @@ final lessonChallengeOfferProvider = LessonChallengeOfferFamily._();
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. Resolved as one
-/// question because the reward list needs one answer — a row that rendered
-/// itself empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 
 final class LessonChallengeOfferProvider
     extends
@@ -183,9 +183,9 @@ final class LessonChallengeOfferProvider
   /// The challenge [lessonId] carries, **only while it is still an offer**.
   ///
   /// Null covers all three ways there is nothing to offer: the lesson carries no
-  /// challenge, the learner started it, or they finished it. Resolved as one
-  /// question because the reward list needs one answer — a row that rendered
-  /// itself empty would still take a hairline from the row above it.
+  /// challenge (twenty of the thirty-two do not), the learner started it, or
+  /// they finished it. Resolved as one question because the reward list needs
+  /// one answer — a row rendering itself empty still takes a hairline.
   LessonChallengeOfferProvider._({
     required LessonChallengeOfferFamily super.from,
     required String super.argument,
@@ -236,9 +236,9 @@ String _$lessonChallengeOfferHash() =>
 /// The challenge [lessonId] carries, **only while it is still an offer**.
 ///
 /// Null covers all three ways there is nothing to offer: the lesson carries no
-/// challenge, the learner started it, or they finished it. Resolved as one
-/// question because the reward list needs one answer — a row that rendered
-/// itself empty would still take a hairline from the row above it.
+/// challenge (twenty of the thirty-two do not), the learner started it, or
+/// they finished it. Resolved as one question because the reward list needs
+/// one answer — a row rendering itself empty still takes a hairline.
 
 final class LessonChallengeOfferFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<BrewChallenge?>, String> {
@@ -254,9 +254,9 @@ final class LessonChallengeOfferFamily extends $Family
   /// The challenge [lessonId] carries, **only while it is still an offer**.
   ///
   /// Null covers all three ways there is nothing to offer: the lesson carries no
-  /// challenge, the learner started it, or they finished it. Resolved as one
-  /// question because the reward list needs one answer — a row that rendered
-  /// itself empty would still take a hairline from the row above it.
+  /// challenge (twenty of the thirty-two do not), the learner started it, or
+  /// they finished it. Resolved as one question because the reward list needs
+  /// one answer — a row rendering itself empty still takes a hairline.
 
   LessonChallengeOfferProvider call(String lessonId) =>
       LessonChallengeOfferProvider._(argument: lessonId, from: this);
@@ -537,7 +537,7 @@ final class SavedChallengesProvider
   }
 }
 
-String _$savedChallengesHash() => r'c7e22a00253c744c25847e4be64ac7bcc87eb292';
+String _$savedChallengesHash() => r'eafa25d032cd0d924836e4960f7215b89e46c6db';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
@@ -600,7 +600,7 @@ final class ModuleChallengeOfferProvider
 }
 
 String _$moduleChallengeOfferHash() =>
-    r'e90b9819e00b7c4879d97ab7ac2608ce648820ad';
+    r'5c352f26a25562f66dbd15a75752c90c58b769b7';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 

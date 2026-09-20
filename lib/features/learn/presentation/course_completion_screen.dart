@@ -40,12 +40,7 @@ class _CourseCompletionScreenState
   void initState() {
     super.initState();
     unawaited(
-      ackCourseCompletion(
-        ref.read(snapshotRepositoryProvider),
-        DateTime.now(),
-      ).then((_) {
-        if (mounted) ref.invalidate(courseCompletionAckedProvider);
-      }),
+      ackCourseCompletion(ref.read(snapshotRepositoryProvider), DateTime.now()),
     );
   }
 
@@ -60,7 +55,10 @@ class _CourseCompletionScreenState
         ref.read(snapshotRepositoryProvider),
         DateTime.now(),
       );
-      ref.invalidate(courseCompletionAckedProvider);
+      // The gate is read straight after its own write, so it takes the
+      // snapshot from the database rather than the stream's last delivery,
+      // which this ack may not have reached yet (ADR-0031).
+      ref.invalidate(progressSnapshotStateProvider);
       await ref.read(courseCompletionDueProvider.future);
     } finally {
       if (mounted && context.mounted) {

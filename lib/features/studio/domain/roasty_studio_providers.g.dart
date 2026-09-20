@@ -62,4 +62,4 @@ final class RoastyStudioProvider
   }
 }
 
-String _$roastyStudioHash() => r'9248a861eb1c8954d67ac7902845654897b5cef5';
+String _$roastyStudioHash() => r'3ce524cf2e09aabfae56621dd0c789c72f8c8c8c';

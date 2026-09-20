@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:brew_path/shared/storage/app_database.dart';
@@ -6,29 +7,46 @@ import 'package:drift/drift.dart';
 
 /// Reads and writes the single progress-snapshot row.
 ///
-/// The repository is deliberately thin: it moves the snapshot between its Dart
-/// form and one row of text, and owns no merge logic at all. Every conflict
-/// decision belongs to `mergeSnapshot`, which is pure and therefore testable
-/// without any of this — putting even part of it here would create a second
-/// home for merge semantics that no test of the merge could reach.
+/// Deliberately thin: it moves the snapshot between its Dart form and one row
+/// of text, and owns no merge logic. Every conflict decision belongs to
+/// `mergeSnapshot`, which is pure and so testable without any of this.
 class SnapshotRepository {
   AppDatabase get _db => AppDatabaseService.instance;
 
   /// Primary-key id of the singleton snapshot row.
   static const int snapshotId = 1;
 
-  /// The stored snapshot, or [ProgressSnapshot.empty] on a fresh install.
+  /// The snapshot as it stands, once — for a **write path**, never a screen.
   ///
-  /// A row that fails to parse also reads as empty rather than throwing. The
-  /// snapshot arrives from an unvalidated key-value store, so a truncated or
-  /// mangled payload must cost the learner their progress at worst — never the
-  /// ability to open the app.
+  /// A read-modify-write needs the value at the instant it edits it, which a
+  /// stream cannot give: its latest delivered value may already be behind. A
+  /// screen that reads this instead goes stale the moment anything writes, and
+  /// only a hand-written announcement would bring it back (ADR-0031).
   Future<ProgressSnapshot> read() async {
-    final row = await (_db.select(
-      _db.progressSnapshots,
-    )..where((row) => row.id.equals(snapshotId))).getSingleOrNull();
-    if (row == null) return ProgressSnapshot.empty;
+    final row = await _row().getSingleOrNull();
+    return _parse(row);
+  }
 
+  /// Every version written after a listener subscribes — for a **screen**,
+  /// which pairs it with one [read] for what is stored now.
+  ///
+  /// Announced by [write], the one door every change goes through, so no
+  /// caller owes an announcement and none can forget one. Static because two
+  /// instances address the same row and must be the same conversation.
+  Stream<ProgressSnapshot> get changes => _changes.stream;
+
+  static final StreamController<ProgressSnapshot> _changes =
+      StreamController<ProgressSnapshot>.broadcast();
+
+  SimpleSelectStatement<$ProgressSnapshotsTable, SnapshotRow> _row() =>
+      _db.select(_db.progressSnapshots)
+        ..where((row) => row.id.equals(snapshotId));
+
+  /// [ProgressSnapshot.empty] for a fresh install, and for a row that fails to
+  /// parse: the payload is unvalidated, so a mangled one must cost the learner
+  /// their progress at worst, never the ability to open the app.
+  ProgressSnapshot _parse(SnapshotRow? row) {
+    if (row == null) return ProgressSnapshot.empty;
     try {
       return ProgressSnapshot.fromJson(
         jsonDecode(row.payload) as Map<String, dynamic>,
@@ -38,7 +56,7 @@ class SnapshotRepository {
     }
   }
 
-  /// Writes [snapshot] over the stored one.
+  /// Writes [snapshot] over the stored one, and says so on [changes].
   ///
   /// Whole-value, never field-by-field: the snapshot *is* the record, so there
   /// is no partial write to get wrong and nothing to reconcile between columns.
@@ -51,5 +69,6 @@ class SnapshotRepository {
             payload: jsonEncode(snapshot.toJson()),
           ),
         );
+    _changes.add(snapshot);
   }
 }

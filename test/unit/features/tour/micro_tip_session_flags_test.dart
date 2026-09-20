@@ -28,6 +28,23 @@ void main() {
     addTearDown(db.close);
   });
 
+  // Resolved the way a screen does, holding the watch open while the chain
+  // settles. A bare read can lose a race with autoDispose, which tears the
+  // chain down while its future is still in flight.
+  Future<Set<String>> resolveSavedKeys() async {
+    final held = container.listen(savedKeysProvider, (_, _) {});
+    final keys = await container.read(savedKeysProvider.future);
+    held.close();
+    return keys;
+  }
+
+  Future<Set<String>> resolveCompletedLessonIds() async {
+    final held = container.listen(completedLessonIdsProvider, (_, _) {});
+    final ids = await container.read(completedLessonIdsProvider.future);
+    held.close();
+    return ids;
+  }
+
   group('a save this session', () {
     test('is not armed by a shelf the learner arrived with', () async {
       await toggleSaved(
@@ -40,12 +57,12 @@ void main() {
 
       // The first resolve is what the learner already had, not something they
       // just did.
-      expect(await container.read(savedKeysProvider.future), hasLength(1));
+      expect(await resolveSavedKeys(), hasLength(1));
       expect(container.read(saveMadeThisSessionProvider), isFalse);
     });
 
     test('is armed when the shelf grows', () async {
-      await container.read(savedKeysProvider.future);
+      await resolveSavedKeys();
       expect(container.read(saveMadeThisSessionProvider), isFalse);
 
       await toggleSaved(
@@ -56,7 +73,7 @@ void main() {
         visible: 0,
       );
       container.invalidate(savedKeysProvider);
-      await container.read(savedKeysProvider.future);
+      await resolveSavedKeys();
 
       expect(container.read(saveMadeThisSessionProvider), isTrue);
     });
@@ -69,7 +86,7 @@ void main() {
         isPlus: true,
         visible: 0,
       );
-      await container.read(savedKeysProvider.future);
+      await resolveSavedKeys();
       expect(container.read(saveMadeThisSessionProvider), isFalse);
 
       await toggleSaved(
@@ -80,7 +97,7 @@ void main() {
         visible: 1,
       );
       container.invalidate(savedKeysProvider);
-      await container.read(savedKeysProvider.future);
+      await resolveSavedKeys();
 
       expect(container.read(saveMadeThisSessionProvider), isFalse);
     });
@@ -143,12 +160,12 @@ void main() {
 
   group('a lesson finished this session', () {
     test('is armed when the finished set grows', () async {
-      await container.read(completedLessonIdsProvider.future);
+      await resolveCompletedLessonIds();
       expect(container.read(lessonFinishedThisSessionProvider), isFalse);
 
       await seedCompletedLesson(SnapshotRepository(), 'm1l1');
       container.invalidate(completedLessonsProvider);
-      await container.read(completedLessonIdsProvider.future);
+      await resolveCompletedLessonIds();
 
       expect(container.read(lessonFinishedThisSessionProvider), isTrue);
     });
@@ -156,7 +173,7 @@ void main() {
     test('is not armed by lessons the learner arrived with', () async {
       await seedCompletedLesson(SnapshotRepository(), 'm1l1');
 
-      expect(await container.read(completedLessonIdsProvider.future), {'m1l1'});
+      expect(await resolveCompletedLessonIds(), {'m1l1'});
       expect(container.read(lessonFinishedThisSessionProvider), isFalse);
     });
   });

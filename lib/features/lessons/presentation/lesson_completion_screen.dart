@@ -1,8 +1,6 @@
 import 'package:brew_path/app/day_surfaces.dart';
 import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
-import 'package:brew_path/features/cards/domain/cards_providers.dart';
-import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
@@ -13,8 +11,8 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
-import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
+import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,28 +68,18 @@ class _LessonCompletionScreenState
         .read(lessonCompletionServiceProvider)
         .finishLesson(lesson, mastery: widget.mastery);
 
-    // The Learn, Cards and Profile screens live in the indexed-stack shell and
-    // stay mounted while this screen covers them, so nothing derived from the
-    // run rebuilds on its own. Every one of these is invalidated on both
-    // paths: a replay moves the streak and the Keep Sharp card exactly as a
-    // first completion does, and the run that pays nothing still records a day.
+    // The clock, which no write touches and no stream covers: a run that
+    // records a day has to say so. Everything the run wrote follows the
+    // database on its own (ADR-0031).
     invalidateDaySurfaces(ref);
-    ref.invalidate(todayLessonProvider);
-    ref.invalidate(modulesWithProgressProvider);
-    ref.invalidate(totalPointsProvider);
-    ref.invalidate(completedLessonsProvider);
-    // The cards grid and the Module Reward count both hang off this one.
-    ref.invalidate(cardsWithCollectionProvider);
-    // A finished lesson can unlock a Coffee Challenge, and Today and Profile
-    // stay mounted behind this screen — so neither would notice on its own.
-    ref.invalidate(savedChallengesProvider);
-    ref.invalidate(completedChallengesProvider);
 
     final card = result.isReplay
         ? null
         : await content.getCardForLesson(lesson.id);
-    // Read after the invalidation above, so it is the lesson queued *behind*
-    // this completion rather than the one just finished.
+    // A read straight after the write, so it takes the snapshot from the
+    // database rather than the stream's last delivery — which this run may not
+    // have reached yet. It must be the lesson queued *behind* this completion.
+    ref.invalidate(progressSnapshotStateProvider);
     final next = await ref.read(todayLessonProvider.future);
 
     return LessonCompletionReward(

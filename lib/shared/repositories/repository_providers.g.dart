@@ -160,6 +160,79 @@ final class SnapshotRepositoryProvider
 String _$snapshotRepositoryHash() =>
     r'93a9fe008652c6c4bb29f85cd883ad2ca783f66b';
 
+/// The stored progress, and every later version of it.
+///
+/// The one place the app listens for progress (ADR-0031). It opens on a
+/// one-shot read, so a caller that only wants the value now is not left
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
+
+@ProviderFor(ProgressSnapshotState)
+final progressSnapshotStateProvider = ProgressSnapshotStateProvider._();
+
+/// The stored progress, and every later version of it.
+///
+/// The one place the app listens for progress (ADR-0031). It opens on a
+/// one-shot read, so a caller that only wants the value now is not left
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
+final class ProgressSnapshotStateProvider
+    extends $AsyncNotifierProvider<ProgressSnapshotState, ProgressSnapshot> {
+  /// The stored progress, and every later version of it.
+  ///
+  /// The one place the app listens for progress (ADR-0031). It opens on a
+  /// one-shot read, so a caller that only wants the value now is not left
+  /// waiting on an announcement, and outlives every screen, because a write
+  /// nobody is listening for is an announcement lost.
+  ProgressSnapshotStateProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'progressSnapshotStateProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$progressSnapshotStateHash();
+
+  @$internal
+  @override
+  ProgressSnapshotState create() => ProgressSnapshotState();
+}
+
+String _$progressSnapshotStateHash() =>
+    r'a85219f004f71bab471990540f1f6672a1491929';
+
+/// The stored progress, and every later version of it.
+///
+/// The one place the app listens for progress (ADR-0031). It opens on a
+/// one-shot read, so a caller that only wants the value now is not left
+/// waiting on an announcement, and outlives every screen, because a write
+/// nobody is listening for is an announcement lost.
+
+abstract class _$ProgressSnapshotState
+    extends $AsyncNotifier<ProgressSnapshot> {
+  FutureOr<ProgressSnapshot> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref =
+        this.ref as $Ref<AsyncValue<ProgressSnapshot>, ProgressSnapshot>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<ProgressSnapshot>, ProgressSnapshot>,
+              AsyncValue<ProgressSnapshot>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
 /// Provides the [InstallRepository].
 
 @ProviderFor(installRepository)

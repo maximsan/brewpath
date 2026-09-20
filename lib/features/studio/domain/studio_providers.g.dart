@@ -50,4 +50,4 @@ final class StudioGroveProvider
   }
 }
 
-String _$studioGroveHash() => r'17e38b4f56f8213269ccaa1496ac82dcdeafcccf';
+String _$studioGroveHash() => r'80a372a42e80c171116a87946b18b27f8189907a';

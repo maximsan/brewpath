@@ -12,7 +12,7 @@ part 'course_completion_providers.g.dart';
 /// the snapshot's `acks` map, cleared only by Reset Progress.
 @riverpod
 Future<bool> courseCompletionAcked(Ref ref) async {
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotStateProvider.future);
   return snapshot.clearedByReset.hasAck(courseCompleteAckKey);
 }
 

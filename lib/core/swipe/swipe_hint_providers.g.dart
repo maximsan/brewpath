@@ -59,4 +59,4 @@ final class SwipesUsedProvider
   }
 }
 
-String _$swipesUsedHash() => r'edd3c45d9d21caa8fbf463443c95d15f19b88567';
+String _$swipesUsedHash() => r'0341c7a699b316188e7f24d8db8c554368e84f4e';

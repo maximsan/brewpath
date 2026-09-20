@@ -45,7 +45,7 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   final formatsFuture = ref.watch(miniGameFormatsProvider.future);
   final completedFuture = ref.watch(completedLessonsProvider.future);
   final poolsFuture = ref.watch(vocabPoolsProvider.future);
-  final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final formats = await formatsFuture;
   final completed = await completedFuture;
   final pools = await poolsFuture;
@@ -89,7 +89,7 @@ Future<bool> keepSharpAcknowledgedToday(Ref ref) async {
   final recommendationFuture = ref.watch(
     keepSharpRecommendationProvider.future,
   );
-  final snapshotFuture = ref.watch(snapshotRepositoryProvider).read();
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final today = epochDay(ref.watch(currentDayProvider));
   final snapshot = await snapshotFuture;
   final recommendation = await recommendationFuture;

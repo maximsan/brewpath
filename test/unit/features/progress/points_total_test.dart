@@ -39,8 +39,15 @@ void main() {
         at: at,
       );
 
-  Future<int> total(ProviderContainer container) =>
-      container.read(totalPointsProvider.future);
+  /// Resolved the way a screen does, holding the watch open while the chain
+  /// settles. A bare read can lose a race with autoDispose, which tears the
+  /// chain down while its future is still in flight.
+  Future<int> total(ProviderContainer container) async {
+    final held = container.listen(totalPointsProvider, (_, _) {});
+    final points = await container.read(totalPointsProvider.future);
+    held.close();
+    return points;
+  }
 
   test('a fresh install has banked nothing', () async {
     expect(await total(harness()), 0);

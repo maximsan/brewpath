@@ -59,7 +59,7 @@ final class TotalPointsProvider
   }
 }
 
-String _$totalPointsHash() => r'cf138c6951ffe7e42a3e3bcb0631324804feae2d';
+String _$totalPointsHash() => r'b62554efaa90969492a58cf2713a8463eca43f89';
 
 /// The qualifying-day set every streak surface folds over — one derivation, so
 /// the engine, the save notice and the week strip can never disagree on which
@@ -113,7 +113,7 @@ final class ActiveDaySetProvider
   }
 }
 
-String _$activeDaySetHash() => r'4b105af611fae87cdac82b149190852aaae5df4a';
+String _$activeDaySetHash() => r'92cbd67460ad1395f12ad5b4a16451eb4327abb6';
 
 /// The current week's seven cells, ready for any strip host — one
 /// derivation, so the streak screen, the Profile tile and the share card can
@@ -304,7 +304,7 @@ final class CompletedLessonsProvider
   }
 }
 
-String _$completedLessonsHash() => r'0e4e21bf097fdda5d742ff4cfaea3c38940f68a7';
+String _$completedLessonsHash() => r'27c0b9a3eca79b107fe45bfa8162243ac7ccb19d';
 
 /// The ids of the lessons the learner has finished.
 ///
@@ -417,7 +417,7 @@ final class TreeStageProvider
   }
 }
 
-String _$treeStageHash() => r'7cbadb3b2897f16b1ae4deb444d49e6b8335090b';
+String _$treeStageHash() => r'4b20165f83d741ef6a341f69091d808f3e78595b';
 
 /// The learner's progress through the core course.
 
@@ -572,4 +572,4 @@ final class GroveTreatmentProvider
   }
 }
 
-String _$groveTreatmentHash() => r'10d2583fea378ddaccfb0e25020882e62f7897a9';
+String _$groveTreatmentHash() => r'7c23be5e221d658a3efee021a39705cb97da866e';

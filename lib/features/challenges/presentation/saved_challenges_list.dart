@@ -85,9 +85,6 @@ class _SavedRow extends ConsumerWidget {
       id: challenge.id,
       now: DateTime.now(),
     );
-    ref
-      ..invalidate(activeChallengeProvider)
-      ..invalidate(savedChallengesProvider);
   }
 
   Future<void> _remove(WidgetRef ref) async {
@@ -96,7 +93,6 @@ class _SavedRow extends ConsumerWidget {
       id: challenge.id,
       now: DateTime.now(),
     );
-    ref.invalidate(savedChallengesProvider);
   }
 
   @override

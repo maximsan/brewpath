@@ -54,6 +54,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The database announces its own changes, so no screen can be left showing
+  stale progress.** Progress was read once and cached, and every write had to
+  remember to say it had happened — a duty forgotten twice in code that shipped,
+  once leaving a wiped Saved shelf still showing its old count. The one method
+  every write goes through now announces itself, screens follow that, and the
+  twenty-two hand-written refreshes are gone. A read taken straight after a
+  write still asks the database directly, which two places do and say so
+  (ADR-0031).
+
 - **Roasty can speak a language other than English.** His lines were the one
   piece of reader-facing prose no language folder could reach; they now load
   like every other content file. Each line carries an id of its own, so a
@@ -73,7 +82,7 @@ You can always edit this file by hand instead — the helpers just save effort.
   window were worked out when a screen last drew and refreshed only when the
   app came back from the background, so a phone sitting on the counter at
   midnight kept yesterday's answers until something was tapped. The app now
-  notices midnight itself and moves them all together (ADR-0030).
+  notices midnight itself and moves them all together (ADR-0031).
 
 - **Buttons a screen reader announced but could not press now press.** The
   idiom that reads a tappable row as one announcement dropped the tap along

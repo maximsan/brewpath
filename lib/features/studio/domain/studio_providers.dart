@@ -44,10 +44,9 @@ class StudioGrove {
   /// What the Studio door says under its title: the planted species, and its
   /// light when the light is not the default.
   ///
-  /// The design writes
-  /// `variety.name + (light is daylight ? '' : ' · ' + light.name)` — Daylight
-  /// is the grove's resting state, so naming it would be telling the learner
-  /// they have chosen something when they have not.
+  /// The design writes `variety.name + (light is daylight ? '' : ' · ' +
+  /// light.name)`: Daylight is the grove's resting state, so naming it would
+  /// claim a choice the learner never made.
   String get doorSubtitle {
     final variety = varietyOf(planted.variety);
     if (planted.light == Grove.defaultLight) return variety.name;
@@ -72,7 +71,7 @@ class StudioGrove {
 @riverpod
 Future<StudioGrove> studioGrove(Ref ref) async {
   final content = ref.watch(contentRepositoryProvider);
-  final snapshot = await ref.watch(snapshotRepositoryProvider).read();
+  final snapshot = await ref.watch(progressSnapshotStateProvider.future);
 
   return StudioGrove(
     varieties: await content.getGroveVarieties(),

@@ -16,10 +16,9 @@ part 'saved_providers.g.dart';
 /// exists. The shelf resolves; a bookmark only needs to know whether its own
 /// key is in here.
 @riverpod
-Future<Set<String>> savedKeys(Ref ref) async {
-  final snapshots = ref.watch(snapshotRepositoryProvider);
-  return (await snapshots.read()).clearedByReset.favourites.value;
-}
+Future<Set<String>> savedKeys(Ref ref) async => (await ref.watch(
+  progressSnapshotStateProvider.future,
+)).clearedByReset.favourites.value;
 
 /// Whether [key] is on the shelf.
 @riverpod

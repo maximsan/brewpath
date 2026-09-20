@@ -16,14 +16,12 @@ part 'vocab_providers.g.dart';
 /// Every term the learner has answered, with the stamps that decide whether
 /// it is still owed a review.
 ///
-/// Its own provider, like [savedKeysProvider]: it is the seam a drill
-/// invalidates after logging an answer, and an inline snapshot read would
-/// leave a second future in flight that nothing awaits.
+/// Its own provider, like [savedKeysProvider], so a drill's logged answer
+/// reaches the deck as one named thing rather than through an inline read.
 @riverpod
-Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async =>
-    (await ref.watch(snapshotRepositoryProvider).read())
-        .clearedByReset
-        .termAnswers;
+Future<Map<String, TermMiss>> vocabAnswers(Ref ref) async => (await ref.watch(
+  progressSnapshotStateProvider.future,
+)).clearedByReset.termAnswers;
 
 /// Both pools a drill picks from, resolved together.
 ///

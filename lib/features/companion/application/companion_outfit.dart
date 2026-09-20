@@ -19,9 +19,9 @@ Future<CompanionConfig> companionOutfit(Ref ref) async {
   // Watches before awaits: a rebuild mid-flight must not reach a watch across
   // an async gap on a disposed ref.
   final entitledFuture = ref.watch(courseEntitlementProvider.future);
-  final snapshots = ref.watch(snapshotRepositoryProvider);
+  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
 
-  final snapshot = await snapshots.read();
+  final snapshot = await snapshotFuture;
   if (!await entitledFuture) return CompanionConfig.initial;
   return snapshot.clearedByDeleteOnly.companion.value;
 }

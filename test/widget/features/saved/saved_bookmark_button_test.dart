@@ -105,10 +105,15 @@ void main() {
       visible: 0,
     );
     container.invalidate(savedKeysProvider);
+    // Pumped rather than awaited: inside `testWidgets` a provider's future
+    // resolves on the tester's clock, so awaiting it directly waits forever.
+    await settleLoaders(tester);
 
     expect(
-      await container.read(savedKeysProvider.future),
-      {_key},
+      container.read(savedKeysProvider).value,
+      {
+        _key,
+      },
       reason: 'the grammar and the writer must agree on the stored spelling',
     );
   });

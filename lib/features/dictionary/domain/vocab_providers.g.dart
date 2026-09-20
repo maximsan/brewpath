@@ -11,9 +11,8 @@ part of 'vocab_providers.dart';
 /// Every term the learner has answered, with the stamps that decide whether
 /// it is still owed a review.
 ///
-/// Its own provider, like [savedKeysProvider]: it is the seam a drill
-/// invalidates after logging an answer, and an inline snapshot read would
-/// leave a second future in flight that nothing awaits.
+/// Its own provider, like [savedKeysProvider], so a drill's logged answer
+/// reaches the deck as one named thing rather than through an inline read.
 
 @ProviderFor(vocabAnswers)
 final vocabAnswersProvider = VocabAnswersProvider._();
@@ -21,9 +20,8 @@ final vocabAnswersProvider = VocabAnswersProvider._();
 /// Every term the learner has answered, with the stamps that decide whether
 /// it is still owed a review.
 ///
-/// Its own provider, like [savedKeysProvider]: it is the seam a drill
-/// invalidates after logging an answer, and an inline snapshot read would
-/// leave a second future in flight that nothing awaits.
+/// Its own provider, like [savedKeysProvider], so a drill's logged answer
+/// reaches the deck as one named thing rather than through an inline read.
 
 final class VocabAnswersProvider
     extends
@@ -38,9 +36,8 @@ final class VocabAnswersProvider
   /// Every term the learner has answered, with the stamps that decide whether
   /// it is still owed a review.
   ///
-  /// Its own provider, like [savedKeysProvider]: it is the seam a drill
-  /// invalidates after logging an answer, and an inline snapshot read would
-  /// leave a second future in flight that nothing awaits.
+  /// Its own provider, like [savedKeysProvider], so a drill's logged answer
+  /// reaches the deck as one named thing rather than through an inline read.
   VocabAnswersProvider._()
     : super(
         from: null,
@@ -67,7 +64,7 @@ final class VocabAnswersProvider
   }
 }
 
-String _$vocabAnswersHash() => r'66c326d3dc5928c2dbe0530c7b03000618ef3f47';
+String _$vocabAnswersHash() => r'dd7779d3fb3e5b50a02881e1c374b0e7c2736d58';
 
 /// The learner's drill pools, tier-scoped.
 ///
