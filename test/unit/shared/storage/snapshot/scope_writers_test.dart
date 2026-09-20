@@ -262,10 +262,11 @@ void main() {
       );
 
       expect(after.completedLessons['m9l1'], 20300);
+      expect(after.lastCompletedLessons['m9l1'], 20300);
       expect(after.bestResults['m9l1'], mastery);
     });
 
-    test('changes the two maps and nothing else', () {
+    test('changes the three maps and nothing else', () {
       final after = populated.withLessonCompleted(
         'm9l1',
         day: 20300,
@@ -275,9 +276,11 @@ void main() {
       expect(
         after.toJson()
           ..remove('completedLessons')
+          ..remove('lastCompletedLessons')
           ..remove('bestResults'),
         populated.toJson()
           ..remove('completedLessons')
+          ..remove('lastCompletedLessons')
           ..remove('bestResults'),
       );
     });
@@ -297,6 +300,11 @@ void main() {
       );
 
       expect(again.completedLessons['m9l1'], 20300);
+      expect(
+        again.lastCompletedLessons['m9l1'],
+        20390,
+        reason: 'the last run is the later one, whatever the first was',
+      );
     });
 
     test('never lowers a result it already holds', () {
@@ -315,47 +323,61 @@ void main() {
     });
   });
 
-  group('withBestResult', () {
-    test('lifts a stored result and leaves the completion day alone', () {
+  group('withLessonReplayed', () {
+    test('lifts a stored result and leaves the first day alone', () {
       final completed = populated.withLessonCompleted(
         'm9l1',
         day: 20300,
         mastery: const MasteryResult(correct: 2, total: 5),
       );
 
-      final after = completed.withBestResult(
+      final after = completed.withLessonReplayed(
         'm9l1',
-        const MasteryResult(correct: 4, total: 5),
+        day: 20390,
+        mastery: const MasteryResult(correct: 4, total: 5),
       );
 
       expect(after.bestResults['m9l1']?.correct, 4);
       expect(after.completedLessons['m9l1'], 20300);
+      expect(after.lastCompletedLessons['m9l1'], 20390);
     });
 
-    test('never lowers one', () {
+    test('never lowers a result, and never dates the run earlier', () {
       final completed = populated.withLessonCompleted(
         'm9l1',
-        day: 20300,
+        day: 20390,
         mastery: const MasteryResult(correct: 5, total: 5),
       );
 
-      final after = completed.withBestResult(
+      final after = completed.withLessonReplayed(
         'm9l1',
-        const MasteryResult(correct: 3, total: 5),
+        day: 20300,
+        mastery: const MasteryResult(correct: 3, total: 5),
       );
 
       expect(after.bestResults['m9l1']?.correct, 5);
+      expect(after.lastCompletedLessons['m9l1'], 20390);
     });
 
-    test('changes the results and nothing else', () {
-      final after = populated.withBestResult(
+    test('changes the result and the last day, and nothing else', () {
+      final after = populated.withLessonReplayed(
         'm9l1',
-        const MasteryResult(correct: 4, total: 5),
+        day: 20390,
+        mastery: const MasteryResult(correct: 4, total: 5),
       );
 
       expect(
-        after.toJson()..remove('bestResults'),
-        populated.toJson()..remove('bestResults'),
+        after.toJson()
+          ..remove('bestResults')
+          ..remove('lastCompletedLessons'),
+        populated.toJson()
+          ..remove('bestResults')
+          ..remove('lastCompletedLessons'),
+      );
+      expect(
+        after.completedLessons,
+        populated.completedLessons,
+        reason: 'a replay is not a first completion',
       );
     });
   });

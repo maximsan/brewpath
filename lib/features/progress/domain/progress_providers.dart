@@ -101,6 +101,7 @@ Future<CompletedLessons> completedLessons(Ref ref) async {
   final progress = snapshot.clearedByReset;
   return CompletedLessons(
     completedOn: progress.completedLessons,
+    lastCompletedOn: progress.lastCompletedLessons,
     mastery: progress.bestResults,
   );
 }

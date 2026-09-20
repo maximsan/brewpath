@@ -189,7 +189,11 @@ class LessonCompletionService {
     // read could land after Reset Progress and report a lesson that is no
     // longer finished.
     final progress = await _updateProgress(
-      (progress) => progress.withBestResult(lesson.id, mastery),
+      (progress) => progress.withLessonReplayed(
+        lesson.id,
+        day: epochDay(at),
+        mastery: mastery,
+      ),
       now: at,
     );
     final best = progress.bestResults[lesson.id] ?? mastery;

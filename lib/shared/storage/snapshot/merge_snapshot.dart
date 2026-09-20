@@ -59,6 +59,12 @@ ClearedByReset _joinProgress(ProgressSnapshot local, ProgressSnapshot remote) {
     // First completion is the true one, so collisions keep the earlier day.
     // `min` is still a lattice operation, so this converges either way round.
     completedLessons: _mergeMap(a.completedLessons, b.completedLessons, min),
+    // The last run is the later one, so this collision keeps `max`.
+    lastCompletedLessons: _mergeMap(
+      a.lastCompletedLessons,
+      b.lastCompletedLessons,
+      max,
+    ),
     bestResults: _mergeMap(a.bestResults, b.bestResults, MasteryResult.best),
     activeDays: {...a.activeDays, ...b.activeDays},
     acks: _mergeMap(a.acks, b.acks, max),
