@@ -21,7 +21,7 @@ const double _maxHeightFraction = 0.78;
 /// **Every sheet opens through here**, and a guard test fails the build on one
 /// opened anywhere else. [title] is the sheet's *only* name — the heading and
 /// the accessible name both — and [eyebrow] is the kicker the design sets over
-/// it. The chrome and what it deliberately omits: `docs/02-architecture.md`.
+/// it. The chrome and what it deliberately omits: `docs/architecture.md`.
 Future<T?> showAppSheet<T>({
   required BuildContext context,
   required String title,

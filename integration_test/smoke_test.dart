@@ -18,7 +18,7 @@ import 'package:integration_test/integration_test.dart';
 import '../test/support/find_mark.dart';
 
 // The only suite that boots the real app: why it exists, why every step must
-// assert, and what a relaunch has to tear down first — docs/12-testing.md,
+// assert, and what a relaunch has to tear down first — docs/testing.md,
 // "The suite, by directory".
 
 /// How long each real-time pump waits before looking again.
@@ -83,7 +83,7 @@ void main() {
   /// in is in the tree before it is on screen, so waiting on mere existence
   /// hands back a widget every tap misses; pass [tappable] false for one the
   /// walk only reads. Never `pumpAndSettle`, and the [budget] is deliberately
-  /// generous; both reasons are in docs/12-testing.md.
+  /// generous; both reasons are in docs/testing.md.
   Future<void> pumpUntil(
     WidgetTester tester,
     Finder target, {
@@ -131,7 +131,7 @@ void main() {
   /// A button that says [label], only while it is enabled — onboarding's
   /// Continue is dead until its controller accepts the answer, and `tap` on a
   /// disabled button succeeds silently. The label is looked for anywhere under
-  /// the button, never as its direct child; docs/12-testing.md, "The smoke
+  /// the button, never as its direct child; docs/testing.md, "The smoke
   /// walk's helpers", says what reading it as a direct child cost.
   Finder liveButton(String label) => find.ancestor(
     of: find.text(label),

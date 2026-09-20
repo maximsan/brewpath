@@ -12,7 +12,7 @@ enum AdLoadStatus {
 
 /// Abstract ads layer. No feature code touches `google_mobile_ads` directly —
 /// only this interface. NoOp is active in the MVP; ads never appear in
-/// lessons (hard rule, see docs/11-ads.md).
+/// lessons (hard rule, see docs/ads.md).
 abstract class AdsService {
   /// Initialize the ads SDK. Call once at app startup.
   Future<void> initialize();

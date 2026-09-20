@@ -1,18 +1,11 @@
 // Future implementation stub. Intentionally does NOT import
-// `google_mobile_ads` yet — wired up only when ads go live
-// (see docs/11-ads.md). Activated via `kAdsEnabled` in
-// lib/features/monetization/monetization_config.dart.
-//
-// Implementation steps (future):
-// 1. MobileAds.instance.initialize() in initialize()
-// 2. InterstitialAd.load() / RewardedAd.load()
-// 3. Cache loaded ads (they expire ~1h); preload the next after show
-// 4. fullScreenContentCallback for show/dismiss events
-// 5. Test ad unit IDs in dev; ATT prompt before any ad on iOS 14+
+// `google_mobile_ads` yet — wired up only when ads go live, behind
+// `kAdsEnabled` in lib/features/monetization/monetization_config.dart.
+// The implementation steps are in docs/ads.md.
 
 import 'package:brew_path/services/ads/ads_service.dart';
 
-/// Real [AdsService] backed by AdMob (stubbed for now; see docs/11-ads.md).
+/// Real [AdsService] backed by AdMob (stubbed for now; see docs/ads.md).
 class AdMobAdsService implements AdsService {
   @override
   Future<void> initialize() =>

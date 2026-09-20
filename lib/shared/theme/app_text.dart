@@ -161,7 +161,7 @@ enum _Rung {
 ///
 /// **There is no `fontSize` parameter**: going off-ladder means editing the
 /// private rung table, which is visible in a diff. The steps, the three axes
-/// and how colour resolves: `docs/02-architecture.md`, The type ladder.
+/// and how colour resolves: `docs/architecture.md`, The type ladder.
 abstract final class AppText {
   /// Celebration numerals — a streak count, a score. Mono by default, because
   /// the design sets every figure in tabular mono.
@@ -262,7 +262,7 @@ abstract final class AppText {
   /// app's type rather than Roboto.
   ///
   /// **All fifteen, none left out** — a null slot keeps Roboto. Which rung each
-  /// takes: `docs/02-architecture.md`, Material's slots.
+  /// takes: `docs/architecture.md`, Material's slots.
   static TextTheme textTheme(MoodColors mood) => TextTheme(
     displayLarge: display(mood: mood),
     displayMedium: display(mood: mood),

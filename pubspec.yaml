@@ -52,7 +52,7 @@ dependencies:
   # (ADR-0024). Inactive until REVENUECAT_KEY is passed at build time.
   purchases_flutter: ^10.12.0
 
-  # Ads — disabled for MVP; re-enable in Phase 8 (see docs/11-ads.md)
+  # Ads — disabled for MVP; re-enable in Phase 8 (see docs/ads.md)
   # google_mobile_ads: ^8.0.0
 
   # Utilities

@@ -12,7 +12,7 @@ each file was, why it went, and where its subject lives now.
 | `03-project-scaffold.md` | One-time scaffold steps; the project is built. | The repository itself; `CLAUDE.md` |
 | `04-folder-structure.md` | Original `lib/` folder-structure spec, written around the Isar 3.x design; the tree it prescribed drifted from the one that got built. | `CLAUDE.md` (Project Layout), the repository itself |
 | `05-dependencies.md` | Dependency snapshot drifted from reality. | `pubspec.yaml` |
-| `06-local-persistence.md` | Designed for Isar; the app migrated to Drift. | `docs/02-architecture.md`, `lib/shared/storage/app_database.dart` |
+| `06-local-persistence.md` | Designed for Isar; the app migrated to Drift. | `docs/architecture.md`, `lib/shared/storage/app_database.dart` |
 | `07-content-model.md` | Original content-model spec; the models and banks now exist. | Freezed models under `lib/`, `assets/content/generated/`, `docs/design/06-content.md` |
 | `08-mini-games.md` | Original mini-game spec; superseded by the design reference and rulings. | `docs/design/06-content.md`, `docs/decisions.md` §5 |
 | `16-claude-code-task-plan.md` | Phase-by-phase build checklist — all 11 phases complete. | `docs/CHANGELOG.md` "Build Milestones" |
