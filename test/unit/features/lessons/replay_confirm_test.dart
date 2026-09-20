@@ -76,6 +76,17 @@ void main() {
       expect(dayName(_daysBefore(7), today: _today), 'Sun, Sep 13');
       expect(dayName(_daysBefore(87), today: _today), 'Thu, Jun 25');
     });
+
+    test('carries the year once the run is not from this one', () {
+      expect(
+        dayName(epochDay(DateTime(2025, 6, 25)), today: _today),
+        'Wed, Jun 25, 2025',
+      );
+      expect(
+        dayName(epochDay(DateTime(2026, 1, 2)), today: _today),
+        'Fri, Jan 2',
+      );
+    });
   });
 
   test('the title asks about the lesson by name', () {

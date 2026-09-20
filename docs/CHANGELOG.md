@@ -156,6 +156,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   wraps where it was drawn to
   ([#572](https://github.com/maximsan/brewpath/issues/572)).
 
+- **The dictionary's filter stays with its category.** *Learned* or *To
+  learn*, chosen inside a category, used to follow the learner out: backing
+  out landed on a list of every learned term with the index gone and the
+  control hidden, and a search typed inside the category was narrowed by a
+  filter no longer on screen, so its count and its *No terms match* line could
+  be wrong. The filter now clears on the way into and out of a category, as
+  the design does, and stays in view while searching inside one.
+
 - **An app left open across midnight no longer shows yesterday.** The streak,
   the freeze line, Keep Sharp, the header's date and a Coffee Challenge's
   window were worked out when a screen last drew and refreshed only when the

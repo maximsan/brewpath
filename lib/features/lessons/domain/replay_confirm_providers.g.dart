@@ -11,8 +11,9 @@ part of 'replay_confirm_providers.dart';
 /// What to ask before replaying [lessonId], or null when nothing should be
 /// asked — the lesson is unfinished, or the course no longer carries it.
 ///
-/// The day comes from [currentDayProvider] rather than the clock, so a sheet
-/// left open over midnight is rebuilt with the streak line it should have.
+/// The day is [currentDayProvider]'s, not the clock's, so the streak line
+/// agrees with every other day surface on which day today is. The sheet is
+/// read once, at the tap; one left open over midnight keeps its lines.
 
 @ProviderFor(replayConfirm)
 final replayConfirmProvider = ReplayConfirmFamily._();
@@ -20,8 +21,9 @@ final replayConfirmProvider = ReplayConfirmFamily._();
 /// What to ask before replaying [lessonId], or null when nothing should be
 /// asked — the lesson is unfinished, or the course no longer carries it.
 ///
-/// The day comes from [currentDayProvider] rather than the clock, so a sheet
-/// left open over midnight is rebuilt with the streak line it should have.
+/// The day is [currentDayProvider]'s, not the clock's, so the streak line
+/// agrees with every other day surface on which day today is. The sheet is
+/// read once, at the tap; one left open over midnight keeps its lines.
 
 final class ReplayConfirmProvider
     extends
@@ -36,8 +38,9 @@ final class ReplayConfirmProvider
   /// What to ask before replaying [lessonId], or null when nothing should be
   /// asked — the lesson is unfinished, or the course no longer carries it.
   ///
-  /// The day comes from [currentDayProvider] rather than the clock, so a sheet
-  /// left open over midnight is rebuilt with the streak line it should have.
+  /// The day is [currentDayProvider]'s, not the clock's, so the streak line
+  /// agrees with every other day surface on which day today is. The sheet is
+  /// read once, at the tap; one left open over midnight keeps its lines.
   ReplayConfirmProvider._({
     required ReplayConfirmFamily super.from,
     required String super.argument,
@@ -87,8 +90,9 @@ String _$replayConfirmHash() => r'0f5c0dae95b8e7c35d0ab5bfc08e6a7573d69b9b';
 /// What to ask before replaying [lessonId], or null when nothing should be
 /// asked — the lesson is unfinished, or the course no longer carries it.
 ///
-/// The day comes from [currentDayProvider] rather than the clock, so a sheet
-/// left open over midnight is rebuilt with the streak line it should have.
+/// The day is [currentDayProvider]'s, not the clock's, so the streak line
+/// agrees with every other day surface on which day today is. The sheet is
+/// read once, at the tap; one left open over midnight keeps its lines.
 
 final class ReplayConfirmFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ReplayConfirmView?>, String> {
@@ -104,8 +108,9 @@ final class ReplayConfirmFamily extends $Family
   /// What to ask before replaying [lessonId], or null when nothing should be
   /// asked — the lesson is unfinished, or the course no longer carries it.
   ///
-  /// The day comes from [currentDayProvider] rather than the clock, so a sheet
-  /// left open over midnight is rebuilt with the streak line it should have.
+  /// The day is [currentDayProvider]'s, not the clock's, so the streak line
+  /// agrees with every other day surface on which day today is. The sheet is
+  /// read once, at the tap; one left open over midnight keeps its lines.
 
   ReplayConfirmProvider call(String lessonId) =>
       ReplayConfirmProvider._(argument: lessonId, from: this);

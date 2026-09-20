@@ -277,6 +277,53 @@ void main() {
       expect(find.text('TO LEARN'), findsOneWidget);
       expect(find.textContaining('All 2'), findsNothing);
     });
+
+    testWidgets('the filter clears on the way out of a category', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('LEARNED'));
+      await tester.pumpAndSettle();
+      expect(find.text('Arabica'), findsNothing);
+
+      // The defect: the filter followed the learner out, so the index never
+      // came back — a list of every learned term stood in for it, with the
+      // control that would have explained it hidden.
+      await tester.tap(findMark(AppIcon.back));
+      await tester.pumpAndSettle();
+      expect(find.byType(CategoryIndex), findsOneWidget);
+
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
+      expect(find.text('Arabica'), findsOneWidget);
+    });
+
+    testWidgets('a search inside a category keeps the filter in view', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Beans and Botany'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('LEARNED'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'arab');
+      await tester.pumpAndSettle();
+
+      // Arabica is not learned, so the search finds nothing — and the segment
+      // that narrowed it stays on screen, as the design draws it, so the
+      // count is never unexplained.
+      expect(find.text('LEARNED'), findsOneWidget);
+      expect(find.text(DictionarySearchCopy.count(0)), findsOneWidget);
+      expect(
+        find.text(DictionarySearchCopy.noMatches('arab').line),
+        findsOneWidget,
+      );
+    });
   });
 
   group('term detail', () {
