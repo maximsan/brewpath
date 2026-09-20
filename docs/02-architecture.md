@@ -117,6 +117,11 @@ function serves them all — callers supply only what is inside.
 - **`eyebrow`** is the kicker the design sets over a sheet's title. The design
   has two — the how-to-play drawer's *How to play* and the duel's *SHARE TO* —
   of which the app has built the first.
+- **A confirmation** opens through `showConfirmSheet`
+  (`lib/core/widgets/confirm_sheet.dart`), not a dialog. It is the design's
+  `ConfirmSheet`: a question, an optional paragraph, a column of label-and-value
+  lines, a destructive flag and its own two labels. Reset Progress is its
+  destructive instance; every other confirm reuses it plain.
 
 Two rules the design states are deliberately **not** implemented, because
 Flutter satisfies both for free and porting them would re-solve a DOM problem:

@@ -6,23 +6,12 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The full-width primary CTA — the design's `.btn-primary`.
+/// The full-width primary CTA — the design's `.btn-primary`: accent fill,
+/// accent-ink text, [AppRadii.chrome] corners (ADR-0009).
 ///
-/// Accent fill, accent-ink text, and the radius the running prototype sets:
-/// `var(--r)`, which is [AppRadii.chrome]. It read [AppRadii.editorial] until
-/// #377, transcribed from the design-system catalogue's 2px, which ADR-0009
-/// ranks below the running prototype.
-///
-/// The shape is set here as well as on `AppTheme`'s button themes. That is not
-/// belt-and-braces: `context.mood` falls back to Dark Roast when no theme
-/// carries the extension, so this renders in a themeless `MaterialApp` — and
-/// without its own shape it would render there as Material's pill. Both read
-/// [AppRadii.chrome], so the two cannot drift; `button_shape_test.dart` pins
-/// the themeless case.
-///
-/// When disabled, swaps to a muted neutral fill so the affordance is still
-/// clearly visible against the dark-roast background — the prototype's 35%
-/// opacity fade is invisible on screen.
+/// The shape repeats `AppTheme`'s because a themeless `MaterialApp` would
+/// otherwise render Material's pill — `button_shape_test.dart` pins that case;
+/// disabled takes a muted fill, the design's 35% fade being invisible here.
 class PrimaryButton extends StatelessWidget {
   /// Creates a [PrimaryButton].
   const PrimaryButton({
@@ -33,7 +22,19 @@ class PrimaryButton extends StatelessWidget {
     this.trailingMark,
     this.semanticsLabel,
     super.key,
-  });
+  }) : _isDestructive = false;
+
+  /// The same CTA in berry — the design's `danger` override, `background:
+  /// var(--berry)`. It carries no mark: a destructive confirm is words alone.
+  const PrimaryButton.destructive({
+    required this.label,
+    required this.onPressed,
+    this.semanticsLabel,
+    super.key,
+  }) : leadingMark = null,
+       leadingMarkSize = null,
+       trailingMark = null,
+       _isDestructive = true;
 
   /// The design's fixed CTA height. Public because the sticky action bar
   /// reserves room for a button before one has been laid out, and a second
@@ -67,6 +68,9 @@ class PrimaryButton extends StatelessWidget {
   /// opens, where the visible words alone would not say which.
   final String? semanticsLabel;
 
+  /// Whether this is the berry variant.
+  final bool _isDestructive;
+
   /// The mark's size beside a control-step label.
   static const double _markSize = 18;
 
@@ -74,7 +78,11 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final enabled = onPressed != null;
-    final background = enabled ? mood.accent : mood.surface2;
+    final background = !enabled
+        ? mood.surface2
+        : _isDestructive
+        ? mood.berry
+        : mood.accent;
     final foreground = enabled ? mood.accentInk : mood.inkMute;
     return SizedBox(
       width: double.infinity,

@@ -60,6 +60,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Reset Progress now asks in a sheet that counts what it clears.** In place
+  of a paragraph naming categories, the confirm lists this learner's own
+  figures — their streak, points, lessons, cards, challenges, saved items and
+  the tree going back to seed — with a closing line for the rest, and confirms
+  on *Reset everything* over *Keep my progress*. Restart onboarding moved onto
+  the same sheet, plain, so two adjacent rows no longer mix a sheet and a
+  dialog. The sheet is a shared component, and it is the app's first
+  ([#570](https://github.com/maximsan/brewpath/issues/570)).
+
 - **The database announces its own changes, so no screen can be left showing
   stale progress.** Progress was read once and cached, and every write had to
   remember to say it had happened — a duty forgotten twice in code that shipped,

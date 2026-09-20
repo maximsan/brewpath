@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
@@ -47,9 +48,9 @@ void main() {
     await settleLoaders(tester);
 
     await tester.tap(find.text(SettingsCopy.resetProgressRow));
-    await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TextButton, 'Reset'));
-    await tester.pumpAndSettle();
+    await settleLoaders(tester);
+    await tester.tap(find.text(ResetCopy.confirm));
+    await settleLoaders(tester);
 
     await tester.tap(findMark(AppIcon.back));
     await tester.pumpAndSettle();
@@ -61,5 +62,8 @@ void main() {
       findsOneWidget,
       reason: 'the badge is a bare label again, with nothing saved',
     );
+
+    // Drain the 2-second auto-dismiss Timer the banner schedules.
+    await tester.pump(const Duration(seconds: 3));
   });
 }

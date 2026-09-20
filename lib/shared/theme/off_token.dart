@@ -510,6 +510,12 @@ abstract final class OffTokens {
     reason: '`.pick-tiles` sets `gap: 11px`',
   );
 
+  /// The room inside one line of a confirm sheet's itemised list.
+  static const OffToken<EdgeInsets> confirmLinePadding = OffToken(
+    EdgeInsets.symmetric(vertical: 13, horizontal: AppSpacing.md),
+    reason: "a confirm sheet's line sets `padding: '13px 16px'`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -586,5 +592,6 @@ abstract final class OffTokens {
     predictReadingLeading,
     predictQuestionLeading,
     pickTileGap,
+    confirmLinePadding,
   ];
 }
