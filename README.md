@@ -201,6 +201,30 @@ node tool/extract_content.js                          # the usual run
 node tool/extract_content.js --source DIR --out DIR   # used by the tests
 ```
 
+### `tool/draft_language.js` — draft and check a language folder
+
+Node script (no dependencies). Reads the generated English banks — never
+`prototype/`, because [ADR-0008](docs/adr/0008-a-language-is-a-folder.md) puts
+translation after extraction — and writes `assets/content/l10n/<code>/` plus
+`lib/l10n/app_<code>.arb`.
+
+The words are agent-drafted, so the work splits in two: `plan` queues every
+piece of prose that is absent or whose English has changed since it was
+translated, an agent fills each `text` in the queue, and `apply` writes the
+folder with a fingerprint per field. `check` is what
+[ADR-0026](docs/adr/0026-a-language-ships-once-complete-and-native-review-follows.md)
+means by complete, and `language_folders_complete_test.dart` re-runs it in CI.
+
+```bash
+node tool/draft_language.js plan  pl    # → build/l10n/pl.queue.json
+node tool/draft_language.js apply pl    # writes the folder from that queue
+node tool/draft_language.js check pl    # non-zero while anything is missing
+```
+
+A new folder needs its own `- assets/content/l10n/<code>/` line under `assets:`
+in `pubspec.yaml`; `apply` says so when it is missing, because a directory
+entry does not bundle its subdirectories.
+
 ### `tool/extract_icons.js` — regenerate the icon family
 
 Node script (no dependencies). Run after the design prototype's icon family

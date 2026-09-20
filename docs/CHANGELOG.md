@@ -44,6 +44,12 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A language folder can be drafted from the English master.**
+  `tool/draft_language.js` queues every piece of prose a language still owes —
+  absent, or left behind by an English edit — writes the folder from that
+  queue with a fingerprint per field, and refuses to call a language complete
+  while anything is missing. CI re-runs that check on every folder in the tree.
+
 - **One horizontal swipe, for every surface that has one.** A shared gesture
   carries the direction contract — left advances, right goes back or sets
   aside, and destructive actions get no swipe — with a blocked direction
@@ -76,6 +82,13 @@ You can always edit this file by hand instead — the helpers just save effort.
   names what actually ships when it writes the modules bank.
 
 ### Fixed
+
+- **A term can carry its own inflected forms.** A Polish folder whose aliases
+  held *kawa, kawy, kawie, kawę* was refused at startup, because the overlay
+  wanted every translated list to match English's length. Aliases are search
+  keys rather than prose (ADR-0025), so they set their own length.
+- **The card-kind help can be translated at all.** A language folder lands on a
+  bank entry by entry by id, and that was the one bank whose entries had none.
 
 - **An app left open across midnight no longer shows yesterday.** The streak,
   the freeze line, Keep Sharp, the header's date and a Coffee Challenge's
