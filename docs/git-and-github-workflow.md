@@ -4,7 +4,7 @@ The `git` and `gh` commands this project actually uses, and the reasoning behind
 the non-obvious ones. Flutter/Dart commands live in [`../README.md`](../README.md);
 the issue-tracker conventions for `/wayfinder` live in
 [`agents/issue-tracker.md`](agents/issue-tracker.md); CI is described in
-[`13-ci-cd.md`](13-ci-cd.md).
+[`ci-cd.md`](ci-cd.md).
 
 Every command below is copy-pasteable from the repo root.
 
@@ -29,6 +29,16 @@ EOF
 
 `Closes #<n>` auto-closes the issue **on merge**. `Refs #<n>` links without
 closing — if you use `Refs`, the issue needs closing by hand.
+
+## Branches
+
+Names follow the conventional prefixes `feat/`, `fix/`, `chore/`, `docs/`,
+`prototype/` with a kebab-case slug — `feat/lesson-mastery-gauge`. Work merges
+to `main` through a PR, squashed (see _Merging_).
+
+⚠️ `main` has **no branch protection**, so nothing refuses a merge with red
+checks; check them first, the discipline is manual. Enabling it is
+[#629](https://github.com/maximsan/brewpath/issues/629).
 
 ## Staging with exclusions
 
@@ -167,8 +177,7 @@ gh run view <run-id> --repo maximsan/brewpath --log-failed
 `--log-failed` prints only the failing job's log instead of the whole run —
 usually the difference between reading 40 lines and 4,000.
 
-⚠️ `main` has **no branch protection**, so nothing refuses a merge with red
-checks. Check first; the discipline is manual.
+`main` is unprotected (_Branches_ above), so read these before merging.
 
 Note that `pull_request` runs use the workflow file from the *merge* of head
 into base. A CI fix landing on `main` therefore takes effect on open PRs as soon
@@ -204,11 +213,10 @@ Two consequences worth knowing, because both look alarming and are not:
 
 ## Reproducing CI locally
 
-CI is six jobs ([`13-ci-cd.md`](13-ci-cd.md)). Run them in this order before
-pushing; they are the same commands the workflow uses. The pre-push hook
-([README _Quality checks_](../README.md#quality-checks)) runs the changelog
-check, the comment check, the format check and metrics from this list, plus
-the guard tests; analyze and the suite stay in CI.
+CI is six jobs ([`ci-cd.md`](ci-cd.md)). Run them in this order before
+pushing; they are the same commands the workflow uses. Which of them the
+pre-push hook already runs is in
+[`quality-checks.md`](quality-checks.md).
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below

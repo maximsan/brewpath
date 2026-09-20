@@ -66,7 +66,7 @@ several times slower on a cold CI runner than locally).
 > sliding in from off-screen. All three failed silently. A step that cannot
 > fail is not a step — and `pumpAndSettle` is banned here, because Roasty
 > idles forever and waiting on it is what disguised the breakage as a
-> ten-minute job. CI runs it on **main only** ([13](13-ci-cd.md)).
+> ten-minute job. CI runs it on **main only** ([13](ci-cd.md)).
 
 ### The smoke walk's helpers
 
@@ -120,7 +120,9 @@ tearDown(() async {
 ```
 
 **Service doubles:** while `kUseFirebase == false` the providers already
-resolve to No-Op implementations, so tests need no Firebase overrides today.
+resolve to No-Op implementations — the do-nothing ones, see
+[architecture.md](architecture.md) under _Service Abstraction Pattern_ — so
+tests need no Firebase overrides today.
 Riverpod `ProviderScope` overrides become relevant only after Firebase
 activation flips the providers.
 
@@ -129,5 +131,5 @@ activation flips the providers.
 ## Android Testing Addendum (For Future)
 
 Nothing here is done — there is no `android/` directory and no Android CI job.
-The plan lives in [`15-future-android-web-plan.md`](15-future-android-web-plan.md);
+The plan lives in [`future-android-web-plan.md`](future-android-web-plan.md);
 unit/widget tests are platform-agnostic and need no changes when it lands.

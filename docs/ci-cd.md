@@ -8,14 +8,10 @@ No automated App Store deployment. That is added later once TestFlight distribut
 
 ---
 
-## Branch Strategy
+## Branches
 
-Branches follow the conventional prefixes `feat/`, `fix/`, `chore/`, `docs/`,
-`prototype/` with a kebab-case slug (e.g. `feat/lesson-mastery-gauge`). Work
-merges to `main` via PR; the `gh` commands and merge-strategy guidance live in
-[`18-git-and-github-workflow.md`](18-git-and-github-workflow.md). Note `main`
-currently has **no branch protection** — nothing refuses a merge with red CI,
-so check the jobs before merging.
+Branch names, how a PR merges, and the state of branch protection are in
+[`git-and-github-workflow.md`](git-and-github-workflow.md), _Branches_.
 
 ---
 
@@ -28,7 +24,7 @@ embedded copy drifted from the real file twice). What the jobs are, and why:
 | Job | Runner | What it gates |
 |---|---|---|
 | `changelog` | ubuntu | PRs only: requires a `docs/CHANGELOG.md` entry for product changes (`tool/check_changelog.sh`); skipped when the PR carries the `no-changelog` label |
-| `comments` | ubuntu | PRs only: every Dart file the PR touches must have no comment block over six lines (`tool/check_comments.dart --changed <base>`); the same check runs locally on write, commit and push — README _Quality checks_ |
+| `comments` | ubuntu | PRs only: the comment cap (`tool/check_comments.dart --changed <base>`) on every Dart file the PR touches — the rule is CLAUDE.md's _Comments_ convention, and the same check runs locally ([`quality-checks.md`](quality-checks.md)) |
 | `format` | ubuntu | `dart format` over `lib test integration_test` (after `pub get`, so the language version resolves) |
 | `analyze & test` | ubuntu | `flutter analyze`, the `dart_code_linter` metrics gate, then `flutter test` (Node pinned for the extractor test) |
 | `iOS build` | macos | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false`. Then asserts `PrivacyInfo.xcprivacy` reached `Runner.app`: it is wired into the target by hand, and nothing else notices if a merge drops it (#166) |
@@ -50,45 +46,14 @@ future CI job needs Firebase active at runtime (e.g. an integration-test job).
 ## Local checks
 
 What runs before code leaves the machine — on the agent's write, on commit and
-on push — is documented once, in the README's _Quality checks_ section
-([`README.md`](../README.md#quality-checks)). The hooks live in
-[`tool/git-hooks/`](../tool/git-hooks/) and run the same commands as the jobs
-above.
+on push — is documented once, in [`quality-checks.md`](quality-checks.md). The
+hooks live in [`tool/git-hooks/`](../tool/git-hooks/) and run the same
+commands as the jobs above.
 
 ---
 
-## Codemagic Alternative
+## Automated distribution — not yet
 
-Codemagic is NOT required for MVP. Consider it only if:
-- The team needs automated TestFlight uploads from CI
-- iOS code signing in GitHub Actions becomes too complex to manage
-
-Codemagic provides better native iOS code signing integration (automatic code signing via App Store Connect API key) and built-in TestFlight upload steps.
-
-If Codemagic is added later:
-- [ ] Create a `codemagic.yaml` in the project root
-- [ ] Configure iOS workflow with code signing environment group
-- [ ] Add TestFlight distribution step
-
----
-
-## Future: Automated TestFlight Distribution
-
-When ready to automate TestFlight:
-
-Option A — Fastlane + GitHub Actions:
-- [ ] Add `fastlane/` directory to project root
-- [ ] Create `Fastfile` with `build_app` and `upload_to_testflight` lanes
-- [ ] Store `AuthKey_*.p8` and `App Store Connect API key` details as GitHub secrets
-- [ ] Add a `release` GitHub Actions workflow that triggers on `git tag v*`
-
-Option B — Codemagic:
-- [ ] Migrate ios-build job to Codemagic
-- [ ] Configure automatic code signing
-- [ ] Enable TestFlight upload trigger on `main` branch
-
----
-
-## Still open (manual — user)
-
-- [ ] Enable branch protection on `main` requiring the CI jobs to pass before merge
+No automated TestFlight or App Store upload exists, and none is added until
+distribution by hand is routine. The two options, with their steps, are a
+plan: [plans/testflight-automation.md](plans/testflight-automation.md).

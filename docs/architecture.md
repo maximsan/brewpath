@@ -208,22 +208,12 @@ the per-screen work.
 
 Every external service (analytics, crash reporting, remote config, ads, payments) is accessed **only through an abstract interface**. Concrete implementations are injected via Riverpod providers.
 
-```dart
-// Abstract interface
-abstract class AnalyticsService {
-  Future<void> logEvent(String name, {Map<String, Object>? parameters});
-  Future<void> logScreen(String screenName);
-}
-
-// Concrete implementations
-class FirebaseAnalyticsService implements AnalyticsService { ... }
-class NoOpAnalyticsService implements AnalyticsService { ... }
-
-// Provider — wired to the No-Op while kUseFirebase == false; activation
-// swaps this one line (see lib/services/analytics/analytics_provider.dart)
-@riverpod
-AnalyticsService analyticsService(Ref ref) => const NoOpAnalyticsService();
-```
+Each service is an abstract class with a real implementation, a No-Op
+implementation — one that accepts every call and does nothing, so the rest of
+the app is written as if the service were live
+([glossary](../learning/glossary.md#no-op-implementation)) — and one provider
+that picks between them. `lib/services/analytics/` is the pattern, and the Firebase ones
+resolve to the No-Op while `kUseFirebase == false` ([firebase.md](firebase.md)).
 
 This means:
 - Tests can inject a `NoOpAnalyticsService` without touching Firebase
@@ -247,23 +237,9 @@ AppDatabaseService (shared/storage/app_database.dart)
 
 ### Schema migrations
 
-Each schema version is dumped to `drift_schemas/` and the generated harness
-replays the whole chain in `test/database/` ([12](12-testing.md)).
-
-**A step may only name things the current Dart definition still has.**
-`addColumn`, `createTable` and `alterTable` all take a live `TableInfo`, so a
-step written against a table that is later removed stops compiling — which is
-why v13 deleted the v1 → v2 and v4 → v5 steps outright rather than rewriting
-them. Dropping is the exception: `deleteTable` takes a table *name* and issues
-`DROP TABLE IF EXISTS`, so a step can drop a table a given database never
-created, and `dropColumn` names its column rather than reading it off a class.
-
-That rules out the rebuild hazard the old chain carried
-([#273](https://github.com/maximsan/brewpath/issues/273)):
-`alterTable(TableMigration(...))` builds the new table from the **current**
-definition and copies every column it does not list in `newColumns` out of the
-old one, so a column added later fails every chained upgrade in a step that
-predates it. No rebuild is left — every drop in the chain is by name.
+Each schema version is dumped to `drift_schemas/` and replayed in
+`test/database/`. The procedure, and the rules a step must obey, are
+[schema-migrations.md](schema-migrations.md).
 
 ---
 
@@ -282,15 +258,6 @@ The app must:
 
 ## Analytics Call Discipline
 
-Analytics events are **never called directly in widget `build` methods**. They are called in:
-- Provider notifiers (on state transitions)
-- `initState` / `didChangeDependencies` via `ref.listen`
-- Explicit user action handlers
-
-This keeps widgets pure and tests clean.
-
----
-
-## Still open (manual — user)
-
-- [ ] Offline-first behavior confirmed on Simulator with Airplane Mode
+Analytics events are never fired from a widget's `build`; where they are
+fired, and how they are named, is [firebase.md](firebase.md), _Analytics
+conventions_.
