@@ -143,8 +143,8 @@ abstract final class OffTokens {
   static const OffToken<double> tabTitleClearOfEntries = OffToken(
     64,
     reason:
-        'the 10 Sep drop moved Path to `paddingTop: 24`; Learn and Profile '
-        'keep 64 to stay clear of the entries (#441)',
+        "the 10 Sep drop moved Path to the design's `paddingTop: 24`; 64 is "
+        "the app's own, clearing the entries (#441)",
   );
 
   /// The room the Path title leaves on its right for the floating entries,

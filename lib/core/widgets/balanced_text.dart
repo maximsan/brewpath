@@ -14,18 +14,21 @@ class BalancedText extends StatelessWidget {
   /// The line to draw.
   final String data;
 
-  /// The style, merged onto the ambient one exactly as [Text] merges it, so
-  /// the measurement and the paint cannot come to disagree.
+  /// The style, resolved against the ambient one exactly as [Text] resolves
+  /// it.
   final TextStyle? style;
 
   @override
   Widget build(BuildContext context) {
-    final ambient = DefaultTextStyle.of(context).style;
-    final resolved = switch (style) {
-      null => ambient,
-      final own when !own.inherit => own,
-      final own => ambient.merge(own),
-    };
+    // Resolved the way `Text` resolves it, bold-text setting included, so the
+    // measurement and the paint cannot come to disagree.
+    var resolved = style ?? const TextStyle();
+    if (resolved.inherit) {
+      resolved = DefaultTextStyle.of(context).style.merge(style);
+    }
+    if (MediaQuery.boldTextOf(context)) {
+      resolved = resolved.merge(const TextStyle(fontWeight: FontWeight.bold));
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -33,20 +36,18 @@ class BalancedText extends StatelessWidget {
         final text = Text(data, style: resolved);
         if (!room.isFinite) return text;
 
+        final balanced = balancedWrapWidth(
+          text: data,
+          style: resolved,
+          maxWidth: room,
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+        );
+
         // Padded rather than sized: a list lays its children out at a tight
         // width, which a narrower box would simply be stretched back out of.
         return Padding(
-          padding: EdgeInsetsDirectional.only(
-            end:
-                room -
-                balancedWrapWidth(
-                  text: data,
-                  style: resolved,
-                  maxWidth: room,
-                  textDirection: Directionality.of(context),
-                  textScaler: MediaQuery.textScalerOf(context),
-                ),
-          ),
+          padding: EdgeInsetsDirectional.only(end: room - balanced),
           child: text,
         );
       },

@@ -224,15 +224,23 @@ void main() {
       );
     }
 
+    void expectLeftOf(String tab, Finder entry) {
+      expect(
+        title().right,
+        lessThanOrEqualTo(tester.getRect(entry).left),
+        reason: '$tab opens level with its entries, so it stops short of them',
+      );
+    }
+
     expectBelow('Learn', _savedButton());
 
     await tester.tap(findMark(AppIcon.route, active: false));
     await settleLoaders(tester);
-    expect(
-      title().right,
-      lessThanOrEqualTo(tester.getRect(_savedButton()).left),
-      reason: 'Path opens level with its entries, so it stops short of them',
-    );
+    expectLeftOf('Path', _savedButton());
+
+    await tester.tap(findMark(AppIcon.cards, active: false));
+    await settleLoaders(tester);
+    expectLeftOf('Cards', _savedButton());
 
     await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);

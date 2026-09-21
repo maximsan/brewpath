@@ -62,10 +62,10 @@ class _PathScreenState extends ConsumerState<PathScreen> {
           ),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
-            // Beside the entries, not below them: the design reserves their
-            // width on the right and lets a long course name wrap into what
-            // is left, so the title can open at the top of the tab.
-            const TabLargeTitle(AppRoutes.path, besideEntries: true),
+            const TabLargeTitle(
+              AppRoutes.path,
+              placement: TabTitlePlacement.besideEntries,
+            ),
             // The design sets 8 here and on the Cards tab: one stacked label
             // rather than two blocks, so both take the hairline pair's stop.
             const SizedBox(height: AppSpacing.xs),

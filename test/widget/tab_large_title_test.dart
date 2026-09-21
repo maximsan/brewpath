@@ -19,7 +19,7 @@ const _pathTitle = 'Beginner Foundations';
 Widget _harness(
   AppRoute route, {
   EdgeInsets padding = EdgeInsets.zero,
-  bool besideEntries = false,
+  TabTitlePlacement placement = TabTitlePlacement.atTop,
 }) {
   return ProviderScope(
     overrides: [currentDayProvider.overrideWithValue(_today)],
@@ -29,7 +29,7 @@ Widget _harness(
         data: MediaQueryData(padding: padding),
         child: Scaffold(
           body: SingleChildScrollView(
-            child: TabLargeTitle(route, besideEntries: besideEntries),
+            child: TabLargeTitle(route, placement: placement),
           ),
         ),
       ),
@@ -115,7 +115,9 @@ void main() {
     await tester.pumpAndSettle();
     final across = tester.getRect(find.text(_pathTitle));
 
-    await tester.pumpWidget(_harness(AppRoutes.path, besideEntries: true));
+    await tester.pumpWidget(
+      _harness(AppRoutes.path, placement: TabTitlePlacement.besideEntries),
+    );
     await tester.pumpAndSettle();
     final beside = tester.getRect(find.text(_pathTitle));
 
