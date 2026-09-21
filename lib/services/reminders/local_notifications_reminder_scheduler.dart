@@ -1,4 +1,5 @@
 import 'package:brew_path/services/reminders/reminder_scheduler.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_10y.dart' as tz_data;
@@ -18,13 +19,23 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
   /// and are never cancelled here.
   static const idBase = 443000;
 
-  /// How many ids the band holds — more than the horizon ever plans, so a
-  /// shortened plan still clears what a longer one left behind.
+  /// How many ids the band holds — iOS's own pending limit, and more than the
+  /// horizon ever plans, so a shortened plan still clears what a longer one
+  /// left behind.
   static const idCount = 64;
 
   final FlutterLocalNotificationsPlugin _plugin;
 
   Future<void>? _ready;
+
+  /// What this process last put in front of the OS.
+  ///
+  /// Only an optimisation, and deliberately per-process: a cold start starts
+  /// with no memory, which is what makes the launch re-assertion real after a
+  /// reboot, an upgrade or anything else that could have lost the schedule.
+  List<DateTime>? _posted;
+
+  ReminderPermission? _lastAnswer;
 
   @override
   Future<ReminderPermission> permission() async {
@@ -33,9 +44,17 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     if (ios == null) return ReminderPermission.unsupported;
 
     final options = await ios.checkPermissions();
-    return (options?.isEnabled ?? false)
+    final answer = (options?.isEnabled ?? false)
         ? ReminderPermission.granted
         : ReminderPermission.denied;
+
+    // An answer that moved means the learner has been in iOS Settings, where
+    // what the OS still holds is not ours to assume. Forget what we posted, so
+    // the next plan is posted afresh rather than skipped as unchanged.
+    if (_lastAnswer != null && answer != _lastAnswer) _posted = null;
+    _lastAnswer = answer;
+
+    return answer;
   }
 
   @override
@@ -61,26 +80,42 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     required String body,
   }) async {
     await _ensureReady();
-    await _cancelOurs();
 
     // Re-checked against the clock rather than trusted from the plan: the plan
     // was computed before the awaits above, and the plugin rejects an instant
     // already gone.
     final now = DateTime.now();
     final upcoming = at.where(now.isBefore).take(idCount).toList();
+    if (const ListEquality<DateTime>().equals(_posted, upcoming)) return;
+
+    await _cancelOurs();
+    if (upcoming.isEmpty) {
+      _posted = upcoming;
+      return;
+    }
+
+    // Read per call, never cached: the zone the trigger is built in is the
+    // zone it fires in, so a learner who has flown has to be re-posted in the
+    // one they are now.
+    final zone = tz.getLocation(
+      (await FlutterTimezone.getLocalTimezone()).identifier,
+    );
 
     for (var index = 0; index < upcoming.length; index++) {
       await _plugin.zonedSchedule(
         id: idBase + index,
         title: title,
         body: body,
-        scheduledDate: tz.TZDateTime.from(upcoming[index], tz.local),
+        scheduledDate: tz.TZDateTime.from(upcoming[index], zone),
         notificationDetails: const NotificationDetails(
           iOS: DarwinNotificationDetails(),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }
+    // Last, so a posting that threw part-way leaves a memory that does not
+    // match the plan — and the next refresh posts it again.
+    _posted = upcoming;
   }
 
   @override
@@ -94,13 +129,11 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
         IOSFlutterLocalNotificationsPlugin
       >();
 
-  /// Initialises the plugin and the timezone database, once per scheduler.
+  /// Loads the timezone database and initialises the plugin, once.
   Future<void> _ensureReady() => _ready ??= _initialize();
 
   Future<void> _initialize() async {
     tz_data.initializeTimeZones();
-    final zone = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(zone.identifier));
 
     // Every `request*` off: initialising must not put a permission prompt in
     // front of a learner who has not asked for a reminder.

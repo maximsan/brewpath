@@ -26,7 +26,9 @@ Future<ReminderPermission> askForReminder(WidgetRef ref, {String? time}) async {
   if (permission == ReminderPermission.denied) {
     permission = await scheduler.request();
   }
-  if (permission == ReminderPermission.denied) return permission;
+  // Only a yes stores it. `unsupported` is a build with nothing to deliver
+  // with, and a switch showing on there would promise exactly as little.
+  if (permission != ReminderPermission.granted) return permission;
 
   final settings = ref.read(settingsControllerProvider.notifier);
   await (time == null

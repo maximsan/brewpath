@@ -9,11 +9,11 @@ import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 
 /// How many days ahead the app keeps reminders pending.
 ///
-/// One-shot occurrences rather than one repeating request, because a day the
-/// learner has already practised on gets no nudge (#443) and a repeat cannot
-/// skip an occurrence. Well under the 64 iOS keeps, and re-filled on every
-/// launch and resume.
-const reminderHorizonDays = 14;
+/// One-shots rather than one repeating request, because a day already
+/// practised on gets no nudge (#443) and a repeat cannot skip an occurrence.
+/// Two months, not two weeks: what is pending is all a learner who has stopped
+/// opening the app has, and iOS keeps 64.
+const reminderHorizonDays = 60;
 
 /// The instants the reminder should arrive at, soonest first.
 ///

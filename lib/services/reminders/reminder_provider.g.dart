@@ -12,7 +12,8 @@ part of 'reminder_provider.dart';
 ///
 /// iOS is the only platform this app ships, and the only one with a scheduler
 /// behind it — so everywhere else, including `flutter_tester`, gets the no-op
-/// and no test has to remember to override it.
+/// and no test has to remember to override it. Kept alive because the
+/// scheduler initialises the plugin once and remembers what it posted.
 
 @ProviderFor(reminderScheduler)
 final reminderSchedulerProvider = ReminderSchedulerProvider._();
@@ -21,7 +22,8 @@ final reminderSchedulerProvider = ReminderSchedulerProvider._();
 ///
 /// iOS is the only platform this app ships, and the only one with a scheduler
 /// behind it — so everywhere else, including `flutter_tester`, gets the no-op
-/// and no test has to remember to override it.
+/// and no test has to remember to override it. Kept alive because the
+/// scheduler initialises the plugin once and remembers what it posted.
 
 final class ReminderSchedulerProvider
     extends
@@ -35,14 +37,15 @@ final class ReminderSchedulerProvider
   ///
   /// iOS is the only platform this app ships, and the only one with a scheduler
   /// behind it — so everywhere else, including `flutter_tester`, gets the no-op
-  /// and no test has to remember to override it.
+  /// and no test has to remember to override it. Kept alive because the
+  /// scheduler initialises the plugin once and remembers what it posted.
   ReminderSchedulerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'reminderSchedulerProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -70,4 +73,4 @@ final class ReminderSchedulerProvider
   }
 }
 
-String _$reminderSchedulerHash() => r'c8af411770c3154b58d59633922363f2727841bc';
+String _$reminderSchedulerHash() => r'b6187560f3827754b54cba9a274f6c5ea3446b6d';

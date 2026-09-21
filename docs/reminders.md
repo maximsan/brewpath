@@ -24,22 +24,25 @@ not one lesson ([#443](https://github.com/maximsan/brewpath/issues/443)).
 
 ## How it fires
 
-The app keeps a rolling fortnight of one-shot notifications pending, one per
-day at the chosen slot, leaving out every day already on the qualifying-day set
-and every slot already gone by. One-shots rather than one repeating request,
-because a repeat cannot skip the day the learner has already practised on; a
-fortnight, because iOS keeps at most 64 and the plan is re-filled on every
-launch.
+The app keeps two months of one-shot notifications pending, one per day at the
+chosen slot, leaving out every day already on the qualifying-day set and every
+slot already gone by. One-shots rather than one repeating request, because a
+repeat cannot skip the day the learner has already practised on. Two months
+because what is pending is all a learner who has stopped opening the app has,
+and iOS keeps at most 64.
 
-`ReminderWatcher` re-fills it on a cold start, a resume, the day turning over,
-a completed activity, and a change to either row. The cold start and the resume
-are what a reboot, an app upgrade and a timezone change come back through — the
-iOS trigger stores the timezone it was built in, so a moved learner is put right
-at the next launch rather than at the next midnight.
+`ReminderWatcher` re-fills the plan on a cold start, a resume, the day turning
+over, a completed activity, and a change to either row. The iOS trigger fires
+in the timezone it was built in, so the device's zone is read afresh every time
+the plan is posted and a learner who has flown is put right at the next launch
+or resume.
 
-Every refresh runs through one queue (`ReminderRefresher`). Two that overlapped
-could leave the OS holding the older plan, which is a reminder arriving after
-it was switched off.
+Two things keep that cheap and safe. A refresh whose plan matches what this
+process last posted does nothing at all — and the memory is per-process, so a
+cold start always re-asserts, which is what carries a reboot or an app upgrade.
+And every refresh runs through one queue (`ReminderRefresher`): two that
+overlapped could leave the OS holding the older plan, which is a reminder
+arriving after it was switched off.
 
 ## Where the code is
 
