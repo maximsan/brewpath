@@ -199,41 +199,44 @@ void main() {
     expect(_sharedHeader(), findsNothing);
   });
 
-  testWidgets('a tab whose title can grow opens clear of the entries', (
+  testWidgets('no tab title paints behind the floating entries', (
     tester,
   ) async {
     // The bar floats over the tab, so nothing lays the title and the entries
-    // out against each other. Three of the four titles are not fixed strings —
-    // the day's date, the course name, a greeting carrying a typed name — and
-    // at the design's 24 the widest of them paints behind the two buttons.
+    // out against each other. Learn and Profile drop below them; Path takes
+    // the 10 Sep drop's own remedy and reserves their width instead (#584).
     await pumpWithProviders(tester, const BrewPathApp());
 
-    Future<void> expectClear(String tab, Finder entry) async {
+    // The Text, not the widget: the widget's box starts at the top of the
+    // screen and the gap it leaves is inside it.
+    Rect title() => tester.getRect(
+      find.descendant(
+        of: find.byType(TabLargeTitle),
+        matching: find.byType(Text),
+      ),
+    );
+
+    void expectBelow(String tab, Finder entry) {
       expect(
-        // The Text, not the widget: the widget's box starts at the top of the
-        // screen and the gap it leaves is inside it.
-        tester
-            .getRect(
-              find.descendant(
-                of: find.byType(TabLargeTitle),
-                matching: find.byType(Text),
-              ),
-            )
-            .top,
+        title().top,
         greaterThanOrEqualTo(tester.getRect(entry).bottom),
         reason: '$tab must open below its entries, not behind them',
       );
     }
 
-    await expectClear('Learn', _savedButton());
+    expectBelow('Learn', _savedButton());
 
     await tester.tap(findMark(AppIcon.route, active: false));
     await settleLoaders(tester);
-    await expectClear('Path', _savedButton());
+    expect(
+      title().right,
+      lessThanOrEqualTo(tester.getRect(_savedButton()).left),
+      reason: 'Path opens level with its entries, so it stops short of them',
+    );
 
     await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
-    await expectClear('Profile', _settingsButton());
+    expectBelow('Profile', _settingsButton());
   });
 
   group('collapse on scroll', () {

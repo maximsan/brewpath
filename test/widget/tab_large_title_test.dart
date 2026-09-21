@@ -4,6 +4,7 @@ import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +14,13 @@ import '../support/widget_harness.dart';
 /// The day the header test freezes to, so the two agree on what Learn says.
 final _today = DateTime(2026, 5, 8);
 
-Widget _harness(AppRoute route, {EdgeInsets padding = EdgeInsets.zero}) {
+const _pathTitle = 'Beginner Foundations';
+
+Widget _harness(
+  AppRoute route, {
+  EdgeInsets padding = EdgeInsets.zero,
+  bool besideEntries = false,
+}) {
   return ProviderScope(
     overrides: [currentDayProvider.overrideWithValue(_today)],
     child: MaterialApp(
@@ -21,7 +28,9 @@ Widget _harness(AppRoute route, {EdgeInsets padding = EdgeInsets.zero}) {
       home: MediaQuery(
         data: MediaQueryData(padding: padding),
         child: Scaffold(
-          body: SingleChildScrollView(child: TabLargeTitle(route)),
+          body: SingleChildScrollView(
+            child: TabLargeTitle(route, besideEntries: besideEntries),
+          ),
         ),
       ),
     ),
@@ -88,6 +97,43 @@ void main() {
       reason:
           'the header floats over the tab now, so the tab is what makes room '
           'for the status bar',
+    );
+  });
+
+  testWidgets('beside the entries, a title that would reach them wraps', (
+    tester,
+  ) async {
+    // Wide enough that the title fits on one line with the whole tab to
+    // itself, and not once the entries' width is taken off it.
+    const width = 640.0;
+    const reserved = width - 120;
+    tester.view.physicalSize = const Size(width, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(_harness(AppRoutes.path));
+    await tester.pumpAndSettle();
+    final across = tester.getRect(find.text(_pathTitle));
+
+    await tester.pumpWidget(_harness(AppRoutes.path, besideEntries: true));
+    await tester.pumpAndSettle();
+    final beside = tester.getRect(find.text(_pathTitle));
+
+    expect(
+      OffTokens.tabTitleBesideEntries.value,
+      width - reserved,
+      reason: 'the reserved width this test measures against is the token',
+    );
+    expect(
+      across.right,
+      greaterThan(reserved),
+      reason: 'left to itself the title reaches under the floating entries',
+    );
+    expect(beside.right, lessThanOrEqualTo(reserved));
+    expect(
+      beside.height,
+      greaterThan(across.height),
+      reason: 'it wraps clear of them rather than running under them',
     );
   });
 

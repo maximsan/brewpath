@@ -9,7 +9,6 @@ import 'package:brew_path/features/path/domain/path_providers.dart';
 import 'package:brew_path/features/path/presentation/path_module_section.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -63,10 +62,10 @@ class _PathScreenState extends ConsumerState<PathScreen> {
           ),
           physics: const AlwaysScrollableScrollPhysics(),
           children: [
-            TabLargeTitle(
-              AppRoutes.path,
-              topGap: OffTokens.tabTitleClearOfEntries.value,
-            ),
+            // Beside the entries, not below them: the design reserves their
+            // width on the right and lets a long course name wrap into what
+            // is left, so the title can open at the top of the tab.
+            const TabLargeTitle(AppRoutes.path, besideEntries: true),
             // The design sets 8 here and on the Cards tab: one stacked label
             // rather than two blocks, so both take the hairline pair's stop.
             const SizedBox(height: AppSpacing.xs),
