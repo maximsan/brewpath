@@ -71,6 +71,30 @@ void main() {
     expect(active?.value?.id, 'bc-m1');
   });
 
+  testWidgets('a brewed entry offers to brew it again, not to start it', (
+    tester,
+  ) async {
+    await pumpWithProviders(
+      tester,
+      ProviderScope(
+        overrides: [
+          savedChallengesProvider.overrideWith(
+            (ref) async => [testChallenge()],
+          ),
+          completedChallengesProvider.overrideWith((ref) async => {'bc-m1'}),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.darkRoast,
+          home: const Scaffold(body: SavedChallengesList()),
+        ),
+      ),
+    );
+    await open(tester);
+
+    expect(find.text('Brew again'), findsOneWidget);
+    expect(find.text('Start'), findsNothing);
+  });
+
   testWidgets('removing one is reachable by its own label', (tester) async {
     await pump(tester, [testChallenge()]);
     await open(tester);

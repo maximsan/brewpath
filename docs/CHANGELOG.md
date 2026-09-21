@@ -57,6 +57,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   the content changes. The deck's peeked neighbour and the first-run hint ship
   beside it. The hint stops when the gesture is used, never after a count
   ([#610](https://github.com/maximsan/brewpath/issues/610)).
+- **Three surfaces take the swipe.** The Coffee Challenge card parks by being
+  slid aside, with the destination naming itself on the track behind and a
+  double chevron standing on the card; saying *not now* no longer means opening
+  a form that claims you are reporting a brew
+  ([#611](https://github.com/maximsan/brewpath/issues/611)). A right swipe on a
+  dictionary row saves the term — save-only, because losing a curated list to a
+  stray drag is the destructive case the direction contract keeps off gestures;
+  un-saving stays on the bookmark
+  ([#612](https://github.com/maximsan/brewpath/issues/612)). The flashcard deck
+  is walked by swiping, with the stack behind the card as its affordance and
+  arrow keys mapped point-at-target
+  ([#613](https://github.com/maximsan/brewpath/issues/613)).
+- **A parked re-brew stays in the queue.** A Coffee Challenge you have already
+  brewed and chose to brew again now survives being parked, and its row offers
+  *Brew again* rather than *Start* — watching it vanish was the park gesture
+  lying about where the card went
+  ([#611](https://github.com/maximsan/brewpath/issues/611)).
 
 - **Replaying a finished lesson asks first.** Tapping one on the Path, in the
   practice shelf or in Saved now raises a sheet saying what a second run is
@@ -106,7 +123,22 @@ You can always edit this file by hand instead — the helpers just save effort.
   on a 3x phone. The design source keeps its lossless originals; the extractor
   names what actually ships when it writes the modules bank.
 
+### Removed
+
+- **The flashcard deck's Prev and Next buttons.** They used the opposite
+  direction model to the gesture — a left chevron meaning *back*, under a card
+  whose left drag means *next*. Finish survives on the last card, and each
+  direction keeps a control that only appears on focus
+  ([#613](https://github.com/maximsan/brewpath/issues/613)).
+
 ### Fixed
+
+- **The app stopped offering a language it has two banks of.** An interface
+  translation beside `app_en.arb` is all it takes for Flutter to advertise a
+  locale, so Belarusian was on offer to any phone set to it while the course
+  still reads English — the mixed-language app ADR-0008 forbids. The draft
+  moves to `lib/l10n/pending/`, where `gen_l10n` leaves it, and comes back the
+  day its content folder is complete. The four translated strings are kept.
 
 - **A term can carry its own inflected forms.** A Polish folder whose aliases
   held *kawa, kawy, kawie, kawę* was refused at startup, because the overlay

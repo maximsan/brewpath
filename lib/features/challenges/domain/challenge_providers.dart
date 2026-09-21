@@ -120,9 +120,10 @@ Future<bool> _isOfferable(
 
 /// The challenges waiting in the saved queue, in bank order.
 ///
-/// Excludes whatever is in play and anything already logged, and drops any
-/// challenge whose lesson the learner has not reached — a queue advertising
-/// work locked behind content is worse than an empty one.
+/// Excludes whatever is in play, and drops any challenge whose lesson the
+/// learner has not reached — a queue advertising work locked behind content is
+/// worse than an empty one. What a logged one is doing here: see
+/// [visibleSavedChallenges].
 @riverpod
 Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
   final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
@@ -146,7 +147,6 @@ Future<List<BrewChallenge>> savedChallenges(Ref ref) async {
       progress.activeChallenge.value,
       nowMillis: nowMillis,
     ),
-    completed: progress.challengesCompleted,
     bankOrder: [for (final challenge in bank) challenge.id],
     isOfferable: offerable.contains,
   );

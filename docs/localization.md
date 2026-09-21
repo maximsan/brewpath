@@ -21,7 +21,7 @@ is redone ([ADR-0027](adr/0027-a-stale-translation-stays-until-it-is-retranslate
 |---|---|---|
 | The English original of every bank | `assets/content/generated/<bank>.json` — the extractor's output, never hand-edited | yes |
 | Course text — lessons, terms, games, Roasty's lines, everything a learner studies | `assets/content/l10n/<code>/<bank>.json`, the same bank name and ids as the English file, holding only the translated fields | yes |
-| Interface text — buttons, titles, screen copy | `lib/l10n/app_<code>.arb`, beside `app_en.arb` | yes |
+| Interface text — buttons, titles, screen copy | `lib/l10n/app_<code>.arb`, beside `app_en.arb` — `lib/l10n/pending/` while the language is still a draft | yes |
 | The to-do list while drafting | `build/l10n/<code>.queue.json` | no — regenerated |
 | The tool | `tool/draft_language.js` and `tool/draft_language/` | yes |
 | Which languages the app offers | `lib/shared/content/content_language.dart` | yes |
@@ -30,6 +30,15 @@ Two formats because Flutter fixes one of them: `gen_l10n` reads every
 `lib/l10n/app_<code>.arb` on each build (`l10n.yaml`, `generate: true`) and
 generates the Dart that picks the string for the phone's locale. Course text
 is ours, so it takes the folder shape.
+
+**An `.arb` in `lib/l10n/` is the app offering that language**, whatever the
+course folder holds: `gen_l10n` puts the locale in `supportedLocales`, and a
+phone set to it gets a translated interface over English lessons — the mixed
+app ADR-0008 forbids. A course folder left out of `pubspec.yaml` is a draft
+Flutter never ships; an `.arb` has no such off switch, so a draft language's
+`.arb` waits in `lib/l10n/pending/`, which `gen_l10n` does not read. **`apply`
+writes to `lib/l10n/`, so move the file back down after drafting** until the
+language is complete and `content_language.dart` names it.
 
 **Moving a screen's strings into the `.arb`.** Interface text is migrated
 screen by screen: its strings go into `app_en.arb` and the screen reads them

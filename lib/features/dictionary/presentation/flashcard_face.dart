@@ -7,13 +7,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// One side of a flashcard: its category, which side this is, the content, and
-/// what a tap does next.
+/// One side of a flashcard: its category, which side this is, and the content.
 ///
-/// Both faces are the same frame so the flip does not resize the card mid-turn.
-/// Only the tint differs — the front carries a wash of accent, the back is
-/// plain surface, which is how the design says *this side is the question*
-/// without a word.
+/// Both faces are the same frame so the flip does not resize the card
+/// mid-turn. Only the tint differs — a wash of accent on the front, plain
+/// surface on the back — which is how the design says *this side is the
+/// question* without a word.
 class FlashcardFace extends StatelessWidget {
   /// Creates a [FlashcardFace].
   const FlashcardFace({
@@ -42,7 +41,7 @@ class FlashcardFace extends StatelessWidget {
 
   /// The design's `borderRadius: 20` — inside `AppRadii.chrome`'s documented
   /// 12–20 slack, at the loose end because this card *is* the screen.
-  static const double _radius = 20;
+  static const double radius = 20;
 
   /// The design's `CatGlyph size={15}` on a face.
   static const double _markSize = 15;
@@ -73,7 +72,7 @@ class FlashcardFace extends StatelessWidget {
       decoration: BoxDecoration(
         color: isFront ? null : mood.surface,
         gradient: isFront ? _wash(mood) : null,
-        borderRadius: BorderRadius.circular(_radius),
+        borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: isFront ? _edge(mood) : mood.rule),
         boxShadow: _lift,
       ),

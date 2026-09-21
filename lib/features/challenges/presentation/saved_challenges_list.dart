@@ -100,6 +100,17 @@ class _SavedRow extends ConsumerWidget {
     final theme = Theme.of(context);
     final mood = context.mood;
     final effort = effortParts(challenge.effort);
+    // A brewed challenge is only back in the queue because the learner parked
+    // a replay, so the row offers to brew it again rather than to start it.
+    final isBrewed =
+        ref
+            .watch(completedChallengesProvider)
+            .asData
+            ?.value
+            .contains(
+              challenge.id,
+            ) ??
+        false;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
@@ -127,9 +138,19 @@ class _SavedRow extends ConsumerWidget {
               ],
             ),
           ),
-          TextButton(
-            onPressed: () => _start(ref),
-            child: const Text('Start'),
+          Semantics(
+            button: true,
+            // Named, because a queue of several would otherwise read as a
+            // column of identical "Start".
+            label: isBrewed
+                ? 'Brew ${challenge.title} again'
+                : 'Start ${challenge.title}',
+            excludeSemantics: true,
+            onTap: () => _start(ref),
+            child: TextButton(
+              onPressed: () => _start(ref),
+              child: Text(isBrewed ? 'Brew again' : 'Start'),
+            ),
           ),
           IconButton(
             icon: const IconMark(AppIcon.close),

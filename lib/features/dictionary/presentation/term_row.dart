@@ -1,9 +1,17 @@
+import 'dart:async';
+
+import 'dart:math' as math;
+
+import 'package:brew_path/core/swipe/horizontal_swipe.dart';
+import 'package:brew_path/core/swipe/swipe_hint.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
 import 'package:brew_path/features/dictionary/presentation/status_mark.dart';
+import 'package:brew_path/features/dictionary/presentation/term_save_track.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/features/saved/presentation/saved_toggle.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -14,17 +22,30 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// One term in a list: its status mark, its name and respelling, its meaning,
 /// and — only once saved — the bookmark that takes it off the shelf.
 ///
-/// The bookmark sits beside the row's tap surface, not inside it: a control
-/// inside a control is pruned from the accessibility tree, and this one is the
-/// only way to un-save from the list.
-class TermRow extends StatelessWidget {
+/// **The whole row is the target, for both the tap and the drag**, but the row
+/// itself is not the button: a row that is a button prunes the nested bookmark
+/// from the accessibility tree, and that bookmark is the only way to un-save.
+class TermRow extends ConsumerWidget {
   /// Creates a [TermRow].
   const TermRow({
     required this.term,
     required this.status,
     required this.onTap,
+    this.nudge = 0,
+    this.onSaved,
     super.key,
   });
+
+  /// A row **never flies off** — it is still in the list afterwards, saved.
+  ///
+  /// The design's `commitThreshold: 64, maxDragDistance: 120`.
+  static const SwipeMotion _motion = SwipeMotion(
+    commitThreshold: _commitAt,
+    maxDrag: _maxDrag,
+  );
+
+  static const double _commitAt = 64;
+  static const double _maxDrag = 120;
 
   /// The design's `padding: 13px 0` above and below the row.
   static const double _rowPad = 13;
@@ -50,40 +71,94 @@ class TermRow extends StatelessWidget {
   /// Called when the row is tapped.
   final VoidCallback onTap;
 
+  /// Where the first-run hint has this row, or 0 for every row it is not
+  /// teaching on.
+  final double nudge;
+
+  /// Called once a swipe has saved the term, so the hint can retire.
+  final VoidCallback? onSaved;
+
   @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final savedKey = formatSavedKey(SavedKind.term, term.id);
+    // Tri-state on purpose. The gesture opens only on a *positive* unsaved
+    // read, so a swipe landing before the shelf resolves cannot un-save a
+    // term; the bookmark and the label wait for a positive saved one, so
+    // neither draws a claim the shelf has not made.
+    final saved = ref.watch(isKeySavedProvider(savedKey)).value;
+    final isSaved = saved ?? false;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: mood.rule)),
+      child: ClipRect(
+        child: HorizontalSwipe(
+          motion: _motion,
+          // Save-only: losing a curated list to a stray 70px drag is exactly
+          // the destructive case the direction contract keeps off gestures.
+          canAdvance: false,
+          canBack: saved == false,
+          onBack: () {
+            onSaved?.call();
+            unawaited(toggleSavedKey(context, ref, savedKey));
+          },
+          behind: (context, drag) => TermSaveTrack(
+            travel: math.max(drag.travel, nudge),
+            isSaved: isSaved,
+          ),
+          builder: (context, drag) => SwipeNudge(
+            offset: nudge,
+            child: _row(context, savedKey: savedKey, isSaved: isSaved),
+          ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: _rowPad),
-          child: Row(
+      ),
+    );
+  }
+
+  Widget _row(
+    BuildContext context, {
+    required String savedKey,
+    required bool isSaved,
+  }) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: context.mood.bg,
+      border: Border(bottom: BorderSide(color: context.mood.rule)),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: _rowPad),
+      child: Stack(
+        children: [
+          // Behind the content and stretched over the whole row, so the
+          // padding and the gaps answer the tap as well as the drag.
+          Positioned.fill(
+            child: Semantics(
+              button: true,
+              // The mark is a shape; the label is what carries the state.
+              label: '${term.term}, ${status.label}',
+              excludeSemantics: true,
+              onTap: onTap,
+              child: InkWell(onTap: onTap),
+            ),
+          ),
+          Row(
             children: [
-              Expanded(
-                child: Semantics(
-                  button: true,
-                  // The mark is a shape; the label is what carries the state.
-                  label: '${term.term}, ${status.label}',
-                  excludeSemantics: true,
-                  onTap: onTap,
-                  child: InkWell(
-                    onTap: onTap,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: _markColumn,
-                          child: Center(child: StatusMark(status: status)),
-                        ),
-                        const SizedBox(width: _markGap),
-                        Expanded(child: _Words(term: term)),
-                      ],
-                    ),
+              // Above the tap target in paint order, so it must let the taps
+              // it does not want fall through to it.
+              ExcludeSemantics(
+                child: IgnorePointer(
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: _markColumn,
+                        child: Center(child: StatusMark(status: status)),
+                      ),
+                      const SizedBox(width: _markGap),
+                    ],
                   ),
+                ),
+              ),
+              Expanded(
+                child: ExcludeSemantics(
+                  child: IgnorePointer(child: _Words(term: term)),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -92,15 +167,20 @@ class TermRow extends StatelessWidget {
                 child: OverflowBox(
                   maxWidth: _bookmarkTarget,
                   maxHeight: _bookmarkTarget,
-                  child: _SavedMark(term: term),
+                  child: isSaved
+                      ? SavedBookmarkButton(
+                          savedKey: savedKey,
+                          label: term.term,
+                        )
+                      : const SizedBox.shrink(),
                 ),
               ),
             ],
           ),
-        ),
+        ],
       ),
-    );
-  }
+    ),
+  );
 }
 
 /// The name at body weight 500 with its respelling beside it, then the meaning
@@ -143,24 +223,5 @@ class _Words extends StatelessWidget {
         Text(term.shortExplanation, style: AppText.support(mood: mood)),
       ],
     );
-  }
-}
-
-/// The bookmark, drawn only once the term is saved.
-///
-/// Ten identical toggles were the heaviest thing on the screen; one filled
-/// mark on a saved row is not. It is still a control — the save-only rule
-/// belongs to the gesture, not to the button.
-class _SavedMark extends ConsumerWidget {
-  const _SavedMark({required this.term});
-
-  final DictionaryTerm term;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final key = formatSavedKey(SavedKind.term, term.id);
-    final saved = ref.watch(isKeySavedProvider(key)).asData?.value ?? false;
-    if (!saved) return const SizedBox.shrink();
-    return SavedBookmarkButton(savedKey: key, label: term.term);
   }
 }

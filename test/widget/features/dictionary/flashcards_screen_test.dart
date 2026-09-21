@@ -1,6 +1,9 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/swipe/swipe_deck_stack.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
+import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/dictionary/presentation/flashcard_deck_controls.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
@@ -12,6 +15,7 @@ import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -66,6 +70,18 @@ Future<ProviderContainer> _pump(
   );
   await settleLoaders(tester);
   return container;
+}
+
+/// Steps on a card by swiping it left, which is the only way a pointer has.
+Future<void> _advance(WidgetTester tester) async {
+  await tester.drag(find.byType(FlashcardView), const Offset(-120, 0));
+  await tester.pumpAndSettle();
+}
+
+/// Sends one key to whatever the deck has focused.
+Future<void> _press(WidgetTester tester, LogicalKeyboardKey key) async {
+  await tester.sendKeyEvent(key);
+  await tester.pumpAndSettle();
 }
 
 /// Bounded pumps rather than `pumpAndSettle`: the results screen's companion
@@ -198,8 +214,7 @@ void main() {
     expect(find.byType(RoastMeter), findsOneWidget);
     expect(find.text('01 / 02'), findsOneWidget);
 
-    await tester.tap(find.text(FlashcardsCopy.next));
-    await tester.pumpAndSettle();
+    await _advance(tester);
 
     expect(find.text('02 / 02'), findsOneWidget);
   });
@@ -211,25 +226,83 @@ void main() {
     await _pump(tester);
 
     expect(find.text(FlashcardsCopy.finish), findsOneWidget);
-    expect(find.text(FlashcardsCopy.next), findsNothing);
+    expect(find.text(FlashcardsCopy.nextCard), findsNothing);
   });
 
-  testWidgets('Prev is dead on the first card and live after it', (
+  testWidgets('the deck keeps no visible Prev or Next, only the stack', (
     tester,
   ) async {
     await _seed([_arabica, _robusta]);
     await _pump(tester);
 
-    OutlinedButton previous() => tester.widget<OutlinedButton>(
-      find.widgetWithText(OutlinedButton, FlashcardsCopy.previous),
+    expect(find.byType(SwipeDeckStack), findsOneWidget);
+    for (final control in tester.widgetList<FocusRevealedButton>(
+      find.byType(FocusRevealedButton),
+    )) {
+      expect(
+        tester.getSize(find.text(control.label)).height,
+        lessThan(FlashcardDeckControls.revealedHeight),
+        reason: 'collapsed until it takes focus',
+      );
+    }
+  });
+
+  testWidgets('the stack peeks on each side that has a card, and no other', (
+    tester,
+  ) async {
+    await _seed([_arabica, _robusta]);
+    await _pump(tester);
+
+    SwipeDeckStack stack() =>
+        tester.widget<SwipeDeckStack>(find.byType(SwipeDeckStack));
+
+    expect(stack().canBack, isFalse, reason: 'no card before the first');
+    expect(stack().canAdvance, isTrue);
+
+    await _advance(tester);
+
+    expect(stack().canBack, isTrue);
+    expect(
+      stack().canAdvance,
+      isFalse,
+      reason: 'no card after the last — Finish appears instead',
     );
+  });
 
-    expect(previous().onPressed, isNull);
+  testWidgets('a right swipe on the first card is refused', (tester) async {
+    await _seed([_arabica, _robusta]);
+    await _pump(tester);
 
-    await tester.tap(find.text(FlashcardsCopy.next));
+    await tester.drag(find.byType(FlashcardView), const Offset(120, 0));
     await tester.pumpAndSettle();
 
-    expect(previous().onPressed, isNotNull);
+    expect(find.text('01 / 02'), findsOneWidget);
+  });
+
+  testWidgets('the way back is announced even though the stack is not', (
+    tester,
+  ) async {
+    await _seed([_arabica, _robusta]);
+    await _pump(tester);
+
+    expect(find.text(FlashcardsCopy.previousCard), findsNothing);
+
+    await _advance(tester);
+
+    expect(find.text(FlashcardsCopy.previousCard), findsOneWidget);
+  });
+
+  testWidgets('Right steps forward and Left steps back, point-at-target', (
+    tester,
+  ) async {
+    await _seed([_arabica, _robusta]);
+    await _pump(tester);
+
+    await _press(tester, LogicalKeyboardKey.arrowRight);
+    expect(find.text('02 / 02'), findsOneWidget);
+
+    await _press(tester, LogicalKeyboardKey.arrowLeft);
+    expect(find.text('01 / 02'), findsOneWidget);
   });
 
   testWidgets('finishing counts the deck and offers another deal', (
@@ -238,8 +311,7 @@ void main() {
     await _seed([_arabica, _robusta]);
     await _pump(tester);
 
-    await tester.tap(find.text(FlashcardsCopy.next));
-    await tester.pumpAndSettle();
+    await _advance(tester);
     await tester.tap(find.text(FlashcardsCopy.finish));
     await _settle(tester);
 
@@ -283,8 +355,7 @@ void main() {
     final container = await _pump(tester);
 
     // One card in, then away — the finish is never reached.
-    await tester.tap(find.text(FlashcardsCopy.next));
-    await tester.pumpAndSettle();
+    await _advance(tester);
     await _settleWrite(tester);
 
     expect(_reviews(await _activityToday(container)), 0);
