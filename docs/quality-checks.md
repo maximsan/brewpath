@@ -1,7 +1,9 @@
 # Quality checks — what runs before code leaves the machine
 
-The repo's own rules run at four moments, earliest first. `flutter analyze`,
-the full suite and the iOS build stay in CI, which runs them on every push.
+The repo's own rules run at four moments, earliest first. `flutter analyze`
+and the full suite stay in CI, which runs them on every push; the iOS build
+and the smoke suite run on Codemagic, on `main` and nightly respectively
+([`ci-cd.md`](ci-cd.md)).
 
 ## The four moments
 
@@ -10,7 +12,7 @@ the full suite and the iOS build stay in CI, which runs them on every push.
 | Claude Code writes a Dart file | `dart format` on that file, then the comment cap on it (`.claude/settings.json`, `PostToolUse`); a failure goes straight back to the agent |
 | `git commit` | `dart format --set-exit-if-changed` and the comment cap on the staged Dart files (sub-second) |
 | `git push` | the format check, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about half a minute) |
-| CI, on a pull request | the same as push, split into jobs, plus `flutter analyze`, `flutter test` and the iOS build ([`ci-cd.md`](ci-cd.md)) |
+| CI, on a pull request | the same as push, as steps of the one `checks` job, plus `flutter analyze` and `flutter test` ([`ci-cd.md`](ci-cd.md)) — the iOS build is not among them, and runs on `main` |
 
 ## The comment cap
 

@@ -47,8 +47,9 @@ obeys are in [docs/testing.md](docs/testing.md).
 The iOS project uses **Swift Package Manager**, not CocoaPods — there is no
 `ios/Podfile` and no `pod install` step. Plugins resolve as Swift Packages during
 `flutter build ios`. The deployment target is **16.0** (required by the Firebase
-SPM packages). CI builds on a macOS runner via the `iOS build` job in
-`.github/workflows/ci.yml`.
+SPM packages). CI builds on a macOS runner via the `ios-build` workflow in
+[`codemagic.yaml`](codemagic.yaml) — macOS runs on Codemagic rather than
+GitHub Actions, for the billing reason in [`docs/ci-cd.md`](docs/ci-cd.md).
 
 Troubleshooting:
 
