@@ -118,6 +118,16 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
   void _openTerm(String termId) =>
       unawaited(context.pushDictionaryTerm(termId));
 
+  /// Drills into [category], or back to the index on null.
+  ///
+  /// The filter is the category's own and clears with it, as the design's
+  /// category button sets `filter` back to `all`: left standing, it narrowed
+  /// the next category — and the index, which shows no filter, never returned.
+  void _enterCategory(DictionaryCategory? category) => setState(() {
+    _category = category;
+    _filter = DictionaryFilter.all;
+  });
+
   @override
   Widget build(BuildContext context) {
     final visible = _visible;
@@ -132,7 +142,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
       // Back leaves the category first and the screen second, which is the
       // design's own rule: a drill-down is a place, so it has to be a step you
       // can take back.
-      onBack: _category != null ? () => setState(() => _category = null) : null,
+      onBack: _category != null ? () => _enterCategory(null) : null,
       // The category is what identifies the content, so the bar clears with
       // it. This is the page the reset exists for: without it, drilling in
       // leaves a compact title standing over a page that has jumped back to
@@ -155,8 +165,10 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                 ),
                 // The filter belongs to a category, where learned and
                 // to-learn are worth telling apart; the index sums them in
-                // its counts, and a search has already said what it wants.
-                if (_category != null && _query.isEmpty)
+                // its counts. It stays up through a search inside the
+                // category, as the design draws it, because the search is
+                // narrowed by it and a hidden filter is an unexplained count.
+                if (_category != null)
                   DictionaryFilterControl(
                     selected: _filter,
                     onSelected: (filter) => setState(() => _filter = filter),
@@ -211,7 +223,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
         CategoryIndex(
           categories: widget.view.categories,
           terms: widget.view.terms,
-          onOpen: (category) => setState(() => _category = category),
+          onOpen: _enterCategory,
         ),
       ],
     ),

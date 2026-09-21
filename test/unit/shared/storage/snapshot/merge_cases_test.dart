@@ -103,6 +103,25 @@ void main() {
     });
   });
 
+  group('lastCompletedLessons — the last run is the later one', () {
+    test('a collision keeps the later day, either way round', () {
+      final early = _snap(
+        progress: const ClearedByReset(lastCompletedLessons: {'m1l1': 3}),
+      );
+      final late = _snap(
+        deviceId: 'phone',
+        progress: const ClearedByReset(lastCompletedLessons: {'m1l1': 9}),
+      );
+
+      for (final merged in [
+        mergeSnapshot(late, early),
+        mergeSnapshot(early, late),
+      ]) {
+        expect(merged.clearedByReset.lastCompletedLessons['m1l1'], 9);
+      }
+    });
+  });
+
   group('the companion — last writer wins, both ways round', () {
     ClearedByDeleteOnly dressed(
       CompanionConfig outfit, {
