@@ -27,6 +27,27 @@ void main() {
     expect(DailyReminder.times, stated);
   });
 
+  test('every slot fires at the time its label reads', () {
+    // The label is what the learner picks; the hour and minute are what the
+    // notification is scheduled for. A typo between them is a reminder at the
+    // wrong time of day and nothing on screen says so.
+    const noon = 12;
+    for (final slot in DailyReminder.slots) {
+      final written = RegExp(
+        r'^(\d{1,2}):(\d{2}) (AM|PM)$',
+      ).firstMatch(slot.label);
+      expect(written, isNotNull, reason: slot.label);
+
+      final onTheClock = int.parse(written!.group(1)!) % noon;
+      expect(
+        slot.hour,
+        written.group(3) == 'PM' ? onTheClock + noon : onTheClock,
+        reason: slot.label,
+      );
+      expect(slot.minute, int.parse(written.group(2)!), reason: slot.label);
+    }
+  });
+
   test('the default slot is the one the design starts on', () {
     final source = File('prototype/screens.jsx').readAsStringSync();
 

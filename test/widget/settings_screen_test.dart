@@ -4,14 +4,18 @@ import 'package:brew_path/core/widgets/confirm_sheet.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/profile/domain/reset_summary.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/settings/reminder_rows.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_write.dart';
+import 'package:brew_path/services/reminders/reminder_provider.dart';
+import 'package:brew_path/services/reminders/reminder_scheduler.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -19,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/fake_reminder_scheduler.dart';
 import '../support/find_mark.dart';
 import '../support/progress_seed.dart';
 import '../support/widget_harness.dart';
@@ -26,13 +31,16 @@ import '../support/widget_harness.dart';
 void main() {
   setUp(useInMemoryDatabase);
 
-  Future<void> openSettings(WidgetTester tester) async {
+  Future<void> openSettings(
+    WidgetTester tester, {
+    ProviderContainer? container,
+  }) async {
     tester.view.physicalSize = const Size(400, 1600);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    await pumpWithProviders(tester, const BrewPathApp());
+    await pumpWithProviders(tester, const BrewPathApp(), container: container);
     await tester.tap(findMark(AppIcon.leaf, active: false));
     await settleLoaders(tester);
     await tester.tap(findMark(AppIcon.gear));
@@ -126,15 +134,128 @@ void main() {
     expect(stored.hapticsEnabled, isFalse);
   });
 
-  testWidgets('the reminder rows are not on Settings until reminders exist', (
-    tester,
-  ) async {
-    // #443: a switch that stores a preference nothing reads is the inert row
-    // the repo forbids, so both rows are hidden until a reminder can arrive.
-    await openSettings(tester);
+  group('the reminder rows', () {
+    late FakeReminderScheduler scheduler;
 
-    expect(find.text(SettingsCopy.notificationsRow), findsNothing);
-    expect(find.text(SettingsCopy.reminderRow), findsNothing);
+    ProviderContainer withScheduler() => ProviderContainer(
+      overrides: [reminderSchedulerProvider.overrideWithValue(scheduler)],
+    );
+
+    Finder row(String label) => find.ancestor(
+      of: find.text(label),
+      matching: find.byType(SettingsNavRow),
+    );
+
+    setUp(() => scheduler = FakeReminderScheduler());
+
+    testWidgets('open on the switch off and the time reading Off', (
+      tester,
+    ) async {
+      await openSettings(tester, container: withScheduler());
+
+      expect(
+        tester
+            .widget<SettingsNavRow>(row(SettingsCopy.notificationsRow))
+            .toggleValue,
+        isFalse,
+      );
+      final time = tester.widget<SettingsNavRow>(
+        row(SettingsCopy.reminderRow),
+      );
+      expect(time.value, DailyReminder.offLabel);
+      expect(time.isDimmed, isTrue);
+    });
+
+    testWidgets('turning the switch on posts the plan and stores the slot', (
+      tester,
+    ) async {
+      await openSettings(tester, container: withScheduler());
+
+      await tester.tap(find.text(SettingsCopy.notificationsRow));
+      await settleLoaders(tester);
+
+      expect(scheduler.pending, hasLength(greaterThan(0)));
+      expect(scheduler.title, DailyReminder.notificationTitle);
+      expect(scheduler.body, DailyReminder.notificationBody);
+
+      final stored = await SettingsRepository().getSettings();
+      expect(stored.notificationsEnabled, isTrue);
+      expect(stored.dailyReminderTime, DailyReminder.defaultTime);
+      expect(
+        tester.widget<SettingsNavRow>(row(SettingsCopy.reminderRow)).value,
+        DailyReminder.defaultTime,
+      );
+    });
+
+    testWidgets('a refusal leaves the switch off and offers iOS Settings', (
+      tester,
+    ) async {
+      scheduler.answer = ReminderPermission.denied;
+      await openSettings(tester, container: withScheduler());
+
+      await tester.tap(find.text(SettingsCopy.notificationsRow));
+      await settleLoaders(tester);
+
+      expect(scheduler.requests, 1);
+      expect(find.text(ReminderRefusedCopy.title), findsOneWidget);
+      expect(scheduler.pending, isEmpty);
+      expect(
+        (await SettingsRepository().getSettings()).notificationsEnabled,
+        isFalse,
+      );
+      expect(
+        tester
+            .widget<SettingsNavRow>(row(SettingsCopy.notificationsRow))
+            .toggleValue,
+        isFalse,
+      );
+
+      await tester.tap(find.text(ReminderRefusedCopy.confirm));
+      await settleLoaders(tester);
+
+      expect(scheduler.settingsOpened, 1);
+    });
+
+    testWidgets('choosing a time from the sheet is asking for the reminder', (
+      tester,
+    ) async {
+      await openSettings(tester, container: withScheduler());
+
+      await tester.tap(find.text(SettingsCopy.reminderRow));
+      await tester.pumpAndSettle();
+      expect(find.text(DailyReminder.sheetTitle), findsWidgets);
+      await tester.tap(find.text('6:30 AM'));
+      await tester.pump();
+      await tester.tap(find.text(DailyReminder.sheetAction));
+      await settleLoaders(tester);
+
+      final stored = await SettingsRepository().getSettings();
+      expect(stored.notificationsEnabled, isTrue);
+      expect(stored.dailyReminderTime, '6:30 AM');
+      expect(
+        scheduler.pending.every((at) => at.hour == 6 && at.minute == 30),
+        isTrue,
+      );
+    });
+
+    testWidgets('switching it back off leaves nothing pending', (tester) async {
+      await openSettings(tester, container: withScheduler());
+
+      await tester.tap(find.text(SettingsCopy.notificationsRow));
+      await settleLoaders(tester);
+      await tester.tap(find.text(SettingsCopy.notificationsRow));
+      await settleLoaders(tester);
+
+      expect(scheduler.pending, isEmpty);
+      expect(
+        (await SettingsRepository().getSettings()).notificationsEnabled,
+        isFalse,
+      );
+      expect(
+        tester.widget<SettingsNavRow>(row(SettingsCopy.reminderRow)).value,
+        DailyReminder.offLabel,
+      );
+    });
   });
 
   testWidgets('the Name row sets, changes and clears what Profile greets by', (

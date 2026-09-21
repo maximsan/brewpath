@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The daily reminder actually arrives.** The Notifications switch and the
+  Daily reminder row are back on Settings, and behind them is a real local
+  notification: one a day at the chosen slot, skipped on a day already
+  practised on, and re-asserted on every launch and resume so a reboot, an
+  upgrade or a timezone change cannot quietly drop it. Turning the switch on
+  asks iOS; a refusal stores nothing and offers the way to iOS Settings, and a
+  permission revoked there later switches the row back off rather than leaving
+  it promising something that will not come
+  ([#443](https://github.com/maximsan/brewpath/issues/443),
+  [`docs/reminders.md`](reminders.md)).
+
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —
   absent, or left behind by an English edit — writes the folder from that

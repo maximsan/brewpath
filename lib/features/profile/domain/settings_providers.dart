@@ -33,17 +33,15 @@ class SettingsController extends _$SettingsController {
   Future<void> toggleSound() =>
       _update((s) => s.soundEnabled = !s.soundEnabled);
 
-  /// Toggles whether the learner wants a daily reminder.
+  /// Stores whether the learner wants a daily reminder.
   ///
   /// Switching it on with no time chosen takes the design's default slot, so
   /// the row never reads on-with-no-time — a state its value cannot show.
-  ///
-  /// **Nothing is scheduled** by this, here or anywhere: see #443.
-  Future<void> toggleNotifications() => _update((s) {
-    s.notificationsEnabled = !s.notificationsEnabled;
-    if (s.notificationsEnabled) {
-      s.dailyReminderTime ??= DailyReminder.defaultTime;
-    }
+  /// Storing is all this does; `askForReminder` is what asks the OS and puts
+  /// the occurrences in front of it.
+  Future<void> setNotificationsEnabled({required bool enabled}) => _update((s) {
+    s.notificationsEnabled = enabled;
+    if (enabled) s.dailyReminderTime ??= DailyReminder.defaultTime;
   });
 
   /// Sets the reminder's time, and turns reminders on if they were off.
