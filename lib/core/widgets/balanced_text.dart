@@ -20,21 +20,22 @@ class BalancedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Resolved the way `Text` resolves it, bold-text setting included, so the
-    // measurement and the paint cannot come to disagree.
+    // Resolved the way `Text` resolves it, so the measurement and the paint
+    // cannot come to disagree.
     var resolved = style ?? const TextStyle();
     if (resolved.inherit) {
       resolved = DefaultTextStyle.of(context).style.merge(style);
     }
-    if (MediaQuery.boldTextOf(context)) {
-      resolved = resolved.merge(const TextStyle(fontWeight: FontWeight.bold));
-    }
+    // Under Bold Text, `Text` paints a weight this cannot ask for — naming one
+    // is the face table's alone — so it hands the line back unbalanced rather
+    // than laying out a box measured from the wrong letterforms.
+    final measurable = !MediaQuery.boldTextOf(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final room = constraints.maxWidth;
         final text = Text(data, style: resolved);
-        if (!room.isFinite) return text;
+        if (!room.isFinite || !measurable) return text;
 
         final balanced = balancedWrapWidth(
           text: data,
