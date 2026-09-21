@@ -159,12 +159,21 @@ function main() {
     testMs,
   );
 
-  process.stdout.write(
-    loadMs > testMs
-      ? "\nLoading dominates: the cost is per-file, so fewer/larger files or a\n" +
-          "different --concurrency will move it. Fixing individual tests will not.\n"
-      : "\nRunning dominates: the cost is in the tests above, not in file count.\n",
-  );
+  // A lopsided split points at one fix; a middle one means both are real, and
+  // saying "running dominates" at 65% would send someone hunting for a slow
+  // test that does not exist.
+  const MIXED_FLOOR = 0.3;
+  const loadShare = work > 0 ? loadMs / work : 0;
+  const verdict =
+    loadShare > 1 - MIXED_FLOOR
+      ? "Loading dominates: the cost is per-file. Fewer, larger files or a\n" +
+        "different --concurrency will move it; fixing individual tests will not."
+      : loadShare < MIXED_FLOOR
+        ? "Running dominates: the cost is in the tests above, not in file count."
+        : "Split roughly evenly, so neither fix alone is enough. Loading is a\n" +
+          "per-file tax on all " +
+          `${loads.length} files; running is concentrated in the files above.`;
+  process.stdout.write(`\n${verdict}\n`);
 }
 
 main();
