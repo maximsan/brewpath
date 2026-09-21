@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_lines_painter.dart';
@@ -35,6 +36,7 @@ Widget _host(
   bool reducedMotion = false,
 }) => ProviderScope(
   child: MaterialApp(
+    theme: AppTheme.cupping,
     home: MediaQuery(
       data: MediaQueryData(disableAnimations: reducedMotion),
       child: Scaffold(

@@ -85,6 +85,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **A screen mounted without the app's theme now fails at once.** `context.mood`
+  used to fall back to Dark Roast when the theme carried no mood, so a widget
+  test or a throwaway walk that pumped a bare `MaterialApp` painted dark tokens
+  on Material's light page and nothing said so — two review screenshots of the
+  swipe surfaces were read as a broken theme when only the harness was. The
+  accessor now throws, naming `AppTheme.cupping` and `AppTheme.darkRoast` as
+  the way in; the app itself always mounts under one of them.
+
 - **A selected pick card is a double stroke, not a filled dot.** The card drew
   a ring with a dot in it, which is the one thing the design's selection rule
   forbids; the edge now turns accent and reads as two, and the indicator is

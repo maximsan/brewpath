@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
@@ -179,6 +180,7 @@ Widget _host(
   ValueChanged<HeldGuess>? onGuess,
 }) => ProviderScope(
   child: MaterialApp(
+    theme: AppTheme.darkRoast,
     home: Scaffold(
       body: SingleChildScrollView(
         child: contentCardView(

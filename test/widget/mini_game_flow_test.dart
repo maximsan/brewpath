@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
@@ -282,7 +283,10 @@ Future<void> _pump(
         data: MediaQueryData.fromView(
           tester.view,
         ).copyWith(disableAnimations: disableAnimations),
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: router,
+        ),
       ),
     ),
   );

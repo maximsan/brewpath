@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
@@ -171,7 +172,10 @@ void main() {
             (ref) => Completer<List<SavedGroup>>().future,
           ),
         ],
-        child: const MaterialApp(home: Scaffold(body: SavedEntryCard())),
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const Scaffold(body: SavedEntryCard()),
+        ),
       ),
     );
     await tester.pump();

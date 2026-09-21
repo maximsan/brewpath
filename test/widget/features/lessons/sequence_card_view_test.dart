@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
@@ -35,6 +36,7 @@ Future<void> _pumpCard(WidgetTester tester, _Signals signals) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp(
+        theme: AppTheme.cupping,
         home: Scaffold(
           body: SingleChildScrollView(
             child: SequenceCardView(

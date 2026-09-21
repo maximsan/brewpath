@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
@@ -32,7 +33,9 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      ProviderScope(child: MaterialApp(home: screen)),
+      ProviderScope(
+        child: MaterialApp(theme: AppTheme.cupping, home: screen),
+      ),
     );
     await tester.pump();
     for (var attempt = 0; attempt < 30; attempt++) {

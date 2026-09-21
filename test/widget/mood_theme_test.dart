@@ -90,18 +90,4 @@ void main() {
     await tester.pumpAndSettle();
     expect(observed.bg, MoodColors.cupping.bg);
   });
-
-  testWidgets('an unthemed subtree still renders in the default mood', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: PrimaryButton(label: 'Continue', onPressed: () {}),
-        ),
-      ),
-    );
-
-    expect(_buttonFill(tester), MoodColors.darkRoast.accent);
-  });
 }

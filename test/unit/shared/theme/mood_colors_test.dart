@@ -243,23 +243,5 @@ void main() {
 
       expect(seen, MoodColors.cupping);
     });
-
-    testWidgets('BuildContext.mood defaults to Dark Roast when unthemed', (
-      tester,
-    ) async {
-      late MoodColors seen;
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Builder(
-            builder: (context) {
-              seen = context.mood;
-              return const SizedBox.shrink();
-            },
-          ),
-        ),
-      );
-
-      expect(seen, MoodColors.darkRoast);
-    });
   });
 }

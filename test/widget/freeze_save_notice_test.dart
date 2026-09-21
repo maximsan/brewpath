@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
@@ -35,8 +36,9 @@ Future<void> pumpCard(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [currentDayProvider.overrideWithValue(_today)],
-      child: const MaterialApp(
-        home: Scaffold(body: FreezeSaveNoticeCard()),
+      child: MaterialApp(
+        theme: AppTheme.cupping,
+        home: const Scaffold(body: FreezeSaveNoticeCard()),
       ),
     ),
   );
