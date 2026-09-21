@@ -1,4 +1,4 @@
-/// The addresses Help's two contact rows open.
+/// The addresses the contact rows open — Help's two, and About's *Say hello*.
 library;
 
 /// The subject a report carries when the version could not be read.

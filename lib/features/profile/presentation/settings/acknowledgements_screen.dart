@@ -39,8 +39,10 @@ class AcknowledgementsScreen extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<List<DictionarySource>> sources,
   ) {
+    // Answered, not `answered with something`: a bank that cites nothing has
+    // no rows, and saying *gathering* about a finished read is a lie.
     final works = sources.asData?.value;
-    if (works != null && works.isNotEmpty) {
+    if (works != null) {
       final open = ref.read(linkOpenerProvider).open;
       return [
         for (final source in works)

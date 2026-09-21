@@ -108,14 +108,20 @@ class _LicensesRow extends ConsumerWidget {
   const _LicensesRow();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) => SettingsNavRow(
-    label: SettingsCopy.licensesRow,
-    onTap: () => showLicensePage(
-      context: context,
-      applicationName: AppLabels.appName,
-      applicationVersion: ref.read(appVersionProvider).asData?.value,
-    ),
-  );
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Watched, not read at the tap: a learner who reaches the row before
+    // `package_info` answers would otherwise open a page naming no build.
+    final version = ref.watch(appVersionProvider).asData?.value;
+
+    return SettingsNavRow(
+      label: SettingsCopy.licensesRow,
+      onTap: () => showLicensePage(
+        context: context,
+        applicationName: AppLabels.appName,
+        applicationVersion: version,
+      ),
+    );
+  }
 }
 
 /// The design's `SAY SOMETHING` group, absent while there is no mailbox.

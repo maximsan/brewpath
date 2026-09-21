@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/settings_finders.dart';
 import '../../../support/widget_harness.dart';
 
 /// Records what a row asked the platform to open.
@@ -25,10 +26,6 @@ class _RecordingOpener implements LinkOpener {
     return true;
   }
 }
-
-Finder _row(String label) => find.byWidgetPredicate(
-  (widget) => widget is SettingsNavRow && widget.label == label,
-);
 
 const _hosted = DictionarySource(
   label: 'SCA — Research and resources',
@@ -99,7 +96,7 @@ void main() {
     );
     expect(find.byType(SettingsNavRow), findsNWidgets(expected.length));
     for (final source in expected.take(3)) {
-      expect(_row(source.label), findsOneWidget);
+      expect(settingsRow(source.label), findsOneWidget);
     }
   });
 
@@ -111,7 +108,7 @@ void main() {
 
     expect(find.byType(OutwardMark), findsOneWidget);
 
-    await tester.tap(_row(_hosted.label));
+    await tester.tap(settingsRow(_hosted.label));
     expect(opener.opened, [Uri.parse(_hosted.url!)]);
   });
 
@@ -121,8 +118,21 @@ void main() {
     await pump(tester, sources: const [_print]);
     await tester.pumpAndSettle();
 
-    expect(tester.widget<SettingsNavRow>(_row(_print.label)).onTap, isNull);
+    expect(
+      tester.widget<SettingsNavRow>(settingsRow(_print.label)).onTap,
+      isNull,
+    );
     expect(find.byType(OutwardMark), findsNothing);
+  });
+
+  testWidgets('a bank that cites nothing stops gathering, and says nothing', (
+    tester,
+  ) async {
+    await pump(tester, sources: const []);
+    await tester.pumpAndSettle();
+
+    expect(find.text(SettingsCopy.acknowledgementsGathering), findsNothing);
+    expect(find.byType(SettingsNavRow), findsNothing);
   });
 
   testWidgets('says the sources could not be read rather than showing none', (

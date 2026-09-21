@@ -93,6 +93,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   link still starts its run directly, and an unfinished lesson is unaffected
   anywhere ([#573](https://github.com/maximsan/brewpath/issues/573)).
 
+### Fixed
+
+- **The paywall no longer spins for the best part of a minute before admitting
+  it has no offer to show.** A provider that fails keeps Riverpod's loading
+  flag while it retries, so the screen's unreachable state — which is what
+  asks the learner to try again — only appeared once ten retries had run out
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
 ### Changed
 
 - **A settings row that leaves the app now says so before it is pressed.** The

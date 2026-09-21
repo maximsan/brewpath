@@ -2,7 +2,6 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
@@ -10,10 +9,13 @@ import 'package:brew_path/features/profile/presentation/settings/about_screen.da
 import 'package:brew_path/features/profile/presentation/settings/account_sync_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
+import 'package:brew_path/services/links/link_opener.dart';
+import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/settings_finders.dart';
 import '../../../support/widget_harness.dart';
 
 /// The kicker is rendered uppercase, so it is found by what it was given
@@ -23,18 +25,23 @@ final Finder _tagline = find.byWidgetPredicate(
       widget is SmallcapsLabel && widget.text == SettingsCopy.aboutTagline,
 );
 
-Finder _row(String label) => find.byWidgetPredicate(
-  (widget) => widget is SettingsNavRow && widget.label == label,
-);
+/// Records what a row asked the platform to open.
+class _RecordingOpener implements LinkOpener {
+  final List<Uri> opened = [];
 
-/// Section headings render uppercase, so they are found by what they were
-/// given rather than by what they draw.
-Finder _section(String label) => find.byWidgetPredicate(
-  (widget) => widget is SmallcapsLabel && widget.text == label,
-);
+  @override
+  Future<bool> open(Uri target) async {
+    opened.add(target);
+    return true;
+  }
+}
 
 void main() {
   setUp(useInMemoryDatabase);
+
+  late _RecordingOpener opener;
+
+  setUp(() => opener = _RecordingOpener());
 
   /// Bounded pumps rather than `pumpAndSettle`: About mounts Roasty, whose
   /// idle animation never ends.
@@ -53,6 +60,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
+          linkOpenerProvider.overrideWithValue(opener),
           if (privacy != null) privacyPageProvider.overrideWithValue(privacy),
           if (terms != null) termsPageProvider.overrideWithValue(terms),
           if (mailbox != null)
@@ -137,8 +145,8 @@ void main() {
   ) async {
     await pump(tester, const AboutScreen());
 
-    expect(_row(SettingsCopy.acknowledgementsRow), findsOneWidget);
-    expect(_row(SettingsCopy.licensesRow), findsOneWidget);
+    expect(settingsRow(SettingsCopy.acknowledgementsRow), findsOneWidget);
+    expect(settingsRow(SettingsCopy.licensesRow), findsOneWidget);
   });
 
   testWidgets('draws no legal row while neither page is hosted', (
@@ -150,8 +158,8 @@ void main() {
 
     expect(SupportLinks.terms, isNull, reason: '#448 has no URLs yet');
     expect(SupportLinks.privacy, isNull, reason: '#448 has no URLs yet');
-    expect(_row(SettingsCopy.termsRow), findsNothing);
-    expect(_row(SettingsCopy.privacyRow), findsNothing);
+    expect(settingsRow(SettingsCopy.termsRow), findsNothing);
+    expect(settingsRow(SettingsCopy.privacyRow), findsNothing);
   });
 
   testWidgets('draws Privacy above Terms once both are hosted', (tester) async {
@@ -163,8 +171,8 @@ void main() {
     );
 
     expect(
-      tester.getTopLeft(_row(SettingsCopy.privacyRow)).dy,
-      lessThan(tester.getTopLeft(_row(SettingsCopy.termsRow)).dy),
+      tester.getTopLeft(settingsRow(SettingsCopy.privacyRow)).dy,
+      lessThan(tester.getTopLeft(settingsRow(SettingsCopy.termsRow)).dy),
       reason: 'the design orders the fine print Privacy, Terms',
     );
   });
@@ -174,15 +182,19 @@ void main() {
   ) async {
     await pump(tester, const AboutScreen());
 
-    expect(_row(SettingsCopy.sayHelloRow), findsNothing);
-    expect(_section(SettingsCopy.saySomethingSection), findsNothing);
+    expect(settingsRow(SettingsCopy.sayHelloRow), findsNothing);
+    expect(settingsSection(SettingsCopy.saySomethingSection), findsNothing);
   });
 
-  testWidgets('says hello once there is a mailbox to write to', (tester) async {
+  testWidgets('says hello once there is a mailbox, and opens a composer to '
+      'it', (tester) async {
     await pump(tester, const AboutScreen(), mailbox: 'hi@brewpath.app');
 
-    expect(_row(SettingsCopy.sayHelloRow), findsOneWidget);
+    expect(settingsRow(SettingsCopy.sayHelloRow), findsOneWidget);
     expect(find.text('hi@brewpath.app'), findsOneWidget);
+
+    await tester.tap(settingsRow(SettingsCopy.sayHelloRow));
+    expect(opener.opened, [Uri.parse('mailto:hi@brewpath.app')]);
   });
 
   testWidgets('never draws Rate BrewPath, which has nothing to rate', (

@@ -153,6 +153,10 @@ class SettingsNavRow extends StatelessWidget {
   }
 
   List<Widget> _trailing(MoodColors mood) {
+    // Whichever mark the row ends on takes the row's own ink, so a
+    // destructive row cannot end in a muted affordance.
+    final affordanceInk = isDestructive ? mood.berry : mood.inkMute;
+
     if (_isToggle) {
       return [
         Switch(value: toggleValue!, onChanged: onToggle),
@@ -172,12 +176,9 @@ class SettingsNavRow extends StatelessWidget {
       if (onTap != null) ...[
         const SizedBox(width: _trailingGap),
         if (isExternal)
-          OutwardMark(color: mood.inkMute)
+          OutwardMark(color: affordanceInk)
         else
-          IconMark(
-            AppIcon.chevron,
-            color: isDestructive ? mood.berry : mood.inkMute,
-          ),
+          IconMark(AppIcon.chevron, color: affordanceInk),
       ],
     ];
   }

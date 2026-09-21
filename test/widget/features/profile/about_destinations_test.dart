@@ -1,16 +1,14 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
+import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/features/profile/presentation/settings/acknowledgements_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/settings_finders.dart';
 import '../../../support/widget_harness.dart';
-
-Finder _row(String label) => find.byWidgetPredicate(
-  (widget) => widget is SettingsNavRow && widget.label == label,
-);
 
 /// Boots the app and routes to About, rather than tapping through Profile and
 /// Settings to reach it — those two hops are their own screens' business.
@@ -21,7 +19,7 @@ Future<void> _openAbout(WidgetTester tester) async {
   addTearDown(tester.view.resetDevicePixelRatio);
 
   final container = await pumpWithProviders(tester, const BrewPathApp());
-  container.read(appRouterProvider).go('/profile/settings/about');
+  container.read(appRouterProvider).goNamed(AppRoutes.settingsAbout.name);
   // Not `settleLoaders`: it ends on a `pumpAndSettle`, and About mounts
   // Roasty, whose idle animation never ends.
   await pumpWithoutSettling(tester);
@@ -35,7 +33,7 @@ void main() {
   ) async {
     await _openAbout(tester);
 
-    await tester.tap(_row(SettingsCopy.acknowledgementsRow));
+    await tester.tap(settingsRow(SettingsCopy.acknowledgementsRow));
     await pumpWithoutSettling(tester);
 
     expect(find.byType(AcknowledgementsScreen), findsOneWidget);
@@ -51,7 +49,7 @@ void main() {
   ) async {
     await _openAbout(tester);
 
-    await tester.tap(_row(SettingsCopy.licensesRow));
+    await tester.tap(settingsRow(SettingsCopy.licensesRow));
     await pumpWithoutSettling(tester);
 
     expect(find.byType(LicensePage), findsOneWidget);
