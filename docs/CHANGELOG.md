@@ -97,9 +97,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   verdict block was spaced by each of its hosts and not one of them matched
   the design. The block now carries that room itself, from where it is
   standing, so a lesson card, a mini-game, a term's self-check and a vocab
-  round each get their own. A card's options also stop leaving a gap under the
-  last one, which was stacking on whatever followed the list — the verdict, or
-  the button. The button under predict and decision moves 2px closer to the
+  round each get their own. A card's options — and the sequence card's steps —
+  also stop leaving a gap under the last one, which was stacking on whatever
+  followed the list: the verdict, or the button. The button under predict and decision moves 2px closer to the
   card, and under recall 6px
   ([#594](https://github.com/maximsan/brewpath/issues/594)).
 

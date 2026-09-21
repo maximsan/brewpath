@@ -1,7 +1,11 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
+import 'package:brew_path/core/widgets/link_button.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
+import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -90,6 +94,11 @@ String _badgeFor(WidgetTester tester, String label) {
           .data ??
       '';
 }
+
+/// The rendered distance from the foot of the last step to the top of [below].
+double _gapUnderSteps(WidgetTester tester, Finder below) =>
+    tester.getTopLeft(below).dy -
+    tester.getBottomLeft(find.byType(CardOptionTile).last).dy;
 
 void main() {
   testWidgets('opens unnumbered, with the steps in the order it was given', (
@@ -270,5 +279,38 @@ void main() {
     );
     expect(find.bySemanticsLabel('Not quite'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('the verdict opens on the design room, not on a trailing step', (
+    tester,
+  ) async {
+    await _pumpCard(tester, _Signals());
+    await _tapSteps(tester, _authoredOrder);
+    await _submit(tester);
+
+    expect(
+      _gapUnderSteps(
+        tester,
+        find
+            .descendant(
+              of: find.byType(AnswerFeedback),
+              matching: find.byType(Row),
+            )
+            .first,
+      ),
+      VerdictPlacement.card.room,
+    );
+  });
+
+  testWidgets('Reset stands the design gap under the last step', (
+    tester,
+  ) async {
+    await _pumpCard(tester, _Signals());
+    await _tapSteps(tester, _authoredOrder);
+
+    expect(
+      _gapUnderSteps(tester, find.byType(LinkButton)),
+      AppSpacing.xs,
+    );
   });
 }

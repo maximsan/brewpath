@@ -8,10 +8,10 @@ import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
-import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
-import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
+import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
@@ -207,7 +207,7 @@ Future<void> _tapText(WidgetTester tester, String text) async {
 
 /// Taps the last [text] on the card — the bagpick option, which the bag also
 /// names once it has been called.
-Future<void> _tapLast(WidgetTester tester, String text) async {
+Future<void> _tapLastMatch(WidgetTester tester, String text) async {
   await tester.tap(find.text(text).last);
   await tester.pumpAndSettle();
 }
@@ -343,7 +343,7 @@ void main() {
           ),
           'bagpick': (
             _bagpick,
-            (tester) => _tapLast(tester, 'Washed'),
+            (tester) => _tapLastMatch(tester, 'Washed'),
             VerdictPlacement.miniGame,
           ),
           'predict': (
@@ -372,33 +372,59 @@ void main() {
   });
 
   group('what the learner actually sees above the verdict', () {
-    // Measured off the rendered boxes, not off the block's own padding: the
-    // option lists used to leave a gap under the last option as well, and it
-    // stacked on the block's room without either value being wrong (#594).
-    testWidgets('mcq leaves the design room under its last option', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_host(_mcq, _Signals()));
-      await _tapText(tester, 'A seed');
+    // Measured from the last thing drawn above the block rather than from the
+    // list around it: a trailing gap inside the list sits inside the list's
+    // own box, so measuring the box would hide the stacking (#594).
+    final hosts =
+        <String, (ContentCard, Future<void> Function(WidgetTester), Finder)>{
+          'mcq': (
+            _mcq,
+            (tester) => _tapText(tester, 'A seed'),
+            find.byType(CardOptionTile).last,
+          ),
+          'multi': (
+            _multi,
+            (tester) async {
+              await _tapText(tester, 'Grind size');
+              await _tapText(tester, 'Check answers');
+            },
+            find.byType(CardOptionTile).last,
+          ),
+          'bagpick': (
+            _bagpick,
+            (tester) => _tapLastMatch(tester, 'Washed'),
+            find.byType(CardOptionTile).last,
+          ),
+          'concept': (
+            _concept,
+            (tester) async {
+              await _tapText(tester, 'skin');
+              await _tapText(tester, 'Check answers');
+            },
+            find.byType(ConceptFillBank),
+          ),
+          'predict': (
+            _predict,
+            (tester) => _tapTextWhileAnimating(tester, 'Seed'),
+            find.byType(PickTileRow),
+          ),
+        };
 
-      expect(
-        _gapToVerdict(tester, find.byType(ChoiceList)),
-        VerdictPlacement.card.room,
-      );
-    });
+    for (final entry in hosts.entries) {
+      final (card, answer, above) = entry.value;
 
-    testWidgets('multi leaves the design room under its last option', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_host(_multi, _Signals()));
-      await _tapText(tester, 'Grind size');
-      await _tapText(tester, 'Check answers');
+      testWidgets('${entry.key} leaves the design room under what it follows', (
+        tester,
+      ) async {
+        await tester.pumpWidget(_host(card, _Signals()));
+        await answer(tester);
 
-      expect(
-        _gapToVerdict(tester, find.byType(MultiChoiceList)),
-        VerdictPlacement.card.room,
-      );
-    });
+        final block = tester.widget<AnswerFeedback>(
+          find.byType(AnswerFeedback).first,
+        );
+        expect(_gapToVerdict(tester, above), block.placement.room);
+      });
+    }
   });
 
   group('the gap a card opens its button on', () {
