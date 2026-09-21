@@ -71,13 +71,17 @@ class _Blurb extends StatelessWidget {
   const _Blurb();
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-    child: Text(
-      SettingsCopy.acknowledgementsBlurb,
-      style: AppText.body(mood: context.mood, color: context.mood.inkMute),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+      child: Text(
+        SettingsCopy.acknowledgementsBlurb,
+        style: AppText.body(mood: mood, color: mood.inkMute),
+      ),
+    );
+  }
 }
 
 /// The line the list shows while the bank is being read.

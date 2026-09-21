@@ -124,13 +124,14 @@ Header copy: `A FIELD GUIDE TO COFFEE`.
 | `GET IN TOUCH` | **Email support** — value `hi@brewpath.app` | yes |
 | | **Report a problem** | yes |
 
-> ⚠️ **All 8 About/Help rows are `onClick={() => {}}` — dead stubs.** They render
-> as fully interactive rows with an external-link affordance and do nothing.
-> Every one needs a real destination before ship: two legal URLs, an App Store
-> review deep link, two mail composers, a licenses screen and an
-> acknowledgements screen. That is **8 pieces of work behind rows the prototype
-> makes look finished**. They are owned now: the legal pair by #448, the
-> Help rows by #531, the About rows by #532.
+> ⚠️ **All 8 About/Help rows are `onClick={() => {}}` in the design — dead
+> stubs.** They render as fully interactive rows with an external-link
+> affordance and do nothing, so each one needed a real destination before ship.
+> Where they stand in the app: Acknowledgements and Open-source licenses are
+> built (#532); *Rate BrewPath* is deliberately absent until there is a store
+> listing to rate, and *Say hello* and the two Help rows appear only once the
+> mailbox constant is filled in (#531). The legal pair is #448's, and is
+> likewise absent while unhosted — the app draws no row live and inert.
 
 > **"Sync over cellular" and "This iPhone" are the UI for the offline promise.**
 > [§6](06-content.md)'s FAQ commits to keeping opened modules on device and syncing when
