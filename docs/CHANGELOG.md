@@ -95,6 +95,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   the close control and the clock first
   ([#583](https://github.com/maximsan/brewpath/issues/583)).
 
+- **A screen mounted without the app's theme now fails at once.** `context.mood`
+  used to fall back to Dark Roast when the theme carried no mood, so a widget
+  test or a throwaway walk that pumped a bare `MaterialApp` painted dark tokens
+  on Material's light page and nothing said so — two review screenshots of the
+  swipe surfaces were read as a broken theme when only the harness was. The
+  accessor now throws, naming `AppTheme.cupping` and `AppTheme.darkRoast` as
+  the way in; the app itself always mounts under one of them.
+
 - **A selected pick card is a double stroke, not a filled dot.** The card drew
   a ring with a dot in it, which is the one thing the design's selection rule
   forbids; the edge now turns accent and reads as two, and the indicator is
@@ -165,6 +173,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   measurements too: a softer bookmark, more room above it, and a line that
   wraps where it was drawn to
   ([#572](https://github.com/maximsan/brewpath/issues/572)).
+
+- **The dictionary's filter stays with its category.** *Learned* or *To
+  learn*, chosen inside a category, used to follow the learner out: backing
+  out landed on a list of every learned term with the index gone and the
+  control hidden, and a search typed inside the category was narrowed by a
+  filter no longer on screen, so its count and its *No terms match* line could
+  be wrong. The filter now clears on the way into and out of a category, as
+  the design does, and stays in view while searching inside one.
 
 - **An app left open across midnight no longer shows yesterday.** The streak,
   the freeze line, Keep Sharp, the header's date and a Coffee Challenge's

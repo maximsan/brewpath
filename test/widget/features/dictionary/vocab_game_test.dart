@@ -2,6 +2,7 @@
 // score writes down.
 import 'dart:async';
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
@@ -143,7 +144,10 @@ Future<ProviderContainer> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: VocabGameScreen()),
+      child: MaterialApp(
+        theme: AppTheme.cupping,
+        home: const VocabGameScreen(),
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -244,7 +248,10 @@ void main() {
           overrides: [
             vocabPoolsProvider.overrideWith((ref) async => _pools()),
           ],
-          child: MaterialApp.router(routerConfig: router),
+          child: MaterialApp.router(
+            theme: AppTheme.cupping,
+            routerConfig: router,
+          ),
         ),
       );
       await tester.pumpAndSettle();

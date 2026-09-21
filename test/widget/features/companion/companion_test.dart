@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
@@ -21,11 +22,14 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [streakProvider.overrideWith((ref) => 0)],
-        child: MediaQuery(
-          data: const MediaQueryData(),
-          child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Center(child: Companion(handle: handle, animate: false)),
+        child: Theme(
+          data: AppTheme.cupping,
+          child: MediaQuery(
+            data: const MediaQueryData(),
+            child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Center(child: Companion(handle: handle, animate: false)),
+            ),
           ),
         ),
       ),

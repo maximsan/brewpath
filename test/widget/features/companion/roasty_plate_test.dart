@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/shared/theme/roasty_colors.dart';
@@ -24,9 +25,12 @@ const double _opaque = 1;
 
 Future<Color> _sampleAt(WidgetTester tester, Roasty roasty, Offset at) async {
   await tester.pumpWidget(
-    Directionality(
-      textDirection: TextDirection.ltr,
-      child: Center(child: roasty),
+    Theme(
+      data: AppTheme.cupping,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Center(child: roasty),
+      ),
     ),
   );
   await tester.pump();

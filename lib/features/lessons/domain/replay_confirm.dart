@@ -75,6 +75,12 @@ String lengthLine(int minutes, int cards) =>
 /// [day] as a learner would name it, against [today].
 ///
 /// A named day while one is in living memory, then the date: *last Tuesday*
-/// is a day someone can place, and *87 days ago* is arithmetic.
-String dayName(int day, {required DateTime today}) =>
-    recentDayName(day, today: today) ?? shortDate(dateFromEpochDay(day));
+/// is a day someone can place, and *87 days ago* is arithmetic. The year is
+/// added once it is not this one, so an old run cannot pass as this year's.
+String dayName(int day, {required DateTime today}) {
+  final named = recentDayName(day, today: today);
+  if (named != null) return named;
+  final date = dateFromEpochDay(day);
+  final short = shortDate(date);
+  return date.year == today.year ? short : '$short, ${date.year}';
+}

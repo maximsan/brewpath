@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
@@ -284,7 +285,10 @@ Future<void> _pump(
         data: MediaQueryData.fromView(
           tester.view,
         ).copyWith(disableAnimations: disableAnimations),
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: router,
+        ),
       ),
     ),
   );
@@ -401,7 +405,7 @@ void main() {
   group("the intro's bar", () {
     /// Short enough that the how-to-play runs past the foot, so there is a
     /// scroll to move at all.
-    const shortViewport = Size(400, 400);
+    const shortViewport = Size(400, 300);
 
     /// Past the design's 8 and well short of the hook's default 40.
     const nudge = 20.0;
@@ -412,6 +416,17 @@ void main() {
       await _pump(tester, viewport: shortViewport);
       await tester.tap(find.text('True or false'));
       await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position
+            .maxScrollExtent,
+        greaterThan(nudge),
+        reason:
+            'the page has to overflow for there to be a drag at all, or this '
+            'reads a bar with nothing under it as a bar that never sealed',
+      );
 
       await tester.drag(find.text('HOW TO PLAY'), const Offset(0, -nudge));
       await tester.pumpAndSettle();

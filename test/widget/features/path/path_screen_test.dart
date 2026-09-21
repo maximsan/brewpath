@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
@@ -71,7 +72,7 @@ Future<void> _pumpPath(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [pathModulesProvider.overrideWith((ref) async => _course())],
-      child: const MaterialApp(home: PathScreen()),
+      child: MaterialApp(theme: AppTheme.cupping, home: const PathScreen()),
     ),
   );
   await tester.pumpAndSettle();

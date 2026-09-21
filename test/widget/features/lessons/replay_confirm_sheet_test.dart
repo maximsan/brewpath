@@ -95,7 +95,7 @@ Future<ProviderContainer> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(routerConfig: router),
+      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
     ),
   );
   await settleLoaders(tester);

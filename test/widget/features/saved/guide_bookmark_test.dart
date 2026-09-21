@@ -1,5 +1,6 @@
 import 'dart:ui' show Tristate;
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -22,8 +23,9 @@ const _roast = VisualGuide(
   fact: 'Darker is not stronger.',
 );
 
-Widget _wrap() => const MaterialApp(
-  home: Scaffold(body: VisualGuideSheetBody(guide: _roast)),
+Widget _wrap() => MaterialApp(
+  theme: AppTheme.cupping,
+  home: const Scaffold(body: VisualGuideSheetBody(guide: _roast)),
 );
 
 void main() {

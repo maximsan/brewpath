@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
@@ -63,7 +64,10 @@ void main() {
         overrides: [
           contentRepositoryProvider.overrideWith((ref) => _FakeContent(lesson)),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.darkRoast,
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump();
@@ -260,7 +264,10 @@ void main() {
             (ref) => _FakeContent(testLesson()),
           ),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.darkRoast,
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump();

@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
@@ -68,7 +69,10 @@ void main() {
           supportMailboxProvider.overrideWithValue(mailbox),
           linkOpenerProvider.overrideWithValue(opener),
         ],
-        child: const MaterialApp(home: HelpSupportScreen()),
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const HelpSupportScreen(),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -81,7 +85,12 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      const ProviderScope(child: MaterialApp(home: HelpSupportScreen())),
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const HelpSupportScreen(),
+        ),
+      ),
     );
     await tester.pump();
   }

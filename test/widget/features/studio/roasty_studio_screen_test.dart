@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/studio/domain/dress_companion.dart';
 import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
@@ -19,6 +20,7 @@ Future<void> _pump(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp(
+        theme: AppTheme.cupping,
         home: const RoastyStudioScreen(),
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(disableAnimations: true),

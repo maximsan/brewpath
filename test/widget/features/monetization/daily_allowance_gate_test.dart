@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
@@ -96,7 +97,10 @@ void main() {
           // From the view: the default `MediaQueryData` carries `size: zero`,
           // which lays the gate sheet out below the viewport.
           data: MediaQueryData.fromView(tester.view),
-          child: MaterialApp.router(routerConfig: router),
+          child: MaterialApp.router(
+            theme: AppTheme.cupping,
+            routerConfig: router,
+          ),
         ),
       ),
     );

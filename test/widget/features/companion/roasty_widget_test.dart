@@ -1,11 +1,15 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _wrap(Widget child) => Directionality(
-  textDirection: TextDirection.ltr,
-  child: Center(child: child),
+Widget _wrap(Widget child) => Theme(
+  data: AppTheme.cupping,
+  child: Directionality(
+    textDirection: TextDirection.ltr,
+    child: Center(child: child),
+  ),
 );
 
 void main() {
