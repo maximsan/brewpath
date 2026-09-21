@@ -3,83 +3,55 @@ name: CI
 on:
   push:
     branches: [main]
+    # Prose changes nothing a build or a test can check, and a markdown-only
+    # commit to main used to cost 169 charged minutes — the whole pipeline,
+    # smoke included. Duplicated rather than shared through a YAML anchor,
+    # which the Actions parser does not support. prototype/ is deliberately
+    # absent: two tool tests read its sources, so an edit there can fail CI.
+    paths-ignore:
+      - "docs/**"
+      - "learning/**"
+      - "**/*.md"
+      - ".claude/**"
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "learning/**"
+      - "**/*.md"
+      - ".claude/**"
   # Run by hand on any branch — the only way to exercise the smoke job
   # before a change to it reaches main.
   workflow_dispatch:
+
+# A second push supersedes the first, so an iterated branch pays for its
+# latest commit rather than for every commit. Pushes to main are never
+# cancelled: each one is the commit that has to be known good.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 env:
   FLUTTER_VERSION: "3.44.1"
 
 jobs:
-  # Pull requests only: the check compares a branch against its base, and by the
-  # time a commit is on main it has already been through it. Skipped entirely
-  # when the PR carries the `no-changelog` label — the escape hatch for
-  # refactors, formatting passes and regenerated output, which the changelog
-  # deliberately does not record.
-  changelog:
-    name: changelog
+  # One job, not four. Each separate job paid its own checkout, its own
+  # Flutter install and its own rounded-up billing minute for work that took
+  # seconds — three minutes a run before either runner did anything. The
+  # cheap checks run first so a formatting slip still fails in under a
+  # minute, and only then does the fifteen-minute suite start.
+  checks:
+    name: checks
     runs-on: ubuntu-latest
-    if: >
-      github.event_name == 'pull_request' &&
-      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+    timeout-minutes: 30
     steps:
-      # Full history: the check diffs against the merge base, which a shallow
-      # clone does not contain.
+      # Full history: the changelog and comment checks diff against the merge
+      # base, which a shallow clone does not contain.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Require a changelog entry for product changes
-        run: tool/check_changelog.sh "${{ github.event.pull_request.base.sha }}"
-
-  # Pull requests only: every Dart file the branch touches must be clean of
-  # over-long comment blocks. Older overruns drain as their files are touched,
-  # so there is no sweep and no allow-list to maintain.
-  comments:
-    name: comments
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Plain Dart is enough: the checker imports nothing outside dart:core.
-      - uses: dart-lang/setup-dart@v1
-
-      - name: Comment blocks in changed files stay under the cap
-        run: dart tool/check_comments.dart --changed "${{ github.event.pull_request.base.sha }}"
-
-  format:
-    name: format
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
-          cache: true
-      # Required for formatting, not just for analysis: `dart format` picks its
-      # style from the package's language version, which it can only read via
-      # .dart_tool/package_config.json. Without this step it falls back to the
-      # newest language version and reformats files that are correctly
-      # formatted at the pubspec's 3.8 floor — so the job disagreed with every
-      # local run and with the other two jobs, both of which do resolve.
-      - name: Install dependencies
-        run: flutter pub get
-
-      # Scoped to source dirs — `dart format .` would descend into build/
-      # (Firebase plugins copy example apps there with broken includes).
-      - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib test integration_test tool
-
-  analyze-test:
-    name: analyze & test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
       - uses: subosito/flutter-action@v2
         with:
@@ -95,8 +67,36 @@ jobs:
         with:
           node-version: "22"
 
+      # Required for formatting, not just for analysis: `dart format` picks its
+      # style from the package's language version, which it can only read via
+      # .dart_tool/package_config.json. Without this step it falls back to the
+      # newest language version and reformats files that are correctly
+      # formatted at the pubspec's 3.8 floor.
       - name: Install dependencies
         run: flutter pub get
+
+      # Pull requests only: the check compares a branch against its base, and by
+      # the time a commit is on main it has already been through it. Skipped
+      # when the PR carries the `no-changelog` label — the escape hatch for
+      # refactors, formatting passes and regenerated output, which the changelog
+      # deliberately does not record.
+      - name: Require a changelog entry for product changes
+        if: >
+          github.event_name == 'pull_request' &&
+          !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+        run: tool/check_changelog.sh "${{ github.event.pull_request.base.sha }}"
+
+      # Pull requests only: every Dart file the branch touches must be clean of
+      # over-long comment blocks. Older overruns drain as their files are
+      # touched, so there is no sweep and no allow-list to maintain.
+      - name: Comment blocks in changed files stay under the cap
+        if: github.event_name == 'pull_request'
+        run: dart tool/check_comments.dart --changed "${{ github.event.pull_request.base.sha }}"
+
+      # Scoped to source dirs — `dart format .` would descend into build/
+      # (Firebase plugins copy example apps there with broken includes).
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test integration_test tool
 
       - name: Analyze
         run: flutter analyze
@@ -116,9 +116,19 @@ jobs:
       - name: Test
         run: flutter test
 
+  # macOS minutes bill at ten times Linux, so a run of this job costs fifty
+  # charged minutes where the whole Linux suite costs seventeen. It ran on
+  # every PR push and then again on the merge, proving the same thing twice.
+  # It now runs where the answer is new: on main, by hand, or on a PR that
+  # asks for it with the `ios` label — which is what a PR touching ios/ or
+  # pubspec.yaml should carry.
   ios-build:
     name: iOS build
     runs-on: macos-latest
+    timeout-minutes: 30
+    if: >
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'ios')
     steps:
       - uses: actions/checkout@v4
 
@@ -203,7 +213,7 @@ jobs:
     # one step. Budget, all measured on this runner: pub ~1 min; a boot of 2
     # to 9 min, bounded at 12; the Flutter build 4 to 10 min; Xcode's own
     # build and the tests after it.
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -275,9 +285,10 @@ jobs:
 
       # The full log and Xcode's result bundle outlive the step whatever ends
       # it — the job cap, a cancel — so a failure can be read afterwards
-      # instead of reconstructed from silence.
+      # instead of reconstructed from silence. Only on failure: a green run's
+      # bundle is never opened, and private-repo artifact storage is capped.
       - name: Keep the smoke logs
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: smoke-logs
@@ -285,4 +296,4 @@ jobs:
             smoke-xcodebuild.log
             smoke.xcresult
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 7
