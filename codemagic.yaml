@@ -156,7 +156,10 @@ workflows:
       # that launches the app itself and then waits for "The Dart VM service
       # is listening on" to arrive on a `log stream` it starts *after* the
       # launch. A live stream shows nothing from before it attached, so when
-      # the app prints first the tool waits forever.
+      # the app prints first the tool waits forever — which happened on half
+      # of the pushes to main while this ran on a GitHub runner. Reproduced
+      # 2026-09-04 by launching the app and attaching the stream three seconds
+      # later: the line was in the simulator's log, never in the stream.
       - name: Smoke test
         script: |
           set -o pipefail
@@ -172,8 +175,8 @@ workflows:
             2>&1 | tee smoke-xcodebuild.log \
             | grep -E 'Test Case|Test Suite|Executed|error:|\*\* TEST'
     # The full log and Xcode's result bundle outlive the build whatever ends
-    # it, so a failure can be read afterwards instead of reconstructed from
-    # silence.
+    # it — the duration cap, a cancel — so a failure can be read afterwards
+    # instead of reconstructed from silence.
     artifacts:
       - smoke-xcodebuild.log
       - smoke.xcresult
