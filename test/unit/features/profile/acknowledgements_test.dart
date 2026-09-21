@@ -23,6 +23,26 @@ void main() {
     expect(sources, [sca]);
   });
 
+  test("credits one address once, under the name without a term's gloss", () {
+    // The bundled bank cites Fairtrade's standards page twice, once with a
+    // parenthetical saying what that term uses it to contrast.
+    const plain = DictionarySource(
+      label: 'Fairtrade International — Standards',
+      url: 'https://www.fairtrade.net/standards',
+    );
+    const glossed = DictionarySource(
+      label: 'Fairtrade International — Standards (the audited contrast)',
+      url: 'https://www.fairtrade.net/standards',
+    );
+
+    final sources = acknowledgedSources([
+      _term('a', const [glossed]),
+      _term('b', const [plain]),
+    ]);
+
+    expect(sources, [plain]);
+  });
+
   test('keeps one label twice when it carries two addresses', () {
     const print = DictionarySource(label: 'Barista Hustle');
     const online = DictionarySource(
