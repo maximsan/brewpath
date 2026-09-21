@@ -1,12 +1,14 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/config/app_links.dart';
+import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/profile/presentation/settings/about_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings/account_sync_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
-import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,12 +23,28 @@ final Finder _tagline = find.byWidgetPredicate(
       widget is SmallcapsLabel && widget.text == SettingsCopy.aboutTagline,
 );
 
+Finder _row(String label) => find.byWidgetPredicate(
+  (widget) => widget is SettingsNavRow && widget.label == label,
+);
+
+/// Section headings render uppercase, so they are found by what they were
+/// given rather than by what they draw.
+Finder _section(String label) => find.byWidgetPredicate(
+  (widget) => widget is SmallcapsLabel && widget.text == label,
+);
+
 void main() {
   setUp(useInMemoryDatabase);
 
   /// Bounded pumps rather than `pumpAndSettle`: About mounts Roasty, whose
   /// idle animation never ends.
-  Future<void> pump(WidgetTester tester, Widget screen) async {
+  Future<void> pump(
+    WidgetTester tester,
+    Widget screen, {
+    Uri? privacy,
+    Uri? terms,
+    String? mailbox,
+  }) async {
     tester.view.physicalSize = const Size(400, 1400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.resetPhysicalSize);
@@ -34,6 +52,12 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [
+          if (privacy != null) privacyPageProvider.overrideWithValue(privacy),
+          if (terms != null) termsPageProvider.overrideWithValue(terms),
+          if (mailbox != null)
+            supportMailboxProvider.overrideWithValue(mailbox),
+        ],
         child: MaterialApp(theme: AppTheme.cupping, home: screen),
       ),
     );
@@ -108,16 +132,64 @@ void main() {
     );
   });
 
+  testWidgets("draws the app's own two fine-print rows whatever is hosted", (
+    tester,
+  ) async {
+    await pump(tester, const AboutScreen());
+
+    expect(_row(SettingsCopy.acknowledgementsRow), findsOneWidget);
+    expect(_row(SettingsCopy.licensesRow), findsOneWidget);
+  });
+
   testWidgets('draws no legal row while neither page is hosted', (
     tester,
   ) async {
     // #448 owns the two URLs; until they exist the rows are absent rather
-    // than drawn live and inert, and the placeholder still names them.
+    // than drawn live and inert.
     await pump(tester, const AboutScreen());
 
     expect(SupportLinks.terms, isNull, reason: '#448 has no URLs yet');
     expect(SupportLinks.privacy, isNull, reason: '#448 has no URLs yet');
-    expect(find.byType(SettingsNavRow), findsNothing);
-    expect(find.text(SettingsCopy.aboutComing), findsOneWidget);
+    expect(_row(SettingsCopy.termsRow), findsNothing);
+    expect(_row(SettingsCopy.privacyRow), findsNothing);
+  });
+
+  testWidgets('draws Privacy above Terms once both are hosted', (tester) async {
+    await pump(
+      tester,
+      const AboutScreen(),
+      privacy: Uri.parse('https://brewpath.example/privacy'),
+      terms: Uri.parse('https://brewpath.example/terms'),
+    );
+
+    expect(
+      tester.getTopLeft(_row(SettingsCopy.privacyRow)).dy,
+      lessThan(tester.getTopLeft(_row(SettingsCopy.termsRow)).dy),
+      reason: 'the design orders the fine print Privacy, Terms',
+    );
+  });
+
+  testWidgets('draws no Say something group while there is no mailbox', (
+    tester,
+  ) async {
+    await pump(tester, const AboutScreen());
+
+    expect(_row(SettingsCopy.sayHelloRow), findsNothing);
+    expect(_section(SettingsCopy.saySomethingSection), findsNothing);
+  });
+
+  testWidgets('says hello once there is a mailbox to write to', (tester) async {
+    await pump(tester, const AboutScreen(), mailbox: 'hi@brewpath.app');
+
+    expect(_row(SettingsCopy.sayHelloRow), findsOneWidget);
+    expect(find.text('hi@brewpath.app'), findsOneWidget);
+  });
+
+  testWidgets('never draws Rate BrewPath, which has nothing to rate', (
+    tester,
+  ) async {
+    await pump(tester, const AboutScreen(), mailbox: 'hi@brewpath.app');
+
+    expect(find.textContaining('Rate'), findsNothing);
   });
 }

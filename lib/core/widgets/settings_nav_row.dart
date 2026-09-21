@@ -1,5 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/icons/outward_mark.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -7,20 +8,10 @@ import 'package:flutter/material.dart';
 
 /// The one row the whole settings surface renders through.
 ///
-/// The design is explicit that this is a single component, not a shape each
-/// screen redraws: *"Settings, About, Account and sync, Help and support and
-/// Purchases all render through this"*. Six trailing variants, one
-/// implementation, so the row cannot drift into two versions again.
-///
-/// **It has no icon slot, deliberately.** Settings' rows had grown leading
-/// Material glyphs — `info_outline` on the version row, `help_outline` on the
-/// App Guide one — that the design never draws, which is why the icon port
-/// (#378) left them alone rather than hunting for marks that do not exist. The
-/// fix was removal, and removal is this shape.
-///
-/// Layout is label left, affordance right, over a hairline: the rule is the
-/// row's own bottom border in the design, so a list of these needs no
-/// separators of its own.
+/// Seven trailing variants, one implementation: *"Settings, About, Account and
+/// sync, Help and support and Purchases all render through this"*. It has no
+/// icon slot — the design draws no leading glyph (#378) — and its own bottom
+/// hairline is the rule, so a list of these needs no separators.
 class SettingsNavRow extends StatelessWidget {
   /// Creates a settings row.
   const SettingsNavRow({
@@ -32,6 +23,7 @@ class SettingsNavRow extends StatelessWidget {
     this.onToggle,
     this.isDestructive = false,
     this.isDimmed = false,
+    this.isExternal = false,
     super.key,
   }) : assert(
          toggleValue == null || onToggle != null,
@@ -75,11 +67,15 @@ class SettingsNavRow extends StatelessWidget {
   /// Whether this row reads as inactive — a reminder time with notifications
   /// switched off.
   ///
-  /// **Visual only. It still acts**, which is the design's own behaviour: `dim`
-  /// sets opacity and nothing else, and only `pending` withholds the press.
-  /// That matters here — tapping the dimmed reminder row is the way a learner
-  /// turns the reminder *on*, because choosing a time is asking for it.
+  /// **Visual only. It still acts:** tapping the dimmed reminder row is how a
+  /// learner turns the reminder on, because choosing a time is asking for it.
   final bool isDimmed;
+
+  /// Whether the press leaves the app — a browser, a mail composer, the store.
+  ///
+  /// The design draws these with its outward arrow rather than the chevron, so
+  /// a row that hands the learner to another app says so before it is pressed.
+  final bool isExternal;
 
   bool get _isToggle => toggleValue != null;
 
@@ -113,10 +109,14 @@ class SettingsNavRow extends StatelessWidget {
       ),
     );
 
+    final acts = action != null && !_isToggle;
+
     return Semantics(
       // The switch inside a toggle row is already a control, and controls do
-      // not nest: only a navigating row announces itself as a button.
-      button: action != null && !_isToggle,
+      // not nest: only a navigating row announces itself. A row that leaves
+      // the app is a link, which is what the outward arrow beside it says.
+      button: acts && !isExternal,
+      link: acts && isExternal,
       child: DecoratedBox(
         decoration: BoxDecoration(
           border: Border(bottom: BorderSide(color: mood.rule)),
@@ -171,10 +171,13 @@ class SettingsNavRow extends StatelessWidget {
         ),
       if (onTap != null) ...[
         const SizedBox(width: _trailingGap),
-        IconMark(
-          AppIcon.chevron,
-          color: isDestructive ? mood.berry : mood.inkMute,
-        ),
+        if (isExternal)
+          OutwardMark(color: mood.inkMute)
+        else
+          IconMark(
+            AppIcon.chevron,
+            color: isDestructive ? mood.berry : mood.inkMute,
+          ),
       ],
     ];
   }

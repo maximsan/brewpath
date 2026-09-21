@@ -44,6 +44,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **About's fine print goes somewhere.** *Acknowledgements* opens a credits
+  page built from the dictionary's own term bank — every distinct work its
+  entries cite, named once and in alphabetical order — so a source added to a
+  term is credited there with nothing else to author. *Open-source licenses*
+  opens Flutter's generated licence page, which lists what the build actually
+  ships rather than a list kept by hand. *Say hello* stands beside them once
+  there is a mailbox to write to, and *Rate BrewPath* stays absent until there
+  is a store listing to rate
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —
   absent, or left behind by an English edit — writes the folder from that
@@ -84,6 +94,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   anywhere ([#573](https://github.com/maximsan/brewpath/issues/573)).
 
 ### Changed
+
+- **A settings row that leaves the app now says so before it is pressed.** The
+  design's outward arrow stands in place of the chevron on About's and Help's
+  external rows, and a screen reader announces them as links rather than
+  buttons. About's fine print also follows the design's own order, Privacy
+  above Terms ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 - **A screen mounted without the app's theme now fails at once.** `context.mood`
   used to fall back to Dark Roast when the theme carried no mood, so a widget

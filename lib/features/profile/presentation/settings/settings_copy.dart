@@ -121,15 +121,40 @@ abstract final class SettingsCopy {
   /// Section on About: the legal rows.
   static const finePrintSection = 'The fine print';
 
+  /// Section on About: the ways to say something back.
+  static const saySomethingSection = 'Say something';
+
+  /// About's row into [acknowledgementsTitle].
+  static const acknowledgementsRow = 'Acknowledgements';
+
+  /// About's row into Flutter's generated license page.
+  static const licensesRow = 'Open-source licenses';
+
+  /// About's row opening a blank message to the support mailbox (#531).
+  static const sayHelloRow = 'Say hello';
+
+  /// Acknowledgements' title.
+  static const acknowledgementsTitle = 'Acknowledgements';
+
+  /// What the Acknowledgements page opens on.
+  static const acknowledgementsBlurb =
+      'The works the dictionary draws on. Every entry names its own sources; '
+      'this is all of them, in one place.';
+
+  /// Section on Acknowledgements: the list itself.
+  static const sourcesSection = 'Sources';
+
+  /// What a screen reader says while the list is being gathered.
+  static const acknowledgementsLoadingLabel = 'Gathering the sources';
+
+  /// The line the list shows meanwhile — the bank is read off the bundle.
+  static const acknowledgementsGathering = 'Gathering…';
+
+  /// The line the list shows when the bank cannot be read.
+  static const acknowledgementsUnavailable =
+      'The sources could not be read on this build.';
+
   /// What the unbuilt half of Account and sync will hold.
   static const cloudSyncComing =
       'Signing in, and keeping your progress on more than one device.';
-
-  /// What the unbuilt half of About will hold.
-  static const aboutComing =
-      'Privacy policy, terms, acknowledgements and the open-source licenses.';
-
-  /// The same, once the two legal pages exist and are drawn as rows (#448).
-  static const aboutComingWithLegal =
-      'Acknowledgements and the open-source licenses.';
 }

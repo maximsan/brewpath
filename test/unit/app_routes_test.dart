@@ -61,6 +61,10 @@ void main() {
     expect(locationOf(AppRoutes.cards.name), '/cards');
     expect(locationOf(AppRoutes.profile.name), '/profile');
     expect(locationOf(AppRoutes.profileSettings.name), '/profile/settings');
+    expect(
+      locationOf(AppRoutes.settingsAcknowledgements.name),
+      '/profile/settings/about/acknowledgements',
+    );
   });
 
   test('parametrized routes interpolate path parameters', () {
@@ -147,6 +151,8 @@ void main() {
     'settingsPurchases': HeaderTier.pushed,
     'settingsHelp': HeaderTier.pushed,
     'settingsAbout': HeaderTier.pushed,
+    // Three pushes deep, like the App Guide, and the same back-arrow bar.
+    'settingsAcknowledgements': HeaderTier.pushed,
     // Three pushes deep now — Settings, Help and support, then the guide —
     // and it carries a back-arrow bar of its own, the same as the screen it
     // was opened from.

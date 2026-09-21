@@ -90,10 +90,12 @@ class _GetInTouch extends ConsumerWidget {
         SettingsNavRow(
           label: SettingsCopy.emailSupportRow,
           value: mailbox,
+          isExternal: true,
           onTap: () => open(supportMailto(mailbox)),
         ),
         SettingsNavRow(
           label: SettingsCopy.reportProblemRow,
+          isExternal: true,
           onTap: () => open(problemReportMailto(mailbox, version)),
         ),
       ],

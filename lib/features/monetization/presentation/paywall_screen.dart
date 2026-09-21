@@ -89,7 +89,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           onDeclined: widget.onDeclined,
           onRestore: _restore,
         ),
-        AsyncError() => _Unreachable(onDeclined: widget.onDeclined),
+        // `hasError`, not an `AsyncError` pattern: a failed provider keeps the
+        // loading flag through ten retries, so matching the state left the
+        // learner on a spinner for the best part of a minute first.
+        AsyncValue(hasError: true) => _Unreachable(
+          onDeclined: widget.onDeclined,
+        ),
         _ => const Center(child: LoadingIndicator()),
       },
     );

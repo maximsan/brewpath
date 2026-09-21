@@ -1,7 +1,4 @@
-import 'dart:math' as math;
-
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/icons/outward_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/services/links/link_provider.dart';
@@ -94,9 +91,6 @@ class _SourceRow extends StatelessWidget {
   /// The design's index column, wide enough for `01`.
   static const double _indexColumn = 28;
 
-  /// The design's outward arrow is the app's arrow turned a quarter up.
-  static const double _outwardTurn = -math.pi / 4;
-
   final int index;
   final DictionarySource source;
   final VoidCallback? onOpen;
@@ -129,10 +123,7 @@ class _SourceRow extends StatelessWidget {
               Expanded(child: Text(source.label, style: mono)),
               if (opens) ...[
                 const SizedBox(width: AppSpacing.sm),
-                Transform.rotate(
-                  angle: _outwardTurn,
-                  child: IconMark(AppIcon.arrow, color: mood.inkMute),
-                ),
+                OutwardMark(color: mood.inkMute),
               ],
             ],
           ),
