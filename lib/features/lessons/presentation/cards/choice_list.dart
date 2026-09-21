@@ -60,9 +60,9 @@ class ChoiceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Spaced between the options and not under the last, the way the design's
-    // `gap: 10` is: a trailing gap would stack on whatever follows the list,
-    // which is the verdict block or the card's button.
+    // A gap between the options and none under the last: the design's
+    // `gap: 10` leaves nothing trailing, and a trailing gap here would stack
+    // on whatever follows — the verdict block, or the card's button.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: AppSpacing.sm,

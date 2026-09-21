@@ -37,7 +37,7 @@ class PickerCopy {
     this.footnote,
     this.verdict = _defaultVerdict,
     this.placement = VerdictPlacement.card,
-    this.buttonGap = AppSpacing.xl,
+    this.buttonGap,
   });
 
   /// The question itself.
@@ -66,9 +66,10 @@ class PickerCopy {
   /// mark an answer, and the design gives them the body step for it.
   final VerdictPlacement placement;
 
-  /// The room this kind opens its button block on. The shell's default, but
-  /// for `decision` and `recall`, which the design closes tighter.
-  final double buttonGap;
+  /// The room this kind opens its button block on, or null to take the
+  /// shell's own. Only `decision` and `recall` name one; the design closes
+  /// those two tighter.
+  final double? buttonGap;
 
   /// The line the verdict block leads with. Takes the outcome for the same
   /// reason [explain] does: `decision` calls it *good call* against *that

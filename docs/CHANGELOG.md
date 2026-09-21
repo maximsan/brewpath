@@ -99,8 +99,8 @@ You can always edit this file by hand instead — the helpers just save effort.
   standing, so a lesson card, a mini-game, a term's self-check and a vocab
   round each get their own. A card's options — and the sequence card's steps —
   also stop leaving a gap under the last one, which was stacking on whatever
-  followed the list: the verdict, or the button. The button under predict and decision moves 2px closer to the
-  card, and under recall 6px
+  followed the list: the verdict, or the button. The button under predict and
+  decision moves 2px closer to the card, and under recall 6px
   ([#594](https://github.com/maximsan/brewpath/issues/594)).
 
 - **A screen mounted without the app's theme now fails at once.** `context.mood`

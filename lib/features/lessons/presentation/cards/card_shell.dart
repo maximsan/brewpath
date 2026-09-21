@@ -41,7 +41,7 @@ class CardShell extends StatelessWidget {
     this.title,
     this.commit,
     this.continueLabel = AppLabels.continueLabel,
-    this.buttonGap = AppSpacing.xl,
+    this.buttonGap,
     super.key,
   });
 
@@ -74,9 +74,9 @@ class CardShell extends StatelessWidget {
   /// gate itself — the predict card's *Make a guess*, then *Find out*.
   final String continueLabel;
 
-  /// The room the button block opens on, off the content above it. Three
-  /// kinds pass their own; their values are in the `OffTokens` register.
-  final double buttonGap;
+  /// The room the button block opens on, off the content above it, or null
+  /// for the design's 32. Three kinds pass their own, from `OffTokens`.
+  final double? buttonGap;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +122,7 @@ class CardShell extends StatelessWidget {
         // in the app shorter than the Continue on the screen after it. The
         // design pads it off the content — [buttonGap] says by how much.
         Padding(
-          padding: EdgeInsets.only(top: buttonGap),
+          padding: EdgeInsets.only(top: buttonGap ?? AppSpacing.xl),
           child: commit != null && !latched
               ? PrimaryButton(label: commit!.label, onPressed: commit!.onCommit)
               : PrimaryButton(

@@ -285,7 +285,14 @@ void main() {
 
     expect(
       tester
-          .widget<Container>(find.byType(Container).first)
+          .widget<Container>(
+            find
+                .descendant(
+                  of: find.byType(AnswerFeedback),
+                  matching: find.byType(Container),
+                )
+                .first,
+          )
           .padding
           ?.resolve(TextDirection.ltr)
           .top,
