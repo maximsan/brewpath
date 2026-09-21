@@ -12,8 +12,8 @@ const _designRoom = <VerdictPlacement, double>{
   VerdictPlacement.heldGuess: 22,
   VerdictPlacement.miniGame: 20,
   VerdictPlacement.openingGuess: 18,
-  VerdictPlacement.reference: 18,
-  VerdictPlacement.vocabRound: 14,
+  VerdictPlacement.vocabRound: 18,
+  VerdictPlacement.reference: 14,
 };
 
 void main() {
@@ -27,10 +27,6 @@ void main() {
               'the design sets ${placement.name} at ${_designRoom[placement]}',
         );
       }
-    });
-
-    test('is named for every placement the block has', () {
-      expect(_designRoom.keys, containsAll(VerdictPlacement.values));
     });
   });
 

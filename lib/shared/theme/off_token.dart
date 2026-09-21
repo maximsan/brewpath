@@ -605,16 +605,16 @@ abstract final class OffTokens {
     reason: 'a ruled-off block sets `paddingTop: 18` under its rule',
   );
 
-  /// The room a term's self-check leaves above its verdict block.
+  /// The room a term entry's self-check leaves above its verdict block.
   static const OffToken<double> verdictRoomInReference = OffToken(
-    18,
-    reason: 'the self-check sets `size={48} marginTop={18}`',
+    14,
+    reason: "a term entry's check sets `size={48} marginTop={14}`",
   );
 
   /// The room a vocab round leaves above its verdict block.
   static const OffToken<double> verdictRoomInVocabRound = OffToken(
-    14,
-    reason: 'a vocab round sets `size={48} marginTop={14}`',
+    18,
+    reason: 'a vocab round sets `size={48} marginTop={18}`',
   );
 
   /// The gap the predict card opens its button block on.

@@ -60,18 +60,19 @@ class ChoiceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Spaced between the options and not under the last, the way the design's
+    // `gap: 10` is: a trailing gap would stack on whatever follows the list,
+    // which is the verdict block or the card's button.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.sm,
       children: [
         for (var index = 0; index < options.length; index++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: _option(
-              context,
-              option: options[index],
-              mark: _markFor(index),
-              onTap: _latched ? null : () => onSelect(index),
-            ),
+          _option(
+            context,
+            option: options[index],
+            mark: _markFor(index),
+            onTap: _latched ? null : () => onSelect(index),
           ),
       ],
     );

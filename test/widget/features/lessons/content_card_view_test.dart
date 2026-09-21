@@ -8,8 +8,10 @@ import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
+import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
@@ -19,6 +21,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/verdict_room.dart';
 
 /// Counts what crossed the card boundary. The whole contract is here: success
 /// is reported at most once and only when earned, and continue is separate.
@@ -208,19 +212,20 @@ Future<void> _tapLast(WidgetTester tester, String text) async {
   await tester.pumpAndSettle();
 }
 
-/// The room above the verdict block, which the block owns rather than its host.
-double _roomAbove(WidgetTester tester) => tester
-    .widget<Padding>(
-      find
-          .descendant(
-            of: find.byType(AnswerFeedback),
-            matching: find.byType(Padding),
-          )
-          .first,
-    )
-    .padding
-    .resolve(TextDirection.ltr)
-    .top;
+/// The rendered distance from the foot of [above] to the top of the verdict
+/// block's own content, which is what a learner sees between the two.
+double _gapToVerdict(WidgetTester tester, Finder above) =>
+    tester
+        .getTopLeft(
+          find
+              .descendant(
+                of: find.byType(AnswerFeedback),
+                matching: find.byType(Row),
+              )
+              .first,
+        )
+        .dy -
+    tester.getBottomLeft(above).dy;
 
 /// The room the shell opens its button block on.
 double _buttonGap(WidgetTester tester) => tester
@@ -361,9 +366,39 @@ void main() {
           find.byType(AnswerFeedback).first,
         );
         expect(block.placement, placement);
-        expect(_roomAbove(tester), placement.room);
+        expect(roomAboveVerdict(tester), placement.room);
       });
     }
+  });
+
+  group('what the learner actually sees above the verdict', () {
+    // Measured off the rendered boxes, not off the block's own padding: the
+    // option lists used to leave a gap under the last option as well, and it
+    // stacked on the block's room without either value being wrong (#594).
+    testWidgets('mcq leaves the design room under its last option', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_mcq, _Signals()));
+      await _tapText(tester, 'A seed');
+
+      expect(
+        _gapToVerdict(tester, find.byType(ChoiceList)),
+        VerdictPlacement.card.room,
+      );
+    });
+
+    testWidgets('multi leaves the design room under its last option', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_multi, _Signals()));
+      await _tapText(tester, 'Grind size');
+      await _tapText(tester, 'Check answers');
+
+      expect(
+        _gapToVerdict(tester, find.byType(MultiChoiceList)),
+        VerdictPlacement.card.room,
+      );
+    });
   });
 
   group('the gap a card opens its button on', () {

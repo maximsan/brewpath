@@ -74,8 +74,8 @@ class CardShell extends StatelessWidget {
   /// gate itself — the predict card's *Make a guess*, then *Find out*.
   final String continueLabel;
 
-  /// The room the button block opens on, off the content above it. The design
-  /// sets 32 on every kind but predict and decision (30) and recall (26).
+  /// The room the button block opens on, off the content above it. Three
+  /// kinds pass their own; their values are in the `OffTokens` register.
   final double buttonGap;
 
   @override

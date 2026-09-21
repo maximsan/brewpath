@@ -66,8 +66,8 @@ class PickerCopy {
   /// mark an answer, and the design gives them the body step for it.
   final VerdictPlacement placement;
 
-  /// The room this kind opens its button block on. The same 32 as every other
-  /// card, but for `decision` and `recall`, which the design closes tighter.
+  /// The room this kind opens its button block on. The shell's default, but
+  /// for `decision` and `recall`, which the design closes tighter.
   final double buttonGap;
 
   /// The line the verdict block leads with. Takes the outcome for the same

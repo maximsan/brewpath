@@ -81,7 +81,8 @@ enum VerdictPlacement {
   ),
 
   /// A vocab quiz round, which reads as reference for the same reason and is
-  /// drawn the same way. The design closes it tighter still.
+  /// drawn the same way. A full screen rather than a panel inside an entry,
+  /// and the design gives it a little more room for that.
   vocabRound(
     mascot: _mascotInReference,
     speaksInBody: false,
@@ -128,8 +129,8 @@ enum VerdictPlacement {
   /// The room the design leaves above the block here.
   ///
   /// On the placement rather than in each host, because the design carries it
-  /// as a prop of the block and twelve hosts each spacing it by hand is how
-  /// none of them ended up at the design's value.
+  /// as a prop of the block, and every host spacing it by hand is how none of
+  /// them ended up at the design's value.
   double get room => switch (this) {
     card || conversational || heldGuess => OffTokens.verdictRoomOnCard.value,
     miniGame => OffTokens.verdictRoomInMiniGame.value,
