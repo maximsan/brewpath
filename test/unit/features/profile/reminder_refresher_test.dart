@@ -83,6 +83,18 @@ void main() {
     expect(scheduler.pending, isEmpty);
   });
 
+  test('a refresh queued after the scope is gone reads nothing', () async {
+    // The smoke suite tears the app down between walks and closes the
+    // database a pump later; a refresh still reading through the old scope
+    // would race that close.
+    await settings().setNotificationsEnabled(enabled: true);
+    final refresh = refresher();
+    container.dispose();
+
+    expect(await refresh.refresh(), ReminderSyncOutcome.gone);
+    expect(scheduler.writes, isEmpty);
+  });
+
   test('a failed refresh leaves the queue usable', () async {
     await settings().setNotificationsEnabled(enabled: true);
     scheduler.failure = StateError('no notification centre');

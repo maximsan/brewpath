@@ -57,9 +57,13 @@ Future<ReminderSyncOutcome> refreshReminders(WidgetRef ref) =>
 /// unhandled async error and takes the app down over a reminder. It goes to
 /// the crash sink instead — there is no screen to put it on.
 Future<void> refreshRemindersQuietly(WidgetRef ref) async {
+  // Resolved before the await, not inside the catch: by the time a refresh
+  // fails the scope may be gone, and a `read` there would throw out of the
+  // handler that exists to stop exactly that.
+  final crashes = ref.read(crashReportingServiceProvider);
   try {
     await refreshReminders(ref);
   } on Object catch (error, stack) {
-    await ref.read(crashReportingServiceProvider).recordError(error, stack);
+    await crashes.recordError(error, stack);
   }
 }

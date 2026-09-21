@@ -28,6 +28,10 @@ enum ReminderSyncOutcome {
 
   /// This build schedules nothing, so the preference was left alone.
   unsupported,
+
+  /// The scope the refresh was queued in is gone — a torn-down app, which the
+  /// smoke suite does between its walks. Nothing was read and nothing posted.
+  gone,
 }
 
 /// Makes what [scheduler] holds match [setting], as of [now].

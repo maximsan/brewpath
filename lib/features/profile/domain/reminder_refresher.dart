@@ -30,7 +30,11 @@ class ReminderRefresher {
   }
 
   Future<ReminderSyncOutcome> _run() async {
+    if (!_ref.mounted) return ReminderSyncOutcome.gone;
+
     final settings = await _ref.read(settingsControllerProvider.future);
+    if (!_ref.mounted) return ReminderSyncOutcome.gone;
+
     final outcome = await syncReminders(
       _ref.read(reminderSchedulerProvider),
       setting: (
@@ -41,7 +45,7 @@ class ReminderRefresher {
       now: _ref.read(appClockProvider)(),
     );
 
-    if (outcome == ReminderSyncOutcome.permissionLost) {
+    if (outcome == ReminderSyncOutcome.permissionLost && _ref.mounted) {
       await _ref
           .read(settingsControllerProvider.notifier)
           .setNotificationsEnabled(enabled: false);
