@@ -63,6 +63,11 @@ class MoodColors extends ThemeExtension<MoodColors> {
     waterHi: Color(0xFFC2E0EF),
   );
 
+  /// The mood a theme of [brightness] belongs to — the release fallback for a
+  /// tree with no mood, chosen to agree with the page it is drawn on.
+  static MoodColors forBrightness(Brightness brightness) =>
+      brightness == Brightness.dark ? darkRoast : cupping;
+
   /// Opacity of [veil] — the design's
   /// `color-mix(in oklab, var(--bg) 38%, transparent)`.
   static const veilOpacity = 0.38;
@@ -298,18 +303,19 @@ class MoodColors extends ThemeExtension<MoodColors> {
 extension MoodColorsContext on BuildContext {
   /// The current mood's colour tokens.
   ///
-  /// Only `AppTheme` carries them, so a tree mounted under any other
-  /// `ThemeData` fails here rather than painting one mood's tokens on the
-  /// other mood's page — the split a bare `MaterialApp` used to produce.
+  /// Only `AppTheme` carries them. A tree mounted under any other `ThemeData`
+  /// fails here in a debug build, so a test or a walk cannot paint one mood's
+  /// tokens on the other mood's page unnoticed; a release build takes the
+  /// mood of the theme's own brightness instead, which at least agrees with it.
   MoodColors get mood {
-    final mood = Theme.of(this).extension<MoodColors>();
-    if (mood == null) {
-      throw FlutterError(
-        'No MoodColors in the ambient Theme. Mount the tree under '
-        'AppTheme.cupping or AppTheme.darkRoast (MaterialApp.theme and '
-        'darkTheme); a bare MaterialApp or ThemeData carries no mood.',
-      );
-    }
-    return mood;
+    final theme = Theme.of(this);
+    final mood = theme.extension<MoodColors>();
+    assert(
+      mood != null,
+      'No MoodColors in the ambient Theme. Mount the tree under '
+      'AppTheme.cupping or AppTheme.darkRoast (MaterialApp.theme and '
+      'darkTheme); a bare MaterialApp or ThemeData carries no mood.',
+    );
+    return mood ?? MoodColors.forBrightness(theme.brightness);
   }
 }

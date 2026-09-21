@@ -324,6 +324,45 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets('a search from the index shows the filter once it finds '
+        'something', (tester) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'arab');
+      await tester.pumpAndSettle();
+      expect(find.text('LEARNED'), findsOneWidget);
+      expect(find.text('Arabica'), findsOneWidget);
+
+      // Narrowing the found terms to none keeps the control, or there would
+      // be no way back to All.
+      await tester.tap(find.text('LEARNED'));
+      await tester.pumpAndSettle();
+      expect(find.text(DictionarySearchCopy.count(0)), findsOneWidget);
+      expect(find.text('TO LEARN'), findsOneWidget);
+
+      // A search that finds nothing has nothing to sort.
+      await tester.enterText(find.byType(TextField), 'zzzz');
+      await tester.pumpAndSettle();
+      expect(find.text('TO LEARN'), findsNothing);
+    });
+
+    testWidgets('clearing a filtered search returns to the index', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'arab');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('LEARNED'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pumpAndSettle();
+      expect(find.byType(CategoryIndex), findsOneWidget);
+    });
   });
 
   group('term detail', () {
