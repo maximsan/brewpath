@@ -97,7 +97,6 @@ class _ConceptCardViewState extends State<ConceptCardView> {
           onPick: _pick,
         ),
         if (_checked) ...[
-          const SizedBox(height: AppSpacing.lg),
           AnswerFeedback(
             verdict: _allRight ? _allCorrect : notQuiteVerdict,
             outcome: _allRight ? Verdict.right : Verdict.wrong,

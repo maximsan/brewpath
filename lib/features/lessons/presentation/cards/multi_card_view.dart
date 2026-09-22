@@ -111,7 +111,6 @@ class _MultiCardViewState extends State<MultiCardView> {
           onToggle: _toggle,
         ),
         if (_submitted) ...[
-          const SizedBox(height: AppSpacing.md),
           AnswerFeedback(
             verdict: verdict,
             outcome: _wasCorrect ? Verdict.right : Verdict.wrong,

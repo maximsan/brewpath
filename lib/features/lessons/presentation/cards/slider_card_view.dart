@@ -201,7 +201,6 @@ class _SliderCardViewState extends State<SliderCardView> {
   /// What the setting came to. The band on the track says where the answer
   /// sat; only this says whether the round was passed.
   List<Widget> _verdict(MoodColors mood) => [
-    const SizedBox(height: AppSpacing.md),
     AnswerFeedback(
       verdict: _within ? _dialedIn : notQuiteVerdict,
       outcome: _within ? Verdict.right : Verdict.wrong,

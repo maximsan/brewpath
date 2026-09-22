@@ -144,11 +144,11 @@ class _BagpickCardViewState extends State<BagpickCardView> {
           revealAnswer: true,
         ),
         if (_latched) ...[
-          const SizedBox(height: AppSpacing.md),
           AnswerFeedback(
             verdict: _verdict(card),
             outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
             explanation: card.explanation,
+            placement: VerdictPlacement.miniGame,
           ),
         ],
       ],

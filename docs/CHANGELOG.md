@@ -107,6 +107,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   reserved width to wrap into
   ([#584](https://github.com/maximsan/brewpath/issues/584)).
 
+- **Every graded surface closes at the spacing the design gives it.** The
+  verdict block was spaced by each of its hosts and not one of them matched
+  the design. The block now carries that room itself, from where it is
+  standing, so a lesson card, a mini-game, a term's self-check and a vocab
+  round each get their own. A card's options — and the sequence card's steps —
+  also stop leaving a gap under the last one, which was stacking on whatever
+  followed the list: the verdict, or the button. The button under predict and
+  decision moves 2px closer to the card, and under recall 6px
+  ([#594](https://github.com/maximsan/brewpath/issues/594)).
+
 - **Settings rows are grouped again, and their rules stop where the words
   do.** Every group opens 24 above its heading rather than 16, so the five
   screens behind Settings read as groups instead of one long run; and a row's
