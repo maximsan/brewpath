@@ -1,0 +1,519 @@
+{
+  "drafted": "Drafted by tool/draft_language.js from the English master. Edit the queue and rerun, or fix a word here and clear its translatedFrom mark.",
+  "bank": "dictionary_terms",
+  "language": "be",
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "arabica",
+      "term": "Арабіка",
+      "translatedFrom": {
+        "term": "1a99f611fe8b"
+      }
+    },
+    {
+      "id": "robusta",
+      "term": "Рабуста",
+      "translatedFrom": {
+        "term": "9f73a0d56b45"
+      }
+    },
+    {
+      "id": "cultivar",
+      "term": "Культывар",
+      "translatedFrom": {
+        "term": "6df16014f3b3"
+      }
+    },
+    {
+      "id": "typica",
+      "term": "Тыпіка",
+      "translatedFrom": {
+        "term": "a9b473f74152"
+      }
+    },
+    {
+      "id": "bourbon",
+      "term": "Бурбон",
+      "translatedFrom": {
+        "term": "127296f35f43"
+      }
+    },
+    {
+      "id": "caturra",
+      "term": "Катура",
+      "translatedFrom": {
+        "term": "0a967ed487c0"
+      }
+    },
+    {
+      "id": "geisha",
+      "term": "Гейша",
+      "translatedFrom": {
+        "term": "7e229117b217"
+      }
+    },
+    {
+      "id": "sl28",
+      "term": "SL28",
+      "translatedFrom": {
+        "term": "0db065d6db4a"
+      }
+    },
+    {
+      "id": "heirloom",
+      "term": "Мясцовыя гатункі",
+      "translatedFrom": {
+        "term": "2de96f523aaf"
+      }
+    },
+    {
+      "id": "cherry",
+      "term": "Кававая ягада",
+      "translatedFrom": {
+        "term": "6eb2f83d3a64"
+      }
+    },
+    {
+      "id": "peaberry",
+      "term": "Пібэры",
+      "translatedFrom": {
+        "term": "35a1365f3c7e"
+      }
+    },
+    {
+      "id": "bean-belt",
+      "term": "Кававы пояс",
+      "translatedFrom": {
+        "term": "9186ac5d5f9e"
+      }
+    },
+    {
+      "id": "terroir",
+      "term": "Тэруар",
+      "translatedFrom": {
+        "term": "87fee210e3d5"
+      }
+    },
+    {
+      "id": "masl",
+      "term": "MASL",
+      "translatedFrom": {
+        "term": "a9b8cfcc81b9"
+      }
+    },
+    {
+      "id": "mucilage",
+      "term": "Слізь",
+      "translatedFrom": {
+        "term": "7a752deb09e9"
+      }
+    },
+    {
+      "id": "parchment",
+      "term": "Пергамент",
+      "translatedFrom": {
+        "term": "ff872964e5ec"
+      }
+    },
+    {
+      "id": "silverskin",
+      "term": "Срэбная плёнка",
+      "translatedFrom": {
+        "term": "71a292ec833c"
+      }
+    },
+    {
+      "id": "center-cut",
+      "term": "Цэнтральная баразна",
+      "translatedFrom": {
+        "term": "ec958fae02a7"
+      }
+    },
+    {
+      "id": "caffeine",
+      "term": "Кафеін",
+      "translatedFrom": {
+        "term": "a9a15db4d1c3"
+      }
+    },
+    {
+      "id": "washed",
+      "term": "Мытая апрацоўка",
+      "translatedFrom": {
+        "term": "493f135e708e"
+      }
+    },
+    {
+      "id": "natural",
+      "term": "Натуральная апрацоўка",
+      "translatedFrom": {
+        "term": "87b044663152"
+      }
+    },
+    {
+      "id": "honey",
+      "term": "Хані-апрацоўка",
+      "translatedFrom": {
+        "term": "68dd88f68185"
+      }
+    },
+    {
+      "id": "fermentation",
+      "term": "Ферментацыя",
+      "translatedFrom": {
+        "term": "28795da7084b"
+      }
+    },
+    {
+      "id": "anaerobic",
+      "term": "Анаэробная ферментацыя",
+      "translatedFrom": {
+        "term": "a3650744e6bf"
+      }
+    },
+    {
+      "id": "decaf",
+      "term": "Дэкаф",
+      "translatedFrom": {
+        "term": "75a81aad31a0"
+      }
+    },
+    {
+      "id": "swiss-water",
+      "term": "Працэс Swiss Water",
+      "translatedFrom": {
+        "term": "2abe241f26ea"
+      }
+    },
+    {
+      "id": "green-coffee",
+      "term": "Зялёная кава",
+      "translatedFrom": {
+        "term": "00d647709739"
+      }
+    },
+    {
+      "id": "washing-station",
+      "term": "Мыйная станцыя",
+      "translatedFrom": {
+        "term": "ece4953a6b42"
+      }
+    },
+    {
+      "id": "wet-hulled",
+      "term": "Мокрае лушчэнне",
+      "translatedFrom": {
+        "term": "89f8aef67ee8"
+      }
+    },
+    {
+      "id": "first-crack",
+      "term": "Першы крэк",
+      "translatedFrom": {
+        "term": "37d411818aae"
+      }
+    },
+    {
+      "id": "roast-level",
+      "term": "Ступень абсмажвання",
+      "translatedFrom": {
+        "term": "64c774b0ca36"
+      }
+    },
+    {
+      "id": "second-crack",
+      "term": "Другі крэк",
+      "translatedFrom": {
+        "term": "f261a8410682"
+      }
+    },
+    {
+      "id": "development",
+      "term": "Час развіцця",
+      "translatedFrom": {
+        "term": "760c766a9aae"
+      }
+    },
+    {
+      "id": "roast-date",
+      "term": "Дата абсмажвання",
+      "translatedFrom": {
+        "term": "b3dcd8b9aaf5"
+      }
+    },
+    {
+      "id": "degassing",
+      "term": "Дэгазацыя",
+      "translatedFrom": {
+        "term": "10a2c3dfa2f2"
+      }
+    },
+    {
+      "id": "co2",
+      "term": "CO₂",
+      "translatedFrom": {
+        "term": "9049b29a14ae"
+      }
+    },
+    {
+      "id": "staling",
+      "term": "Страта свежасці",
+      "translatedFrom": {
+        "term": "482d2ab7e41a"
+      }
+    },
+    {
+      "id": "bloom",
+      "term": "Блум",
+      "translatedFrom": {
+        "term": "fe689170440f"
+      }
+    },
+    {
+      "id": "brew-ratio",
+      "term": "Прапорцыя заварвання",
+      "translatedFrom": {
+        "term": "a1c0f1442522"
+      }
+    },
+    {
+      "id": "extraction",
+      "term": "Экстракцыя",
+      "translatedFrom": {
+        "term": "3ded2af71d1e"
+      }
+    },
+    {
+      "id": "tds",
+      "term": "TDS",
+      "translatedFrom": {
+        "term": "3777b69e21b3"
+      }
+    },
+    {
+      "id": "pour-over",
+      "term": "Пуровер",
+      "translatedFrom": {
+        "term": "f9b4f76b1542"
+      }
+    },
+    {
+      "id": "immersion",
+      "term": "Імерсія",
+      "translatedFrom": {
+        "term": "6e0fe50a1288"
+      }
+    },
+    {
+      "id": "cold-brew",
+      "term": "Халоднае заварванне",
+      "translatedFrom": {
+        "term": "94fab6ba1b05"
+      }
+    },
+    {
+      "id": "espresso",
+      "term": "Эспрэса",
+      "translatedFrom": {
+        "term": "e25dc4762c33"
+      }
+    },
+    {
+      "id": "dialing-in",
+      "term": "Настройка памолу",
+      "translatedFrom": {
+        "term": "f062df38e8eb"
+      }
+    },
+    {
+      "id": "crema",
+      "term": "Крэма",
+      "translatedFrom": {
+        "term": "6412f351a2cf"
+      }
+    },
+    {
+      "id": "portafilter",
+      "term": "Партафільтр",
+      "translatedFrom": {
+        "term": "9e4158aa6d98"
+      }
+    },
+    {
+      "id": "cortado",
+      "term": "Картада",
+      "translatedFrom": {
+        "term": "2ce96939a5a9"
+      }
+    },
+    {
+      "id": "channeling",
+      "term": "Утварэнне каналаў",
+      "translatedFrom": {
+        "term": "38ffcb0359f8"
+      }
+    },
+    {
+      "id": "tamp",
+      "term": "Утрамбоўка",
+      "translatedFrom": {
+        "term": "1bd3f9602d9e"
+      }
+    },
+    {
+      "id": "acidity",
+      "term": "Кіслотнасць",
+      "translatedFrom": {
+        "term": "32857e06215e"
+      }
+    },
+    {
+      "id": "body",
+      "term": "Цела",
+      "translatedFrom": {
+        "term": "6ccaa6415b5e"
+      }
+    },
+    {
+      "id": "mouthfeel",
+      "term": "Адчуванне ў роце",
+      "translatedFrom": {
+        "term": "50c557a0f9f4"
+      }
+    },
+    {
+      "id": "finish",
+      "term": "Паслясмак",
+      "translatedFrom": {
+        "term": "a6c7a84baa67"
+      }
+    },
+    {
+      "id": "balance",
+      "term": "Баланс",
+      "translatedFrom": {
+        "term": "d05e07b7c14e"
+      }
+    },
+    {
+      "id": "cupping",
+      "term": "Капінг",
+      "translatedFrom": {
+        "term": "68ea547c3eb1"
+      }
+    },
+    {
+      "id": "burr-grinder",
+      "term": "Жорнавая кавамолка",
+      "translatedFrom": {
+        "term": "71e02a05676b"
+      }
+    },
+    {
+      "id": "gooseneck",
+      "term": "Чайнік з тонкім носікам",
+      "translatedFrom": {
+        "term": "03b7db32bf73"
+      }
+    },
+    {
+      "id": "aeropress",
+      "term": "AeroPress",
+      "translatedFrom": {
+        "term": "a35544c59ead"
+      }
+    },
+    {
+      "id": "chemex",
+      "term": "Chemex",
+      "translatedFrom": {
+        "term": "908dae92f85a"
+      }
+    },
+    {
+      "id": "v60",
+      "term": "V60",
+      "translatedFrom": {
+        "term": "78ecc72d9552"
+      }
+    },
+    {
+      "id": "french-press",
+      "term": "Французскі прэс",
+      "translatedFrom": {
+        "term": "e4c9f37d746e"
+      }
+    },
+    {
+      "id": "scale",
+      "term": "Вагі",
+      "translatedFrom": {
+        "term": "f102986b39ef"
+      }
+    },
+    {
+      "id": "grind-size",
+      "term": "Памер памолу",
+      "translatedFrom": {
+        "term": "49e476fdb8f5"
+      }
+    },
+    {
+      "id": "fines",
+      "term": "Дробныя часціцы",
+      "translatedFrom": {
+        "term": "e6734cfcd5a8"
+      }
+    },
+    {
+      "id": "single-origin",
+      "term": "Адзінае паходжанне",
+      "translatedFrom": {
+        "term": "820116cddb0f"
+      }
+    },
+    {
+      "id": "fair-trade",
+      "term": "Сумленны гандаль",
+      "translatedFrom": {
+        "term": "f4f8259f9d08"
+      }
+    },
+    {
+      "id": "direct-trade",
+      "term": "Прамы гандаль",
+      "translatedFrom": {
+        "term": "264dfc898519"
+      }
+    },
+    {
+      "id": "traceability",
+      "term": "Прасочвальнасць",
+      "translatedFrom": {
+        "term": "a14559df36aa"
+      }
+    },
+    {
+      "id": "sca",
+      "term": "SCA",
+      "translatedFrom": {
+        "term": "47f6e4002b7c"
+      }
+    },
+    {
+      "id": "origin-boards",
+      "term": "Нацыянальныя кававыя саветы",
+      "translatedFrom": {
+        "term": "492b268401c8"
+      }
+    },
+    {
+      "id": "specialty",
+      "term": "Спешалці-кава",
+      "translatedFrom": {
+        "term": "09f1f7f97f69"
+      }
+    }
+  ]
+}
