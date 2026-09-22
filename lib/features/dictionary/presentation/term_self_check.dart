@@ -182,14 +182,11 @@ class _Explanation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (chosen == null) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.sm),
-      child: AnswerFeedback(
-        verdict: wasCorrect ? _correct : notQuiteVerdict,
-        outcome: wasCorrect ? Verdict.right : Verdict.wrong,
-        explanation: text,
-        placement: VerdictPlacement.reference,
-      ),
+    return AnswerFeedback(
+      verdict: wasCorrect ? _correct : notQuiteVerdict,
+      outcome: wasCorrect ? Verdict.right : Verdict.wrong,
+      explanation: text,
+      placement: VerdictPlacement.reference,
     );
   }
 }

@@ -114,16 +114,19 @@ class _SequenceCardViewState extends State<SequenceCardView> {
       children: [
         Text(widget.prompt, style: AppText.title(mood: mood)),
         const SizedBox(height: AppSpacing.md),
-        for (var index = 0; index < widget.items.length; index++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: _step(mood, index),
-          ),
-        if (_allPlaced && !_submitted)
+        // Between the steps and not under the last, as `choice_list.dart`
+        // says: a trailing gap would stack on the verdict block or the button.
+        for (var index = 0; index < widget.items.length; index++) ...[
+          if (index > 0) const SizedBox(height: AppSpacing.sm),
+          _step(mood, index),
+        ],
+        if (_allPlaced && !_submitted) ...[
+          const SizedBox(height: AppSpacing.xs),
           Align(
             alignment: Alignment.centerRight,
             child: LinkButton(label: _resetLabel, onPressed: _reset),
           ),
+        ],
         if (_submitted) ..._verdict(mood),
       ],
     );

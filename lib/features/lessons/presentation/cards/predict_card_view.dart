@@ -72,6 +72,7 @@ class _PredictCardViewState extends State<PredictCardView> {
       latched: latched,
       onContinue: widget.onContinue,
       continueLabel: latched ? AppLabels.findOut : AppLabels.makeAGuess,
+      buttonGap: OffTokens.predictButtonGap.value,
       children: [
         Semantics(
           header: true,
@@ -107,7 +108,6 @@ class _PredictCardViewState extends State<PredictCardView> {
           onChoose: _guess,
         ),
         if (_selectedIndex case final chosen?) ...[
-          const SizedBox(height: AppSpacing.md),
           AnswerFeedback(
             verdict: 'Your guess · ${widget.options[chosen]}',
             outcome: Verdict.held,
