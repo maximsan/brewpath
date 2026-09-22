@@ -62,7 +62,7 @@
     },
     {
       "id": "heirloom",
-      "term": "Мясцовыя гатункі",
+      "term": "Мясцовы гатунак",
       "translatedFrom": {
         "term": "2de96f523aaf"
       }
@@ -76,7 +76,7 @@
     },
     {
       "id": "peaberry",
-      "term": "Пібэры",
+      "term": "Піберы",
       "translatedFrom": {
         "term": "35a1365f3c7e"
       }
@@ -181,7 +181,7 @@
     },
     {
       "id": "swiss-water",
-      "term": "Працэс Swiss Water",
+      "term": "Апрацоўка Swiss Water",
       "translatedFrom": {
         "term": "2abe241f26ea"
       }
@@ -321,7 +321,7 @@
     },
     {
       "id": "dialing-in",
-      "term": "Настройка памолу",
+      "term": "Наладка памолу",
       "translatedFrom": {
         "term": "f062df38e8eb"
       }
@@ -370,7 +370,7 @@
     },
     {
       "id": "body",
-      "term": "Цела",
+      "term": "Шчыльнасць",
       "translatedFrom": {
         "term": "6ccaa6415b5e"
       }
@@ -412,7 +412,7 @@
     },
     {
       "id": "gooseneck",
-      "term": "Чайнік з тонкім носікам",
+      "term": "Чайнік з выгнутым носікам",
       "translatedFrom": {
         "term": "03b7db32bf73"
       }
@@ -475,7 +475,7 @@
     },
     {
       "id": "fair-trade",
-      "term": "Сумленны гандаль",
+      "term": "Справядлівы гандаль",
       "translatedFrom": {
         "term": "f4f8259f9d08"
       }
