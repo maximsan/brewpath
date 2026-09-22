@@ -107,9 +107,17 @@ You can always edit this file by hand instead — the helpers just save effort.
   used to fall back to Dark Roast when the theme carried no mood, so a widget
   test or a throwaway walk that pumped a bare `MaterialApp` painted dark tokens
   on Material's light page and nothing said so — two review screenshots of the
-  swipe surfaces were read as a broken theme when only the harness was. The
-  accessor now throws, naming `AppTheme.cupping` and `AppTheme.darkRoast` as
-  the way in; the app itself always mounts under one of them.
+  swipe surfaces were read as a broken theme when only the harness was. In a
+  debug build the accessor now fails, naming `AppTheme.cupping` and
+  `AppTheme.darkRoast` as the way in; a release build takes the mood of the
+  theme's own brightness, so even the fallback agrees with the page. The app
+  itself always mounts under one of the two themes.
+
+- **A spent free day meets the paywall before the replay question.** Tapping
+  a finished lesson once the day's free activities are used up used to raise
+  the *review this lesson?* sheet first and the paywall only after a confirm.
+  The paywall now comes first, as the design's course gate does: a learner
+  who cannot play today is told so rather than asked and then refused.
 
 - **A selected pick card is a double stroke, not a filled dot.** The card drew
   a ring with a dot in it, which is the one thing the design's selection rule
@@ -173,11 +181,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The card-kind help can be translated at all.** A language folder lands on a
   bank entry by entry by id, and that was the one bank whose entries had none.
 
+- **A search from the dictionary index shows the filter once it finds
+  something.** *All / Learned / To learn* appeared only inside a category;
+  typing in the search box on the index gave results with no way to sort
+  them. The control now appears over any search that found terms, on the
+  index as well as inside a category, and stays while a chosen filter empties
+  the list so there is always a way back to *All*. A search that finds
+  nothing has nothing to sort and shows none.
+
 - **A search that finds nothing now says what it looked for.** The dictionary
   read *No terms match that search.* whatever was typed; it now quotes the
-  query back and suggests a broader word or the categories, and every search
-  is headed with its result count — `0 RESULTS`, `1 RESULT`, `12 RESULTS` —
-  as the design draws it. The Saved shelf's empty state takes the design's own
+  query back and suggests a broader word or the categories, and a search that
+  finds something is headed with its count — `1 RESULT`, `12 RESULTS` — as
+  the design draws it. One that finds nothing shows the line alone: no count
+  to say the same thing twice, and no filter with nothing to sort. The Saved shelf's empty state takes the design's own
   measurements too: a softer bookmark, more room above it, and a line that
   wraps where it was drawn to
   ([#572](https://github.com/maximsan/brewpath/issues/572)).

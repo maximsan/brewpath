@@ -1,13 +1,8 @@
 /// Every way a lesson can be opened, named once.
 ///
-/// Four call sites used to assemble these URLs by hand — path segments spelled
-/// out, mode flags appended as query strings. A route rename compiles perfectly
-/// against a string literal and fails at the tap, which is exactly the failure
-/// `AppRoutes` exists to make impossible.
-///
-/// No destination below carries a mode. What a finished run records is derived
-/// from the progress store, so the only thing a lesson URL has to say is which
-/// lesson — and the graded pair the completion screen renders.
+/// A route rename compiles perfectly against a hand-spelled path and fails at
+/// the tap, which `AppRoutes` exists to make impossible. No destination carries
+/// a mode: what a finished run records is derived from the progress store.
 library;
 
 import 'package:brew_path/core/constants/app_routes.dart';
@@ -43,11 +38,8 @@ class RouteDestination {
   /// Whether following this begins a **full learning/practice activity** — one
   /// of the two a free local day holds (§8, #216).
   ///
-  /// It rides on the destination because the two screens that navigate to a
-  /// destination they were *handed* — Keep Sharp's card and a lesson ending —
-  /// cannot otherwise tell a replay from the Path tab. Deriving it from the
-  /// route name instead would put that knowledge in a second place, keyed on
-  /// something a rename changes.
+  /// On the destination, because a screen handed one — Keep Sharp's card, a
+  /// lesson ending — cannot otherwise tell a replay from the Path tab.
   final bool startsActivity;
 
   @override
@@ -102,22 +94,12 @@ RouteDestination lessonCompletion(
   queryParams: {'correct': '$correct', 'total': '$total'},
 );
 
-/// The module ending — **the one ending a module's last lesson plays**.
+/// The module ending — **the one ending a module's last lesson plays** (#458),
+/// so it also carries what that lesson's own ending would have reported.
 ///
-/// A lesson that closes its module comes straight here and plays no lesson
-/// ending of its own (#458). So this route also carries what that ending would
-/// have reported, because nothing else will say it.
-///
-/// [runLessonId] names the lesson that closed the module, which is where the
-/// screen reads the points it paid and the collectible it handed over.
-/// [freezeEarned] cannot be re-derived at all — it is a transition, true only
-/// on the run that crossed it. [fromStage] and [toStage] travel rather than
-/// being recomputed, so the tree the learner sees and the tree the run wrote
-/// can never disagree.
-///
-/// Every one is optional: opened without them — a deep link, a review — the
-/// screen simply shows the module and its reward, with nothing claimed about a
-/// run that did not happen.
+/// [runLessonId] is where the points and the collectible are read from;
+/// [freezeEarned], [fromStage] and [toStage] travel because they cannot be
+/// re-derived. All optional: a deep link shows the module with nothing claimed.
 RouteDestination moduleSummary(
   String moduleId, {
   String? runLessonId,
@@ -156,10 +138,7 @@ extension GoToDestination on BuildContext {
   ///
   /// **Not for a destination that starts an activity.** Those go through
   /// `BuildContext.goToActivity`, which asks the free day's allowance first
-  /// (ADR-0020). The assert catches a new call site that reached for the
-  /// obvious method: it fires in debug and in every test, where a leak is
-  /// cheap to find. It is a backstop, not a wall — the two methods below are
-  /// public and assert nothing, because the guard itself has to call them.
+  /// (ADR-0020); the assert is a backstop that fires in debug and in tests.
   void goTo(RouteDestination destination) {
     assert(
       !destination.startsActivity,
@@ -175,11 +154,8 @@ extension GoToDestination on BuildContext {
   /// Deliberately unpleasant to reach for: the one caller is
   /// `BuildContext.goToActivity`, and a name this specific cannot be typed by
   /// accident the way [goTo] can.
-  void goToAfterAllowance(RouteDestination destination) => goNamed(
-    destination.name,
-    pathParameters: destination.pathParams,
-    queryParameters: destination.queryParams,
-  );
+  void goToAfterAllowance(RouteDestination destination) =>
+      GoRouter.of(this).goToAfterAllowance(destination);
 
   /// Pushes [destination] for a caller that has already asked the allowance —
   /// the one caller being `BuildContext.pushActivity`.
@@ -187,6 +163,22 @@ extension GoToDestination on BuildContext {
   /// Pushed rather than gone to where closing the surface has to return the
   /// learner to whichever screen opened it — the drills, which are reached
   /// from four places each.
+  Future<void> pushAfterAllowance(RouteDestination destination) =>
+      GoRouter.of(this).pushAfterAllowance(destination);
+}
+
+/// The same two moves on a router captured **before** an async gap, for a
+/// caller whose own context may be unmounted by the time the answer lands —
+/// a row rebuilt under a sheet still owes the run it was tapped for.
+extension RouterToDestination on GoRouter {
+  /// Goes to [destination]; the caller has already asked the allowance.
+  void goToAfterAllowance(RouteDestination destination) => goNamed(
+    destination.name,
+    pathParameters: destination.pathParams,
+    queryParameters: destination.queryParams,
+  );
+
+  /// Pushes [destination] under the same condition.
   Future<void> pushAfterAllowance(RouteDestination destination) => pushNamed(
     destination.name,
     pathParameters: destination.pathParams,

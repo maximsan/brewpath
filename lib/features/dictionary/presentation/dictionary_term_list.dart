@@ -104,7 +104,14 @@ class DictionaryTermList extends ConsumerWidget {
           ),
         for (final entry in groups.entries) ...[
           if (grouped) ...[
-            SectionHeader(entry.key.label),
+            // At the gutter like every line under it; the header carries no
+            // inset of its own, and unpadded it sat flush to the screen edge.
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.gutter,
+              ),
+              child: SectionHeader(entry.key.label),
+            ),
             _CategoryNote(category: entry.key),
           ],
           for (final term in entry.value)

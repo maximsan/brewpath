@@ -18,8 +18,9 @@
 **Mount under an app theme.** A widget test pumps
 `MaterialApp(theme: AppTheme.cupping, …)` or `AppTheme.darkRoast`, never a bare
 `MaterialApp`: Flutter's default theme carries no mood, and `context.mood`
-throws rather than guess, because the guess it used to make painted Dark Roast
-tokens on a light Material page — a screen in both moods at once.
+fails a debug build rather than guess, because the guess it used to make
+painted Dark Roast tokens on a light Material page — a screen in both moods
+at once. A release build falls back to the mood of the theme's own brightness.
 
 ---
 
