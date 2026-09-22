@@ -18,7 +18,6 @@ import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -72,9 +71,9 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 // Below the entries for Learn's reason: the greeting carries
                 // a name the learner typed, so its width is theirs to set.
-                TabLargeTitle(
+                const TabLargeTitle(
                   AppRoutes.profile,
-                  topGap: OffTokens.tabTitleClearOfEntries.value,
+                  placement: TabTitlePlacement.belowEntries,
                 ),
                 const SizedBox(height: _headlineGap),
                 treeStage.when(

@@ -95,6 +95,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   the close control and the clock first
   ([#583](https://github.com/maximsan/brewpath/issues/583)).
 
+- **The Path title opens at the top of the tab, beside the Saved and
+  Dictionary buttons.** It used to start 64 down so it cleared them; it now
+  starts at the design's 24 and reserves their width on its right, so a long
+  course name wraps into what is left instead of running under them. Learn and
+  Profile still open below the buttons — a date and a typed name have no
+  reserved width to wrap into
+  ([#584](https://github.com/maximsan/brewpath/issues/584)).
+
 - **A screen mounted without the app's theme now fails at once.** `context.mood`
   used to fall back to Dark Roast when the theme carried no mood, so a widget
   test or a throwaway walk that pumped a bare `MaterialApp` painted dark tokens

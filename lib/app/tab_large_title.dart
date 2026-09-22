@@ -1,40 +1,71 @@
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/widgets/balanced_text.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+/// Where a tab root's large title sits against the entries floating over it.
+///
+/// One value rather than a gap and an inset passed separately: which of the
+/// three a tab wants is a fact about its title, and no call site can now ask
+/// for a combination the design does not draw.
+enum TabTitlePlacement {
+  /// The whole width to itself, at the design's 24. Cards.
+  atTop(),
+
+  /// Level with the entries at the design's 24, reserving their width on the
+  /// right so a long title wraps into what is left rather than under them.
+  besideEntries(reservesEntries: true),
+
+  /// Below the entries, for a title whose width is not the app's to predict:
+  /// Learn's date and Profile's typed name.
+  belowEntries(gap: OffTokens.tabTitleClearOfEntries);
+
+  const TabTitlePlacement({
+    OffToken<double>? gap,
+    this.reservesEntries = false,
+  }) : _gap = gap;
+
+  final OffToken<double>? _gap;
+
+  /// Whether the title stops short of the entries and wraps balanced.
+  final bool reservesEntries;
+
+  /// How far below the status bar the title opens.
+  double get topGap => _gap?.value ?? AppSpacing.lg;
+
+  /// How much room the title leaves on its right.
+  double get endInset =>
+      reservesEntries ? OffTokens.tabTitleBesideEntries.value : 0;
+}
+
 /// The large title a tab root carries at the top of its own scroll.
 ///
-/// The design pairs it with a header that is invisible at rest: the screen is
-/// titled by the page while the page is at the top, and by the bar once the
-/// page has scrolled under it. The two halves are the same pair, so this reads
-/// the tab heading the shared header reads rather than restating the words —
-/// which is how the Cards tab can say `Collection` again without saying it
-/// twice (#396 dropped it when the bar drew a title at rest).
-///
-/// **It carries the status-bar inset**, because the header no longer can: the
-/// bar floats over the tab now instead of standing above it, so nothing else
-/// in a tab root is above the content to make room. Every tab root opens with
-/// this, which is what keeps the rule in one place.
+/// It reads the heading the shared header reads, so the two halves of the
+/// design's pair cannot disagree about what a screen is called (#396), and it
+/// carries the status-bar inset, because the bar floats over the tab now and
+/// nothing else in a tab root is above the content to make room (#441).
 class TabLargeTitle extends ConsumerWidget {
-  /// Creates the large title for the tab root at [route], opening [topGap]
-  /// below the status bar.
-  const TabLargeTitle(this.route, {this.topGap = AppSpacing.lg, super.key});
+  /// Creates the large title for the tab root at [route], laid out where
+  /// [placement] puts it against the header's entries.
+  const TabLargeTitle(
+    this.route, {
+    this.placement = TabTitlePlacement.atTop,
+    super.key,
+  });
 
   /// The tab root this titles. A route rather than a path string, so a tab can
   /// only be named by the catalogue that defines it.
   final AppRoute route;
 
-  /// How far below the status bar the title sits. Cards opens at the design's
-  /// 24; the three whose titles are not fixed strings open below the header's
-  /// entries instead (`OffTokens.tabTitleClearOfEntries`). The tab states its
-  /// own, because which of the two it wants is a fact about its title.
-  final double topGap;
+  /// Where this tab's title sits against the floating entries.
+  final TabTitlePlacement placement;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -45,13 +76,18 @@ class TabLargeTitle extends ConsumerWidget {
     );
     if (tab == null) return const SizedBox.shrink();
 
+    final style = AppText.display(mood: context.mood);
+
     return Padding(
-      padding: EdgeInsets.only(
-        top: MediaQuery.paddingOf(context).top + topGap,
+      padding: EdgeInsetsDirectional.only(
+        top: MediaQuery.paddingOf(context).top + placement.topGap,
+        end: placement.endInset,
       ),
       child: Semantics(
         header: true,
-        child: Text(tab.title, style: AppText.display(mood: context.mood)),
+        child: placement.reservesEntries
+            ? BalancedText(tab.title, style: style)
+            : Text(tab.title, style: style),
       ),
     );
   }
