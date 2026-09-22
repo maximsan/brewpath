@@ -7,6 +7,7 @@ import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/domain/support_links.dart';
+import 'package:brew_path/features/profile/presentation/settings/about_signature.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/services/links/link_provider.dart';
@@ -29,7 +30,6 @@ class AboutScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mood = context.mood;
-    final version = ref.watch(appVersionProvider);
 
     return SettingsSubScreen(
       title: SettingsCopy.aboutTitle,
@@ -54,8 +54,8 @@ class AboutScreen extends ConsumerWidget {
           children: [_FinePrintRows()],
         ),
         const _SaySomething(),
-        const SizedBox(height: AppSpacing.lg),
-        SettingsVersionLine(version: version.asData?.value),
+        const SizedBox(height: AppSpacing.xl),
+        const AboutSignature(),
       ],
     );
   }
@@ -124,28 +124,39 @@ class _LicensesRow extends ConsumerWidget {
   }
 }
 
-/// The design's `SAY SOMETHING` group, absent while there is no mailbox.
+/// The design's `SAY SOMETHING` group — each row behind the one thing it
+/// needs, and the group absent while neither of them exists.
 ///
-/// *Say hello* reads the same constant as Help's contact rows, so filling it
-/// in lights both at once (#531).
+/// *Rate BrewPath* waits on an App Store listing and *Say hello* on the
+/// mailbox (#531). Setting either constant draws its row with no other change,
+/// so neither is a row the app has to grow later.
 class _SaySomething extends ConsumerWidget {
   const _SaySomething();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final review = ref.watch(appStoreReviewProvider);
     final mailbox = ref.watch(supportMailboxProvider);
-    if (mailbox == null) return const SizedBox.shrink();
+    if (review == null && mailbox == null) return const SizedBox.shrink();
+
+    final open = ref.read(linkOpenerProvider).open;
 
     return SettingsSection(
       label: SettingsCopy.saySomethingSection,
       children: [
-        SettingsNavRow(
-          label: SettingsCopy.sayHelloRow,
-          value: mailbox,
-          isExternal: true,
-          onTap: () =>
-              ref.read(linkOpenerProvider).open(supportMailto(mailbox)),
-        ),
+        if (review case final url?)
+          SettingsNavRow(
+            label: SettingsCopy.rateRow,
+            isExternal: true,
+            onTap: () => open(url),
+          ),
+        if (mailbox case final address?)
+          SettingsNavRow(
+            label: SettingsCopy.sayHelloRow,
+            value: address,
+            isExternal: true,
+            onTap: () => open(supportMailto(address)),
+          ),
       ],
     );
   }

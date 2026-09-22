@@ -205,3 +205,52 @@ final class AppVersionShortProvider
 }
 
 String _$appVersionShortHash() => r'c8b0082d7131d96888692811933d9281cc0fb459';
+
+/// The two numbers apart, which is how About's closing block prints them —
+/// `VERSION 0.1 · BUILD 240618`.
+
+@ProviderFor(appVersionParts)
+final appVersionPartsProvider = AppVersionPartsProvider._();
+
+/// The two numbers apart, which is how About's closing block prints them —
+/// `VERSION 0.1 · BUILD 240618`.
+
+final class AppVersionPartsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<({String build, String version})>,
+          ({String build, String version}),
+          FutureOr<({String build, String version})>
+        >
+    with
+        $FutureModifier<({String build, String version})>,
+        $FutureProvider<({String build, String version})> {
+  /// The two numbers apart, which is how About's closing block prints them —
+  /// `VERSION 0.1 · BUILD 240618`.
+  AppVersionPartsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appVersionPartsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appVersionPartsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<({String build, String version})> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<({String build, String version})> create(Ref ref) {
+    return appVersionParts(ref);
+  }
+}
+
+String _$appVersionPartsHash() => r'c93f75f6a27328a6157dfde733a2fe27c9d9dc7b';

@@ -49,9 +49,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   entries cite, named once and in alphabetical order — so a source added to a
   term is credited there with nothing else to author. *Open-source licenses*
   opens Flutter's generated licence page, which lists what the build actually
-  ships rather than a list kept by hand. *Say hello* stands beside them once
-  there is a mailbox to write to, and *Rate BrewPath* stays absent until there
-  is a store listing to rate
+  ships rather than a list kept by hand. *Say hello* and *Rate BrewPath* stand
+  beside them, each drawn once the one thing it needs exists — a mailbox, and
+  an App Store listing — so neither is a row the app has to grow later
   ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 - **A language folder can be drafted from the English master.**
@@ -110,6 +110,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   Profile still open below the buttons — a date and a typed name have no
   reserved width to wrap into
   ([#584](https://github.com/maximsan/brewpath/issues/584)).
+
+- **Settings rows are grouped again, and their rules stop where the words
+  do.** Every group opens 24 above its heading rather than 16, so the five
+  screens behind Settings read as groups instead of one long run; and a row's
+  hairline now runs the width of the page's column instead of edge to edge,
+  which is where the design draws it. About closes on two lines — the version
+  over the build, then its signature — where Settings keeps its one
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 - **A settings row that leaves the app now says so before it is pressed.** The
   design's outward arrow stands in place of the chevron on About's and Help's

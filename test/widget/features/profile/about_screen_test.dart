@@ -5,6 +5,7 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/profile/domain/support_links.dart';
 import 'package:brew_path/features/profile/presentation/settings/about_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/account_sync_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
@@ -51,6 +52,7 @@ void main() {
     Uri? privacy,
     Uri? terms,
     String? mailbox,
+    String? appStoreId,
   }) async {
     tester.view.physicalSize = const Size(400, 1400);
     tester.view.devicePixelRatio = 1.0;
@@ -65,6 +67,8 @@ void main() {
           if (terms != null) termsPageProvider.overrideWithValue(terms),
           if (mailbox != null)
             supportMailboxProvider.overrideWithValue(mailbox),
+          if (appStoreId != null)
+            appStoreReviewProvider.overrideWithValue(reviewPage(appStoreId)),
         ],
         child: MaterialApp(theme: AppTheme.cupping, home: screen),
       ),
@@ -197,11 +201,39 @@ void main() {
     expect(opener.opened, [Uri.parse('mailto:hi@brewpath.app')]);
   });
 
-  testWidgets('never draws Rate BrewPath, which has nothing to rate', (
+  testWidgets('draws no Rate BrewPath while there is no listing to rate', (
     tester,
   ) async {
+    // The row is absent, not inert: with no App Store id there is nowhere
+    // for it to go (#532, ruling 4).
     await pump(tester, const AboutScreen(), mailbox: 'hi@brewpath.app');
 
-    expect(find.textContaining('Rate'), findsNothing);
+    expect(SupportLinks.appStoreId, isNull, reason: 'no listing exists yet');
+    expect(settingsRow(SettingsCopy.rateRow), findsNothing);
+    expect(settingsSection(SettingsCopy.saySomethingSection), findsOneWidget);
+  });
+
+  testWidgets('rates BrewPath once a listing exists, above Say hello', (
+    tester,
+  ) async {
+    await pump(tester, const AboutScreen(), appStoreId: '6448123456');
+
+    expect(settingsRow(SettingsCopy.rateRow), findsOneWidget);
+
+    await tester.tap(settingsRow(SettingsCopy.rateRow));
+    expect(opener.opened, [reviewPage('6448123456')]);
+  });
+
+  testWidgets('closes on the build as well as the version, over the '
+      'signature', (tester) async {
+    // The design writes About's close as two lines where Settings writes
+    // one: the build number is for whoever is reading a crash report.
+    await pump(tester, const AboutScreen());
+
+    expect(find.text('VERSION 1.0.0 · BUILD 1'), findsOneWidget);
+    expect(
+      find.text(SettingsCopy.aboutSignature.toUpperCase()),
+      findsOneWidget,
+    );
   });
 }

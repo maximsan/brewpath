@@ -93,9 +93,12 @@ class SettingsSection extends StatelessWidget {
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Padding(
+        // The design opens every settings group 26 above its heading and 4
+        // below it; the gap above was 16, which read as one run of rows
+        // rather than as groups.
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.gutter,
-          AppSpacing.md,
+          AppSpacing.lg,
           AppSpacing.gutter,
           AppSpacing.xxs,
         ),

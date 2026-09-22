@@ -94,10 +94,7 @@ class SettingsNavRow extends StatelessWidget {
     final action = _action;
 
     final row = Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.gutter,
-        vertical: _verticalPadding,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: _verticalPadding),
       child: Row(
         children: [
           Expanded(
@@ -117,15 +114,21 @@ class SettingsNavRow extends StatelessWidget {
       // the app is a link, which is what the outward arrow beside it says.
       button: acts && !isExternal,
       link: acts && isExternal,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: mood.rule)),
-        ),
-        child: Opacity(
-          opacity: isDimmed ? _dimmedOpacity : 1,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: minHeight),
-            child: action == null ? row : InkWell(onTap: action, child: row),
+      // The gutter sits outside the rule, because the design's row lives
+      // inside the page's `px-24` column: the hairline stops where the label
+      // starts rather than running the width of the screen.
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: mood.rule)),
+          ),
+          child: Opacity(
+            opacity: isDimmed ? _dimmedOpacity : 1,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: minHeight),
+              child: action == null ? row : InkWell(onTap: action, child: row),
+            ),
           ),
         ),
       ),

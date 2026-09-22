@@ -133,6 +133,15 @@ abstract final class SettingsCopy {
   /// About's row opening a blank message to the support mailbox (#531).
   static const sayHelloRow = 'Say hello';
 
+  /// About's row opening the App Store listing's review sheet (#532).
+  static const rateRow = 'Rate BrewPath';
+
+  /// What closes About, under the version and build numbers.
+  ///
+  /// Settings closes on [versionTagline] instead: one line there, two here,
+  /// which is how the design draws each.
+  static const aboutSignature = 'Brewed slowly, like the good stuff';
+
   /// Acknowledgements' title.
   static const acknowledgementsTitle = 'Acknowledgements';
 
