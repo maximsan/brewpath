@@ -580,9 +580,7 @@ abstract final class OffTokens {
   /// close control, the bookmark and the clock sit over the first line.
   static const OffToken<double> floatBarScrollFlag = OffToken(
     8,
-    reason:
-        'the two screens set `window.useScrollFlag(8, term && term.id)` and '
-        '`window.useScrollFlag(8, game && game.id)`',
+    reason: 'the two full-bleed screens set `window.useScrollFlag(8`',
   );
 
   /// The room over the dictionary's mono results count.
