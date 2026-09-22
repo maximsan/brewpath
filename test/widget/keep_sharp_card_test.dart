@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
@@ -75,7 +76,7 @@ Future<void> _pump(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [companionLinesProvider.overrideWith((ref) async => _lines)],
-      child: MaterialApp.router(routerConfig: router),
+      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
     ),
   );
   // Fixed pumps rather than pumpAndSettle: the acknowledged state's Roasty
@@ -145,6 +146,7 @@ void main() {
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
         child: MaterialApp(
+          theme: AppTheme.cupping,
           home: Scaffold(
             body: TodayCardWidget(today: null, keepSharp: _miniGames),
           ),
@@ -210,6 +212,7 @@ void main() {
         child: MediaQuery(
           data: const MediaQueryData(disableAnimations: true),
           child: MaterialApp(
+            theme: AppTheme.cupping,
             home: Scaffold(
               body: TodayCardWidget(
                 today: null,
@@ -292,6 +295,7 @@ void main() {
           textScaler: TextScaler.linear(_largeTextScale),
         ),
         child: MaterialApp(
+          theme: AppTheme.cupping,
           home: Scaffold(
             // Scrolls like the Learn screen does, so only a sideways
             // overflow can fail this.

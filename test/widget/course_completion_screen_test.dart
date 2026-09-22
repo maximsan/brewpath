@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/companion/application/companion_providers.dart';
@@ -93,7 +94,10 @@ Future<void> _pump(
       ],
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: router,
+        ),
       ),
     ),
   );

@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/application/companion_outfit.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/companion_outfit_scope.dart';
@@ -33,7 +34,10 @@ Widget _buriedRoasty() => const Padding(
 
 Future<void> _pump(WidgetTester tester, Widget child) async {
   await tester.pumpWidget(
-    Directionality(textDirection: TextDirection.ltr, child: child),
+    Theme(
+      data: AppTheme.cupping,
+      child: Directionality(textDirection: TextDirection.ltr, child: child),
+    ),
   );
   await tester.pump();
 }

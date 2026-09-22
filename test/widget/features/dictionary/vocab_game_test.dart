@@ -2,8 +2,10 @@
 // score writes down.
 import 'dart:async';
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/pick_card.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
@@ -143,7 +145,10 @@ Future<ProviderContainer> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: const MaterialApp(home: VocabGameScreen()),
+      child: MaterialApp(
+        theme: AppTheme.cupping,
+        home: const VocabGameScreen(),
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -244,7 +249,10 @@ void main() {
           overrides: [
             vocabPoolsProvider.overrideWith((ref) async => _pools()),
           ],
-          child: MaterialApp.router(routerConfig: router),
+          child: MaterialApp.router(
+            theme: AppTheme.cupping,
+            routerConfig: router,
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -514,6 +522,19 @@ void main() {
       expect(find.textContaining('NOT QUITE'), findsOneWidget);
       expect(find.text(VocabCopy.readEntry.toUpperCase()), findsNothing);
       expect(find.text(VocabCopy.readEntry), findsOneWidget);
+    });
+
+    testWidgets('the verdict stands where a vocab round does', (tester) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await answer(tester, correctly: true);
+
+      expect(
+        tester.widget<AnswerFeedback>(find.byType(AnswerFeedback)).placement,
+        VerdictPlacement.vocabRound,
+      );
     });
   });
 

@@ -138,11 +138,20 @@ abstract final class OffTokens {
     reason: 'the line under the count sets `marginTop: 2`',
   );
 
-  /// How far below the status bar the Path, Learn and Profile titles open,
-  /// clear of the header's entries; Cards keeps the design's 24.
+  /// How far below the status bar the Learn and Profile titles open, clear of
+  /// the header's entries; Path and Cards open at the design's 24.
   static const OffToken<double> tabTitleClearOfEntries = OffToken(
     64,
-    reason: 'the Path tab opens its scroll at `paddingTop: 64`',
+    reason:
+        "the 10 Sep drop moved Path to the design's `paddingTop: 24`; 64 is "
+        "the app's own, clearing the entries (#441)",
+  );
+
+  /// The room the Path title leaves on its right for the floating entries,
+  /// so a long one wraps beside them rather than running under them.
+  static const OffToken<double> tabTitleBesideEntries = OffToken(
+    120,
+    reason: 'the Path title reserves the entries with `paddingRight: 120`',
   );
 
   /// The gap the intro screens set between a block and the next one.
@@ -572,6 +581,60 @@ abstract final class OffTokens {
     reason: "the results count sets `margin: '18px 0 4px'`",
   );
 
+  /// The room a graded card leaves above its verdict block.
+  static const OffToken<double> verdictRoomOnCard = OffToken(
+    22,
+    reason: 'the verdict block defaults to `marginTop = 22`',
+  );
+
+  /// The room a mini-game leaves above its verdict block.
+  static const OffToken<double> verdictRoomInMiniGame = OffToken(
+    20,
+    reason: 'the bagpick and tastefix rounds set `marginTop={20}`',
+  );
+
+  /// The room above the recall card's payoff, over the rule it opens on.
+  static const OffToken<double> verdictRoomOnPayoff = OffToken(
+    18,
+    reason: 'the payoff sets `art={false} borderTop marginTop={18}`',
+  );
+
+  /// The gap between that rule and the payoff under it.
+  static const OffToken<double> verdictRuleGap = OffToken(
+    18,
+    reason: 'a ruled-off block sets `paddingTop: 18` under its rule',
+  );
+
+  /// The room a term entry's self-check leaves above its verdict block.
+  static const OffToken<double> verdictRoomInReference = OffToken(
+    14,
+    reason: "a term entry's check sets `size={48} marginTop={14}`",
+  );
+
+  /// The room a vocab round leaves above its verdict block.
+  static const OffToken<double> verdictRoomInVocabRound = OffToken(
+    18,
+    reason: 'a vocab round sets `size={48} marginTop={18}`',
+  );
+
+  /// The gap the predict card opens its button block on.
+  static const OffToken<double> predictButtonGap = OffToken(
+    30,
+    reason: "the predict card's button sets `paddingTop: 30`",
+  );
+
+  /// The gap the decision card opens its button block on.
+  static const OffToken<double> decisionButtonGap = OffToken(
+    30,
+    reason: "the decision card's button sets `paddingTop: 30`",
+  );
+
+  /// The gap the recall card opens its button block on.
+  static const OffToken<double> recallButtonGap = OffToken(
+    26,
+    reason: "the recall card's button sets `paddingTop: 26`",
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -591,6 +654,7 @@ abstract final class OffTokens {
     cardsFooterPadding,
     cardsFooterLineGap,
     tabTitleClearOfEntries,
+    tabTitleBesideEntries,
     introBlockGap,
     introSupportGap,
     ghostUnderPrimaryGap,
@@ -658,5 +722,14 @@ abstract final class OffTokens {
     savedEmptyLineWidth,
     emptyStateLeading,
     searchCountTop,
+    verdictRoomOnCard,
+    verdictRoomInMiniGame,
+    verdictRoomOnPayoff,
+    verdictRuleGap,
+    verdictRoomInReference,
+    verdictRoomInVocabRound,
+    predictButtonGap,
+    decisionButtonGap,
+    recallButtonGap,
   ];
 }

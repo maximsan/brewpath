@@ -1,13 +1,17 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
+import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
+import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
+import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
@@ -17,6 +21,8 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/verdict_room.dart';
 
 /// Counts what crossed the card boundary. The whole contract is here: success
 /// is reported at most once and only when earned, and continue is separate.
@@ -179,6 +185,7 @@ Widget _host(
   ValueChanged<HeldGuess>? onGuess,
 }) => ProviderScope(
   child: MaterialApp(
+    theme: AppTheme.darkRoast,
     home: Scaffold(
       body: SingleChildScrollView(
         child: contentCardView(
@@ -197,6 +204,42 @@ Future<void> _tapText(WidgetTester tester, String text) async {
   await tester.tap(find.text(text));
   await tester.pumpAndSettle();
 }
+
+/// Taps the last [text] on the card — the bagpick option, which the bag also
+/// names once it has been called.
+Future<void> _tapLastMatch(WidgetTester tester, String text) async {
+  await tester.tap(find.text(text).last);
+  await tester.pumpAndSettle();
+}
+
+/// The rendered distance from the foot of [above] to the top of the verdict
+/// block's own content, which is what a learner sees between the two.
+double _gapToVerdict(WidgetTester tester, Finder above) =>
+    tester
+        .getTopLeft(
+          find
+              .descendant(
+                of: find.byType(AnswerFeedback),
+                matching: find.byType(Row),
+              )
+              .first,
+        )
+        .dy -
+    tester.getBottomLeft(above).dy;
+
+/// The room the shell opens its button block on.
+double _buttonGap(WidgetTester tester) => tester
+    .widget<Padding>(
+      find
+          .ancestor(
+            of: find.byType(PrimaryButton),
+            matching: find.byType(Padding),
+          )
+          .first,
+    )
+    .padding
+    .resolve(TextDirection.ltr)
+    .top;
 
 /// Taps [text] on a card whose mascot keeps animating afterwards.
 ///
@@ -260,6 +303,147 @@ void main() {
           reason: '${entry.key} let the learner past an unanswered card',
         );
         expect(signals.solved, 0);
+      });
+    }
+  });
+
+  group('the room a card leaves above its verdict', () {
+    // Each host used to space the block itself and none of them landed on the
+    // design's value (#594); the block owns the room now, keyed by where it is
+    // standing, so what a host can still get wrong is the standing.
+    final hosts =
+        <
+          String,
+          (ContentCard, Future<void> Function(WidgetTester), VerdictPlacement)
+        >{
+          'mcq': (
+            _mcq,
+            (tester) => _tapText(tester, 'A seed'),
+            VerdictPlacement.card,
+          ),
+          'flavor': (
+            _flavor,
+            (tester) => _tapText(tester, 'Citrus'),
+            VerdictPlacement.card,
+          ),
+          'decision': (
+            _decision,
+            (tester) => _tapText(tester, 'Buy fresh'),
+            VerdictPlacement.conversational,
+          ),
+          'recall': (
+            _recall,
+            (tester) => _tapText(tester, 'The seed of a cherry'),
+            VerdictPlacement.conversational,
+          ),
+          'tastefix': (
+            _tastefix,
+            (tester) => _tapText(tester, 'Grind finer'),
+            VerdictPlacement.miniGame,
+          ),
+          'bagpick': (
+            _bagpick,
+            (tester) => _tapLastMatch(tester, 'Washed'),
+            VerdictPlacement.miniGame,
+          ),
+          'predict': (
+            _predict,
+            (tester) => _tapTextWhileAnimating(tester, 'Seed'),
+            VerdictPlacement.heldGuess,
+          ),
+        };
+
+    for (final entry in hosts.entries) {
+      final (card, answer, placement) = entry.value;
+
+      testWidgets('${entry.key} stands its block where the design does', (
+        tester,
+      ) async {
+        await tester.pumpWidget(_host(card, _Signals()));
+        await answer(tester);
+
+        final block = tester.widget<AnswerFeedback>(
+          find.byType(AnswerFeedback).first,
+        );
+        expect(block.placement, placement);
+        expect(roomAboveVerdict(tester), placement.room);
+      });
+    }
+  });
+
+  group('what the learner actually sees above the verdict', () {
+    // Measured from the last thing drawn above the block rather than from the
+    // list around it: a trailing gap inside the list sits inside the list's
+    // own box, so measuring the box would hide the stacking (#594).
+    final hosts =
+        <String, (ContentCard, Future<void> Function(WidgetTester), Finder)>{
+          'mcq': (
+            _mcq,
+            (tester) => _tapText(tester, 'A seed'),
+            find.byType(CardOptionTile).last,
+          ),
+          'multi': (
+            _multi,
+            (tester) async {
+              await _tapText(tester, 'Grind size');
+              await _tapText(tester, 'Check answers');
+            },
+            find.byType(CardOptionTile).last,
+          ),
+          'bagpick': (
+            _bagpick,
+            (tester) => _tapLastMatch(tester, 'Washed'),
+            find.byType(CardOptionTile).last,
+          ),
+          'concept': (
+            _concept,
+            (tester) async {
+              await _tapText(tester, 'skin');
+              await _tapText(tester, 'Check answers');
+            },
+            find.byType(ConceptFillBank),
+          ),
+          'predict': (
+            _predict,
+            (tester) => _tapTextWhileAnimating(tester, 'Seed'),
+            find.byType(PickTileRow),
+          ),
+        };
+
+    for (final entry in hosts.entries) {
+      final (card, answer, above) = entry.value;
+
+      testWidgets('${entry.key} leaves the design room under what it follows', (
+        tester,
+      ) async {
+        await tester.pumpWidget(_host(card, _Signals()));
+        await answer(tester);
+
+        final block = tester.widget<AnswerFeedback>(
+          find.byType(AnswerFeedback).first,
+        );
+        expect(_gapToVerdict(tester, above), block.placement.room);
+      });
+    }
+  });
+
+  group('the gap a card opens its button on', () {
+    // 32 on every kind but three, which the design closes tighter (#594).
+    final gaps = <String, (ContentCard, double)>{
+      'predict': (_predict, 30),
+      'decision': (_decision, 30),
+      'recall': (_recall, 26),
+      'mcq': (_mcq, 32),
+      'bagpick': (_bagpick, 32),
+    };
+
+    for (final entry in gaps.entries) {
+      final (card, gap) = entry.value;
+
+      testWidgets('${entry.key} pads its button by $gap', (tester) async {
+        await tester.pumpWidget(_host(card, _Signals()));
+
+        expect(_buttonGap(tester), gap);
       });
     }
   });

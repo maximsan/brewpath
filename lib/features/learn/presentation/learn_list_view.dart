@@ -83,11 +83,11 @@ class LearnListView extends ConsumerWidget {
       children: [
         // Below the header's entries, not beside them: the day's date is not
         // a fixed string, and the long ones reach across to where they float.
-        Padding(
+        const Padding(
           padding: _inGutter,
           child: TabLargeTitle(
             AppRoutes.learn,
-            topGap: OffTokens.tabTitleClearOfEntries.value,
+            placement: TabTitlePlacement.belowEntries,
           ),
         ),
         // The save beat leads the tab: someone returning after a miss is

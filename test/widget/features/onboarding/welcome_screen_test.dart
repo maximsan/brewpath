@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/seed_video_hero.dart';
@@ -16,6 +17,7 @@ Future<void> _pumpWelcome(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp.router(
+        theme: AppTheme.cupping,
         routerConfig: introRouter(initialLocation: '/welcome'),
       ),
     ),
