@@ -85,6 +85,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The floating top bar fades under its hairline, and two screens seal
+  sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
+  both endings now draws the same soft band below its edge that every other
+  top bar draws, so nothing is seen crossing a bare line — it composes the
+  shared chrome rather than painting its own. Term of the Day and the
+  mini-game intro take their chrome after 8 pixels instead of 40, because
+  those pages run to the top of the screen and a long one used to travel under
+  the close control and the clock first
+  ([#583](https://github.com/maximsan/brewpath/issues/583)).
+
 - **The Path title opens at the top of the tab, beside the Saved and
   Dictionary buttons.** It used to start 64 down so it cleared them; it now
   starts at the design's 24 and reserves their width on its right, so a long
