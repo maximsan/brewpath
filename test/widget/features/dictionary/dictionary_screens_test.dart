@@ -262,6 +262,23 @@ void main() {
       expect(find.byType(DictionarySearchCount), findsNothing);
     });
 
+    testWidgets('a search heads each run of rows at the gutter', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_wrap(const DictionaryHomeScreen()));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'arab');
+      await tester.pumpAndSettle();
+
+      // Seen on a simulator: the category header stood flush to the screen
+      // edge, left of the count and the rows under it.
+      expect(
+        tester.getTopLeft(find.text('BEANS AND BOTANY')).dx,
+        tester.getTopLeft(find.text(DictionarySearchCopy.count(1))).dx,
+      );
+    });
+
     testWidgets('the filter names its three states, without counts', (
       tester,
     ) async {
