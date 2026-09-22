@@ -1,11 +1,9 @@
 import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
-import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/profile/domain/support_links.dart';
 import 'package:brew_path/features/profile/presentation/settings/about_signature.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
@@ -16,13 +14,12 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// The app's own page: what it is, the fine print, and the way to write in.
 ///
-/// *Rate BrewPath* is not drawn. The design gives it a row, but there is no
-/// store listing to rate yet, and a row that looks live and does nothing is
-/// the failure #531 already recorded (#532).
+/// Every row here waits on something that must exist first — a hosted page, a
+/// mailbox, a store listing — and is absent until it does, because a row that
+/// looks live and does nothing is the failure #531 recorded.
 class AboutScreen extends ConsumerWidget {
   /// Creates the about screen.
   const AboutScreen({super.key});
@@ -61,10 +58,12 @@ class AboutScreen extends ConsumerWidget {
   }
 }
 
-/// The design's four fine-print rows, in its order.
+/// The design's fine-print rows: Privacy and Terms, each drawn only once its
+/// page exists (#448).
 ///
-/// Terms and Privacy leave the app and are each drawn only once their page
-/// exists (#448); the two below them are the app's own pages and always are.
+/// While neither does the group would be a heading over nothing, so it says
+/// what belongs there instead — the same line Account and sync gives its own
+/// unbuilt half.
 class _FinePrintRows extends ConsumerWidget {
   const _FinePrintRows();
 
@@ -89,37 +88,9 @@ class _FinePrintRows extends ConsumerWidget {
             isExternal: true,
             onTap: () => open(url),
           ),
-        SettingsNavRow(
-          label: SettingsCopy.acknowledgementsRow,
-          onTap: () =>
-              context.pushNamed(AppRoutes.settingsAcknowledgements.name),
-        ),
-        const _LicensesRow(),
+        if (privacy == null && terms == null)
+          const SettingsPlaceholder(SettingsCopy.aboutComing),
       ],
-    );
-  }
-}
-
-/// Flutter's own license page, which reads `LicenseRegistry`.
-///
-/// Every dependency registers its own licence there, so the page is generated
-/// from what the build actually ships and no list is written by hand.
-class _LicensesRow extends ConsumerWidget {
-  const _LicensesRow();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Watched, not read at the tap: a learner who reaches the row before
-    // `package_info` answers would otherwise open a page naming no build.
-    final version = ref.watch(appVersionProvider).asData?.value;
-
-    return SettingsNavRow(
-      label: SettingsCopy.licensesRow,
-      onTap: () => showLicensePage(
-        context: context,
-        applicationName: AppLabels.appName,
-        applicationVersion: version,
-      ),
     );
   }
 }

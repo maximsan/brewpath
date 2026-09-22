@@ -101,12 +101,6 @@ abstract class AppRoutes {
 
   /// Settings → `SUPPORT` → About.
   static const settingsAbout = AppRoute('settingsAbout', 'about');
-
-  /// Settings → About → `THE FINE PRINT` → Acknowledgements.
-  static const settingsAcknowledgements = AppRoute(
-    'settingsAcknowledgements',
-    'acknowledgements',
-  );
 }
 
 /// Opening a dictionary term, from wherever the learner found it.

@@ -124,12 +124,6 @@ abstract final class SettingsCopy {
   /// Section on About: the ways to say something back.
   static const saySomethingSection = 'Say something';
 
-  /// About's row into [acknowledgementsTitle].
-  static const acknowledgementsRow = 'Acknowledgements';
-
-  /// About's row into Flutter's generated license page.
-  static const licensesRow = 'Open-source licenses';
-
   /// About's row opening a blank message to the support mailbox (#531).
   static const sayHelloRow = 'Say hello';
 
@@ -142,26 +136,8 @@ abstract final class SettingsCopy {
   /// which is how the design draws each.
   static const aboutSignature = 'Brewed slowly, like the good stuff';
 
-  /// Acknowledgements' title.
-  static const acknowledgementsTitle = 'Acknowledgements';
-
-  /// What the Acknowledgements page opens on.
-  static const acknowledgementsBlurb =
-      'The works the dictionary draws on. Every entry names its own sources; '
-      'this is all of them, in one place.';
-
-  /// Section on Acknowledgements: the list itself.
-  static const sourcesSection = 'Sources';
-
-  /// What a screen reader says while the list is being gathered.
-  static const acknowledgementsLoadingLabel = 'Gathering the sources';
-
-  /// The line the list shows meanwhile — the bank is read off the bundle.
-  static const acknowledgementsGathering = 'Gathering…';
-
-  /// The line the list shows when the bank cannot be read.
-  static const acknowledgementsUnavailable =
-      'The sources could not be read on this build.';
+  /// What the fine print will hold, while neither legal page is hosted.
+  static const aboutComing = 'Privacy policy and terms of use.';
 
   /// What the unbuilt half of Account and sync will hold.
   static const cloudSyncComing =

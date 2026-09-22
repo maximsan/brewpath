@@ -144,26 +144,30 @@ void main() {
     );
   });
 
-  testWidgets("draws the app's own two fine-print rows whatever is hosted", (
-    tester,
-  ) async {
-    await pump(tester, const AboutScreen());
-
-    expect(settingsRow(SettingsCopy.acknowledgementsRow), findsOneWidget);
-    expect(settingsRow(SettingsCopy.licensesRow), findsOneWidget);
-  });
-
-  testWidgets('draws no legal row while neither page is hosted', (
-    tester,
-  ) async {
+  testWidgets('draws no legal row while neither page is hosted, and says '
+      'what belongs there', (tester) async {
     // #448 owns the two URLs; until they exist the rows are absent rather
-    // than drawn live and inert.
+    // than drawn live and inert — and the heading is not left over nothing.
     await pump(tester, const AboutScreen());
 
     expect(SupportLinks.terms, isNull, reason: '#448 has no URLs yet');
     expect(SupportLinks.privacy, isNull, reason: '#448 has no URLs yet');
     expect(settingsRow(SettingsCopy.termsRow), findsNothing);
     expect(settingsRow(SettingsCopy.privacyRow), findsNothing);
+    expect(find.text(SettingsCopy.aboutComing), findsOneWidget);
+  });
+
+  testWidgets('drops the placeholder once the legal pages are hosted', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const AboutScreen(),
+      privacy: Uri.parse('https://brewpath.example/privacy'),
+      terms: Uri.parse('https://brewpath.example/terms'),
+    );
+
+    expect(find.text(SettingsCopy.aboutComing), findsNothing);
   });
 
   testWidgets('draws Privacy above Terms once both are hosted', (tester) async {

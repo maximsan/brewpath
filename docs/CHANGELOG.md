@@ -44,15 +44,11 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
-- **About's fine print goes somewhere.** *Acknowledgements* opens a credits
-  page built from the dictionary's own term bank — every distinct work its
-  entries cite, named once and in alphabetical order — so a source added to a
-  term is credited there with nothing else to author. *Open-source licenses*
-  opens Flutter's generated licence page, which lists what the build actually
-  ships rather than a list kept by hand. *Say hello* and *Rate BrewPath* stand
-  beside them, each drawn once the one thing it needs exists — a mailbox, and
-  an App Store listing — so neither is a row the app has to grow later
-  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+- **About's *Say something* rows are written, and wait on their data.** *Say
+  hello* appears once there is a mailbox to write to and *Rate BrewPath* once
+  there is an App Store listing to rate, each from its own constant — so
+  neither is a row the app has to grow later, and neither is ever drawn live
+  and inert ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —

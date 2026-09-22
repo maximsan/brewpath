@@ -127,11 +127,13 @@ Header copy: `A FIELD GUIDE TO COFFEE`.
 > ⚠️ **All 8 About/Help rows are `onClick={() => {}}` in the design — dead
 > stubs.** They render as fully interactive rows with an external-link
 > affordance and do nothing, so each one needed a real destination before ship.
-> Where they stand in the app: Acknowledgements and Open-source licenses are
-> built (#532); *Rate BrewPath* is deliberately absent until there is a store
-> listing to rate, and *Say hello* and the two Help rows appear only once the
-> mailbox constant is filled in (#531). The legal pair is #448's, and is
-> likewise absent while unhosted — the app draws no row live and inert.
+> Where they stand in the app: **Acknowledgements and Open-source licenses are
+> not built** — the owner's ruling on #532 is that neither earns its
+> complexity yet, so neither row is drawn. The other six are written and each
+> waits on one constant: an App Store id for *Rate BrewPath*, the mailbox for
+> *Say hello* and Help's two (#531), the two hosted URLs for the legal pair
+> (#448). The app draws no row live and inert, so an unset constant means an
+> absent row.
 
 > **"Sync over cellular" and "This iPhone" are the UI for the offline promise.**
 > [§6](06-content.md)'s FAQ commits to keeping opened modules on device and syncing when

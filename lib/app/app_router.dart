@@ -33,7 +33,6 @@ import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/about_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/account_sync_screen.dart';
-import 'package:brew_path/features/profile/presentation/settings/acknowledgements_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/purchases_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
@@ -407,15 +406,6 @@ GoRouter appRouter(Ref ref) {
                         name: AppRoutes.settingsAbout.name,
                         parentNavigatorKey: _rootKey,
                         builder: (context, state) => const AboutScreen(),
-                        routes: [
-                          GoRoute(
-                            path: AppRoutes.settingsAcknowledgements.path,
-                            name: AppRoutes.settingsAcknowledgements.name,
-                            parentNavigatorKey: _rootKey,
-                            builder: (context, state) =>
-                                const AcknowledgementsScreen(),
-                          ),
-                        ],
                       ),
                     ],
                   ),
