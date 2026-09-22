@@ -236,7 +236,10 @@ void main() {
       await tester.enterText(find.byType(TextField), 'zzzz');
       await tester.pumpAndSettle();
 
-      expect(find.text(DictionarySearchCopy.count(0)), findsOneWidget);
+      // The line stands alone: no count to repeat it, no filter with nothing
+      // to sort.
+      expect(find.byType(DictionarySearchCount), findsNothing);
+      expect(find.byType(SegmentedButton<DictionaryFilter>), findsNothing);
       expect(
         find.text(DictionarySearchCopy.noMatches('zzzz').line),
         findsOneWidget,
@@ -331,11 +334,11 @@ void main() {
       await tester.enterText(find.byType(TextField), 'arab');
       await tester.pumpAndSettle();
 
-      // Arabica is not learned, so the search finds nothing — and the segment
-      // that narrowed it stays on screen, as the design draws it, so the
-      // count is never unexplained.
+      // Arabica is not learned, so the filter leaves nothing — and the segment
+      // that narrowed it stays on screen, the way back to All. No count: the
+      // line under it already says what was found.
       expect(find.text('LEARNED'), findsOneWidget);
-      expect(find.text(DictionarySearchCopy.count(0)), findsOneWidget);
+      expect(find.byType(DictionarySearchCount), findsNothing);
       expect(
         find.text(DictionarySearchCopy.noMatches('arab').line),
         findsOneWidget,
@@ -356,7 +359,11 @@ void main() {
       // be no way back to All.
       await tester.tap(find.text('LEARNED'));
       await tester.pumpAndSettle();
-      expect(find.text(DictionarySearchCopy.count(0)), findsOneWidget);
+      expect(find.byType(DictionarySearchCount), findsNothing);
+      expect(
+        find.text(DictionarySearchCopy.noMatches('arab').line),
+        findsOneWidget,
+      );
       expect(find.text('TO LEARN'), findsOneWidget);
 
       // A search that finds nothing has nothing to sort.

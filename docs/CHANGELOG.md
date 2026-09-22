@@ -173,9 +173,10 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 - **A search that finds nothing now says what it looked for.** The dictionary
   read *No terms match that search.* whatever was typed; it now quotes the
-  query back and suggests a broader word or the categories, and every search
-  is headed with its result count — `0 RESULTS`, `1 RESULT`, `12 RESULTS` —
-  as the design draws it. The Saved shelf's empty state takes the design's own
+  query back and suggests a broader word or the categories, and a search that
+  finds something is headed with its count — `1 RESULT`, `12 RESULTS` — as
+  the design draws it. One that finds nothing shows the line alone: no count
+  to say the same thing twice, and no filter with nothing to sort. The Saved shelf's empty state takes the design's own
   measurements too: a softer bookmark, more room above it, and a line that
   wraps where it was drawn to
   ([#572](https://github.com/maximsan/brewpath/issues/572)).

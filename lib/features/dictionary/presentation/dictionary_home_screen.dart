@@ -182,9 +182,10 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                     selected: _filter,
                     onSelected: (filter) => setState(() => _filter = filter),
                   ),
-                // The design heads every search with its count, whether or
-                // not anything matched; a category drill-down has none.
-                if (_query.isNotEmpty)
+                // The count heads a search that found something; with
+                // nothing found the no-matches line says so alone, and a
+                // category drill-down has none.
+                if (_query.isNotEmpty && visible.isNotEmpty)
                   DictionarySearchCount(count: visible.length),
                 if (_onIndex) _index(),
               ],
