@@ -103,6 +103,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The Path title opens at the top of the tab, beside the Saved and
+  Dictionary buttons.** It used to start 64 down so it cleared them; it now
+  starts at the design's 24 and reserves their width on its right, so a long
+  course name wraps into what is left instead of running under them. Learn and
+  Profile still open below the buttons — a date and a typed name have no
+  reserved width to wrap into
+  ([#584](https://github.com/maximsan/brewpath/issues/584)).
+
 - **A settings row that leaves the app now says so before it is pressed.** The
   design's outward arrow stands in place of the chevron on About's and Help's
   external rows, and a screen reader announces them as links rather than
