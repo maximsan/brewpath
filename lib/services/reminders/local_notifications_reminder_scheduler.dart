@@ -1,9 +1,8 @@
 import 'package:brew_path/services/reminders/reminder_scheduler.dart';
+import 'package:brew_path/services/reminders/reminder_trigger.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:timezone/data/latest_10y.dart' as tz_data;
-import 'package:timezone/timezone.dart' as tz;
 
 /// The shipping scheduler: iOS local notifications via
 /// `flutter_local_notifications`.
@@ -34,6 +33,10 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
   /// with no memory, which is what makes the launch re-assertion real after a
   /// reboot, an upgrade or anything else that could have lost the schedule.
   List<DateTime>? _posted;
+
+  /// The zone [_posted] was built in — part of what the OS was told, so a
+  /// learner who has flown is re-posted even where the instants agree.
+  String? _postedZone;
 
   ReminderPermission? _lastAnswer;
 
@@ -86,36 +89,38 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
     // already gone.
     final now = DateTime.now();
     final upcoming = at.where(now.isBefore).take(idCount).toList();
-    if (const ListEquality<DateTime>().equals(_posted, upcoming)) return;
-
-    await _cancelOurs();
-    if (upcoming.isEmpty) {
-      _posted = upcoming;
-      return;
-    }
 
     // Read per call, never cached: the zone the trigger is built in is the
     // zone it fires in, so a learner who has flown has to be re-posted in the
     // one they are now.
-    final zone = tz.getLocation(
-      (await FlutterTimezone.getLocalTimezone()).identifier,
-    );
+    final zoneName = (await FlutterTimezone.getLocalTimezone()).identifier;
+    if (zoneName == _postedZone &&
+        const ListEquality<DateTime>().equals(_posted, upcoming)) {
+      return;
+    }
 
+    // Forgotten before the cancel, not after the post: a posting that throws
+    // part-way must leave a memory that matches nothing, or the next refresh
+    // of the same plan would trust what is no longer there.
+    _posted = null;
+    _postedZone = null;
+    await _cancelOurs();
+
+    final zone = reminderZone(zoneName);
     for (var index = 0; index < upcoming.length; index++) {
       await _plugin.zonedSchedule(
         id: idBase + index,
         title: title,
         body: body,
-        scheduledDate: tz.TZDateTime.from(upcoming[index], zone),
+        scheduledDate: reminderTrigger(upcoming[index], zone),
         notificationDetails: const NotificationDetails(
           iOS: DarwinNotificationDetails(),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }
-    // Last, so a posting that threw part-way leaves a memory that does not
-    // match the plan — and the next refresh posts it again.
     _posted = upcoming;
+    _postedZone = zoneName;
   }
 
   @override
@@ -133,7 +138,7 @@ class LocalNotificationsReminderScheduler implements ReminderScheduler {
   Future<void> _ensureReady() => _ready ??= _initialize();
 
   Future<void> _initialize() async {
-    tz_data.initializeTimeZones();
+    loadReminderZones();
 
     // Every `request*` off: initialising must not put a permission prompt in
     // front of a learner who has not asked for a reminder.
