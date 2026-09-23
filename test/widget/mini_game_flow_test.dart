@@ -4,6 +4,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
@@ -229,8 +230,9 @@ Future<void> _pump(
   WidgetTester tester, {
   bool disableAnimations = false,
   bool hasCourse = true,
+  Size viewport = const Size(500, 1400),
 }) async {
-  tester.view.physicalSize = const Size(500, 1400);
+  tester.view.physicalSize = viewport;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -398,6 +400,52 @@ void main() {
     );
 
     handle.dispose();
+  });
+
+  group("the intro's bar", () {
+    /// Short enough that the how-to-play runs past the foot, so there is a
+    /// scroll to move at all.
+    const shortViewport = Size(400, 300);
+
+    /// Past the design's 8 and well short of the hook's default 40.
+    const nudge = 20.0;
+
+    testWidgets('takes its chrome as soon as the page moves under it', (
+      tester,
+    ) async {
+      await _pump(tester, viewport: shortViewport);
+      await tester.tap(find.text('True or false'));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position
+            .maxScrollExtent,
+        greaterThan(nudge),
+        reason:
+            'the page has to overflow for there to be a drag at all, or this '
+            'reads a bar with nothing under it as a bar that never sealed',
+      );
+
+      await tester.drag(find.text('HOW TO PLAY'), const Offset(0, -nudge));
+      await tester.pumpAndSettle();
+
+      expect(
+        isScrolledPast(nudge),
+        isFalse,
+        reason:
+            'on the default the page would still be running under the close '
+            'control and the clock with a bare bar over it',
+      );
+      expect(
+        find.descendant(
+          of: find.byType(FloatTopbar),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 
   group('the tier line', () {

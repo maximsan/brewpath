@@ -21,6 +21,7 @@ import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.
 import 'package:brew_path/features/lessons/presentation/cards/visual_card_view.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/widgets.dart';
 
 /// Builds the widget for [card]. A single exhaustive switch over the sealed
@@ -163,6 +164,7 @@ PickerCopy _mcqCopy(McqCard card) => PickerCopy(
 
 PickerCopy _recallCopy(RecallCard card) => PickerCopy(
   placement: VerdictPlacement.conversational,
+  buttonGap: OffTokens.recallButtonGap.value,
   label: card.label,
   prompt: card.question,
   explain: ({required wasCorrect}) => card.explanation,
@@ -171,6 +173,7 @@ PickerCopy _recallCopy(RecallCard card) => PickerCopy(
 
 PickerCopy _decisionCopy(DecisionCard card) => PickerCopy(
   placement: VerdictPlacement.conversational,
+  buttonGap: OffTokens.decisionButtonGap.value,
   label: card.label,
   title: card.title,
   scenario: card.scenario,
@@ -215,6 +218,7 @@ TastefixReaction _cupAfter(PickOutcome outcome) => switch (outcome) {
 /// cup's, drawn in the panel above rather than in a copy slot.
 PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
   cue: CardCue.tastefix,
+  placement: VerdictPlacement.miniGame,
   prompt: card.prompt,
   explain: ({required wasCorrect}) => card.explanation,
   // A fix that worked, not an answer that was right.

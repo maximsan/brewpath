@@ -41,7 +41,7 @@ void main() {
     );
   });
 
-  testWidgets('a theme with no mood fails at once, naming the way in', (
+  testWidgets('a theme with no mood fails a debug build, naming the way in', (
     tester,
   ) async {
     // The defect this pins: a bare MaterialApp used to fall back to Dark
@@ -49,9 +49,16 @@ void main() {
     await _readMood(tester);
     final error = tester.takeException();
 
-    expect(error, isA<FlutterError>());
+    expect(error, isA<AssertionError>());
     expect('$error', contains('AppTheme.cupping'));
     expect('$error', contains('AppTheme.darkRoast'));
+  });
+
+  test('the release fallback is the mood of the theme’s own brightness', () {
+    // What a release build reads in the same tree: a mood that agrees with
+    // the page rather than one that contradicts it.
+    expect(MoodColors.forBrightness(Brightness.light), MoodColors.cupping);
+    expect(MoodColors.forBrightness(Brightness.dark), MoodColors.darkRoast);
   });
 
   testWidgets('the page and the tokens agree under either theme', (

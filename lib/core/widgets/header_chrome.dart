@@ -1,32 +1,14 @@
 import 'package:brew_path/core/widgets/scrolled_progress.dart';
+import 'package:brew_path/shared/theme/app_overlay.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The one bar chrome a screen-level top bar wears.
+/// The one bar chrome a screen-level top bar wears: nothing at rest, and
+/// scrolled, the page pulled over itself under a hairline and a short fade.
 ///
-/// **Invisible at rest.** The design's header draws nothing until the page
-/// under it has moved: no fill, no hairline, no blur, and — because a
-/// `BackdropFilter` costs a `saveLayer` whatever its sigma — no filter in the
-/// tree at all. What the learner sees at the top of a tab is the tab's own
-/// large title, and the bar is only the entries floating over it.
-///
-/// **Scrolled, it blends in.** The page pulled over itself at
-/// `color-mix(in oklab, var(--bg) 94%, transparent)`, blurred 16px and lifted
-/// back to its own warmth, with a hairline along the bottom and a short
-/// gradient fading below it so type scrolling out from under the bar is never
-/// seen crossing an invisible edge.
-///
-/// It is a primitive rather than one screen's chrome because the design has
-/// one of these and composes it twice — the tab header here, and the back bar
-/// a pushed page wears (#513). Height is the caller's, so a bar and whatever
-/// is laid out against it cannot drift apart.
-///
-/// **The painted half is laid beside the content rather than around it**, and
-/// ignores the pointer. A `DecoratedBox` claims every hit inside its
-/// decoration's shape, so a bar built as one box wrapping its own contents
-/// would swallow the drag that is meant to scroll the page underneath it —
-/// which is exactly the gesture the design's `pointer-events: none` lets
-/// through.
+/// A primitive, because the design has one of these and composes it three
+/// times — the tab header, a pushed page's back bar (#513) and the floating
+/// bar (#583). Height is the caller's.
 class HeaderChrome extends StatelessWidget {
   /// Creates a [HeaderChrome] of [height], filled when [isScrolled].
   const HeaderChrome({
@@ -69,7 +51,6 @@ class HeaderChrome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     // The bar reaches up under the status bar, because what passes beneath it
     // has to be blurred all the way to the top of the screen.
     final barHeight = MediaQuery.paddingOf(context).top + height;
@@ -85,12 +66,15 @@ class HeaderChrome extends StatelessWidget {
         height: barHeight + fadeHeight,
         child: Stack(
           children: [
+            // Laid beside the content rather than around it, and taking no
+            // pointer: a bar built as one box wrapping its own contents would
+            // swallow the drag meant to scroll the page underneath — the
+            // gesture the design's `pointer-events: none` lets through.
             Positioned.fill(
               child: IgnorePointer(
-                child: _PaintedBar(
-                  mood: mood,
-                  progress: progress,
+                child: HeaderChromePaint(
                   barHeight: barHeight,
+                  progress: progress,
                 ),
               ),
             ),
@@ -102,25 +86,44 @@ class HeaderChrome extends StatelessWidget {
   }
 }
 
-/// The bar's painted half at [progress] of the way from invisible to filled.
-class _PaintedBar extends StatelessWidget {
-  const _PaintedBar({
-    required this.mood,
-    required this.progress,
+/// A bar's painted half — fill, hairline and the fade below it — [progress] of
+/// the way in from nothing.
+///
+/// Public because the floating bar lays its own controls over this instead of
+/// along the bottom edge [HeaderChrome] aligns to, and the design gives the
+/// two bars one fade rather than one each.
+class HeaderChromePaint extends StatelessWidget {
+  /// Creates the painted half, [barHeight] tall above its fade.
+  const HeaderChromePaint({
     required this.barHeight,
+    required this.progress,
+    this.fill,
+    this.child,
+    super.key,
   });
 
-  final MoodColors mood;
-  final double progress;
+  /// How tall the filled band stands, the status-bar inset included.
   final double barHeight;
+
+  /// How far in the chrome is: 0 draws nothing, 1 draws all of it. The fill,
+  /// the hairline and the fade all ride it.
+  final double progress;
+
+  /// What fills the band, for a bar sealed with the page's own colour rather
+  /// than the header's translucent pull. Defaults to [MoodColors.headerFill].
+  final AppOverlay? fill;
+
+  /// What sits inside the band. The fade below it never takes the pointer.
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
+    final mood = context.mood;
     // The whole token, scaled: the tint, the blur and the saturation it is
     // written with arrive together and fade in together — and at rest there is
     // no filter at all, which is what keeps an invisible bar from paying for a
     // `saveLayer`.
-    final headerFill = mood.headerFill.at(progress);
+    final headerFill = (fill ?? mood.headerFill).at(progress);
     final bar = SizedBox(
       height: barHeight,
       child: DecoratedBox(
@@ -130,6 +133,7 @@ class _PaintedBar extends StatelessWidget {
             bottom: BorderSide(color: mood.rule.withValues(alpha: progress)),
           ),
         ),
+        child: child,
       ),
     );
     final filter = headerFill.backdropFilter;
@@ -144,7 +148,9 @@ class _PaintedBar extends StatelessWidget {
           ClipRect(
             child: BackdropFilter(filter: filter, child: bar),
           ),
-        _EdgeFade(mood: mood, progress: progress),
+        IgnorePointer(
+          child: _EdgeFade(mood: mood, progress: progress),
+        ),
       ],
     );
   }

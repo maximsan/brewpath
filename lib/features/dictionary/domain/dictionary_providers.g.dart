@@ -67,6 +67,59 @@ final class DictionaryViewProvider
 
 String _$dictionaryViewHash() => r'1259ca50e681c4fc4dac31cb565e2e68af1839ba';
 
+/// The surface forms lesson copy may link, compiled once.
+///
+/// Off the learner's own view rather than the raw bank (#217), so a free
+/// learner is never handed a link to an entry the view does not hold.
+
+@ProviderFor(termLinkIndex)
+final termLinkIndexProvider = TermLinkIndexProvider._();
+
+/// The surface forms lesson copy may link, compiled once.
+///
+/// Off the learner's own view rather than the raw bank (#217), so a free
+/// learner is never handed a link to an entry the view does not hold.
+
+final class TermLinkIndexProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<TermLinkIndex>,
+          TermLinkIndex,
+          FutureOr<TermLinkIndex>
+        >
+    with $FutureModifier<TermLinkIndex>, $FutureProvider<TermLinkIndex> {
+  /// The surface forms lesson copy may link, compiled once.
+  ///
+  /// Off the learner's own view rather than the raw bank (#217), so a free
+  /// learner is never handed a link to an entry the view does not hold.
+  TermLinkIndexProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'termLinkIndexProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$termLinkIndexHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<TermLinkIndex> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<TermLinkIndex> create(Ref ref) {
+    return termLinkIndex(ref);
+  }
+}
+
+String _$termLinkIndexHash() => r'5449b29bcfd7b1676e2ed3bfea2c863525a1a17b';
+
 /// The title of the lesson [lessonId] names, or null when it names none.
 ///
 /// A term's path block shows the lesson by title, not by id: "Where you

@@ -1,27 +1,58 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
+import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _host(Widget child) => MaterialApp(
+Widget _host(Widget child, {bool disableAnimations = false}) => MaterialApp(
   theme: AppTheme.darkRoast,
-  home: Scaffold(body: child),
+  home: Builder(
+    builder: (context) => MediaQuery(
+      data: MediaQuery.of(
+        context,
+      ).copyWith(disableAnimations: disableAnimations),
+      child: Scaffold(body: child),
+    ),
+  ),
 );
 
-/// The bar's own fill, read off the box it paints.
+/// A bar over a page that has moved, for the tests that read what it paints.
+Widget _scrolledBar({bool disableAnimations = false}) => _host(
+  const FloatTopbar(
+    icon: AppIcon.close,
+    label: 'Close',
+    onPressed: _doNothing,
+    isScrolled: true,
+  ),
+  disableAnimations: disableAnimations,
+);
+
+void _doNothing() {}
+
+/// Every box the bar paints itself with.
+Iterable<BoxDecoration> _painted(WidgetTester tester) => tester
+    .widgetList<DecoratedBox>(
+      find.descendant(
+        of: find.byType(FloatTopbar),
+        matching: find.byType(DecoratedBox),
+      ),
+    )
+    .map((box) => box.decoration)
+    .whereType<BoxDecoration>();
+
+/// The bar's own fill, read off the band it rules.
 Color? _fill(WidgetTester tester) =>
-    (tester
-                .widget<DecoratedBox>(
-                  find.descendant(
-                    of: find.byType(FloatTopbar),
-                    matching: find.byType(DecoratedBox),
-                  ),
-                )
-                .decoration
-            as BoxDecoration)
-        .color;
+    _painted(tester).firstWhere((box) => box.border != null).color;
+
+/// How strongly the gradient below the hairline starts.
+double _fadeOpacity(WidgetTester tester) {
+  final gradient = _painted(
+    tester,
+  ).firstWhere((box) => box.gradient != null).gradient!;
+  return gradient.colors.first.a;
+}
 
 void main() {
   group('the bar', () {
@@ -91,6 +122,56 @@ void main() {
       );
     });
 
+    testWidgets('draws no fade below its hairline at rest', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const FloatTopbar(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: _doNothing,
+            isScrolled: false,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(_fadeOpacity(tester), 0);
+    });
+
+    testWidgets('and scrolled, fades a band below it the height the design '
+        'draws', (tester) async {
+      await tester.pumpWidget(_scrolledBar());
+      await tester.pumpAndSettle();
+
+      // The band the design fades from `color-mix(in oklab, bg 88%,
+      // transparent)` to transparent, so nothing is seen crossing a bare edge.
+      expect(_fadeOpacity(tester), MoodColors.headerFadeOpacity);
+      expect(
+        tester.getSize(find.byType(FloatTopbar)).height,
+        FloatTopbar.height + HeaderChrome.fadeHeight,
+      );
+    });
+
+    testWidgets('and under reduced motion the fade is a cut', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const FloatTopbar(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: _doNothing,
+            isScrolled: false,
+          ),
+          disableAnimations: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.pumpWidget(_scrolledBar(disableAnimations: true));
+      await tester.pump();
+
+      expect(_fadeOpacity(tester), MoodColors.headerFadeOpacity);
+    });
+
     testWidgets('carries its label for the reader and the tooltip', (
       tester,
     ) async {
@@ -124,6 +205,24 @@ void main() {
       );
 
       expect(_fill(tester), MoodColors.darkRoast.bg);
+    });
+
+    testWidgets('fades below its hairline from the first frame too', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          const FloatTopbar.sealed(
+            icon: AppIcon.close,
+            label: 'Close',
+            onPressed: _doNothing,
+          ),
+        ),
+      );
+
+      // The design ties the fade to the fill, so a bar that is filled before
+      // anything moves has its fade before anything moves.
+      expect(_fadeOpacity(tester), MoodColors.headerFadeOpacity);
     });
 
     testWidgets('pays for no filter — an opaque page hides what passes under', (

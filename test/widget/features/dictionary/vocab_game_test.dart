@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/drill_results_view.dart';
 import 'package:brew_path/core/widgets/pick_card.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
@@ -521,6 +522,19 @@ void main() {
       expect(find.textContaining('NOT QUITE'), findsOneWidget);
       expect(find.text(VocabCopy.readEntry.toUpperCase()), findsNothing);
       expect(find.text(VocabCopy.readEntry), findsOneWidget);
+    });
+
+    testWidgets('the verdict stands where a vocab round does', (tester) async {
+      await _pump(tester);
+      await tester.tap(find.text(VocabCopy.start));
+      await tester.pumpAndSettle();
+
+      await answer(tester, correctly: true);
+
+      expect(
+        tester.widget<AnswerFeedback>(find.byType(AnswerFeedback)).placement,
+        VerdictPlacement.vocabRound,
+      );
     });
   });
 
