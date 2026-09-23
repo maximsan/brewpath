@@ -51,6 +51,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   of a boxed card. *Start* puts the brew on Today; a brewed row opens its
   recap.
 
+- **Glossary terms in lesson copy are tappable.** A concept card's prose, the
+  predict card's opening body and a verdict block's explanation — in a lesson
+  or a mini-game round — now link the terms they say; tapping one opens the
+  term peek sheet without leaving the card. Matching is whole-word and
+  case-insensitive over the term's aliases, longest first, one link per term
+  at its first mention and four to a paragraph. The links come from the
+  learner's own dictionary, so a free learner is never sent to an entry they
+  cannot open ([#99](https://github.com/maximsan/brewpath/issues/99)).
+
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —
   absent, or left behind by an English edit — writes the folder from that

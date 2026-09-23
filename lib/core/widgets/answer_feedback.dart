@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/verdict_placement.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/dictionary/presentation/term_linked_text.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -113,12 +114,15 @@ class AnswerFeedback extends StatelessWidget {
                   ),
                 ),
               ),
-              if (explanation != null) ...[
+              if (explanation case final explanation?) ...[
                 const SizedBox(height: AppSpacing.xs),
-                Text(
-                  explanation!,
-                  style: placement.explanationStyle(mood),
-                ),
+                if (placement.linksTerms)
+                  TermLinkedText(
+                    text: explanation,
+                    style: placement.explanationStyle(mood),
+                  )
+                else
+                  Text(explanation, style: placement.explanationStyle(mood)),
               ],
               ?extra,
             ],

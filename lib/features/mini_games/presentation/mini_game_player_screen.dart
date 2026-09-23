@@ -10,6 +10,7 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_scroll.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
@@ -100,6 +101,10 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
   @override
   Widget build(BuildContext context) {
     final rounds = ref.watch(miniGameRoundsProvider(widget.formatId));
+    // Started with the rounds rather than at the first card that draws a
+    // link: a card that mounts ahead of the index sets its terms plain and
+    // turns them accent a frame later.
+    ref.watch(termLinkIndexProvider);
 
     return FloatBarScaffold(
       bar: FloatTopbar.sealed(

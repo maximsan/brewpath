@@ -14,6 +14,7 @@ enum VerdictPlacement {
   card(
     mascot: _mascotOnCard,
     speaksInBody: false,
+    linksTerms: true,
     room: OffTokens.verdictRoomOnCard,
   ),
 
@@ -24,6 +25,7 @@ enum VerdictPlacement {
   miniGame(
     mascot: _mascotOnCard,
     speaksInBody: false,
+    linksTerms: true,
     room: OffTokens.verdictRoomInMiniGame,
   ),
 
@@ -35,6 +37,7 @@ enum VerdictPlacement {
   conversational(
     mascot: _mascotOnCard,
     speaksInBody: true,
+    linksTerms: true,
     room: OffTokens.verdictRoomOnCard,
   ),
 
@@ -91,6 +94,7 @@ enum VerdictPlacement {
     required OffToken<double> room,
     this.rulesOff = false,
     this.wrongInAccent = false,
+    this.linksTerms = false,
   }) : _room = room;
 
   /// The design's mascot size on a graded card, holding a guess, and inside a
@@ -127,6 +131,13 @@ enum VerdictPlacement {
 
   /// Whether the explanation takes the body step rather than support.
   final bool speaksInBody;
+
+  /// Whether the explanation links the glossary terms it says (#99).
+  ///
+  /// Only where the block marks a graded answer. The two reference standings
+  /// are look-ups rather than lessons, and the two guess standings answer a
+  /// guess rather than mark it — the design draws a link in none of the four.
+  final bool linksTerms;
 
   /// The colour a wrong answer is named in.
   Color wrongTone(MoodColors mood) => wrongInAccent ? mood.accent : mood.berry;
