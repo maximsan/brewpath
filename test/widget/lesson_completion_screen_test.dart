@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/reward_row.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
@@ -102,6 +103,7 @@ ProviderContainer _buildContainer() => ProviderContainer(
 /// completion companion renders a static frame. Without it, the companion's
 /// idle loop never settles and `settleLoaders`' final `pumpAndSettle` hangs.
 Widget _app(Widget home) => MaterialApp(
+  theme: AppTheme.cupping,
   home: home,
   builder: (context, child) => MediaQuery(
     data: MediaQuery.of(context).copyWith(disableAnimations: true),
@@ -744,6 +746,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
+          theme: AppTheme.cupping,
           routerConfig: router,
           builder: (context, child) => MediaQuery(
             data: MediaQuery.of(context).copyWith(disableAnimations: true),
@@ -931,6 +934,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
+          theme: AppTheme.cupping,
           routerConfig: router,
           builder: (context, child) => MediaQuery(
             data: MediaQuery.of(context).copyWith(disableAnimations: true),

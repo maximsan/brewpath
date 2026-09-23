@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/reward_flip.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
@@ -48,6 +49,7 @@ ModuleSummary _summary({
 /// Pumped with animations **on** by default: the flip is the subject, and a
 /// harness that disabled them everywhere could not tell a turn from a jump.
 Widget _app(Widget home, {bool reducedMotion = false}) => MaterialApp(
+  theme: AppTheme.cupping,
   home: home,
   builder: (context, child) => MediaQuery(
     data: MediaQuery.of(context).copyWith(disableAnimations: reducedMotion),

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/config/app_links.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
@@ -96,7 +97,10 @@ Future<void> _pump(
       ],
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.cupping,
+          routerConfig: router,
+        ),
       ),
     ),
   );

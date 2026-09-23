@@ -13,8 +13,9 @@ typedef ReplayConfirmView = ({String title, List<ReplayConfirmLine> lines});
 /// What to ask before replaying [lessonId], or null when nothing should be
 /// asked — the lesson is unfinished, or the course no longer carries it.
 ///
-/// The day comes from [currentDayProvider] rather than the clock, so a sheet
-/// left open over midnight is rebuilt with the streak line it should have.
+/// The day is [currentDayProvider]'s, not the clock's, so the streak line
+/// agrees with every other day surface on which day today is. The sheet is
+/// read once, at the tap; one left open over midnight keeps its lines.
 @riverpod
 Future<ReplayConfirmView?> replayConfirm(Ref ref, String lessonId) async {
   final today = ref.watch(currentDayProvider);

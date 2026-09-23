@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
@@ -63,7 +64,10 @@ void main() {
         overrides: [
           contentRepositoryProvider.overrideWith((ref) => _FakeContent(lesson)),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.darkRoast,
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump();
@@ -128,16 +132,19 @@ void main() {
     await pumpLesson(tester, testLesson());
 
     expect(find.byType(AppBar), findsNothing);
-    final band = tester.widget<DecoratedBox>(
-      find.descendant(
-        of: find.byType(FloatTopbar),
-        matching: find.byType(DecoratedBox),
-      ),
-    );
-    expect(
-      (band.decoration as BoxDecoration).color,
-      MoodColors.darkRoast.bg,
-    );
+    // The band is the box the hairline is on: the bar also paints the fade
+    // below that hairline, which is a gradient and carries no border.
+    final band = tester
+        .widgetList<DecoratedBox>(
+          find.descendant(
+            of: find.byType(FloatTopbar),
+            matching: find.byType(DecoratedBox),
+          ),
+        )
+        .map((box) => box.decoration)
+        .whereType<BoxDecoration>()
+        .firstWhere((box) => box.border != null);
+    expect(band.color, MoodColors.darkRoast.bg);
   });
 
   testWidgets('reports position without ever reporting a score', (
@@ -257,7 +264,10 @@ void main() {
             (ref) => _FakeContent(testLesson()),
           ),
         ],
-        child: MaterialApp.router(routerConfig: router),
+        child: MaterialApp.router(
+          theme: AppTheme.darkRoast,
+          routerConfig: router,
+        ),
       ),
     );
     await tester.pump();

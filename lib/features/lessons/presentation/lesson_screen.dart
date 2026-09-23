@@ -5,6 +5,7 @@ import 'package:brew_path/core/widgets/error_view.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
+import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
@@ -96,6 +97,11 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Started here rather than at the first card that draws a link: the index
+    // is cold on the way in from Learn or the Path, and a card that mounts
+    // ahead of it sets its terms plain and turns them accent a frame later.
+    ref.watch(termLinkIndexProvider);
+
     // One future for both: the bar needs the lesson's title for the
     // bookmark's accessible name, and the body needs its cards. Resolving it
     // twice would be two chances for them to disagree about which lesson this

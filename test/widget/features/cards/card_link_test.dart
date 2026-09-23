@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_redirect.dart';
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/card_deep_link.dart';
@@ -75,7 +76,7 @@ Future<GoRouter> _pumpAt(WidgetTester tester, String location) async {
         challengeBankProvider.overrideWith((ref) async => []),
         completedChallengesProvider.overrideWith((ref) async => <String>{}),
       ],
-      child: MaterialApp.router(routerConfig: router),
+      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
     ),
   );
   await tester.pumpAndSettle();

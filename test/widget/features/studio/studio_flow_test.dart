@@ -1,5 +1,6 @@
 import 'dart:ui' show Tristate;
 
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
@@ -30,6 +31,7 @@ void main() {
   Widget host({required bool isPlus}) => ProviderScope(
     overrides: [courseEntitlementProvider.overrideWith((_) async => isPlus)],
     child: MaterialApp.router(
+      theme: AppTheme.cupping,
       routerConfig: GoRouter(
         initialLocation: '/studio',
         routes: [
@@ -160,8 +162,9 @@ void main() {
         overrides: [
           courseEntitlementProvider.overrideWith((_) async => false),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: StudioDoorTile()),
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const Scaffold(body: StudioDoorTile()),
         ),
       ),
     );
@@ -187,8 +190,9 @@ void main() {
         overrides: [
           courseEntitlementProvider.overrideWith((_) async => true),
         ],
-        child: const MaterialApp(
-          home: Scaffold(body: StudioDoorTile()),
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: const Scaffold(body: StudioDoorTile()),
         ),
       ),
     );

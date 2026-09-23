@@ -1,3 +1,5 @@
+import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -14,6 +16,7 @@ const _check = DictionaryCheck(
 );
 
 Widget _harness({required bool disableAnimations}) => MaterialApp(
+  theme: AppTheme.cupping,
   home: MediaQuery(
     data: MediaQueryData(disableAnimations: disableAnimations),
     child: const Scaffold(body: TermSelfCheck(check: _check)),
@@ -40,4 +43,17 @@ void main() {
       },
     );
   }
+
+  testWidgets('the verdict stands where a reference surface does', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_harness(disableAnimations: true));
+    await tester.tap(find.text('More sweetness'));
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<AnswerFeedback>(find.byType(AnswerFeedback)).placement,
+      VerdictPlacement.reference,
+    );
+  });
 }

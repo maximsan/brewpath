@@ -56,6 +56,7 @@ class SnapshotGen {
   /// The progress-scoped fields.
   ClearedByReset progress() => ClearedByReset(
     completedLessons: _dayMap(_lessons),
+    lastCompletedLessons: _dayMap(_lessons),
     bestResults: _bestResults(),
     activeDays: _days(),
     acks: _dayMap(_ackKeys),

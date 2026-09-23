@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/app_text_field.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
@@ -50,6 +51,7 @@ void main() {
         // ignore: scoped_providers_should_specify_dependencies — test-only root override
         overrides: [onboardingRepositoryProvider.overrideWithValue(fake)],
         child: MaterialApp.router(
+          theme: AppTheme.cupping,
           routerConfig: router,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

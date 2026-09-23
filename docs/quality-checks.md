@@ -11,7 +11,7 @@ and the smoke suite run on Codemagic, on `main` and nightly respectively
 | --- | --- |
 | Claude Code writes a Dart file | `dart format` on that file, then the comment cap on it (`.claude/settings.json`, `PostToolUse`); a failure goes straight back to the agent |
 | `git commit` | `dart format --set-exit-if-changed` and the comment cap on the staged Dart files (sub-second) |
-| `git push` | the format check, the `dart_code_linter` metrics, every `*_guard_test.dart`, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about half a minute) |
+| `git push` | the format check, the `dart_code_linter` metrics, every guard test `tool/guard_tests.dart` names, the comment cap on every Dart file changed against the base, and `tool/check_changelog.sh` (about a minute) |
 | CI, on a pull request | the same as push, as steps of the one `checks` job, plus `flutter analyze` and `flutter test` ([`ci-cd.md`](ci-cd.md)) — the iOS build is not among them, and runs on `main` |
 
 ## The comment cap

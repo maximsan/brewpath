@@ -139,6 +139,7 @@ void main() {
     // its own shape it would render there as Material's pill.
     await tester.pumpWidget(
       MaterialApp(
+        theme: AppTheme.cupping,
         home: Scaffold(
           body: GhostButton(label: 'Skip', onPressed: () {}),
         ),

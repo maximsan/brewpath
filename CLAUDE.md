@@ -38,6 +38,7 @@ first, then resume.
 | Localization      | `flutter_localizations` + gen_l10n         | English only. How it works and how a language is made: [`docs/localization.md`](docs/localization.md). |
 | Payments          | RevenueCat behind `PaymentsService`       | A build with no `REVENUECAT_KEY` runs the no-op store, so the app is free by construction: [`docs/payments.md`](docs/payments.md)                                                  |
 | Ads               | `NoOpAdsService`                          | AdMob deferred: [`docs/ads.md`](docs/ads.md)                                                                                                                                       |
+| Reminders         | `flutter_local_notifications` behind `ReminderScheduler` | One local notification a day, on a day not practised yet: [`docs/reminders.md`](docs/reminders.md)                                                     |
 | Analytics / Crash | Firebase behind abstractions (gated off)  | Inactive until `kUseFirebase` is flipped: [`docs/firebase.md`](docs/firebase.md)                                                                                                   |
 
 ## Critical Rules

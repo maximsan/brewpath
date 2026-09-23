@@ -3,22 +3,10 @@ import 'package:flutter/material.dart';
 
 /// The colour half of a **mood** — the design's word for a theme.
 ///
-/// (The two veils are the exception that proves it: they are overlays rather
-/// than colours, so they carry a blur radius as well — see [veil].)
-///
-/// The design ships one token system in two moods, [cupping] (light) and
-/// [darkRoast] (dark), and every token below flips between them. They are held
-/// here rather than on [ColorScheme] because Material's vocabulary cannot hold
-/// this palette: `--bg`, `--water` and `--water-hi` have no scheme slot at all,
-/// and the ones that do fit would lose their meaning in the translation
-/// (`--sage` means "learned", not "secondary"; `--warn` means celebration and
-/// nothing else). `ColorScheme` is still populated in `AppTheme` so stock
-/// Material widgets are not unstyled, but app code reads its colours from here.
-///
-/// Reach an instance through `context.mood` rather than
-/// `Theme.of(context).extension<MoodColors>()`.
-///
-/// Values are transcribed 1:1 from the design bundle CSS.
+/// One token system in two moods, [cupping] and [darkRoast]; every token
+/// flips between them. Held as a `ThemeExtension` rather than on
+/// [ColorScheme], whose names cannot carry these meanings; the tokens and
+/// their rules are in `docs/design/03-design-system.md`. Read via `context.mood`.
 @immutable
 class MoodColors extends ThemeExtension<MoodColors> {
   /// Creates a mood's colour tokens.
@@ -75,6 +63,11 @@ class MoodColors extends ThemeExtension<MoodColors> {
     waterHi: Color(0xFFC2E0EF),
   );
 
+  /// The mood a theme of [brightness] belongs to — the release fallback for a
+  /// tree with no mood, chosen to agree with the page it is drawn on.
+  static MoodColors forBrightness(Brightness brightness) =>
+      brightness == Brightness.dark ? darkRoast : cupping;
+
   /// Opacity of [veil] — the design's
   /// `color-mix(in oklab, var(--bg) 38%, transparent)`.
   static const veilOpacity = 0.38;
@@ -130,44 +123,12 @@ class MoodColors extends ThemeExtension<MoodColors> {
   /// Text placed on an [accent] fill.
   final Color accentInk;
 
-  /// [accent] as a **small label** — the `label` step, where the design's
-  /// smallcaps live.
+  /// [accent] as a **small label** — the `label` step, where smallcaps live.
   ///
-  /// Raw [accent] is the brand colour, tuned to be a fill and a mark rather
-  /// than a reading colour: in Cupping it lands at 4.23:1 on [bg] — under
-  /// WCAG AA's 4.5:1 for small text, which the design's own QA recorded and
-  /// then declined to fix by moving the brand colour, "because moving the one
-  /// brand colour costs more than it buys". This token is the fix it chose
-  /// instead: the accent pulled toward [ink] until it reads.
-  ///
-  /// **Where it applies is the design's sentence, not ours.** It states the
-  /// whole rule beside the token — *"Accent used as TEXT: raw `--accent` lands
-  /// at ~4.3:1 on paper, so small accent labels use this darkened mix instead
-  /// (AA at 11px)"*. So: accent smallcaps, eyebrows and kickers at the `label`
-  /// step. Accent set larger than that is not what the sentence covers and
-  /// keeps [accent], and so does everything the accent is not *read* as —
-  /// fills, borders, progress bars, marks and icons.
-  ///
-  /// **The tab bar is not an exception to any of this — it is outside the
-  /// sentence.** `.tab.active` puts [accent] on a 9.5px label, which looks like
-  /// a contradiction and is not: it colours a *control*, setting one `color`
-  /// for the mark and its word so the pair reads as one unit, the way an
-  /// active-state colour must. This token governs accent picked as a **text**
-  /// colour, which is what every `--accent-text` site in the design is. A state
-  /// colour is not a text colour, so the tab bar keeps [accent], joined — and
-  /// no divergence is being recorded here, because there is none.
-  ///
-  /// `.btn-link` keeps [accent] for the plainer reason that it is set at the
-  /// support step, above the labels the sentence covers.
-  ///
-  /// Where a glyph sits beside such a label, only the label changes: the design
-  /// draws exactly that pair, an accent mark next to an `--accent-text` word,
-  /// and an accent-bordered pill with an `--accent-text` label.
-  ///
-  /// The design writes it as
-  /// `color-mix(in oklab, var(--accent) 62%, var(--ink))` and the values here
-  /// are that mix resolved per mood, so a mood keeps one literal per token and
-  /// lerps between moods like every other.
+  /// The design's `color-mix(in oklab, var(--accent) 62%, var(--ink))`,
+  /// resolved per mood, because raw accent misses AA on paper. Its scope —
+  /// text at the label step only; never a fill, a mark or the tab bar — is the
+  /// design's own sentence, kept in `docs/design/03-design-system.md`.
   final Color accentText;
 
   /// Success = "learned": correct answers, learned terms, pass mark.
@@ -189,49 +150,35 @@ class MoodColors extends ThemeExtension<MoodColors> {
 
   /// [accent] washed over [surface] — the fill under an icon well or a chip.
   ///
-  /// Derived rather than stored, so it follows the mood and keeps following it
-  /// mid-[lerp]. The design writes it as
-  /// `color-mix(in oklab, var(--accent) 12%, var(--surface))` and uses the one
-  /// strength everywhere it appears: the reward rail's wells, the mastery chip,
-  /// and the challenge offer's badge.
+  /// Derived, so it follows the mood mid-[lerp]: the design's
+  /// `color-mix(in oklab, var(--accent) 12%, var(--surface))`, one strength.
   Color get accentWash =>
       Color.alphaBlend(accent.withValues(alpha: _accentWashAlpha), surface);
 
   /// How much accent the wash carries. The design's `12%`.
   static const double _accentWashAlpha = 0.12;
 
-  /// [inkMute] pulled part of the way toward [ink] — the design's
-  /// `color-mix(in oklab, var(--ink-mute) N%, var(--ink))`, with [muteShare]
-  /// as `N`: a meta line or a row's eyebrow that has to read as words rather
-  /// than fade as a label. Derived, so it follows the mood mid-[lerp].
-  ///
-  /// A straight lerp rather than an oklab mix. The two agree to within a shade
-  /// at the strengths the design uses (62% and 76%), and the app has no oklab.
+  /// [inkMute] pulled [muteShare] of the way toward [ink] — the design's
+  /// `color-mix(in oklab, var(--ink-mute) N%, var(--ink))` for a meta line
+  /// that has to read as words. A straight lerp: the app has no oklab, and
+  /// the two agree to within a shade at the design's 62% and 76%.
   Color inkMix(double muteShare) => Color.lerp(ink, inkMute, muteShare)!;
 
-  /// The page background pulled over the page, and the blur that goes with it.
-  /// Derived from [bg] rather than stored, so it follows the mood — and keeps
-  /// following it mid-[lerp].
+  /// The page background pulled over the page, with its blur — derived from
+  /// [bg], so it follows the mood mid-[lerp].
   ///
-  /// **No call site.** The veil's job is the Foundations feature lock — a wash
-  /// over content the learner is meant to keep reading, because that legibility
-  /// is the pitch. The app has no feature lock to wear it: the content gate is
-  /// #215.
+  /// No call site: its job is the Foundations feature lock, and the app's
+  /// content gate is #215.
   AppOverlay get veil => AppOverlay(
     color: bg.withValues(alpha: veilOpacity),
     blurRadius: veilBlurRadius,
   );
 
-  /// [veil] at full strength, for content that must be obscured rather than
-  /// softened.
+  /// [veil] at full strength, for content that must be obscured.
   ///
-  /// **No call site, and no longer one owed.** It was written for the
-  /// earned-card preview at the end of a lesson, and briefly had it. The
-  /// restyled endings put that card on the *back of the screen* rather than
-  /// under a wash (#490), so there is nothing left for a covering overlay to
-  /// cover. Kept because the overlay ladder is the design's, not a set of
-  /// call sites: a wash this strong is what the next screen that must hide
-  /// what is behind it should reach for.
+  /// No call site since the endings put the earned card behind the screen
+  /// (#490); kept because the overlay ladder is the design's, not a set of
+  /// call sites.
   AppOverlay get veilStrong => AppOverlay(
     color: bg.withValues(alpha: veilStrongOpacity),
     blurRadius: veilStrongBlurRadius,
@@ -356,10 +303,19 @@ class MoodColors extends ThemeExtension<MoodColors> {
 extension MoodColorsContext on BuildContext {
   /// The current mood's colour tokens.
   ///
-  /// Falls back to [MoodColors.darkRoast] — the app's default mood — when the
-  /// extension is absent, so a widget pumped under a bare `MaterialApp` (as
-  /// several widget tests do) renders in the shipping palette instead of
-  /// throwing.
-  MoodColors get mood =>
-      Theme.of(this).extension<MoodColors>() ?? MoodColors.darkRoast;
+  /// Only `AppTheme` carries them. A tree mounted under any other `ThemeData`
+  /// fails here in a debug build, so a test or a walk cannot paint one mood's
+  /// tokens on the other mood's page unnoticed; a release build takes the
+  /// mood of the theme's own brightness instead, which at least agrees with it.
+  MoodColors get mood {
+    final theme = Theme.of(this);
+    final mood = theme.extension<MoodColors>();
+    assert(
+      mood != null,
+      'No MoodColors in the ambient Theme. Mount the tree under '
+      'AppTheme.cupping or AppTheme.darkRoast (MaterialApp.theme and '
+      'darkTheme); a bare MaterialApp or ThemeData carries no mood.',
+    );
+    return mood ?? MoodColors.forBrightness(theme.brightness);
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/lessons/presentation/cards/practical_card_view.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -31,6 +32,7 @@ const _untagged =
 
 void main() {
   Widget wrap(PracticalCard card, {VoidCallback? onContinue}) => MaterialApp(
+    theme: AppTheme.cupping,
     home: Scaffold(
       body: SingleChildScrollView(
         child: PracticalCardView(

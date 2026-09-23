@@ -1,3 +1,4 @@
+import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
@@ -13,6 +14,7 @@ const String _title = 'Perfect run!';
 Widget _host(VoidCallback onDone, {bool reducedMotion = false}) =>
     ProviderScope(
       child: MaterialApp(
+        theme: AppTheme.cupping,
         home: Scaffold(
           body: RoastyMoment(
             reaction: CompanionReaction.lessonComplete,

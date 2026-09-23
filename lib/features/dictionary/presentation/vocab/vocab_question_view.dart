@@ -115,17 +115,13 @@ class _Verdict extends StatelessWidget {
   Widget build(BuildContext context) {
     final isCorrect = round.isCorrect(picked);
 
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.md),
-      child: AnswerFeedback(
-        verdict: VocabCopy.verdict(round.answer.term, isCorrect: isCorrect),
-        outcome: isCorrect ? Verdict.right : Verdict.wrong,
-        placement: VerdictPlacement.reference,
-        extra: LinkButton(
-          label: VocabCopy.readEntry,
-          onPressed: () =>
-              unawaited(context.pushDictionaryTerm(round.answer.id)),
-        ),
+    return AnswerFeedback(
+      verdict: VocabCopy.verdict(round.answer.term, isCorrect: isCorrect),
+      outcome: isCorrect ? Verdict.right : Verdict.wrong,
+      placement: VerdictPlacement.vocabRound,
+      extra: LinkButton(
+        label: VocabCopy.readEntry,
+        onPressed: () => unawaited(context.pushDictionaryTerm(round.answer.id)),
       ),
     );
   }
