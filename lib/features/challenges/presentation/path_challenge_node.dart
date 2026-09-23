@@ -74,7 +74,7 @@ ChallengeSurfaceState pathChallengeState(
 /// a tap does — the design's `.lesson-row.challenge-sub`, compact, so the card
 /// keeps no border or fill of its own.
 ///
-/// The module's capstone and a finished lesson's challenge both draw through it.
+/// The module's capstone and a lesson's challenge both draw through it.
 class PathChallengeRow extends ConsumerStatefulWidget {
   /// Creates a [PathChallengeRow].
   const PathChallengeRow({
