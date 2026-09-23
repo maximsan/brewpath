@@ -16,8 +16,9 @@ Linux rate and rounds every job up to the minute, so on a private repository
 the iOS build and smoke cost about **150 charged minutes per push to `main`** —
 an order of magnitude more than the entire Linux suite. Codemagic bills real
 minutes against a 500-a-month personal allowance, where the same work costs
-about **14**. Nothing was dropped in the move; the two workflows run the same
-commands against the same scripts.
+about **14**. No command was dropped — the two workflows run the same commands against the
+same scripts. What changed is *when* they run, which the two notes below spell
+out.
 
 No automated App Store deployment. That is added later once TestFlight
 distribution is routine — and Codemagic's built-in TestFlight step is now the
@@ -58,10 +59,13 @@ Generated files are committed, so no `build_runner` step runs in CI.
 
 Two further economies, both in the workflow's `on:` and `concurrency:` blocks:
 a second push to a pull request cancels the run its predecessor started, and a
-change confined to `docs/`, `learning/`, `.claude/` or any `*.md` skips the
-workflow entirely. `prototype/` is deliberately **not** in that skip list —
-`test/unit/tool/extract_content_test.dart` and `extract_card_art_test.dart`
-read its sources, so an edit there can genuinely fail CI.
+change confined to `.claude/` skips the workflow entirely. That is the only
+path skipped, because it is the only one no test reads. `docs/`, `learning/`
+and the root markdown files were skipped too until
+`test/unit/tool/adr_numbering_test.dart` and
+`test/unit/glossary_vocabulary_test.dart` turned out to assert over exactly
+them — `tool/guard_tests.dart` lists `docs/` as a guard root — so skipping
+them had switched two regression guards off.
 
 ---
 

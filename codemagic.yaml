@@ -1,6 +1,6 @@
 # The macOS half of CI; the Linux checks are in .github/workflows/ci.yml.
-# GitHub bills macOS at ten times Linux, which made these two workflows 150
-# charged minutes a push. Why they moved here: docs/ci-cd.md.
+# GitHub bills macOS at ten times Linux, which made these two 150 charged
+# minutes per push to main, 50 per pull request. Why they moved: docs/ci-cd.md.
 
 definitions:
   environment: &macos
@@ -82,7 +82,11 @@ workflows:
   smoke:
     name: smoke (simulator)
     instance_type: mac_mini_m2
-    max_build_duration: 45
+    # The budget measured on the old runner: pub ~1 min, a boot of 2 to 9
+    # bounded at 12 by boot_simulator.sh, the Flutter build 4 to 10, then
+    # Xcode's build and the tests. No M2 measurement exists, so the cap stays
+    # where that evidence put it rather than being trimmed on a guess.
+    max_build_duration: 60
     environment: *macos
     cache: *pub
     # No `triggering` block, so nothing in the repository starts this: it runs
@@ -143,8 +147,10 @@ workflows:
             -resultBundlePath smoke.xcresult \
             2>&1 | tee smoke-xcodebuild.log \
             | grep -E 'Test Case|Test Suite|Executed|error:|\*\* TEST'
-    # These outlive the build whatever ends it — the duration cap, a cancel —
-    # so a failure can be read rather than reconstructed from silence.
+    # Collected after the build so a failure can be read rather than
+    # reconstructed from silence. Unverified against a build killed by the
+    # duration cap, and .xcresult is a bundle directory — confirm both on the
+    # first red nightly rather than trusting them.
     artifacts:
       - smoke-xcodebuild.log
       - smoke.xcresult

@@ -217,21 +217,22 @@ Two consequences worth knowing, because both look alarming and are not:
 
 ## Reproducing CI locally
 
-CI is six jobs ([`ci-cd.md`](ci-cd.md)). Run them in this order before
-pushing; they are the same commands the workflow uses. Which of them the
+CI is one GitHub Actions job plus two Codemagic workflows
+([`ci-cd.md`](ci-cd.md)). The commands below are the GitHub half, in order;
+the macOS half needs a Mac and does not run on a pull request. Which of them the
 pre-push hook already runs is in
 [`quality-checks.md`](quality-checks.md).
 
 ```bash
 flutter pub get                                    # required BEFORE format — see below
 
-tool/check_changelog.sh                            # pull-request job; needs origin/main fetched
-dart tool/check_comments.dart --changed            # pull-request job; same base
+tool/check_changelog.sh                            # pull-request only; needs origin/main fetched
+dart tool/check_comments.dart --changed            # pull-request only; same base
 dart format --output=none --set-exit-if-changed lib test integration_test tool
 flutter analyze
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
 flutter test
-flutter build ios --release --no-codesign
+flutter build ios --release --no-codesign          # Codemagic only; main, not PRs
 ```
 
 Two things that are easy to get wrong:
@@ -243,14 +244,14 @@ Two things that are easy to get wrong:
   `dart format` selects its style from the package's language version, which it
   reads via `.dart_tool/package_config.json`. Without resolution it falls back
   to the newest language version and reformats files that are correct at the
-  `sdk:` floor `pubspec.yaml` declares. This exact omission kept the `format` job
-  red on `main` for over a week
+  `sdk:` floor `pubspec.yaml` declares. This exact omission kept the then-separate
+  `format` job red on `main` for over a week
   ([#43](https://github.com/maximsan/brewpath/pull/43)).
 
 `flutter analyze` does **not** cover `dart_code_linter`'s per-function metrics,
 and `flutter test` does **not** run `integration_test/` — those need a device.
 
-### The changelog job
+### The changelog check
 
 `tool/check_changelog.sh` fails a pull request that changes `lib/`,
 `assets/content/` or `pubspec.yaml` without adding an entry to

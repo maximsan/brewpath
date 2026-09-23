@@ -1,7 +1,8 @@
 # Quality checks — what runs before code leaves the machine
 
 The repo's own rules run at four moments, earliest first. `flutter analyze`
-and the full suite stay in CI, which runs them on every push; the iOS build
+and the full suite stay in CI, which runs them on every push that touches
+anything but `.claude/`; the iOS build
 and the smoke suite run on Codemagic, on `main` and nightly respectively
 ([`ci-cd.md`](ci-cd.md)).
 

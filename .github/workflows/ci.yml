@@ -3,21 +3,16 @@ name: CI
 on:
   push:
     branches: [main]
-    # Prose changes nothing a build or a test can check, and a markdown-only
-    # commit to main used to cost 169 charged minutes — the whole pipeline,
-    # smoke included. Duplicated rather than shared through a YAML anchor,
-    # which the Actions parser does not support. prototype/ is deliberately
-    # absent: two tool tests read its sources, so an edit there can fail CI.
+    # Only .claude/ is skipped, because it is the only path here no test reads.
+    # docs/, learning/ and root markdown were skipped too until adr_numbering_test
+    # and glossary_vocabulary_test turned out to assert over exactly them — and
+    # tool/guard_tests.dart lists docs/ as a guard root. Skipping those switched
+    # two regression guards off. Duplicated rather than shared through a YAML
+    # anchor, which the Actions parser does not support.
     paths-ignore:
-      - "docs/**"
-      - "learning/**"
-      - "**/*.md"
       - ".claude/**"
   pull_request:
     paths-ignore:
-      - "docs/**"
-      - "learning/**"
-      - "**/*.md"
       - ".claude/**"
   # Run by hand on any branch, which is also how a prose-only change gets the
   # checks the paths-ignore above skips.
@@ -37,15 +32,9 @@ env:
   FLUTTER_VERSION: "3.44.1"
 
 jobs:
-  # Linux only. The iOS build and the simulator smoke suite live in
-  # codemagic.yaml: GitHub bills a macOS runner at ten times Linux and
-  # rounds every job up, so those two cost 150 charged minutes per push to
-  # main here against 14 real ones there. docs/ci-cd.md has the split.
-  # One job, not four. Each separate job paid its own checkout, its own
-  # Flutter install and its own rounded-up billing minute for work that took
-  # seconds — three minutes a run before either runner did anything. The
-  # cheap checks run first so a formatting slip still fails in under a
-  # minute, and only then does the fifteen-minute suite start.
+  # Linux only; the macOS workflows are in codemagic.yaml. One job rather than
+  # four, and a changelog or comment failure therefore stops the run before
+  # analyze and test report. Why both: docs/ci-cd.md.
   checks:
     name: checks
     runs-on: ubuntu-latest

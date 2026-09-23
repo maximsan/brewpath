@@ -6,18 +6,25 @@
  *   node tool/profile_tests.js                  # runs the suite, then reports
  *   node tool/profile_tests.js --report r.json  # reports on an existing run
  *
- * The suite is 372 files, and the question a total wall time cannot answer is
- * which of two different problems it has: a handful of genuinely slow tests,
- * or a per-file tax paid 372 times. The fixes do not resemble each other —
+ * The suite is hundreds of files, and the question a total wall time cannot
+ * answer is which of two problems it has: a handful of genuinely slow tests,
+ * or a per-file tax paid once per file. The fixes do not resemble each other —
  * the first is a few tests to repair, the second is fewer, larger files or a
  * different --concurrency — so the report separates them.
  *
  * The discriminator is free in the JSON reporter's own output. Compiling and
  * loading a test file is reported as a hidden test named `loading <path>`,
  * distinct from the tests in it, so "load" below is real per-file overhead
- * measured rather than inferred. Anything left over once both are subtracted
- * from the wall clock is the runner's own setup.
+ * measured rather than inferred. Both are sums across parallel isolates, so
+ * they are shares of the work done, not of the time elapsed.
  */
+
+// Piping into `head` closes stdout mid-report; without this the process dies
+// with an unhandled EPIPE instead of just stopping.
+process.stdout.on("error", (error) => {
+  if (error.code === "EPIPE") process.exit(0);
+  throw error;
+});
 
 const fs = require("fs");
 const os = require("os");
@@ -29,12 +36,10 @@ const MS_PER_SECOND = 1000;
 
 /** Reads `--report <path>`, or runs the suite into a temporary file. */
 function reportPath(argv) {
+  const inline = argv.find((arg) => arg.startsWith("--report="));
+  if (inline) return inline.slice("--report=".length) || fail("--report needs a path");
   const flag = argv.indexOf("--report");
-  if (flag !== -1) {
-    const given = argv[flag + 1];
-    if (!given) fail("--report needs a path");
-    return given;
-  }
+  if (flag !== -1) return argv[flag + 1] ?? fail("--report needs a path");
   const out = path.join(
     fs.mkdtempSync(path.join(os.tmpdir(), "brewpath-tests-")),
     "report.json",
@@ -96,13 +101,15 @@ function parse(file) {
         name: started.name,
         suite: suitePaths.get(started.suiteID) ?? "(unknown file)",
         ms: event.time - started.start,
-        // `hidden` marks the reporter's own bookkeeping entries; the load of
-        // a file is the one that matters here.
+        // `hidden` marks every entry the reporter generates: the load of a
+        // file, and also (setUpAll)/(tearDownAll). Only the first is wanted,
+        // and the rest are not tests, so both flags are carried.
+        hidden: event.hidden === true,
         isLoad: event.hidden === true && started.name.startsWith("loading "),
       });
     }
   }
-  return { finished, wall };
+  return { finished, wall, unfinished: open.size };
 }
 
 const seconds = (ms) => `${(ms / MS_PER_SECOND).toFixed(1)}s`;
@@ -126,11 +133,11 @@ function table(title, ranked, total) {
 }
 
 function main() {
-  const { finished, wall } = parse(reportPath(process.argv.slice(2)));
+  const { finished, wall, unfinished } = parse(reportPath(process.argv.slice(2)));
   if (finished.length === 0) fail("the report contains no tests");
 
   const loads = finished.filter((row) => row.isLoad);
-  const tests = finished.filter((row) => !row.isLoad);
+  const tests = finished.filter((row) => !row.hidden);
   const loadMs = loads.reduce((sum, row) => sum + row.ms, 0);
   const testMs = tests.reduce((sum, row) => sum + row.ms, 0);
 
@@ -146,6 +153,11 @@ function main() {
       `Tests              ${tests.length}`,
       `Loading files      ${seconds(loadMs)}  (${share(loadMs)} of work)`,
       `Running tests      ${seconds(testMs)}  (${share(testMs)} of work)`,
+      // A crashed suite leaves its tests open, and their time in neither
+      // bucket — which tilts the verdict below, so it is never silent.
+      ...(unfinished > 0
+        ? [`Never finished     ${unfinished} (their time is in neither figure)`]
+        : []),
     ].join("\n") + "\n",
   );
 
@@ -170,7 +182,7 @@ function main() {
         "different --concurrency will move it; fixing individual tests will not."
       : loadShare < MIXED_FLOOR
         ? "Running dominates: the cost is in the tests above, not in file count."
-        : "Split roughly evenly, so neither fix alone is enough. Loading is a\n" +
+        : "Both are substantial, so neither fix alone is enough. Loading is a\n" +
           "per-file tax on all " +
           `${loads.length} files; running is concentrated in the files above.`;
   process.stdout.write(`\n${verdict}\n`);
