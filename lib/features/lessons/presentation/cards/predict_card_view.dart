@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/core/widgets/fill_slot.dart';
+import 'package:brew_path/features/dictionary/presentation/term_linked_text.dart';
 import 'package:brew_path/features/lessons/domain/cloze.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
@@ -79,8 +80,8 @@ class _PredictCardViewState extends State<PredictCardView> {
           child: Text(card.title, style: AppText.display(mood: mood)),
         ),
         SizedBox(height: OffTokens.predictSectionGap.value),
-        Text(
-          card.body,
+        TermLinkedText(
+          text: card.body,
           style: AppText.lead(
             mood: mood,
           ).copyWith(height: OffTokens.predictReadingLeading.value),
