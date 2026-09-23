@@ -196,4 +196,4 @@ final class AppStoreReviewProvider extends $FunctionalProvider<Uri?, Uri?, Uri?>
   }
 }
 
-String _$appStoreReviewHash() => r'110a82872e432789bd7302d0792077e8106bac22';
+String _$appStoreReviewHash() => r'd366dba2bb37b067d3068f299442d55353f2c847';
