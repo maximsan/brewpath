@@ -4,6 +4,7 @@ import 'package:brew_path/app/day_rollover_watcher.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_expiry_watcher.dart';
 import 'package:brew_path/features/companion/application/companion_outfit.dart';
 import 'package:brew_path/features/companion/presentation/companion_outfit_scope.dart';
+import 'package:brew_path/features/profile/presentation/reminder_watcher.dart';
 import 'package:brew_path/features/tour/presentation/micro_tip_host.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
@@ -22,31 +23,33 @@ class BrewPathApp extends ConsumerWidget {
     final themeMode = ref.watch(themeModeControllerProvider);
     return DayRolloverWatcher(
       child: ChallengeExpiryWatcher(
-        child: MaterialApp.router(
-          title: 'BrewPath',
-          // `theme` must be the light mood and `darkTheme` the dark one: under
-          // ThemeMode.system Flutter picks between them by platform brightness,
-          // and it follows a live OS change on its own.
-          theme: AppTheme.cupping,
-          darkTheme: AppTheme.darkRoast,
-          themeMode: themeMode.materialThemeMode,
-          routerConfig: router,
-          debugShowCheckedModeBanner: false,
-          // English alone, so every device locale resolves to it — ADR-0008
-          // admits a language only once its whole folder is translated.
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          // The guide layer's micro-tips draw over the whole app: two of the
-          // screens they appear on are pushed over the tab bar, so no shell or
-          // screen can host them all. See `MicroTipHost`.
-          //
-          // The outfit is installed here, above every route, because a Roasty
-          // on a pushed screen has no other common ancestor to read it from.
-          builder: (context, child) => CompanionOutfitScope(
-            outfit:
-                ref.watch(companionOutfitProvider).value ??
-                CompanionConfig.initial,
-            child: MicroTipHost(child: child!),
+        child: ReminderWatcher(
+          child: MaterialApp.router(
+            title: 'BrewPath',
+            // `theme` must be the light mood and `darkTheme` the dark
+            // one: under ThemeMode.system Flutter picks between them by
+            // platform brightness, and follows a live OS change on its own.
+            theme: AppTheme.cupping,
+            darkTheme: AppTheme.darkRoast,
+            themeMode: themeMode.materialThemeMode,
+            routerConfig: router,
+            debugShowCheckedModeBanner: false,
+            // English alone, so every device locale resolves to it — ADR-0008
+            // admits a language only once its whole folder is translated.
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            // The guide layer's micro-tips draw over the whole app: two of
+            // the screens they appear on are pushed over the tab bar, so no
+            // shell or screen can host them all. See `MicroTipHost`.
+            //
+            // The outfit is installed here, above every route, because a Roasty
+            // on a pushed screen has no other common ancestor to read it from.
+            builder: (context, child) => CompanionOutfitScope(
+              outfit:
+                  ref.watch(companionOutfitProvider).value ??
+                  CompanionConfig.initial,
+              child: MicroTipHost(child: child!),
+            ),
           ),
         ),
       ),

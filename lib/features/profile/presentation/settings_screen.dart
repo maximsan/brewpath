@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/presentation/settings/reminder_rows.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
@@ -18,8 +19,7 @@ import 'package:go_router/go_router.dart';
 ///
 /// The foot carries no label, `Delete account` drawn and inert while Firebase
 /// is off, and `Restart onboarding`, which the design lacks and #383 needs:
-/// the owner's rulings on #395. The design's reminder rows under `PRACTICE`
-/// wait for #443.
+/// the owner's rulings on #395.
 class SettingsScreen extends ConsumerWidget {
   /// Creates a [SettingsScreen].
   const SettingsScreen({super.key});
@@ -64,8 +64,8 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
-/// The `PRACTICE` rows: sound and haptics. The design's two reminder rows are
-/// hidden until reminders exist (#443).
+/// The `PRACTICE` rows, in the design's order: the reminder's switch and its
+/// time, then sound and haptics.
 class _PracticeRows extends ConsumerWidget {
   const _PracticeRows({required this.settings});
 
@@ -81,6 +81,7 @@ class _PracticeRows extends ConsumerWidget {
       data: (state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          ReminderRows(settings: state),
           SettingsNavRow(
             label: SettingsCopy.soundRow,
             toggleValue: state.soundEnabled,

@@ -483,18 +483,20 @@ final class CardChallengeTriedFamily extends $Family
 
 /// The challenges waiting in the saved queue, in bank order.
 ///
-/// Excludes whatever is in play and anything already logged, and drops any
-/// challenge whose lesson the learner has not reached — a queue advertising
-/// work locked behind content is worse than an empty one.
+/// Excludes whatever is in play, and drops any challenge whose lesson the
+/// learner has not reached — a queue advertising work locked behind content is
+/// worse than an empty one. What a logged one is doing here: see
+/// [visibleSavedChallenges].
 
 @ProviderFor(savedChallenges)
 final savedChallengesProvider = SavedChallengesProvider._();
 
 /// The challenges waiting in the saved queue, in bank order.
 ///
-/// Excludes whatever is in play and anything already logged, and drops any
-/// challenge whose lesson the learner has not reached — a queue advertising
-/// work locked behind content is worse than an empty one.
+/// Excludes whatever is in play, and drops any challenge whose lesson the
+/// learner has not reached — a queue advertising work locked behind content is
+/// worse than an empty one. What a logged one is doing here: see
+/// [visibleSavedChallenges].
 
 final class SavedChallengesProvider
     extends
@@ -508,9 +510,10 @@ final class SavedChallengesProvider
         $FutureProvider<List<BrewChallenge>> {
   /// The challenges waiting in the saved queue, in bank order.
   ///
-  /// Excludes whatever is in play and anything already logged, and drops any
-  /// challenge whose lesson the learner has not reached — a queue advertising
-  /// work locked behind content is worse than an empty one.
+  /// Excludes whatever is in play, and drops any challenge whose lesson the
+  /// learner has not reached — a queue advertising work locked behind content is
+  /// worse than an empty one. What a logged one is doing here: see
+  /// [visibleSavedChallenges].
   SavedChallengesProvider._()
     : super(
         from: null,
@@ -537,7 +540,7 @@ final class SavedChallengesProvider
   }
 }
 
-String _$savedChallengesHash() => r'eafa25d032cd0d924836e4960f7215b89e46c6db';
+String _$savedChallengesHash() => r'7865224f2d10e86d05311bb05b64ae56e3562528';
 
 /// The capstone [moduleId] offers, or null when it has none or is unearned.
 
