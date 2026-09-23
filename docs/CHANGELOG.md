@@ -113,6 +113,10 @@ You can always edit this file by hand instead — the helpers just save effort.
   challenge row without a card of its own. Every lock on the Path is the
   design's own 13-by-15 mark rather than the icon catalogue's smaller one,
   and the challenge cup is the design's brew cup with its steam.
+- **The header's two entries sit in the design's circles.** Saved and the
+  Dictionary are 44-point rings on the surface colour with a hairline edge,
+  their glyphs in the accent, ten apart, on every tab; Profile's gear takes
+  the same ring.
 - **The floating top bar fades under its hairline, and two screens seal
   sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
   both endings now draws the same soft band below its edge that every other
