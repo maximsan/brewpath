@@ -64,6 +64,12 @@ You can always edit this file by hand instead — the helpers just save effort.
   learner's own dictionary, so a free learner is never sent to an entry they
   cannot open ([#99](https://github.com/maximsan/brewpath/issues/99)).
 
+- **About's *Say something* rows are written, and wait on their data.** *Say
+  hello* appears once there is a mailbox to write to and *Rate BrewPath* once
+  there is an App Store listing to rate, each from its own constant — so
+  neither is a row the app has to grow later, and neither is ever drawn live
+  and inert ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —
   absent, or left behind by an English edit — writes the folder from that
@@ -103,6 +109,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   link still starts its run directly, and an unfinished lesson is unaffected
   anywhere ([#573](https://github.com/maximsan/brewpath/issues/573)).
 
+### Fixed
+
+- **The paywall no longer spins for the best part of a minute before admitting
+  it has no offer to show.** A provider that fails keeps Riverpod's loading
+  flag while it retries, so the screen's unreachable state — which is what
+  asks the learner to try again — only appeared once ten retries had run out
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
 ### Changed
 
 - **A push now runs every guard, not the ones named like one.** The hook
@@ -141,6 +155,28 @@ You can always edit this file by hand instead — the helpers just save effort.
   followed the list: the verdict, or the button. The button under predict and
   decision moves 2px closer to the card, and under recall 6px
   ([#594](https://github.com/maximsan/brewpath/issues/594)).
+
+- **Settings rows are grouped again, and their rules stop where the words
+  do.** Every group opens 24 above its heading rather than 16, so the five
+  screens behind Settings read as groups instead of one long run; and a row's
+  hairline now runs the width of the page's column instead of edge to edge,
+  which is where the design draws it. About closes on two lines — the version
+  over the build, then its signature — where Settings keeps its one
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
+- **Settings and About sign off at the foot of the screen.** Both drew their
+  closing block as the last thing in a list, so on a page that does not fill
+  the screen — About, while the legal pages and the mailbox are still absent —
+  the version line floated halfway down over a stretch of nothing. It now
+  holds the bottom until the content is long enough to push it past, and
+  leaves the home indicator the room neither page was leaving it
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
+- **A settings row that leaves the app now says so before it is pressed.** The
+  design's outward arrow stands in place of the chevron on About's and Help's
+  external rows, and a screen reader announces them as links rather than
+  buttons. About's fine print also follows the design's own order, Privacy
+  above Terms ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 - **A screen mounted without the app's theme now fails at once.** `context.mood`
   used to fall back to Dark Roast when the theme carried no mood, so a widget

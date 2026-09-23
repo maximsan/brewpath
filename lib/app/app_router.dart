@@ -31,9 +31,10 @@ import 'package:brew_path/features/onboarding/presentation/paywall/onboarding_pa
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/profile/presentation/profile_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings/about_screen.dart';
+import 'package:brew_path/features/profile/presentation/settings/account_sync_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/purchases_screen.dart';
-import 'package:brew_path/features/profile/presentation/settings/settings_destinations.dart';
 import 'package:brew_path/features/profile/presentation/settings_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';

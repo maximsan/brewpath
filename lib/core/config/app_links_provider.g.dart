@@ -152,3 +152,48 @@ final class PrivacyPageProvider extends $FunctionalProvider<Uri?, Uri?, Uri?>
 }
 
 String _$privacyPageHash() => r'a31844839370a344477826d0b2806a0c5e86ff52';
+
+/// Where *Rate BrewPath* goes, or null while there is no listing (#532).
+
+@ProviderFor(appStoreReview)
+final appStoreReviewProvider = AppStoreReviewProvider._();
+
+/// Where *Rate BrewPath* goes, or null while there is no listing (#532).
+
+final class AppStoreReviewProvider extends $FunctionalProvider<Uri?, Uri?, Uri?>
+    with $Provider<Uri?> {
+  /// Where *Rate BrewPath* goes, or null while there is no listing (#532).
+  AppStoreReviewProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'appStoreReviewProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$appStoreReviewHash();
+
+  @$internal
+  @override
+  $ProviderElement<Uri?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Uri? create(Ref ref) {
+    return appStoreReview(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Uri? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Uri?>(value),
+    );
+  }
+}
+
+String _$appStoreReviewHash() => r'd366dba2bb37b067d3068f299442d55353f2c847';

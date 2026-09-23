@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/icons/outward_mark.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,10 @@ import 'package:flutter_test/flutter_test.dart';
 /// all — the app's rows had grown leading glyphs the design never drew, which
 /// is what makes this a component rather than a `ListTile` call.
 final Matcher _isButton = isSemantics(isButton: true);
+
+/// A node a screen reader announces as a link — the design's `external` row,
+/// which hands the learner to a browser, a mail composer or the store.
+final Matcher _isLink = isSemantics(isLink: true);
 
 void main() {
   Future<void> pump(WidgetTester tester, Widget row) => tester.pumpWidget(
@@ -114,6 +119,25 @@ void main() {
       tester.widget<Opacity>(find.byType(Opacity)).opacity,
       lessThan(1),
     );
+  });
+
+  testWidgets('a row that leaves the app draws the outward arrow, not the '
+      'chevron, and announces itself as a link', (tester) async {
+    await pump(
+      tester,
+      SettingsNavRow(label: 'Say hello', isExternal: true, onTap: () {}),
+    );
+
+    expect(find.byType(OutwardMark), findsOneWidget);
+    expect(tester.getSemantics(find.text('Say hello')), _isLink);
+    expect(tester.getSemantics(find.text('Say hello')), isNot(_isButton));
+  });
+
+  testWidgets('a row that stays in the app keeps the chevron', (tester) async {
+    await pump(tester, SettingsNavRow(label: 'About', onTap: () {}));
+
+    expect(find.byType(OutwardMark), findsNothing);
+    expect(tester.getSemantics(find.text('About')), _isButton);
   });
 
   testWidgets('every row clears the platform minimum tap target', (

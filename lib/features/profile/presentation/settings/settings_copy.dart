@@ -121,15 +121,25 @@ abstract final class SettingsCopy {
   /// Section on About: the legal rows.
   static const finePrintSection = 'The fine print';
 
+  /// Section on About: the ways to say something back.
+  static const saySomethingSection = 'Say something';
+
+  /// About's row opening a blank message to the support mailbox (#531).
+  static const sayHelloRow = 'Say hello';
+
+  /// About's row opening the App Store listing's review sheet (#532).
+  static const rateRow = 'Rate BrewPath';
+
+  /// What closes About, under the version and build numbers.
+  ///
+  /// Settings closes on [versionTagline] instead: one line there, two here,
+  /// which is how the design draws each.
+  static const aboutSignature = 'Brewed slowly, like the good stuff';
+
+  /// What the fine print will hold, while neither legal page is hosted.
+  static const aboutComing = 'Privacy policy and terms of use.';
+
   /// What the unbuilt half of Account and sync will hold.
   static const cloudSyncComing =
       'Signing in, and keeping your progress on more than one device.';
-
-  /// What the unbuilt half of About will hold.
-  static const aboutComing =
-      'Privacy policy, terms, acknowledgements and the open-source licenses.';
-
-  /// The same, once the two legal pages exist and are drawn as rows (#448).
-  static const aboutComingWithLegal =
-      'Acknowledgements and the open-source licenses.';
 }

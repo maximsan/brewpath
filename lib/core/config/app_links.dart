@@ -43,4 +43,11 @@ abstract final class SupportLinks {
 
   /// The hosted Privacy policy, or null while the page does not exist (#448).
   static const String? privacy = null;
+
+  /// The App Store listing's id, or null while there is no listing (#532).
+  ///
+  /// The number in every App Store URL, and it exists the moment the app
+  /// record does — `docs/universal-links-setup.md` says where to find it.
+  /// About's *Rate BrewPath* is absent until it is set.
+  static const String? appStoreId = null;
 }

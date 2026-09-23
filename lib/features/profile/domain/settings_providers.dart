@@ -85,6 +85,14 @@ Future<String> appVersion(Ref ref) async {
 Future<String> appVersionShort(Ref ref) async =>
     'v${(await PackageInfo.fromPlatform()).version}';
 
+/// The two numbers apart, which is how About's closing block prints them —
+/// `VERSION 0.1 · BUILD 240618`.
+@riverpod
+Future<({String version, String build})> appVersionParts(Ref ref) async {
+  final info = await PackageInfo.fromPlatform();
+  return (version: info.version, build: info.buildNumber);
+}
+
 /// Wipes the learner's progress.
 ///
 /// Every progress surface follows the write on its own, because it reads the

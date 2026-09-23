@@ -1,18 +1,11 @@
-/// Three of the four screens the design's `ACCOUNT` and `SUPPORT` rows lead
-/// to; Help is its own file.
-///
-/// **They are frames, not features.** Behind each row is the screen's real
-/// sections, with what the app has not built named rather than left blank; the
-/// payments service is a no-op and Firebase is gated off.
-library;
-
 import 'package:brew_path/core/config/app_links_provider.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
-import 'package:brew_path/features/profile/domain/settings_providers.dart';
+import 'package:brew_path/features/profile/domain/support_links.dart';
+import 'package:brew_path/features/profile/presentation/settings/about_signature.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
 import 'package:brew_path/services/links/link_provider.dart';
@@ -22,24 +15,11 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Signing in, and progress across devices.
-class AccountSyncScreen extends StatelessWidget {
-  /// Creates the account screen.
-  const AccountSyncScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) => const SettingsSubScreen(
-    title: SettingsCopy.accountSyncTitle,
-    children: [
-      SettingsSection(
-        label: SettingsCopy.cloudSyncSection,
-        children: [SettingsPlaceholder(SettingsCopy.cloudSyncComing)],
-      ),
-    ],
-  );
-}
-
-/// The app's own page: what it is, and the fine print.
+/// The app's own page: what it is, the fine print, and the way to write in.
+///
+/// Every row here waits on something that must exist first — a hosted page, a
+/// mailbox, a store listing — and is absent until it does, because a row that
+/// looks live and does nothing is the failure #531 recorded.
 class AboutScreen extends ConsumerWidget {
   /// Creates the about screen.
   const AboutScreen({super.key});
@@ -47,7 +27,6 @@ class AboutScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mood = context.mood;
-    final version = ref.watch(appVersionProvider);
 
     return SettingsSubScreen(
       title: SettingsCopy.aboutTitle,
@@ -55,6 +34,9 @@ class AboutScreen extends ConsumerWidget {
       // row that reached it. `About` stays in the bar, as on every other page
       // behind Settings.
       opening: const _BrandBlock(),
+      // The design closes the page on its signature, at the foot of the
+      // screen — not wherever the last row happens to end.
+      footer: const AboutSignature(),
       children: [
         const SizedBox(height: AppSpacing.lg),
         Padding(
@@ -71,46 +53,82 @@ class AboutScreen extends ConsumerWidget {
           label: SettingsCopy.finePrintSection,
           children: [_FinePrintRows()],
         ),
-        const SizedBox(height: AppSpacing.lg),
-        SettingsVersionLine(version: version.asData?.value),
+        const _SaySomething(),
       ],
     );
   }
 }
 
-/// Terms and Privacy, each drawn only once its page exists (#448).
+/// The design's fine-print rows: Privacy and Terms, each drawn only once its
+/// page exists (#448).
 ///
-/// Acknowledgements and the open-source licenses are #532's, so the
-/// placeholder stays for as long as either of those is unbuilt.
+/// While neither does the group would be a heading over nothing, so it says
+/// what belongs there instead — the same line Account and sync gives its own
+/// unbuilt half.
 class _FinePrintRows extends ConsumerWidget {
   const _FinePrintRows();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final open = ref.read(linkOpenerProvider).open;
-    final terms = ref.watch(termsPageProvider);
     final privacy = ref.watch(privacyPageProvider);
+    final terms = ref.watch(termsPageProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (terms case final url?)
-          SettingsNavRow(
-            label: SettingsCopy.termsRow,
-            onTap: () => open(url),
-          ),
         if (privacy case final url?)
           SettingsNavRow(
             label: SettingsCopy.privacyRow,
+            isExternal: true,
             onTap: () => open(url),
           ),
-        // Names only what is still missing, so the line does not promise a
-        // row sitting right above it.
-        SettingsPlaceholder(
-          terms != null && privacy != null
-              ? SettingsCopy.aboutComingWithLegal
-              : SettingsCopy.aboutComing,
-        ),
+        if (terms case final url?)
+          SettingsNavRow(
+            label: SettingsCopy.termsRow,
+            isExternal: true,
+            onTap: () => open(url),
+          ),
+        if (privacy == null && terms == null)
+          const SettingsPlaceholder(SettingsCopy.aboutComing),
+      ],
+    );
+  }
+}
+
+/// The design's `SAY SOMETHING` group — each row behind the one thing it
+/// needs, and the group absent while neither of them exists.
+///
+/// *Rate BrewPath* waits on an App Store listing and *Say hello* on the
+/// mailbox (#531). Setting either constant draws its row with no other change,
+/// so neither is a row the app has to grow later.
+class _SaySomething extends ConsumerWidget {
+  const _SaySomething();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final review = ref.watch(appStoreReviewProvider);
+    final mailbox = ref.watch(supportMailboxProvider);
+    if (review == null && mailbox == null) return const SizedBox.shrink();
+
+    final open = ref.read(linkOpenerProvider).open;
+
+    return SettingsSection(
+      label: SettingsCopy.saySomethingSection,
+      children: [
+        if (review case final url?)
+          SettingsNavRow(
+            label: SettingsCopy.rateRow,
+            isExternal: true,
+            onTap: () => open(url),
+          ),
+        if (mailbox case final address?)
+          SettingsNavRow(
+            label: SettingsCopy.sayHelloRow,
+            value: address,
+            isExternal: true,
+            onTap: () => open(supportMailto(address)),
+          ),
       ],
     );
   }
