@@ -8,6 +8,16 @@ import '../../tool/guard_tests.dart';
 const _hook = 'tool/git-hooks/pre-push';
 const _selector = 'tool/guard_tests.dart';
 
+/// The four ways a test writes the path it reads. The last two are not
+/// hypothetical: a wrapped call and a path held in a `const` were both missed
+/// by a matcher that only looked inside `File(…)`.
+const _spellings = <String, String>{
+  'in the call': "File('lib/x.dart').read();",
+  'wrapped by the formatter': "File(\n  'lib/x.dart',\n).read();",
+  'in double quotes': 'File("lib/x.dart").read();',
+  'held in a const': "const dir = 'lib/x.dart';\nFile(dir).read();",
+};
+
 void main() {
   test('it names tests that exist, and some of them', () {
     final swept = guardTestPaths();
@@ -32,42 +42,34 @@ void main() {
     );
   });
 
-  test('a guard is swept however its call is wrapped', () {
-    // `dart format` breaks a long `File(…)` across lines, and the line-based
-    // match this replaces lost one that way. The spelling to never miss.
-    const wrapped = "final css = File(\n  'lib/x.dart',\n).read();";
-
-    expect(repoPathsRead(wrapped), ['lib/x.dart']);
-  });
-
-  test('every door into the repo is swept', () {
-    final swept = guardTestPaths().toSet();
-    final byName = <String>[];
-    final byReader = <String>[];
-
-    for (final file in testFiles()) {
-      if (file.path.endsWith('_guard_test.dart')) byName.add(file.path);
-      if (file.readAsStringSync().contains('support/dart_sources.dart')) {
-        byReader.add(file.path);
-      }
+  test('a path is seen however the test writes it', () {
+    for (final spelling in _spellings.entries) {
+      expect(
+        repoRootsNamed(spelling.value),
+        contains('lib/'),
+        reason: 'a guard that names its path ${spelling.key} is missed',
+      );
     }
-
-    expect(byName, isNotEmpty);
-    expect(byReader, isNotEmpty);
-    expect(byName.where((path) => !swept.contains(path)), isEmpty);
-    expect(byReader.where((path) => !swept.contains(path)), isEmpty);
   });
 
-  test('a test that reads only the authored course is left to CI', () {
-    // The boundary the sweep draws: content is a different class, and a push
-    // that had to validate the whole course would stop being run.
-    const contentTest = 'test/unit/content_rules_test.dart';
+  test('a comment naming a path is not a test reading one', () {
+    expect(repoRootsNamed("// see 'lib/x.dart' for why\n"), isEmpty);
+  });
 
-    expect(File(contentTest).existsSync(), isTrue);
+  test('nothing declared a guard by its name is excluded', () {
     expect(
-      repoPathsRead(File(contentTest).readAsStringSync()),
-      everyElement(startsWith(contentRoot)),
+      notGuards.keys.where((path) => path.endsWith('_guard_test.dart')),
+      isEmpty,
+      reason: 'a file that calls itself a guard cannot be quietly dropped',
     );
-    expect(guardTestPaths(), isNot(contains(contentTest)));
+  });
+
+  test('every exclusion still names a file, and says why', () {
+    expect(notGuards, isNotEmpty);
+    notGuards.forEach((path, reason) {
+      expect(File(path).existsSync(), isTrue, reason: '$path is gone');
+      expect(reason.trim(), isNotEmpty, reason: '$path has no reason');
+      expect(guardTestPaths(), isNot(contains(path)));
+    });
   });
 }

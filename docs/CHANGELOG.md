@@ -86,12 +86,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 ### Changed
 
 - **A push now runs every guard, not the ones named like one.** The hook
-  picked them with `find -name '*_guard_test.dart'`, and thirteen of the
-  twenty guards were not named that way — including the one that forbids
-  naming a font weight, which let a violation through to CI. They are chosen
-  by what they read now, so a guard cannot stop guarding by being named
-  plainly, and a test fails if the hook stops asking. The sweep goes from 35
-  tests to 190, and the push from about 5 seconds of guards to about 12.
+  picked them with `find -name '*_guard_test.dart'`, and most of the guards
+  were not named that way — including the one that forbids naming a font
+  weight, which let a violation through to CI. They are chosen by what they
+  read now, so a guard cannot stop guarding by being named plainly, and a test
+  fails if the hook stops asking. A test that is not a guard is excluded by
+  name, with its reason, so the list fails closed. The sweep goes from 35
+  tests to 220, and the push from about 5 seconds of guards to about 18.
 
 - **The Path title opens at the top of the tab, beside the Saved and
   Dictionary buttons.** It used to start 64 down so it cleared them; it now
