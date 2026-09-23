@@ -206,6 +206,14 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **The daily reminder posts in every zone iOS can name.** iOS still calls
+  some zones by their old names — India is `Asia/Calcutta` to it, and
+  `Asia/Kolkata` is a name it does not know — and the trimmed timezone
+  database the reminder loaded had none of them, so a learner there had a
+  switch reading on and nothing pending. The full database is loaded now, a
+  name it still lacks falls back to the moment itself rather than to nothing,
+  and a phone that changes zone gets its reminders re-posted in the new one
+  ([#443](https://github.com/maximsan/brewpath/issues/443)).
 - **The app stopped offering a language it has two banks of.** An interface
   translation beside `app_en.arb` is all it takes for Flutter to advertise a
   locale, so Belarusian was on offer to any phone set to it while the course
