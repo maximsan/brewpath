@@ -52,7 +52,7 @@ several times slower on a cold CI runner than locally).
 > Drift, a cleared `rootBundle` and an onboarding flag the harness seeds to
 > `true` — so a migration that fails on a real on-disk database, an asset the
 > pubspec does not bundle, and an unregistered plugin are invisible to all of
-> it. `iOS build` proves the app links, never that it boots. Onboarding has no
+> it. `ios-build` proves the app links, never that it boots. Onboarding has no
 > other coverage at all.
 >
 > **Never landmark on authored copy.** Lesson titles, card text and questions
@@ -73,7 +73,9 @@ several times slower on a cold CI runner than locally).
 > sliding in from off-screen. All three failed silently. A step that cannot
 > fail is not a step — and `pumpAndSettle` is banned here, because Roasty
 > idles forever and waiting on it is what disguised the breakage as a
-> ten-minute job. CI runs it on **main only** ([13](ci-cd.md)).
+> ten-minute job. CI runs it **nightly**, on Codemagic ([13](ci-cd.md)) — so
+> a push that breaks start-up is found the following morning, not within the
+> hour.
 
 ### The smoke walk's helpers
 

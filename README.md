@@ -47,8 +47,9 @@ obeys are in [docs/testing.md](docs/testing.md).
 The iOS project uses **Swift Package Manager**, not CocoaPods — there is no
 `ios/Podfile` and no `pod install` step. Plugins resolve as Swift Packages during
 `flutter build ios`. The deployment target is **16.0** (required by the Firebase
-SPM packages). CI builds on a macOS runner via the `iOS build` job in
-`.github/workflows/ci.yml`.
+SPM packages). CI builds on a macOS runner via the `ios-build` workflow in
+[`codemagic.yaml`](codemagic.yaml) — macOS runs on Codemagic rather than
+GitHub Actions, for the billing reason in [`docs/ci-cd.md`](docs/ci-cd.md).
 
 Troubleshooting:
 
@@ -124,6 +125,22 @@ Archives and package caches are refused by an allow-list.
 
 `--worktrees` forces a full rebuild for anyone working in one; leave it off
 while another session is mid-build.
+
+### `tool/profile_tests.js` — attribute the test suite's time
+
+Run when CI's `flutter test` step is the thing you are waiting on. It separates
+the per-file cost of loading a test file from the cost of running the tests
+inside it, because the two have unrelated fixes — fewer, larger files or a
+different `--concurrency`, against repairing individual slow tests.
+
+```bash
+node tool/profile_tests.js                  # runs the suite, then reports
+node tool/profile_tests.js --report r.json  # reports on an existing run
+```
+
+A report comes from `flutter test --file-reporter=json:<path>`. The measured
+numbers, and what they said about this suite, are in
+[#657](https://github.com/maximsan/brewpath/issues/657).
 
 ### `tool/extract_content.js` — regenerate the content banks
 

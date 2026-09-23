@@ -99,7 +99,7 @@ Apple requires a Privacy Manifest for apps accessing certain APIs.
       and its own comments carry the reasoning for each entry. Read the file, not
       a copy of it.
 - [x] In Xcode: add `PrivacyInfo.xcprivacy` to the Runner target (Build Phases →
-      Copy Bundle Resources). Wired in `project.pbxproj`; the `iOS build` CI job
+      Copy Bundle Resources). Wired in `project.pbxproj`; the `ios-build` CI workflow
       fails if it stops landing in `Runner.app`.
 
 What the app declares today: **tracks nobody, collects nothing**, and one

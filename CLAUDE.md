@@ -109,7 +109,7 @@ explanations — plus test and iOS/SPM build notes — lives in
   self-evident code, and no comment because a lint asked for one
   (`public_member_api_docs` is off). A comment block runs **six lines at
   most**: `tool/check_comments.dart` checks every Dart file a branch touches —
-  on the agent's write, on commit, on push and in the `comments` CI job — so a
+  on the agent's write, on commit, on push and in the `checks` CI job — so a
   file you touch is a file you clean, and older overruns drain as files are
   touched ([`docs/quality-checks.md`](docs/quality-checks.md)). Anything longer is documentation: put it
   in `docs/` or an ADR and leave one line pointing there. The argument for a

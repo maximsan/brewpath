@@ -1,0 +1,156 @@
+# The macOS half of CI; the Linux checks are in .github/workflows/ci.yml.
+# GitHub bills macOS at ten times Linux, which made these two 150 charged
+# minutes per push to main, 50 per pull request. Why they moved: docs/ci-cd.md.
+
+definitions:
+  environment: &macos
+    flutter: 3.44.1
+    xcode: latest
+  cache: &pub
+    cache_paths:
+      - $HOME/.pub-cache
+
+workflows:
+  ios-build:
+    name: iOS build
+    # M2 is the cheapest instance the free allowance covers.
+    instance_type: mac_mini_m2
+    # A backstop against a wedged runner; the build takes about four minutes.
+    max_build_duration: 30
+    environment: *macos
+    cache: *pub
+    # Pushes to main only — on a PR the merge rebuilds the same commit. A
+    # branch needing the check early gets a manual build from the UI.
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+
+      # No CocoaPods (SPM) and no GoogleService-Info.plist: the build succeeds
+      # with Firebase gated off (kUseFirebase == false).
+      - name: Build iOS (no code signing)
+        script: flutter build ios --release --no-codesign
+
+      - name: Verify build artifact
+        script: ls -la build/ios/iphoneos/Runner.app
+
+      # Wired into the Runner target by hand (#166), so a merge can drop it and
+      # nothing notices — the app still builds and boots, and the rejection
+      # only comes from App Store Connect. Assert it reached the bundle, still
+      # declaring the SQLite file-timestamp reason.
+      - name: Verify privacy manifest is in the bundle
+        script: |
+          MANIFEST=build/ios/iphoneos/Runner.app/PrivacyInfo.xcprivacy
+          test -f "$MANIFEST" || {
+            echo "$MANIFEST is missing — the Runner target lost it from Copy Bundle Resources."
+            exit 1
+          }
+          plutil -lint "$MANIFEST"
+          plutil -extract NSPrivacyAccessedAPITypes.0.NSPrivacyAccessedAPIType raw "$MANIFEST" \
+            | grep -qx NSPrivacyAccessedAPICategoryFileTimestamp || {
+            echo "The file-timestamp reason is gone; SQLite still needs it."
+            exit 1
+          }
+
+      # Same hazard, same fix (#171): without it every shared link opens Safari
+      # and nothing else says so. This build is --no-codesign, so the
+      # entitlement never reaches the bundle — assert the project-file wiring
+      # instead, which is the part a merge drops.
+      - name: Verify the associated-domains entitlement is still wired
+        script: |
+          ENTITLEMENTS=ios/Runner/Runner.entitlements
+          plutil -lint "$ENTITLEMENTS"
+          # PlistBuddy, not `plutil -extract`: plutil reads dots in a key path
+          # as separators, and this key name is all dots.
+          /usr/libexec/PlistBuddy -c 'Print :com.apple.developer.associated-domains:0' \
+            "$ENTITLEMENTS" | grep -qx 'applinks:brewpath.maximsan.dev' || {
+            echo "$ENTITLEMENTS no longer claims brewpath.maximsan.dev."
+            exit 1
+          }
+          test "$(grep -c 'CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;' \
+            ios/Runner.xcodeproj/project.pbxproj)" = 3 || {
+            echo "Expected all three Runner configs to name the entitlements file."
+            exit 1
+          }
+
+  smoke:
+    name: smoke (simulator)
+    instance_type: mac_mini_m2
+    # The budget measured on the old runner: pub ~1 min, a boot of 2 to 9
+    # bounded at 12 by boot_simulator.sh, the Flutter build 4 to 10, then
+    # Xcode's build and the tests. No M2 measurement exists, so the cap stays
+    # where that evidence put it rather than being trimmed on a guess.
+    max_build_duration: 60
+    environment: *macos
+    cache: *pub
+    # No `triggering` block on purpose: this is started over the API by
+    # .github/workflows/nightly-smoke.yml, and an API-started build ignores
+    # one anyway. Codemagic's own scheduler is a Team feature and the free
+    # macOS minutes are personal-only, so the cron lives in the repository —
+    # where #187 says a trigger belongs. Why nightly: docs/ci-cd.md.
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+
+      # Whichever iPhone the image ships; pinning a model breaks on every image
+      # roll. boot_simulator.sh erases and boots it, then waits for it to take
+      # an app launch — a first boot can migrate data for minutes, and a
+      # launch before that is refused.
+      - name: Boot an iPhone simulator
+        script: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c "
+          import json, sys
+          runtimes = json.load(sys.stdin)['devices']
+          for runtime, devices in runtimes.items():
+              if 'iOS' not in runtime:
+                  continue
+              for device in devices:
+                  if device.get('isAvailable') and device['name'].startswith('iPhone'):
+                      print(device['udid'])
+                      sys.exit(0)
+          sys.exit('no available iPhone simulator on this runner')
+          ")
+          echo "Booting $UDID"
+          tool/ci/boot_simulator.sh "$UDID"
+          # $CM_ENV carries a value to the next script; each is its own shell.
+          echo "SIMULATOR_UDID=$UDID" >> "$CM_ENV"
+
+      # `flutter build`, not `xcodebuild` alone: the Flutter tool is what
+      # raises the generated plugin package's platform floor to the project's
+      # 16.0. Left at its default 13.0 the Firebase packages refuse to build —
+      # the error tool/reset_ios_spm.sh exists for.
+      - name: Build the smoke test app
+        script: flutter build ios --simulator --debug -t integration_test/smoke_test.dart
+
+      # Xcode launches the app and reports each Dart test as an XCTest result
+      # (ios/RunnerTests/RunnerTests.m). Not `flutter test integration_test`:
+      # it waits for the app's start-up line on a `log stream` it attaches
+      # *after* the launch, so when the app prints first it waits forever —
+      # half the pushes to main, back on the GitHub runner. Reproduced
+      # 2026-09-04: attach three seconds late and the line is already gone.
+      - name: Smoke test
+        script: |
+          set -o pipefail
+          # No parallel testing: Xcode would clone the simulator and boot the
+          # clone all over again, re-paying the wait above.
+          xcodebuild test \
+            -workspace ios/Runner.xcworkspace -scheme Runner -configuration Debug \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -parallel-testing-enabled NO \
+            -derivedDataPath build/ios_integ \
+            -resultBundlePath smoke.xcresult \
+            2>&1 | tee smoke-xcodebuild.log \
+            | grep -E 'Test Case|Test Suite|Executed|error:|\*\* TEST'
+    # Collected after the build so a failure can be read rather than
+    # reconstructed from silence. Unverified against a build killed by the
+    # duration cap, and .xcresult is a bundle directory — confirm both on the
+    # first red nightly rather than trusting them.
+    artifacts:
+      - smoke-xcodebuild.log
+      - smoke.xcresult

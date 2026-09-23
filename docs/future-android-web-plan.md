@@ -85,17 +85,21 @@ The following components require **no changes** to run on Android or Web:
 
 ### Android CI Matrix Addition
 
-Add an `android-build` job to `.github/workflows/ci.yml` by **cloning the
-shape of the existing `ios-build` job** (same checkout / flutter-action /
-`pub get` steps, same pinned `FLUTTER_VERSION` env — no build_runner step,
-generated files are committed). The only Android deltas:
+Android builds on Linux, so this one belongs on GitHub Actions rather than
+alongside `ios-build`, which moved to [`codemagic.yaml`](../codemagic.yaml)
+because macOS minutes bill at ten times Linux ([`ci-cd.md`](ci-cd.md)). Add an
+`android-build` job to `.github/workflows/ci.yml` beside `checks`, taking the
+same checkout / flutter-action / `pub get` steps and the same pinned
+`FLUTTER_VERSION` env — no build_runner step, generated files are committed.
+The only Android deltas:
 
 - write `android/app/google-services.json` from a `GOOGLE_SERVICES_JSON`
   secret (only once Firebase is active)
 - build with `flutter build apk --debug`
 
 (An earlier revision embedded a full YAML template here; it rotted against the
-real workflow — the live `ci.yml` is the only template worth cloning.)
+real workflow — the live `ci.yml` and `codemagic.yaml` are the only templates
+worth cloning.)
 
 ---
 
