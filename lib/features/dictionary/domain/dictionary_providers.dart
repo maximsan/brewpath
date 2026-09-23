@@ -1,4 +1,5 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
+import 'package:brew_path/features/dictionary/domain/term_links.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
@@ -77,6 +78,14 @@ Future<DictionaryView> dictionaryView(Ref ref) async {
     hasCourse: hasCourse,
   );
 }
+
+/// The surface forms lesson copy may link, compiled once.
+///
+/// Off the learner's own view rather than the raw bank (#217), so a free
+/// learner is never handed a link to an entry the view does not hold.
+@riverpod
+Future<TermLinkIndex> termLinkIndex(Ref ref) async =>
+    TermLinkIndex.of((await ref.watch(dictionaryViewProvider.future)).terms);
 
 /// The title of the lesson [lessonId] names, or null when it names none.
 ///

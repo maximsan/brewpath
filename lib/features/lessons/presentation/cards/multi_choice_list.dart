@@ -23,15 +23,9 @@ const double _pickedInset = 2;
 /// The multi-select list a `multi` card picks from.
 ///
 /// Separate from [ChoiceList] rather than a flag on it: that list latches on
-/// the **first** tap and never reopens, which is the opposite of what a set
-/// needs. Merging the two would put a mode switch through every branch of a
-/// widget whose single-commit rule is the thing worth keeping.
-///
-/// It is handed [marks] and [submitted] rather than working either out. The
-/// card owns the answer key because it also scores against it, and deriving
-/// them twice is how the two become able to disagree — a card whose key holds
-/// no correct choice would leave every mark [MultiMark.none] after a commit,
-/// and a list inferring the commit from the marks would stay open on it.
+/// the **first** tap and never reopens, which a set cannot do. It takes
+/// [marks] and [submitted] rather than deriving either, because the card owns
+/// the answer key and scores against it.
 class MultiChoiceList extends StatelessWidget {
   /// Creates a [MultiChoiceList].
   const MultiChoiceList({
@@ -60,18 +54,17 @@ class MultiChoiceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Between the options and not under the last, as `choice_list.dart` says.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: AppSpacing.sm,
       children: [
         for (var index = 0; index < options.length; index++)
-          Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-            child: _MultiOptionRow(
-              text: options[index].text,
-              picked: selected.contains(index),
-              mark: marks[index],
-              onTap: submitted ? null : () => onToggle(index),
-            ),
+          _MultiOptionRow(
+            text: options[index].text,
+            picked: selected.contains(index),
+            mark: marks[index],
+            onTap: submitted ? null : () => onToggle(index),
           ),
       ],
     );

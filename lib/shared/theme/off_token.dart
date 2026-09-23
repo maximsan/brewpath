@@ -575,10 +575,72 @@ abstract final class OffTokens {
     reason: "an empty state's line sets `lineHeight: 1.6`",
   );
 
+  /// How far a page that runs full-bleed to the top scrolls before its
+  /// floating bar seals — shorter than the hook's default 40, because the
+  /// close control, the bookmark and the clock sit over the first line.
+  static const OffToken<double> floatBarScrollFlag = OffToken(
+    8,
+    reason: 'the two full-bleed screens set `window.useScrollFlag(8`',
+  );
+
   /// The room over the dictionary's mono results count.
   static const OffToken<double> searchCountTop = OffToken(
     18,
     reason: "the results count sets `margin: '18px 0 4px'`",
+  );
+
+  /// The room a graded card leaves above its verdict block.
+  static const OffToken<double> verdictRoomOnCard = OffToken(
+    22,
+    reason: 'the verdict block defaults to `marginTop = 22`',
+  );
+
+  /// The room a mini-game leaves above its verdict block.
+  static const OffToken<double> verdictRoomInMiniGame = OffToken(
+    20,
+    reason: 'the bagpick and tastefix rounds set `marginTop={20}`',
+  );
+
+  /// The room above the recall card's payoff, over the rule it opens on.
+  static const OffToken<double> verdictRoomOnPayoff = OffToken(
+    18,
+    reason: 'the payoff sets `art={false} borderTop marginTop={18}`',
+  );
+
+  /// The gap between that rule and the payoff under it.
+  static const OffToken<double> verdictRuleGap = OffToken(
+    18,
+    reason: 'a ruled-off block sets `paddingTop: 18` under its rule',
+  );
+
+  /// The room a term entry's self-check leaves above its verdict block.
+  static const OffToken<double> verdictRoomInReference = OffToken(
+    14,
+    reason: "a term entry's check sets `size={48} marginTop={14}`",
+  );
+
+  /// The room a vocab round leaves above its verdict block.
+  static const OffToken<double> verdictRoomInVocabRound = OffToken(
+    18,
+    reason: 'a vocab round sets `size={48} marginTop={18}`',
+  );
+
+  /// The gap the predict card opens its button block on.
+  static const OffToken<double> predictButtonGap = OffToken(
+    30,
+    reason: "the predict card's button sets `paddingTop: 30`",
+  );
+
+  /// The gap the decision card opens its button block on.
+  static const OffToken<double> decisionButtonGap = OffToken(
+    30,
+    reason: "the decision card's button sets `paddingTop: 30`",
+  );
+
+  /// The gap the recall card opens its button block on.
+  static const OffToken<double> recallButtonGap = OffToken(
+    26,
+    reason: "the recall card's button sets `paddingTop: 26`",
   );
 
   /// Every sanctioned exception, so the register can be tested as a whole.
@@ -667,6 +729,16 @@ abstract final class OffTokens {
     savedEmptyMarkGap,
     savedEmptyLineWidth,
     emptyStateLeading,
+    floatBarScrollFlag,
     searchCountTop,
+    verdictRoomOnCard,
+    verdictRoomInMiniGame,
+    verdictRoomOnPayoff,
+    verdictRuleGap,
+    verdictRoomInReference,
+    verdictRoomInVocabRound,
+    predictButtonGap,
+    decisionButtonGap,
+    recallButtonGap,
   ];
 }

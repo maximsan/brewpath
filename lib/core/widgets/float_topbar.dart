@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/core/widgets/scrolled_progress.dart';
+import 'package:brew_path/shared/theme/app_overlay.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,7 @@ class FloatTopbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final barHeight = MediaQuery.paddingOf(context).top + height;
 
     final controls = SafeArea(
       bottom: false,
@@ -129,12 +131,13 @@ class FloatTopbar extends StatelessWidget {
     );
 
     // Filled with the page's own colour, so nothing shows through and no
-    // filter is paid for.
+    // filter is paid for — and its fade is drawn from the first frame too,
+    // because the design ties the fade to the fill.
     if (_isSealed) {
-      return _Band(
-        height: height + MediaQuery.paddingOf(context).top,
-        color: mood.bg,
-        ruleColor: mood.rule,
+      return HeaderChromePaint(
+        barHeight: barHeight,
+        progress: 1,
+        fill: AppOverlay(color: mood.bg, blurRadius: 0),
         child: controls,
       );
     }
@@ -143,23 +146,11 @@ class FloatTopbar extends StatelessWidget {
       isScrolled: isScrolled,
       duration: scrolledFade,
       child: controls,
-      builder: (context, progress, control) {
-        final headerFill = mood.headerFill.at(progress);
-        final bar = _Band(
-          height: height + MediaQuery.paddingOf(context).top,
-          color: headerFill.color,
-          ruleColor: mood.rule.withValues(alpha: progress),
-          child: control,
-        );
-        final filter = headerFill.backdropFilter;
-
-        // No filter until there is a fill to go with it: an invisible bar must
-        // not pay for the `saveLayer` a `BackdropFilter` takes at any sigma.
-        if (filter == null) return bar;
-        return ClipRect(
-          child: BackdropFilter(filter: filter, child: bar),
-        );
-      },
+      builder: (context, progress, control) => HeaderChromePaint(
+        barHeight: barHeight,
+        progress: progress,
+        child: control,
+      ),
     );
   }
 }
@@ -188,34 +179,6 @@ class FloatBarScaffold extends StatelessWidget {
         child,
         Positioned(top: 0, left: 0, right: 0, child: bar),
       ],
-    ),
-  );
-}
-
-/// The bar's painted band, reaching up under the status bar so what passes
-/// beneath is covered all the way to the top of the screen.
-class _Band extends StatelessWidget {
-  const _Band({
-    required this.height,
-    required this.color,
-    required this.ruleColor,
-    required this.child,
-  });
-
-  final double height;
-  final Color color;
-  final Color ruleColor;
-  final Widget? child;
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: height,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: color,
-        border: Border(bottom: BorderSide(color: ruleColor)),
-      ),
-      child: child,
     ),
   );
 }

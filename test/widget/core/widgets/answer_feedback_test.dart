@@ -2,10 +2,15 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../../support/verdict_room.dart';
 
 /// The verdict block that closes every graded surface (#390).
 ///
@@ -13,12 +18,27 @@ import 'package:flutter_test/flutter_test.dart';
 /// wrong-state colour, which is the failure one component exists to make
 /// impossible — so these assert the things that drifted, not only that it
 /// renders.
-Widget _host(Widget child, {bool reduceMotion = false}) => MaterialApp(
-  theme: AppTheme.cupping,
-  home: MediaQuery(
-    data: MediaQueryData(disableAnimations: reduceMotion),
-    child: Scaffold(body: child),
+Widget _host(Widget child, {bool reduceMotion = false}) => ProviderScope(
+  overrides: [
+    dictionaryViewProvider.overrideWith((ref) async => _emptyDictionary),
+  ],
+  child: MaterialApp(
+    theme: AppTheme.cupping,
+    home: MediaQuery(
+      data: MediaQueryData(disableAnimations: reduceMotion),
+      child: Scaffold(body: child),
+    ),
   ),
+);
+
+/// A learner whose dictionary says nothing: the block links the glossary
+/// terms its explanation says (#99), and these assertions are about the block
+/// rather than about which words happen to be terms.
+const DictionaryView _emptyDictionary = DictionaryView(
+  terms: [],
+  categories: [],
+  completedLessonIds: {},
+  hasCourse: true,
 );
 
 /// The mood the host paints in, so a test can name the colours it expects.
@@ -248,5 +268,52 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(Roasty), findsOneWidget);
+  });
+
+  testWidgets('opens on the room its placement carries', (tester) async {
+    // The block spaces itself off what it follows, so no host has to — every
+    // host that did left the block off the design's value (#594).
+    for (final placement in VerdictPlacement.values) {
+      await tester.pumpWidget(
+        _host(
+          AnswerFeedback(
+            verdict: 'Not quite',
+            outcome: Verdict.wrong,
+            placement: placement,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(roomAboveVerdict(tester), placement.room, reason: '$placement');
+    }
+  });
+
+  testWidgets('the payoff keeps the design gap under its rule', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        const AnswerFeedback(
+          verdict: 'You guessed seed',
+          outcome: Verdict.right,
+          placement: VerdictPlacement.openingGuess,
+        ),
+      ),
+    );
+
+    expect(
+      tester
+          .widget<Container>(
+            find
+                .descendant(
+                  of: find.byType(AnswerFeedback),
+                  matching: find.byType(Container),
+                )
+                .first,
+          )
+          .padding
+          ?.resolve(TextDirection.ltr)
+          .top,
+      OffTokens.verdictRuleGap.value,
+    );
   });
 }

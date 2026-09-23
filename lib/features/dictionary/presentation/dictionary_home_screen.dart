@@ -95,13 +95,12 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
   /// subject, not a scroll of seventy-three terms.
   DictionaryCategory? _category;
 
-  /// Whether the index is what to show — nothing narrowed, nothing searched.
-  bool get _onIndex =>
-      _category == null && _query.isEmpty && _filter == DictionaryFilter.all;
+  /// Whether the index is what to show — no category opened, nothing searched.
+  bool get _onIndex => _category == null && _query.isEmpty;
 
-  /// The terms surviving the category, the filter and the query, in bank
-  /// order.
-  List<DictionaryTerm> get _visible {
+  /// The terms the category and the query find, before the filter narrows
+  /// them, in bank order.
+  List<DictionaryTerm> get _matches {
     final inCategory = _category == null
         ? widget.view.terms
         : widget.view.terms
@@ -109,11 +108,17 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
               .toList();
 
     return searchDictionary(
-      filterDictionary(inCategory, _filter, widget.view.completedLessonIds),
+      inCategory,
       _query,
       categories: widget.view.categories,
     );
   }
+
+  /// Whether the filter has anything to sort: a category's own list, or a
+  /// search that found something. Judged before the filter narrows the list,
+  /// so a filter that empties a search stays on screen to be switched back.
+  bool _hasFilterable(List<DictionaryTerm> matches) =>
+      _query.isEmpty ? _category != null : matches.isNotEmpty;
 
   void _openTerm(String termId) =>
       unawaited(context.pushDictionaryTerm(termId));
@@ -130,7 +135,12 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
 
   @override
   Widget build(BuildContext context) {
-    final visible = _visible;
+    final matches = _matches;
+    final visible = filterDictionary(
+      matches,
+      _filter,
+      widget.view.completedLessonIds,
+    );
 
     // The bar's title follows the learner into a category, as the design's
     // compact title does. The page heading following it too is the masthead's
@@ -163,19 +173,19 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
                 DictionarySearchField(
                   onChanged: (value) => setState(() => _query = value),
                 ),
-                // The filter belongs to a category, where learned and
-                // to-learn are worth telling apart; the index sums them in
-                // its counts. It stays up through a search inside the
-                // category, as the design draws it, because the search is
-                // narrowed by it and a hidden filter is an unexplained count.
-                if (_category != null)
+                // The filter belongs where there are terms to sort: a
+                // category, or a search that found something, on the index
+                // too. The index itself sums learned and to-learn in its
+                // counts and shows none.
+                if (_hasFilterable(matches))
                   DictionaryFilterControl(
                     selected: _filter,
                     onSelected: (filter) => setState(() => _filter = filter),
                   ),
-                // The design heads every search with its count, whether or
-                // not anything matched; a category drill-down has none.
-                if (_query.isNotEmpty)
+                // The count heads a search that found something; with
+                // nothing found the no-matches line says so alone, and a
+                // category drill-down has none.
+                if (_query.isNotEmpty && visible.isNotEmpty)
                   DictionarySearchCount(count: visible.length),
                 if (_onIndex) _index(),
               ],

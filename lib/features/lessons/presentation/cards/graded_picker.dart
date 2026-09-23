@@ -37,6 +37,7 @@ class PickerCopy {
     this.footnote,
     this.verdict = _defaultVerdict,
     this.placement = VerdictPlacement.card,
+    this.buttonGap,
   });
 
   /// The question itself.
@@ -64,6 +65,11 @@ class PickerCopy {
   /// How the block is set. `decision` and `recall` talk back rather than
   /// mark an answer, and the design gives them the body step for it.
   final VerdictPlacement placement;
+
+  /// The room this kind opens its button block on, or null to take the
+  /// shell's own. Only `decision` and `recall` name one; the design closes
+  /// those two tighter.
+  final double? buttonGap;
 
   /// The line the verdict block leads with. Takes the outcome for the same
   /// reason [explain] does: `decision` calls it *good call* against *that
@@ -163,6 +169,7 @@ class _GradedPickerState extends State<GradedPicker> {
       cue: copy.cue,
       label: copy.label,
       title: copy.title,
+      buttonGap: copy.buttonGap,
       children: [
         if (widget.framing case final framing?) ...[
           framing(_outcome),
@@ -184,17 +191,13 @@ class _GradedPickerState extends State<GradedPicker> {
           revealAnswer: true,
         ),
         if (_latched) ...[
-          const SizedBox(height: AppSpacing.md),
           AnswerFeedback(
             verdict: copy.verdict(wasCorrect: _wasCorrect),
             outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
             explanation: copy.explain(wasCorrect: _wasCorrect),
             placement: copy.placement,
           ),
-          if (widget.payoff case final payoff?) ...[
-            const SizedBox(height: AppSpacing.md),
-            payoff,
-          ],
+          ?widget.payoff,
           if (copy.footnote != null) ...[
             const SizedBox(height: AppSpacing.sm),
             Text(

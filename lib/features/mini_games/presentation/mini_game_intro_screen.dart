@@ -15,6 +15,7 @@ import 'package:brew_path/features/monetization/presentation/activity_start.dart
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +43,9 @@ class MiniGameIntroScreen extends ConsumerWidget {
     final format = ref.watch(miniGameFormatProvider(formatId));
 
     return ScrollFlagScope(
+      // The page runs full-bleed to the top, so a long how-to-play passes
+      // under the close control and the clock well before the default.
+      threshold: OffTokens.floatBarScrollFlag.value,
       builder: (context, {required isScrolled}) => FloatBarScaffold(
         // No title: the screen's own name is the heading in the body below,
         // which is where the design keeps it.

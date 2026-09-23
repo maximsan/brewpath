@@ -44,6 +44,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **Glossary terms in lesson copy are tappable.** A concept card's prose, the
+  predict card's opening body and a verdict block's explanation — in a lesson
+  or a mini-game round — now link the terms they say; tapping one opens the
+  term peek sheet without leaving the card. Matching is whole-word and
+  case-insensitive over the term's aliases, longest first, one link per term
+  at its first mention and four to a paragraph. The links come from the
+  learner's own dictionary, so a free learner is never sent to an entry they
+  cannot open ([#99](https://github.com/maximsan/brewpath/issues/99)).
+
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —
   absent, or left behind by an English edit — writes the folder from that
@@ -94,6 +103,16 @@ You can always edit this file by hand instead — the helpers just save effort.
   name, with its reason, so the list fails closed. The sweep goes from 35
   tests to 220, and the push from about 5 seconds of guards to about 18.
 
+- **The floating top bar fades under its hairline, and two screens seal
+  sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
+  both endings now draws the same soft band below its edge that every other
+  top bar draws, so nothing is seen crossing a bare line — it composes the
+  shared chrome rather than painting its own. Term of the Day and the
+  mini-game intro take their chrome after 8 pixels instead of 40, because
+  those pages run to the top of the screen and a long one used to travel under
+  the close control and the clock first
+  ([#583](https://github.com/maximsan/brewpath/issues/583)).
+
 - **The Path title opens at the top of the tab, beside the Saved and
   Dictionary buttons.** It used to start 64 down so it cleared them; it now
   starts at the design's 24 and reserves their width on its right, so a long
@@ -102,13 +121,31 @@ You can always edit this file by hand instead — the helpers just save effort.
   reserved width to wrap into
   ([#584](https://github.com/maximsan/brewpath/issues/584)).
 
+- **Every graded surface closes at the spacing the design gives it.** The
+  verdict block was spaced by each of its hosts and not one of them matched
+  the design. The block now carries that room itself, from where it is
+  standing, so a lesson card, a mini-game, a term's self-check and a vocab
+  round each get their own. A card's options — and the sequence card's steps —
+  also stop leaving a gap under the last one, which was stacking on whatever
+  followed the list: the verdict, or the button. The button under predict and
+  decision moves 2px closer to the card, and under recall 6px
+  ([#594](https://github.com/maximsan/brewpath/issues/594)).
+
 - **A screen mounted without the app's theme now fails at once.** `context.mood`
   used to fall back to Dark Roast when the theme carried no mood, so a widget
   test or a throwaway walk that pumped a bare `MaterialApp` painted dark tokens
   on Material's light page and nothing said so — two review screenshots of the
-  swipe surfaces were read as a broken theme when only the harness was. The
-  accessor now throws, naming `AppTheme.cupping` and `AppTheme.darkRoast` as
-  the way in; the app itself always mounts under one of them.
+  swipe surfaces were read as a broken theme when only the harness was. In a
+  debug build the accessor now fails, naming `AppTheme.cupping` and
+  `AppTheme.darkRoast` as the way in; a release build takes the mood of the
+  theme's own brightness, so even the fallback agrees with the page. The app
+  itself always mounts under one of the two themes.
+
+- **A spent free day meets the paywall before the replay question.** Tapping
+  a finished lesson once the day's free activities are used up used to raise
+  the *review this lesson?* sheet first and the paywall only after a confirm.
+  The paywall now comes first, as the design's course gate does: a learner
+  who cannot play today is told so rather than asked and then refused.
 
 - **A selected pick card is a double stroke, not a filled dot.** The card drew
   a ring with a dot in it, which is the one thing the design's selection rule
@@ -172,11 +209,20 @@ You can always edit this file by hand instead — the helpers just save effort.
 - **The card-kind help can be translated at all.** A language folder lands on a
   bank entry by entry by id, and that was the one bank whose entries had none.
 
+- **A search from the dictionary index shows the filter once it finds
+  something.** *All / Learned / To learn* appeared only inside a category;
+  typing in the search box on the index gave results with no way to sort
+  them. The control now appears over any search that found terms, on the
+  index as well as inside a category, and stays while a chosen filter empties
+  the list so there is always a way back to *All*. A search that finds
+  nothing has nothing to sort and shows none.
+
 - **A search that finds nothing now says what it looked for.** The dictionary
   read *No terms match that search.* whatever was typed; it now quotes the
-  query back and suggests a broader word or the categories, and every search
-  is headed with its result count — `0 RESULTS`, `1 RESULT`, `12 RESULTS` —
-  as the design draws it. The Saved shelf's empty state takes the design's own
+  query back and suggests a broader word or the categories, and a search that
+  finds something is headed with its count — `1 RESULT`, `12 RESULTS` — as
+  the design draws it. One that finds nothing shows the line alone: no count
+  to say the same thing twice, and no filter with nothing to sort. The Saved shelf's empty state takes the design's own
   measurements too: a softer bookmark, more room above it, and a line that
   wraps where it was drawn to
   ([#572](https://github.com/maximsan/brewpath/issues/572)).
