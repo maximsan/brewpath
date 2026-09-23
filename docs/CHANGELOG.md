@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The daily reminder actually arrives.** The Notifications switch and the
+  Daily reminder row are back on Settings, and behind them is a real local
+  notification: one a day at the chosen slot, skipped on a day already
+  practised on, and re-asserted on every launch and resume so a reboot, an
+  upgrade or a timezone change cannot quietly drop it. Switching it on lands
+  on a slot still ahead today, so the first one arrives today rather than
+  tomorrow. Turning it on asks iOS; a refusal stores nothing and offers the
+  way to iOS Settings, and a permission revoked there later switches the row
+  back off rather than leaving it promising something that will not come
+  ([#443](https://github.com/maximsan/brewpath/issues/443),
+  [`docs/reminders.md`](reminders.md)).
 - **Glossary terms in lesson copy are tappable.** A concept card's prose, the
   predict card's opening body and a verdict block's explanation — in a lesson
   or a mini-game round — now link the terms they say; tapping one opens the
@@ -107,6 +118,15 @@ You can always edit this file by hand instead — the helpers just save effort.
   ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 ### Changed
+
+- **A push now runs every guard, not the ones named like one.** The hook
+  picked them with `find -name '*_guard_test.dart'`, and most of the guards
+  were not named that way — including the one that forbids naming a font
+  weight, which let a violation through to CI. They are chosen by what they
+  read now, so a guard cannot stop guarding by being named plainly, and a test
+  fails if the hook stops asking. A test that is not a guard is excluded by
+  name, with its reason, so the list fails closed. The sweep goes from 35
+  tests to 220, and the push from about 5 seconds of guards to about 18.
 
 - **The floating top bar fades under its hairline, and two screens seal
   sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
