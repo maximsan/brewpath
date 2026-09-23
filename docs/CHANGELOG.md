@@ -108,6 +108,11 @@ You can always edit this file by hand instead — the helpers just save effort.
   its spine starts and ends at a module's first and last nodes, Reference's
   title, glyph, thumbnails and count line follow the design, and the course
   ending draws Roasty at the design's size.
+- **The Path reads as the design draws it: compact.** No hairline under a
+  lesson, no wash behind the current one, rows closer together, and the
+  challenge row without a card of its own. Every lock on the Path is the
+  design's own 13-by-15 mark rather than the icon catalogue's smaller one,
+  and the challenge cup is the design's brew cup with its steam.
 - **The floating top bar fades under its hairline, and two screens seal
   sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
   both endings now draws the same soft band below its edge that every other
