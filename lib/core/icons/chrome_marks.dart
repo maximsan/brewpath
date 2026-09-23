@@ -81,3 +81,67 @@ class BrewCupMark extends StatelessWidget {
     excludeFromSemantics: true,
   );
 }
+
+/// The design's open book on the Dictionary entry: drawn once, in the
+/// header's own `DictHeaderButton`, at 22 and stroke 1.6 in the accent.
+class OpenBookMark extends StatelessWidget {
+  /// Creates an [OpenBookMark].
+  const OpenBookMark({required this.color, this.size = _designSize, super.key});
+
+  /// `<svg width="22" height="22">`.
+  static const double _designSize = 22;
+
+  /// The box's side.
+  final double size;
+
+  /// The ink — the design's `var(--accent)`.
+  final Color color;
+
+  static const String _markup = '''
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 6.6C10.4 5.4 8.3 5.1 6.2 5.3A1 1 0 0 0 5 6.3v10.2a1 1 0 0 0 1.1 1c1.9-.2 3.9.1 5.4 1.2M12 6.6c1.6-1.2 3.7-1.5 5.8-1.3a1 1 0 0 1 1.1 1v10.2a1 1 0 0 1-1.1 1c-1.9-.2-3.9.1-5.4 1.2M12 6.6V19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>''';
+
+  @override
+  Widget build(BuildContext context) => SvgPicture.string(
+    _markup,
+    width: size,
+    height: size,
+    theme: SvgTheme(currentColor: color),
+    excludeFromSemantics: true,
+  );
+}
+
+/// The design's bookmark on the Saved entry: `SavedHeaderButton`'s own, at
+/// 20 and stroke 1.6 in the accent — not the catalogue's 1.5 mark.
+class SavedBookmarkMark extends StatelessWidget {
+  /// Creates a [SavedBookmarkMark].
+  const SavedBookmarkMark({
+    required this.color,
+    this.size = _designSize,
+    super.key,
+  });
+
+  /// `<svg width="20" height="20">`.
+  static const double _designSize = 20;
+
+  /// The box's side.
+  final double size;
+
+  /// The ink — the design's `var(--accent)`.
+  final Color color;
+
+  static const String _markup = '''
+<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M7 4.8A1 1 0 0 1 8 3.8h8a1 1 0 0 1 1 1V20l-5-3.6L7 20V4.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>''';
+
+  @override
+  Widget build(BuildContext context) => SvgPicture.string(
+    _markup,
+    width: size,
+    height: size,
+    theme: SvgTheme(currentColor: color),
+    excludeFromSemantics: true,
+  );
+}
