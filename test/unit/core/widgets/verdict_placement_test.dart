@@ -30,6 +30,26 @@ void main() {
     });
   });
 
+  group('the glossary terms in an explanation', () {
+    test('are linked on the three standings that mark a graded answer', () {
+      const marksAnAnswer = {
+        VerdictPlacement.card,
+        VerdictPlacement.conversational,
+        VerdictPlacement.miniGame,
+      };
+
+      for (final placement in VerdictPlacement.values) {
+        expect(
+          placement.linksTerms,
+          marksAnAnswer.contains(placement),
+          reason:
+              'a term is tappable where the block marks an answer and flat '
+              'where it looks one up or repeats a guess: ${placement.name}',
+        );
+      }
+    });
+  });
+
   group('a wrong answer', () {
     test('is named in the accent on the two reference surfaces', () {
       const reference = {

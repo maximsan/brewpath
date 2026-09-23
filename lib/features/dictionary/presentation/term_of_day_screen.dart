@@ -23,6 +23,7 @@ import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
+import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -62,6 +63,9 @@ class TermOfDayScreen extends ConsumerWidget {
     final view = ref.watch(termOfDayViewProvider);
 
     return ScrollFlagScope(
+      // The page runs full-bleed to the top, so a long term passes under the
+      // close control, the bookmark and the clock well before the default.
+      threshold: OffTokens.floatBarScrollFlag.value,
       builder: (context, {required isScrolled}) => FloatBarScaffold(
         bar: FloatTopbar(
           icon: AppIcon.close,

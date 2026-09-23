@@ -3,7 +3,8 @@ library;
 
 /// The search's copy, verbatim from the design.
 abstract final class DictionarySearchCopy {
-  /// The mono count over every search — `0 RESULTS`, `1 RESULT`, `12 RESULTS`.
+  /// The mono count over a search that found something — `1 RESULT`,
+  /// `12 RESULTS`; one that found nothing shows the no-matches line alone.
   static String count(int found) =>
       '$found ${found == 1 ? 'RESULT' : 'RESULTS'}';
 

@@ -6,8 +6,11 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
 import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
 import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
+import 'package:brew_path/features/monetization/domain/daily_allowance.dart';
+import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
+import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
@@ -15,6 +18,7 @@ import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
+import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -201,6 +205,32 @@ void main() {
 
     expect(find.text(ReplayConfirmCopy.confirm), findsNothing);
     expect(find.text(_running), findsOneWidget);
+  });
+
+  testWidgets('a spent free day meets the paywall, and never the sheet', (
+    tester,
+  ) async {
+    final container = await _pump(tester);
+    // The free day's two activities, through the real recorder.
+    await tester.runAsync(() async {
+      final snapshots = container.read(snapshotRepositoryProvider);
+      for (var i = 0; i < freeDailyActivities; i++) {
+        await recordActivity(
+          snapshots,
+          type: ActivityType.vocab,
+          subject: '',
+          now: DateTime.now(),
+        );
+      }
+    });
+    await _tapOpen(tester);
+
+    expect(
+      find.text(const DailyAllowanceSpent(cap: freeDailyActivities).header),
+      findsOneWidget,
+    );
+    expect(find.text(ReplayConfirmCopy.confirm), findsNothing);
+    expect(find.text(_running), findsNothing);
   });
 
   testWidgets('the Path asks before it replays a row', (tester) async {

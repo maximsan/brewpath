@@ -4,6 +4,8 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/core/widgets/float_topbar.dart';
+import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_copy.dart';
@@ -78,8 +80,9 @@ Future<DictionaryTerm> _todaysTerm(WidgetTester tester) async {
 Future<void> _pumpScreen(
   WidgetTester tester, {
   required bool hasCourse,
+  Size viewport = const Size(400, 2400),
 }) async {
-  _useTallViewport(tester);
+  _useViewport(tester, viewport);
   final container = ProviderContainer(
     overrides: [
       currentDayProvider.overrideWithValue(_pinnedDay),
@@ -138,9 +141,9 @@ Future<void> _settle(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 600));
 }
 
-/// A tall viewport, so the whole screen lays out rather than being clipped.
-void _useTallViewport(WidgetTester tester) {
-  tester.view.physicalSize = const Size(400, 2400);
+/// Tall by default, so the whole screen lays out rather than being clipped.
+void _useViewport(WidgetTester tester, [Size size = const Size(400, 2400)]) {
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
@@ -148,7 +151,7 @@ void _useTallViewport(WidgetTester tester) {
 
 /// Opens the dictionary in the real shell, the way a learner reaches it.
 Future<void> _openDictionary(WidgetTester tester) async {
-  _useTallViewport(tester);
+  _useViewport(tester);
   final container = await pumpWithProviders(tester, const BrewPathApp());
   container.read(appRouterProvider).go('/learn/dictionary');
   await settleLoaders(tester);
@@ -197,6 +200,42 @@ void main() {
         find.text(term.deepExplanation!),
         findsNothing,
         reason: 'the full entry is what the button leads to, not what is shown',
+      );
+    });
+  });
+
+  group("the screen's bar", () {
+    /// Short enough that the term runs past the foot, so there is a scroll to
+    /// move at all.
+    const shortViewport = Size(400, 300);
+
+    /// Past the design's 8 and well short of the hook's default 40.
+    const nudge = 20.0;
+
+    testWidgets('takes its chrome as soon as the page moves under it', (
+      tester,
+    ) async {
+      await _pumpScreen(tester, hasCourse: false, viewport: shortViewport);
+
+      await tester.drag(
+        find.byType(SingleChildScrollView),
+        const Offset(0, -nudge),
+      );
+      await _settle(tester);
+
+      expect(
+        isScrolledPast(nudge),
+        isFalse,
+        reason:
+            'on the default the term would still be running under the close '
+            'control, the bookmark and the clock with a bare bar over it',
+      );
+      expect(
+        find.descendant(
+          of: find.byType(FloatTopbar),
+          matching: find.byType(BackdropFilter),
+        ),
+        findsOneWidget,
       );
     });
   });
