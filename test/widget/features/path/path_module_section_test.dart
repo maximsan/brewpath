@@ -1,6 +1,5 @@
 import 'package:brew_path/app/app_theme.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
@@ -104,9 +103,7 @@ Future<void> _pump(
   ),
 );
 
-Finder get _lock => find.byWidgetPredicate(
-  (widget) => widget is IconMark && widget.icon == AppIcon.lock,
-);
+Finder get _lock => find.byType(LockMark);
 
 // A locked module row says which lock it is, and the two are not the same
 // sentence: progression opens by learning, where the purchase does not.
@@ -136,7 +133,7 @@ void main() {
       await _pump(tester, isPurchaseLocked: false);
 
       expect(
-        tester.widget<IconMark>(_lock).color,
+        tester.widget<LockMark>(_lock).color,
         MoodColors.darkRoast.inkMute,
       );
 
@@ -169,7 +166,7 @@ void main() {
       await _pump(tester, isPurchaseLocked: true);
 
       expect(_lock, findsOneWidget);
-      expect(tester.widget<IconMark>(_lock).color, MoodColors.darkRoast.accent);
+      expect(tester.widget<LockMark>(_lock).color, MoodColors.darkRoast.accent);
     });
 
     testWidgets('raises the offer on tap', (tester) async {

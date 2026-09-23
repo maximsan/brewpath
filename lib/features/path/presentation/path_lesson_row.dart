@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
@@ -18,20 +19,30 @@ import 'package:flutter/material.dart';
 /// A lesson on the path: a bean on the spine, its title, and what the row has
 /// to say about it.
 ///
-/// **The row is not a card.** The design draws `.lesson-row` flat on a
-/// hairline, threaded by a 1px spine the bean discs punch stops out of — that
-/// line is what makes a list of lessons read as a *path*. See #435.
+/// **Not a card, and not a list either.** The design runs the Path compact
+/// (`data-path-compact`, set for every reader): no hairline, no wash behind
+/// the current row, only the 1px spine the bean discs punch stops out of.
 class PathLessonRow extends StatelessWidget {
   /// Creates a [PathLessonRow].
   const PathLessonRow({
     required this.entry,
     required this.isLast,
     this.isFirst = false,
+    this.tightAbove = false,
+    this.tightBelow = false,
     super.key,
   });
 
   /// The lesson and the learner's progress through it.
   final PathLesson entry;
+
+  /// Whether the row closes up above: a row after a challenge row
+  /// (`.challenge-sub + .lesson-row { padding-top: 6px }`).
+  final bool tightAbove;
+
+  /// Whether the row closes up below: a row before a challenge row
+  /// (`.lesson-row:has(+ .challenge-sub)`), which also closes up above.
+  final bool tightBelow;
 
   /// Whether this is the module's first row, whose spine starts at its own
   /// node rather than running up out of the header.
@@ -42,9 +53,11 @@ class PathLessonRow extends StatelessWidget {
   /// at its own node.
   final bool isLast;
 
-  /// The design's `.lesson-row` padding — `18px 0`, generous because the row
-  /// has no card to give it room.
-  static const double _rowPadding = 18;
+  /// The compact row's `padding-top: 11px; padding-bottom: 11px`.
+  static const double _rowPadding = 11;
+
+  /// What a locked row, or one beside a challenge row, closes up to: `6px`.
+  static const double _tightPadding = 6;
 
   /// Where the spine runs: `.lesson-row::before`'s `left: 15.5px`, which is the
   /// centre of the 32-px node column. Public because a challenge row on the
@@ -53,10 +66,6 @@ class PathLessonRow extends StatelessWidget {
 
   /// The spine's `width: 1px`.
   static const double spineWidth = 1;
-
-  /// The wash behind the current row, and behind its node — the design's
-  /// `color-mix(in oklab, var(--accent) 7%, …)`.
-  static const double _currentWash = 0.07;
 
   /// The design's `gap: 14px` between the node column and the title.
   static const double _columnGap = 14;
@@ -67,31 +76,24 @@ class PathLessonRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
     final lesson = entry.lesson;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: entry.readsAsCurrent
-            ? mood.accent.withValues(alpha: _currentWash)
-            : null,
-        // The current row drops its rule too: the wash already separates it,
-        // and a line under a highlighted row reads as a second edge.
-        border: Border(
-          bottom: BorderSide(
-            color: isLast || entry.readsAsCurrent
-                ? Colors.transparent
-                : mood.rule,
-          ),
-        ),
-      ),
-      child: Stack(
-        children: [
-          // Behind everything, and masked into stops by each node's own disc.
-          PathSpine(isFirst: isFirst, isLast: isLast),
-          _row(context, lesson.title),
-        ],
-      ),
+    return Stack(
+      children: [
+        // Behind everything, and masked into stops by each node's own disc.
+        PathSpine(isFirst: isFirst, isLast: isLast),
+        _row(context, lesson.title),
+      ],
+    );
+  }
+
+  /// The row's vertical room: 11 each side, closing to 6 where the design
+  /// does — a locked row, or either side of a challenge row.
+  EdgeInsets get _padding {
+    final shut = entry.isPurchaseLocked || entry.isLocked;
+    return EdgeInsets.only(
+      top: shut || tightAbove || tightBelow ? _tightPadding : _rowPadding,
+      bottom: shut || tightBelow ? _tightPadding : _rowPadding,
     );
   }
 
@@ -118,7 +120,7 @@ class PathLessonRow extends StatelessWidget {
       child: Opacity(
         opacity: shut ? _lockedOpacity : 1,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: _rowPadding),
+          padding: _padding,
           child: Row(
             children: [
               _LessonNode(entry: entry),
@@ -247,8 +249,7 @@ class _Meta extends StatelessWidget {
     // before or wherever the course is pointing. Accent for the purchase,
     // ink-mute for progression — the same split the module heading makes.
     if (entry.isPurchaseLocked) {
-      return IconMark(
-        AppIcon.lock,
+      return LockMark(
         size: _lockSize,
         color: mood.accent,
         semanticLabel: LockedRowCopy.partOfFoundations,
@@ -256,8 +257,7 @@ class _Meta extends StatelessWidget {
     }
 
     if (entry.isLocked) {
-      return IconMark(
-        AppIcon.lock,
+      return LockMark(
         size: _lockSize,
         color: mood.inkMute,
         semanticLabel: AppLabels.lessonLocked,
@@ -293,7 +293,7 @@ class _Meta extends StatelessWidget {
 ///
 /// Which tone and how full is [lessonNodeGauge]'s decision. The disc is
 /// painted in the page colour on purpose — that is what masks the spine behind
-/// it into a stop.
+/// it into a stop — and the compact Path tints no node, current or not.
 class _LessonNode extends StatelessWidget {
   const _LessonNode({required this.entry});
 
@@ -321,17 +321,9 @@ class _LessonNode extends StatelessWidget {
       width: _nodeSize,
       height: _nodeSize,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        // Opaque either way — a translucent disc would let the spine show
-        // through the stop it exists to punch.
-        color: entry.readsAsCurrent
-            ? Color.alphaBlend(
-                mood.accent.withValues(alpha: PathLessonRow._currentWash),
-                mood.bg,
-              )
-            : mood.bg,
-        shape: BoxShape.circle,
-      ),
+      // Opaque — a translucent disc would let the spine show through the
+      // stop it exists to punch.
+      decoration: BoxDecoration(color: mood.bg, shape: BoxShape.circle),
       child: BeanGauge(
         fill: gauge.fill,
         color: color,

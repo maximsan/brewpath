@@ -1,9 +1,8 @@
 import 'dart:async';
 
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/icons/disclosure_mark.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
@@ -135,8 +134,7 @@ class _LockMark extends StatelessWidget {
 
     // Accent for the purchase, ink-mute for progression. Accent means there is
     // something to do, and buying is the one they can do now.
-    return IconMark(
-      AppIcon.lock,
+    return LockMark(
       size: size,
       color: module.isPurchaseLocked ? mood.accent : mood.inkMute,
       semanticLabel: module.isPurchaseLocked
@@ -195,8 +193,8 @@ class _SubLine extends StatelessWidget {
 /// finished lesson's own Coffee Challenge follows its row, and the module's
 /// capstone closes the list.
 ///
-/// Which row is last is worked out here, because the design's `:last-child`
-/// drops the hairline and ends the spine on whatever row that turns out to be.
+/// Worked out here: which row is last, where the spine ends, and which rows
+/// close up to 6 against a challenge row.
 class _Lessons extends ConsumerWidget {
   const _Lessons({required this.module});
 
@@ -229,6 +227,8 @@ class _Lessons extends ConsumerWidget {
                 i == lessons.length - 1 &&
                 challengeOf(lessons[i]) == null &&
                 capstone == null,
+            tightAbove: i > 0 && challengeOf(lessons[i - 1]) != null,
+            tightBelow: challengeOf(lessons[i]) != null,
           ),
           if (challengeOf(lessons[i]) case final challenge?)
             PathChallengeRow(

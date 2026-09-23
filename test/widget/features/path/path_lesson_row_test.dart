@@ -1,7 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
@@ -136,10 +135,11 @@ void main() {
     expect(decoration.shape, BoxShape.circle);
   });
 
-  testWidgets('the current lesson tints its own well', (tester) async {
-    // `.lesson-row.current .path-node` is the accent at 7% *over* the page,
-    // not the page. It stays opaque either way — a translucent disc would let
-    // the spine show through the stop it exists to punch.
+  testWidgets('the current lesson keeps its well on the page canvas too', (
+    tester,
+  ) async {
+    // The compact Path tints nothing: `.lesson-row.current .path-node
+    // { background: var(--bg) }`, and the row behind it is transparent.
     await _pump(tester, isCompleted: false, isCurrent: true);
 
     final well = tester.widget<Container>(
@@ -152,8 +152,7 @@ void main() {
     );
     final decoration = well.decoration! as BoxDecoration;
 
-    expect(decoration.color, isNot(MoodColors.darkRoast.bg));
-    expect(decoration.color!.a, 1.0);
+    expect(decoration.color, MoodColors.darkRoast.bg);
   });
 
   testWidgets('the spine is drawn one pixel wide, the row tall', (
@@ -224,12 +223,10 @@ void main() {
 
       // Exactly one — the spine beside it carries no lock of its own, which is
       // the whole of #91's part 1.
-      final locks = find.byWidgetPredicate(
-        (widget) => widget is IconMark && widget.icon == AppIcon.lock,
-      );
+      final locks = find.byType(LockMark);
       expect(locks, findsOneWidget);
       expect(
-        tester.widget<IconMark>(locks).color,
+        tester.widget<LockMark>(locks).color,
         MoodColors.darkRoast.accent,
         reason: 'accent, not ink-mute: buying is something to do',
       );
@@ -311,9 +308,7 @@ void main() {
       await _pump(tester, isCompleted: false, isCurrent: false);
 
       expect(
-        find.byWidgetPredicate(
-          (widget) => widget is IconMark && widget.icon == AppIcon.lock,
-        ),
+        find.byType(LockMark),
         findsNothing,
       );
     });
@@ -328,12 +323,10 @@ void main() {
     testWidgets('draws one muted lock', (tester) async {
       await pumpLocked(tester);
 
-      final locks = find.byWidgetPredicate(
-        (widget) => widget is IconMark && widget.icon == AppIcon.lock,
-      );
+      final locks = find.byType(LockMark);
       expect(locks, findsOneWidget);
       expect(
-        tester.widget<IconMark>(locks).color,
+        tester.widget<LockMark>(locks).color,
         MoodColors.darkRoast.inkMute,
       );
     });

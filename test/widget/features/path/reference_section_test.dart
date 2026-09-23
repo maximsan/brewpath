@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
@@ -85,7 +86,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(findMark(AppIcon.lock), findsOneWidget);
+      expect(find.byType(LockMark), findsOneWidget);
     });
 
     testWidgets('refuses to open rather than opening onto nothing', (

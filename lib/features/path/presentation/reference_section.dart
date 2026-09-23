@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
@@ -42,7 +43,9 @@ String _lockedSubtitle({required bool byPurchase, required String? nextTitle}) {
 /// icon that resizes when a spacing stop is retuned is a coupling nobody
 /// asked for.
 const double _glyphSize = 20;
-const double _lockSize = 16;
+
+/// The lock every section header carries: `<LockMark size={13}/>`.
+const double _lockSize = 13;
 
 /// The well a guide's thumbnail sits in: `width: 36, height: 36`.
 const double _wellSize = 36;
@@ -127,9 +130,7 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
             ),
           ],
         ),
-        trailing: shelf.isLocked
-            ? IconMark(AppIcon.lock, size: _lockSize, color: ink)
-            : null,
+        trailing: shelf.isLocked ? LockMark(size: _lockSize, color: ink) : null,
         below: Padding(
           padding: const EdgeInsets.only(
             top: AppSpacing.xs,

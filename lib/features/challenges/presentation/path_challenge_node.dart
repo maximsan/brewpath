@@ -3,8 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/dash_runs.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
@@ -71,10 +70,11 @@ ChallengeSurfaceState pathChallengeState(
 }
 
 /// A Coffee Challenge as a row on the path's spine: a diamond at the junction,
-/// a dashed card with the cup, and a pill that says what a tap does.
+/// the cup in its dashed ring, the kicker and title, and a pill that says what
+/// a tap does — the design's `.lesson-row.challenge-sub`, compact, so the card
+/// keeps no border or fill of its own.
 ///
-/// The design's `.lesson-row.challenge-sub`. Both the module's capstone and a
-/// finished lesson's own challenge draw through it, so the two cannot drift.
+/// The module's capstone and a finished lesson's challenge both draw through it.
 class PathChallengeRow extends ConsumerStatefulWidget {
   /// Creates a [PathChallengeRow].
   const PathChallengeRow({
@@ -91,12 +91,13 @@ class PathChallengeRow extends ConsumerStatefulWidget {
   /// challenge is not drawn on the Path at all.
   final ChallengeSurfaceState state;
 
-  /// Whether this is the module's last row, which drops its hairline and ends
-  /// the spine at its own junction.
+  /// Whether this is the module's last row, which ends the spine at its own
+  /// junction.
   final bool isLast;
 
-  /// The design's `.challenge-sub { padding: 8px 0 }`.
-  static const double _rowPadding = 8;
+  /// The compact row's `.challenge-sub { padding-top: 4px; padding-bottom:
+  /// 4px }`.
+  static const double _rowPadding = 4;
 
   /// The design's `gap: 14px` between the spine column and the trail.
   static const double _columnGap = 14;
@@ -193,60 +194,49 @@ class _PathChallengeRowState extends ConsumerState<PathChallengeRow> {
 
   @override
   Widget build(BuildContext context) {
-    final mood = context.mood;
-
     return Semantics(
       button: true,
       label: '${_challenge.title}, coffee challenge, $_stateWord',
       onTap: _act,
       excludeSemantics: true,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: widget.isLast ? Colors.transparent : mood.rule,
-            ),
-          ),
-        ),
-        child: Stack(
-          children: [
-            PathSpine(isFirst: false, isLast: widget.isLast),
-            InkWell(
-              onTap: _act,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: PathChallengeRow._rowPadding,
-                ),
-                child: Row(
-                  children: [
-                    _Junction(done: _state == ChallengeSurfaceState.completed),
-                    const SizedBox(
-                      width:
-                          PathChallengeRow._columnGap -
-                          PathChallengeRow._cardPullBack,
+      child: Stack(
+        children: [
+          PathSpine(isFirst: false, isLast: widget.isLast),
+          InkWell(
+            onTap: _act,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: PathChallengeRow._rowPadding,
+              ),
+              child: Row(
+                children: [
+                  _Junction(done: _state == ChallengeSurfaceState.completed),
+                  const SizedBox(
+                    width:
+                        PathChallengeRow._columnGap -
+                        PathChallengeRow._cardPullBack,
+                  ),
+                  Expanded(
+                    child: _Card(
+                      state: _state,
+                      kicker: _kicker,
+                      title: _challenge.title,
                     ),
-                    Expanded(
-                      child: _Card(
-                        state: _state,
-                        kicker: _kicker,
-                        title: _challenge.title,
+                  ),
+                  if (_state != ChallengeSurfaceState.completed) ...[
+                    const SizedBox(width: PathChallengeRow._columnGap),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        right: PathChallengeRow._trailPadding,
                       ),
+                      child: _Pill(state: _state, word: _stateWord),
                     ),
-                    if (_state != ChallengeSurfaceState.completed) ...[
-                      const SizedBox(width: PathChallengeRow._columnGap),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: PathChallengeRow._trailPadding,
-                        ),
-                        child: _Pill(state: _state, word: _stateWord),
-                      ),
-                    ],
                   ],
-                ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -290,7 +280,8 @@ class _Junction extends StatelessWidget {
 }
 
 /// The `.challenge-card`, with the short dashed connector that ties it back
-/// to the diamond.
+/// to the diamond. Compact, it is words beside a badge: `padding: 8px 10px
+/// 8px 11px; border: none; background: transparent`.
 class _Card extends StatelessWidget {
   const _Card({required this.state, required this.kicker, required this.title});
 
@@ -298,25 +289,13 @@ class _Card extends StatelessWidget {
   final String kicker;
   final String title;
 
-  /// `padding: 12px 14px`.
-  static const EdgeInsets _padding = EdgeInsets.symmetric(
-    vertical: 12,
-    horizontal: 14,
-  );
+  static const EdgeInsets _padding = EdgeInsets.fromLTRB(11, 8, 10, 8);
 
   /// `gap: 12px` between the badge and the words.
   static const double _gap = 12;
 
   /// `.challenge-kicker { margin-bottom: 4px }`.
   static const double _kickerGap = 4;
-
-  /// The border's accent share: `color-mix(in oklab, var(--accent) 38%,
-  /// var(--rule))`, and 40% once the challenge is active.
-  static const double _restingTint = 0.38;
-  static const double _activeTint = 0.40;
-
-  /// The fill: `color-mix(in oklab, var(--accent) 6%, transparent)`.
-  static const double _wash = 0.06;
 
   /// The connector: `left: -11px; width: 10px`, dashed at
   /// `color-mix(in oklab, var(--accent) 45%, var(--rule))`.
@@ -328,27 +307,6 @@ class _Card extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final done = state == ChallengeSurfaceState.completed;
-    final active = state == ChallengeSurfaceState.active;
-
-    final BorderSide side;
-    if (done) {
-      side = BorderSide(color: mood.rule);
-    } else {
-      side = BorderSide(
-        color: Color.lerp(
-          mood.rule,
-          mood.accent,
-          active ? _activeTint : _restingTint,
-        )!,
-      );
-    }
-    // Dashed while it is still an invitation; solid once in play or brewed.
-    final ShapeBorder shape = done || active
-        ? RoundedRectangleBorder(
-            side: side,
-            borderRadius: BorderRadius.circular(AppRadii.chrome),
-          )
-        : DashedRoundedBorder(radius: AppRadii.chrome, side: side);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -367,12 +325,8 @@ class _Card extends StatelessWidget {
             ),
           ),
         ),
-        Container(
+        Padding(
           padding: _padding,
-          decoration: ShapeDecoration(
-            color: done ? null : mood.accent.withValues(alpha: _wash),
-            shape: shape,
-          ),
           child: Row(
             children: [
               _Badge(done: done),
@@ -422,9 +376,9 @@ class _ConnectorPainter extends CustomPainter {
   final Color color;
   final bool dashed;
 
-  /// Short dashes, so three of them fit the 10-px run the design gives it.
-  static const double _dash = 2;
-  static const double _gap = 2;
+  /// A browser's `1px dashed`: three-pixel dashes with three-pixel gaps.
+  static const double _dash = 3;
+  static const double _gap = 3;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -465,6 +419,9 @@ class _Badge extends StatelessWidget {
   static const double _doneRing = 0.5;
   static const double _doneWash = 0.08;
 
+  /// A browser's `1px dashed` on a ring: three on, three off.
+  static const double _ringDash = 3;
+
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
@@ -484,9 +441,14 @@ class _Badge extends StatelessWidget {
         ),
         shape: done
             ? CircleBorder(side: side)
-            : DashedRoundedBorder(radius: _size / 2, side: side),
+            : DashedRoundedBorder(
+                radius: _size / 2,
+                side: side,
+                dashLength: _ringDash,
+                dashGap: _ringDash,
+              ),
       ),
-      child: IconMark(AppIcon.cup, size: _cupSize, color: tint),
+      child: BrewCupMark(size: _cupSize, color: tint),
     );
   }
 }
