@@ -643,6 +643,18 @@ abstract final class OffTokens {
     reason: "the recall card's button sets `paddingTop: 26`",
   );
 
+  /// The corner of the well a guide's thumbnail sits in on Reference.
+  static const OffToken<double> guideWellRadius = OffToken(
+    9,
+    reason: 'a guide row draws its thumbnail in `borderRadius: 9`',
+  );
+
+  /// The room above the line that counts the guides still to come.
+  static const OffToken<double> referenceRemainingTop = OffToken(
+    10,
+    reason: 'the guides-left line opens at `marginTop: 10`',
+  );
+
   /// Every sanctioned exception, so the register can be tested as a whole.
   static const register = <OffToken<Object>>[
     rewardedAdCanvas,
@@ -740,5 +752,7 @@ abstract final class OffTokens {
     predictButtonGap,
     decisionButtonGap,
     recallButtonGap,
+    guideWellRadius,
+    referenceRemainingTop,
   ];
 }

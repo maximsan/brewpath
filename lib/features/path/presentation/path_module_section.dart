@@ -6,6 +6,8 @@ import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
+import 'package:brew_path/features/challenges/domain/challenge_bank.dart';
+import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
@@ -13,10 +15,12 @@ import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dar
 import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// One module on Path, drawn at the density its state earns.
 ///
@@ -187,27 +191,62 @@ class _SubLine extends StatelessWidget {
   }
 }
 
-/// The lesson list a module opens onto.
-class _Lessons extends StatelessWidget {
+/// The lesson list a module opens onto, with the challenges hung off it: a
+/// finished lesson's own Coffee Challenge follows its row, and the module's
+/// capstone closes the list.
+///
+/// Which row is last is worked out here, because the design's `:last-child`
+/// drops the hairline and ends the spine on whatever row that turns out to be.
+class _Lessons extends ConsumerWidget {
   const _Lessons({required this.module});
 
   final PathModule module;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bank =
+        ref.watch(challengeBankProvider).asData?.value ??
+        const <BrewChallenge>[];
+    final capstone = module.density.isLocked
+        ? null
+        : pathModuleCapstone(ref, module.id);
+    final lessons = module.lessons;
+
+    // A lesson's challenge is drawn only once the lesson is done — before that
+    // it is not the learner's yet.
+    BrewChallenge? challengeOf(PathLesson entry) =>
+        entry.isCompleted ? challengeForLesson(bank, entry.lesson.id) : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        for (var i = 0; i < module.lessons.length; i++)
+        for (var i = 0; i < lessons.length; i++) ...[
           PathLessonRow(
-            entry: module.lessons[i],
-            isLast: i == module.lessons.length - 1,
+            entry: lessons[i],
+            isFirst: i == 0,
+            isLast:
+                i == lessons.length - 1 &&
+                challengeOf(lessons[i]) == null &&
+                capstone == null,
           ),
-        // The module's Coffee Challenge — Path is the only place a challenge
-        // appears outside Today. Inside the panel, as the design nests it: a
-        // finished module that is shut is not still offering its brew.
-        if (!module.density.isLocked) PathChallengeNode(moduleId: module.id),
+          if (challengeOf(lessons[i]) case final challenge?)
+            PathChallengeRow(
+              challenge: challenge,
+              state: pathChallengeState(
+                ref,
+                id: challenge.id,
+                offerable: true,
+              ),
+              isLast: i == lessons.length - 1 && capstone == null,
+            ),
+        ],
+        if (capstone != null)
+          PathChallengeRow(
+            challenge: capstone.challenge,
+            state: capstone.state,
+            isLast: true,
+          ),
       ],
     );
   }

@@ -36,6 +36,7 @@ Future<void> _pump(
   required bool isCurrent,
   MasteryResult mastery = MasteryResult.unscored,
   bool isLast = false,
+  bool isLocked = false,
   bool isPurchaseLocked = false,
 }) => tester.pumpWidget(
   ProviderScope(
@@ -49,6 +50,7 @@ Future<void> _pump(
             lesson: _lesson,
             isCompleted: isCompleted,
             isCurrent: isCurrent,
+            isLocked: isLocked,
             isPurchaseLocked: isPurchaseLocked,
             mastery: mastery,
           ),
@@ -299,6 +301,60 @@ void main() {
         ),
         findsNothing,
       );
+    });
+  });
+
+  group('the progression lock', () {
+    // A lesson still ahead on the path: each finished lesson unlocks the next,
+    // so this one is drawn shut and answers nothing.
+    Future<void> pumpLocked(WidgetTester tester) =>
+        _pump(tester, isCompleted: false, isCurrent: false, isLocked: true);
+
+    testWidgets('draws one muted lock', (tester) async {
+      await pumpLocked(tester);
+
+      final locks = find.byWidgetPredicate(
+        (widget) => widget is IconMark && widget.icon == AppIcon.lock,
+      );
+      expect(locks, findsOneWidget);
+      expect(
+        tester.widget<IconMark>(locks).color,
+        MoodColors.darkRoast.inkMute,
+      );
+    });
+
+    testWidgets('fades the whole row', (tester) async {
+      await pumpLocked(tester);
+
+      final opacity = tester.widget<Opacity>(
+        find.ancestor(
+          of: find.text('Where coffee grows'),
+          matching: find.byType(Opacity),
+        ),
+      );
+      expect(opacity.opacity, 0.4);
+    });
+
+    testWidgets('announces the lesson as locked', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await pumpLocked(tester);
+
+      expect(
+        find.bySemanticsLabel('Where coffee grows, locked'),
+        findsOneWidget,
+      );
+      semantics.dispose();
+    });
+
+    testWidgets('does nothing on tap', (tester) async {
+      await pumpLocked(tester);
+
+      await tester.tap(find.text('Where coffee grows'));
+      await tester.pumpAndSettle();
+
+      // Neither the lesson nor the offer: there is nothing to open yet.
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
+      expect(tester.takeException(), isNull);
     });
   });
 }

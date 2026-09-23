@@ -19,6 +19,7 @@ class PathLesson {
     required this.lesson,
     required this.isCompleted,
     required this.isCurrent,
+    required this.isLocked,
     required this.isPurchaseLocked,
     required this.mastery,
   });
@@ -33,11 +34,16 @@ class PathLesson {
   /// the whole course, never one per module.
   final bool isCurrent;
 
+  /// Whether the lesson is still ahead of the learner: neither finished nor
+  /// the one they are on. Each finished lesson unlocks the next, so a row
+  /// past the current one is drawn shut and does not open.
+  final bool isLocked;
+
   /// Whether the free tier does not carry this lesson.
   ///
-  /// Not the same lock as [PathModuleDensity.locked]. That one opens when the
-  /// module before it is finished. This one only opens by buying the course.
-  /// ADR-0016.
+  /// Not the same lock as [isLocked] or [PathModuleDensity.locked]: those
+  /// open by finishing what comes before. This one only opens by buying the
+  /// course. ADR-0016.
   final bool isPurchaseLocked;
 
   /// The best stored result, driving how full the row's bean reads.
@@ -129,6 +135,8 @@ List<PathModule> buildPathModules({
                 lesson: lesson,
                 isCompleted: completedIds.contains(lessonId),
                 isCurrent: lessonId == currentId,
+                isLocked:
+                    !completedIds.contains(lessonId) && lessonId != currentId,
                 isPurchaseLocked: lockedToPurchase(
                   lessonId,
                   isCompleted: completedIds.contains(lessonId),

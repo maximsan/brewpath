@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/disclosure_mark.dart';
+import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/path_challenge_node.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/path/domain/path_density.dart';
@@ -9,6 +10,7 @@ import 'package:brew_path/features/path/domain/path_providers.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -49,6 +51,7 @@ List<PathModule> _course() {
             ),
             isCompleted: i < done,
             isCurrent: position == 2 && i == done,
+            isLocked: i >= done && !(position == 2 && i == done),
             isPurchaseLocked: false,
             mastery: MasteryResult.unscored,
           ),
@@ -63,6 +66,9 @@ List<PathModule> _course() {
   ];
 }
 
+/// Module 1's capstone, earned: the only challenge this course carries.
+final BrewChallenge _capstone = testChallenge(scope: ChallengeScope.module);
+
 Future<void> _pumpPath(WidgetTester tester) async {
   tester.view.physicalSize = const Size(400, 2400);
   tester.view.devicePixelRatio = 1.0;
@@ -71,7 +77,18 @@ Future<void> _pumpPath(WidgetTester tester) async {
 
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [pathModulesProvider.overrideWith((ref) async => _course())],
+      overrides: [
+        pathModulesProvider.overrideWith((ref) async => _course()),
+        challengeBankProvider.overrideWith((ref) async => [_capstone]),
+        moduleChallengeOfferProvider(
+          'm1',
+        ).overrideWith((ref) async => _capstone),
+        moduleChallengeOfferProvider('m2').overrideWith((ref) async => null),
+        moduleChallengeOfferProvider('m3').overrideWith((ref) async => null),
+        activeChallengeProvider.overrideWith((ref) async => null),
+        completedChallengesProvider.overrideWith((ref) async => const {}),
+        savedChallengesProvider.overrideWith((ref) async => const []),
+      ],
       child: MaterialApp(theme: AppTheme.cupping, home: const PathScreen()),
     ),
   );
@@ -188,12 +205,13 @@ void main() {
 
     // Module 1 is finished and collapsed, so its Coffee Challenge is inside
     // the region that is shut — the design nests it there.
-    expect(find.byType(PathChallengeNode), findsOneWidget);
+    expect(find.byType(PathChallengeRow), findsNothing);
 
     await tester.tap(find.text('Module 1'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(PathChallengeNode), findsNWidgets(2));
+    expect(find.byType(PathChallengeRow), findsOneWidget);
+    expect(find.text('Two cups, two ratios'), findsOneWidget);
   });
 
   testWidgets('a finished module announces that it is finished', (

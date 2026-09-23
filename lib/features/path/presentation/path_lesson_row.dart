@@ -26,14 +26,20 @@ class PathLessonRow extends StatelessWidget {
   const PathLessonRow({
     required this.entry,
     required this.isLast,
+    this.isFirst = false,
     super.key,
   });
 
   /// The lesson and the learner's progress through it.
   final PathLesson entry;
 
+  /// Whether this is the module's first row, whose spine starts at its own
+  /// node rather than running up out of the header.
+  final bool isFirst;
+
   /// Whether this is the module's last row, which drops its hairline so the
-  /// list does not end on a rule with nothing under it.
+  /// list does not end on a rule with nothing under it, and stops its spine
+  /// at its own node.
   final bool isLast;
 
   /// The design's `.lesson-row` padding — `18px 0`, generous because the row
@@ -41,9 +47,12 @@ class PathLessonRow extends StatelessWidget {
   static const double _rowPadding = 18;
 
   /// Where the spine runs: `.lesson-row::before`'s `left: 15.5px`, which is the
-  /// centre of the 32-px node column.
-  static const double _spineLeft = 15.5;
-  static const double _spineWidth = 1;
+  /// centre of the 32-px node column. Public because a challenge row on the
+  /// same spine draws its own segment at the same place.
+  static const double spineLeft = 15.5;
+
+  /// The spine's `width: 1px`.
+  static const double spineWidth = 1;
 
   /// The wash behind the current row, and behind its node — the design's
   /// `color-mix(in oklab, var(--accent) 7%, …)`.
@@ -79,13 +88,7 @@ class PathLessonRow extends StatelessWidget {
       child: Stack(
         children: [
           // Behind everything, and masked into stops by each node's own disc.
-          Positioned(
-            left: _spineLeft,
-            top: 0,
-            bottom: 0,
-            width: _spineWidth,
-            child: ColoredBox(color: mood.rule),
-          ),
+          PathSpine(isFirst: isFirst, isLast: isLast),
           _row(context, lesson.title),
         ],
       ),
@@ -96,19 +99,24 @@ class PathLessonRow extends StatelessWidget {
   ///
   /// A purchase-locked row stays tappable on purpose. It is where someone
   /// meets the wall, and a dead row would say no without saying what it costs.
+  /// A row still ahead on the path is the one row that does nothing: each
+  /// finished lesson unlocks the next, and this one is not next yet.
   Widget _row(BuildContext context, String title) {
-    final locked = entry.isPurchaseLocked;
+    final purchase = entry.isPurchaseLocked;
+    final shut = purchase || entry.isLocked;
     void openGate() =>
         unawaited(showPlusGate(context, LockedLesson(title: title)));
 
     final row = InkWell(
-      onTap: locked
+      onTap: purchase
           ? openGate
+          : entry.isLocked
+          ? null
           : () => unawaited(
               context.goToLessonAskingReview(entry.lesson.id),
             ),
       child: Opacity(
-        opacity: locked ? _lockedOpacity : 1,
+        opacity: shut ? _lockedOpacity : 1,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: _rowPadding),
           child: Row(
@@ -124,16 +132,52 @@ class PathLessonRow extends StatelessWidget {
       ),
     );
 
-    if (!locked) return row;
+    if (!shut) return row;
 
     // One sentence, not three separate nodes. A locked row never shows the
     // CURRENT label, so `excludeSemantics` loses nothing.
     return Semantics(
-      button: true,
-      label: LockedRowCopy.purchaseLockedSemantics(title),
-      onTap: openGate,
+      button: purchase,
+      label: purchase
+          ? LockedRowCopy.purchaseLockedSemantics(title)
+          : AppLabels.lessonLockedSemantics(title),
+      onTap: purchase ? openGate : null,
       excludeSemantics: true,
       child: row,
+    );
+  }
+}
+
+/// The 1px spine behind a row on the path, at the node column's centre.
+///
+/// The design's `.lesson-row::before`: full height, except that the first
+/// row's starts at its node (`top: 50%`) and the last row's ends at its own
+/// (`bottom: 50%`), so the line never runs out past the rows it threads.
+class PathSpine extends StatelessWidget {
+  /// Creates a [PathSpine].
+  const PathSpine({required this.isFirst, required this.isLast, super.key});
+
+  /// Whether the segment starts at the row's centre rather than its top.
+  final bool isFirst;
+
+  /// Whether the segment ends at the row's centre rather than its bottom.
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final line = ColoredBox(color: context.mood.rule);
+
+    return Positioned(
+      left: PathLessonRow.spineLeft,
+      top: 0,
+      bottom: 0,
+      width: PathLessonRow.spineWidth,
+      child: Column(
+        children: [
+          Expanded(child: isFirst ? const SizedBox.shrink() : line),
+          Expanded(child: isLast ? const SizedBox.shrink() : line),
+        ],
+      ),
     );
   }
 }
@@ -198,13 +242,23 @@ class _Meta extends StatelessWidget {
     final mood = context.mood;
 
     // Before every other arm: locked is locked, whatever the learner scored
-    // before or wherever the course is pointing.
+    // before or wherever the course is pointing. Accent for the purchase,
+    // ink-mute for progression — the same split the module heading makes.
     if (entry.isPurchaseLocked) {
       return IconMark(
         AppIcon.lock,
         size: _lockSize,
         color: mood.accent,
         semanticLabel: LockedRowCopy.partOfFoundations,
+      );
+    }
+
+    if (entry.isLocked) {
+      return IconMark(
+        AppIcon.lock,
+        size: _lockSize,
+        color: mood.inkMute,
+        semanticLabel: AppLabels.lessonLocked,
       );
     }
 

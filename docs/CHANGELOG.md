@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A finished lesson's Coffee Challenge hangs under its row on the Path.**
+  Drawn as the design's challenge row — a diamond off the spine, a dashed card
+  with the cup and how long the brew takes, and a pill that reads *Start*,
+  *Resume* or *Active* — and the module's capstone takes the same row instead
+  of a boxed card. *Start* puts the brew on Today; a brewed row opens its
+  recap.
+
 - **A language folder can be drafted from the English master.**
   `tool/draft_language.js` queues every piece of prose a language still owes —
   absent, or left behind by an English edit — writes the folder from that
@@ -85,6 +92,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **Lessons still ahead on the Path are locked.** Each finished lesson unlocks
+  the next, as the App Guide already promised: a lesson past the current one
+  draws dimmed with a lock and does not open. With it, the Path takes the
+  design's 24 gutter ([#539](https://github.com/maximsan/brewpath/issues/539)),
+  its spine starts and ends at a module's first and last nodes, Reference's
+  title, glyph, thumbnails and count line follow the design, and the course
+  ending draws Roasty at the design's size.
 - **The floating top bar fades under its hairline, and two screens seal
   sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
   both endings now draws the same soft band below its edge that every other

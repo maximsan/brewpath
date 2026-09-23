@@ -109,6 +109,9 @@ class _CourseCompletionScreenState
     );
   }
 
+  /// The design's `<Roasty state="module" size={190}/>` on this screen.
+  static const double _roastySize = 190;
+
   Widget _celebration(MoodColors mood, _Stats stats) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -117,6 +120,7 @@ class _CourseCompletionScreenState
         const Center(
           child: CompanionCelebration(
             reaction: CompanionReaction.courseComplete,
+            size: _roastySize,
           ),
         ),
         const SizedBox(height: AppSpacing.md),
