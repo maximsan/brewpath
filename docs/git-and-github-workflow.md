@@ -242,8 +242,8 @@ Two things that are easy to get wrong:
 - **`flutter pub get` must run first, including for the format check.**
   `dart format` selects its style from the package's language version, which it
   reads via `.dart_tool/package_config.json`. Without resolution it falls back
-  to the newest language version and reformats files that are correct at this
-  package's `sdk: ">=3.8.0"` floor. This exact omission kept the `format` job
+  to the newest language version and reformats files that are correct at the
+  `sdk:` floor `pubspec.yaml` declares. This exact omission kept the `format` job
   red on `main` for over a week
   ([#43](https://github.com/maximsan/brewpath/pull/43)).
 

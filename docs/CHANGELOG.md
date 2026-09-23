@@ -44,6 +44,17 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **The daily reminder actually arrives.** The Notifications switch and the
+  Daily reminder row are back on Settings, and behind them is a real local
+  notification: one a day at the chosen slot, skipped on a day already
+  practised on, and re-asserted on every launch and resume so a reboot, an
+  upgrade or a timezone change cannot quietly drop it. Switching it on lands
+  on a slot still ahead today, so the first one arrives today rather than
+  tomorrow. Turning it on asks iOS; a refusal stores nothing and offers the
+  way to iOS Settings, and a permission revoked there later switches the row
+  back off rather than leaving it promising something that will not come
+  ([#443](https://github.com/maximsan/brewpath/issues/443),
+  [`docs/reminders.md`](reminders.md)).
 - **Glossary terms in lesson copy are tappable.** A concept card's prose, the
   predict card's opening body and a verdict block's explanation — in a lesson
   or a mini-game round — now link the terms they say; tapping one opens the

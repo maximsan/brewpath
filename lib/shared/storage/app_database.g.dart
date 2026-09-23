@@ -417,8 +417,8 @@ class SettingsRow extends DataClass implements Insertable<SettingsRow> {
 
   /// Whether the learner asked for a daily reminder. Off by default.
   ///
-  /// Stored, not yet acted on: nothing schedules from this bit, and whether
-  /// reminders ship at all is unruled; the platform work is #443. Device-local.
+  /// Device-local. Switched back off by the refresher where the OS has stopped
+  /// honouring it, so this bit never outlives the permission behind it.
   final bool notificationsEnabled;
 
   /// The time of day the reminder is set for, as one of the design's eight
