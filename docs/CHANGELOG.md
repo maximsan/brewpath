@@ -48,8 +48,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   Daily reminder row are back on Settings, and behind them is a real local
   notification: one a day at the chosen slot, skipped on a day already
   practised on, and re-asserted on every launch and resume so a reboot, an
-  upgrade or a timezone change cannot quietly drop it. Turning the switch on
-  asks iOS; a refusal stores nothing and offers the way to iOS Settings, and a
+  upgrade or a timezone change cannot quietly drop it. Switching it on lands on
+  a slot still ahead today, so the first one arrives today rather than
+  tomorrow. Turning the switch on asks iOS; a refusal stores nothing and offers the way to iOS Settings, and a
   permission revoked there later switches the row back off rather than leaving
   it promising something that will not come
   ([#443](https://github.com/maximsan/brewpath/issues/443),

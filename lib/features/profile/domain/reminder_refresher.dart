@@ -48,7 +48,7 @@ class ReminderRefresher {
     if (outcome == ReminderSyncOutcome.permissionLost && _ref.mounted) {
       await _ref
           .read(settingsControllerProvider.notifier)
-          .setNotificationsEnabled(enabled: false);
+          .turnNotificationsOff();
     }
 
     return outcome;

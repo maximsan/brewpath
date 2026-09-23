@@ -12,6 +12,12 @@ switch, and a **Daily reminder** row showing the slot it arrives at — dim and
 reading *Off* while the switch is off, and still pressable, because choosing a
 time is how the reminder is turned on.
 
+Turning the switch on starts a learner who has never chosen a slot on the
+design's 8:00 AM, or — where that has already gone by — on the next slot still
+ahead today, so a reminder switched on today arrives today (ruled 23 September
+2026). The sheet opens on the same slot. A slot they *did* choose is never
+moved, even past: a deliberate 6:30 AM means tomorrow, not this afternoon.
+
 Turning it on asks iOS. A refusal stores nothing at all: the switch stays off,
 the row keeps reading *Off*, and a sheet offers the way to iOS Settings — the
 only place a refusal can be undone. If the permission is revoked there later,

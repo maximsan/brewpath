@@ -1,4 +1,3 @@
-import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/settings_record.dart';
@@ -33,21 +32,19 @@ class SettingsController extends _$SettingsController {
   Future<void> toggleSound() =>
       _update((s) => s.soundEnabled = !s.soundEnabled);
 
-  /// Stores whether the learner wants a daily reminder.
+  /// Drops the daily reminder, keeping the slot it was set to.
   ///
-  /// Switching it on with no time chosen takes the design's default slot, so
-  /// the row never reads on-with-no-time — a state its value cannot show.
-  /// Storing is all this does; `askForReminder` is what asks the OS and puts
-  /// the occurrences in front of it.
-  Future<void> setNotificationsEnabled({required bool enabled}) => _update((s) {
-    s.notificationsEnabled = enabled;
-    if (enabled) s.dailyReminderTime ??= DailyReminder.defaultTime;
-  });
+  /// The slot is kept on purpose: switching back on should return the learner
+  /// to the time they chose, not to the default. Storing is all this does;
+  /// `dropReminder` is what also clears what the OS is holding.
+  Future<void> turnNotificationsOff() =>
+      _update((s) => s.notificationsEnabled = false);
 
   /// Sets the reminder's time, and turns reminders on if they were off.
   ///
   /// Choosing a time *is* asking for the reminder — the design's own sheet
-  /// saves with `setNotify(true)` beside the time it stores.
+  /// saves with `setNotify(true)` beside the time it stores. It is also the
+  /// only way on, so on-with-no-time cannot be stored.
   Future<void> setReminderTime(String time) => _update((s) {
     s
       ..dailyReminderTime = time

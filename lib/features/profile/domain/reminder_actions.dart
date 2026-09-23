@@ -6,6 +6,8 @@
 /// second place for it.
 library;
 
+import 'package:brew_path/app/current_day.dart';
+import 'package:brew_path/features/profile/domain/daily_reminder.dart';
 import 'package:brew_path/features/profile/domain/reminder_refresher.dart';
 import 'package:brew_path/features/profile/domain/reminder_sync.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
@@ -16,9 +18,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Asks the OS for permission, and stores the reminder only if it says yes.
 ///
-/// [time] is the slot to store; null keeps whatever slot is already there. A
-/// refusal writes nothing at all, so the switch stays off and the row keeps
-/// reading *Off* — a switch that shows on is a promise the OS would break.
+/// [time] is the slot to store; null takes the one already stored, or
+/// [startingSlot] where there is none. A refusal writes nothing at all, so the
+/// switch stays off and the row keeps reading *Off* — a switch that shows on
+/// is a promise the OS would break.
 Future<ReminderPermission> askForReminder(WidgetRef ref, {String? time}) async {
   final scheduler = ref.read(reminderSchedulerProvider);
 
@@ -30,20 +33,30 @@ Future<ReminderPermission> askForReminder(WidgetRef ref, {String? time}) async {
   // with, and a switch showing on there would promise exactly as little.
   if (permission != ReminderPermission.granted) return permission;
 
-  final settings = ref.read(settingsControllerProvider.notifier);
-  await (time == null
-      ? settings.setNotificationsEnabled(enabled: true)
-      : settings.setReminderTime(time));
+  await ref
+      .read(settingsControllerProvider.notifier)
+      .setReminderTime(time ?? await startingSlot(ref));
   await refreshReminders(ref);
 
   return permission;
 }
 
+/// The slot the switch turns on at: the stored one, or [DailyReminder]'s
+/// opening slot for the current time where the learner has never chosen.
+///
+/// A slot they did choose is never moved, even where it has gone by — a
+/// deliberate 6:30 AM means tomorrow, not this afternoon.
+Future<String> startingSlot(WidgetRef ref) async {
+  final stored = (await ref.read(
+    settingsControllerProvider.future,
+  )).dailyReminderTime;
+  return stored ??
+      DailyReminder.openingSlot(ref.read(appClockProvider)()).label;
+}
+
 /// Drops the reminder: the preference goes off and nothing stays pending.
 Future<void> dropReminder(WidgetRef ref) async {
-  await ref
-      .read(settingsControllerProvider.notifier)
-      .setNotificationsEnabled(enabled: false);
+  await ref.read(settingsControllerProvider.notifier).turnNotificationsOff();
   await refreshReminders(ref);
 }
 

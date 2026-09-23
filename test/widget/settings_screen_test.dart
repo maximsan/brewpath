@@ -1,4 +1,5 @@
 import 'package:brew_path/app/app.dart';
+import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/confirm_sheet.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
@@ -137,8 +138,15 @@ void main() {
   group('the reminder rows', () {
     late FakeReminderScheduler scheduler;
 
-    ProviderContainer withScheduler() => ProviderContainer(
-      overrides: [reminderSchedulerProvider.overrideWithValue(scheduler)],
+    /// A container whose clock stands at [hour], so the slot the switch opens
+    /// on is the test's input rather than the hour it happens to run at.
+    ProviderContainer withScheduler({int hour = 6}) => ProviderContainer(
+      overrides: [
+        reminderSchedulerProvider.overrideWithValue(scheduler),
+        appClockProvider.overrideWithValue(
+          () => DateTime(2026, 9, 23, hour),
+        ),
+      ],
     );
 
     Finder row(String label) => find.ancestor(
@@ -214,6 +222,23 @@ void main() {
       await settleLoaders(tester);
 
       expect(scheduler.settingsOpened, 1);
+    });
+
+    testWidgets('switched on after its slot, it still arrives today', (
+      tester,
+    ) async {
+      // Turning the reminder on today is expected to give one today, which
+      // the design's 8:00 AM cannot at nine in the morning.
+      await openSettings(tester, container: withScheduler(hour: 9));
+
+      await tester.tap(find.text(SettingsCopy.notificationsRow));
+      await settleLoaders(tester);
+
+      expect(
+        (await SettingsRepository().getSettings()).dailyReminderTime,
+        '12:30 PM',
+      );
+      expect(scheduler.pending.first, DateTime(2026, 9, 23, 12, 30));
     });
 
     testWidgets('choosing a time from the sheet is asking for the reminder', (

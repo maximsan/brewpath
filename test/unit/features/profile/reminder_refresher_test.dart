@@ -56,12 +56,12 @@ void main() {
       // The bug this exists for: the settings row and the watcher both refresh,
       // so a run that read `on` used to land its plan after the clear that came
       // of switching the reminder off.
-      await settings().setNotificationsEnabled(enabled: true);
+      await settings().setReminderTime('8:00 AM');
       final gate = Completer<void>();
       scheduler.pause = gate.future;
 
       final held = refresher().refresh();
-      await settings().setNotificationsEnabled(enabled: false);
+      await settings().turnNotificationsOff();
       final second = refresher().refresh();
       gate.complete();
       await Future.wait([held, second]);
@@ -72,7 +72,7 @@ void main() {
   );
 
   test('a revoked permission switches the stored preference off', () async {
-    await settings().setNotificationsEnabled(enabled: true);
+    await settings().setReminderTime('8:00 AM');
     scheduler.answer = ReminderPermission.denied;
 
     expect(await refresher().refresh(), ReminderSyncOutcome.permissionLost);
@@ -87,7 +87,7 @@ void main() {
     // The smoke suite tears the app down between walks and closes the
     // database a pump later; a refresh still reading through the old scope
     // would race that close.
-    await settings().setNotificationsEnabled(enabled: true);
+    await settings().setReminderTime('8:00 AM');
     final refresh = refresher();
     container.dispose();
 
@@ -96,7 +96,7 @@ void main() {
   });
 
   test('a failed refresh leaves the queue usable', () async {
-    await settings().setNotificationsEnabled(enabled: true);
+    await settings().setReminderTime('8:00 AM');
     scheduler.failure = StateError('no notification centre');
 
     await expectLater(refresher().refresh(), throwsStateError);

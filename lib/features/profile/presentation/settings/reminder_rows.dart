@@ -66,10 +66,12 @@ class ReminderRows extends ConsumerWidget {
   );
 
   Future<void> _pickTime(BuildContext context, WidgetRef ref) async {
-    final picked = await DailyReminderSheet.show(
-      context,
-      current: settings.dailyReminderTime,
-    );
+    // The same slot the switch would turn on at, so the sheet never opens on a
+    // time that has already gone by.
+    final opensOn = await startingSlot(ref);
+    if (!context.mounted) return;
+
+    final picked = await DailyReminderSheet.show(context, current: opensOn);
     if (picked == null || !context.mounted) return;
 
     await _ask(context, ref, time: picked);

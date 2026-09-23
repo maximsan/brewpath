@@ -10,7 +10,7 @@ typedef ReminderSlot = ({String label, int hour, int minute});
 /// `reminderFireTimes` turns a slot into occurrences to post.
 abstract final class DailyReminder {
   /// The slots the sheet offers, in the design's order, each with the local
-  /// time its label names.
+  /// time its label names. Ascending, which [openingSlot] reads as such.
   static const slots = <ReminderSlot>[
     (label: '6:30 AM', hour: 6, minute: 30),
     (label: '7:00 AM', hour: 7, minute: 0),
@@ -39,6 +39,21 @@ abstract final class DailyReminder {
   /// [defaultTime]'s slot.
   static ReminderSlot get defaultSlot =>
       slots.firstWhere((slot) => slot.label == defaultTime);
+
+  /// The slot to start a learner on at [now] — the design's own, or the next
+  /// one still ahead of it where that has already gone by.
+  ///
+  /// A reminder switched on today is expected to arrive today, and it cannot
+  /// if the slot it defaults to is already past (ruled 23 September 2026,
+  /// #443). Late enough that no slot is left, it falls back to the design's.
+  static ReminderSlot openingSlot(DateTime now) {
+    bool isAhead(ReminderSlot slot) =>
+        slot.hour > now.hour ||
+        (slot.hour == now.hour && slot.minute > now.minute);
+
+    if (isAhead(defaultSlot)) return defaultSlot;
+    return slots.firstWhere(isAhead, orElse: () => defaultSlot);
+  }
 
   /// The slot the sheet lands on when the learner has not chosen one.
   static const defaultTime = '8:00 AM';
