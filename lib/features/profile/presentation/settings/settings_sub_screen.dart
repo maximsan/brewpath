@@ -1,7 +1,9 @@
+import 'package:brew_path/core/widgets/footed_scroll_view.dart';
 import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
+import 'package:brew_path/features/profile/presentation/settings/settings_signature.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -19,6 +21,7 @@ class SettingsSubScreen extends StatelessWidget {
     required this.title,
     required this.children,
     this.opening,
+    this.footer,
     super.key,
   });
 
@@ -33,17 +36,32 @@ class SettingsSubScreen extends StatelessWidget {
   /// The sections, in the design's order.
   final List<Widget> children;
 
+  /// The block the page closes on, held at the foot of the screen.
+  final Widget? footer;
+
   @override
   Widget build(BuildContext context) {
     return SubScreenScaffold(
       title: title,
-      body: (context, scrollPadding) => ListView(
-        padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
-        children: [
+      body: (context, scrollPadding) {
+        final content = [
           opening ?? SettingsScreenHeading(title: title),
           ...children,
-        ],
-      ),
+        ];
+        final closing = footer;
+
+        if (closing == null) {
+          return ListView(
+            padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
+            children: content,
+          );
+        }
+        return FootedScrollView(
+          scrollPadding: scrollPadding,
+          footer: closing,
+          children: content,
+        );
+      },
     );
   }
 }
@@ -132,12 +150,11 @@ class SettingsPlaceholder extends StatelessWidget {
   );
 }
 
-/// The centred mono line that closes Settings and About.
+/// What Settings signs off with: the app's name, its version and
+/// [SettingsCopy.versionTagline] between middots, on one line.
 ///
-/// The design ends both screens with a signature rather than a labelled row:
-/// the app's name, its version and [SettingsCopy.versionTagline] between
-/// middots, mono smallcaps in muted ink. Not spelled out here, because the
-/// glossary guard reads comments too.
+/// The words are this screen's; the block they are drawn in is
+/// [SettingsSignature], which About closes on too.
 class SettingsVersionLine extends StatelessWidget {
   /// Creates the version line for [version].
   const SettingsVersionLine({required this.version, super.key});
@@ -150,23 +167,9 @@ class SettingsVersionLine extends StatelessWidget {
   static const _pendingVersion = '—';
 
   @override
-  Widget build(BuildContext context) {
-    final mood = context.mood;
-    final line =
+  Widget build(BuildContext context) => SettingsSignature(
+    line:
         'BrewPath · ${version ?? _pendingVersion} · '
-        '${SettingsCopy.versionTagline}';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.gutter),
-      child: Semantics(
-        label: line,
-        excludeSemantics: true,
-        child: Text(
-          line.toUpperCase(),
-          textAlign: TextAlign.center,
-          style: AppText.micro(mood: mood, color: mood.inkMute),
-        ),
-      ),
-    );
-  }
+        '${SettingsCopy.versionTagline}',
+  );
 }

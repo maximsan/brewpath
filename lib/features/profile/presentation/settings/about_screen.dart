@@ -34,6 +34,9 @@ class AboutScreen extends ConsumerWidget {
       // row that reached it. `About` stays in the bar, as on every other page
       // behind Settings.
       opening: const _BrandBlock(),
+      // The design closes the page on its signature, at the foot of the
+      // screen — not wherever the last row happens to end.
+      footer: const AboutSignature(),
       children: [
         const SizedBox(height: AppSpacing.lg),
         Padding(
@@ -51,8 +54,6 @@ class AboutScreen extends ConsumerWidget {
           children: [_FinePrintRows()],
         ),
         const _SaySomething(),
-        const SizedBox(height: AppSpacing.xl),
-        const AboutSignature(),
       ],
     );
   }

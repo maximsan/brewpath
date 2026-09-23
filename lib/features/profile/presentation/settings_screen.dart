@@ -1,4 +1,5 @@
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/widgets/footed_scroll_view.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/profile/domain/learner_name.dart';
@@ -31,8 +32,11 @@ class SettingsScreen extends ConsumerWidget {
 
     return SubScreenScaffold(
       title: SettingsCopy.title,
-      body: (context, scrollPadding) => ListView(
-        padding: scrollPadding.copyWith(bottom: AppSpacing.xl),
+      // The version line closes the page at the foot of the screen, as it
+      // does on About — a short page must not leave it floating mid-screen.
+      body: (context, scrollPadding) => FootedScrollView(
+        scrollPadding: scrollPadding,
+        footer: SettingsVersionLine(version: version.asData?.value),
         children: [
           // The design draws the name twice: large here, and small in the
           // bar once this has scrolled under it. The four screens behind this
@@ -56,8 +60,6 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
           const _DestructiveRows(),
-          const SizedBox(height: AppSpacing.xl),
-          SettingsVersionLine(version: version.asData?.value),
         ],
       ),
     );
