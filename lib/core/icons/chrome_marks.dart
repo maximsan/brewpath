@@ -30,7 +30,7 @@ class LockMark extends StatelessWidget {
   /// already says what it is.
   final String? semanticLabel;
 
-  /// The markup as `flavor-wheel.jsx` draws it, colour left to `currentColor`.
+  /// The design's `LockMark` markup, colour left to `currentColor`.
   static const String _markup = '''
 <svg viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
   <rect x="1" y="6" width="11" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
@@ -60,7 +60,7 @@ class BrewCupMark extends StatelessWidget {
   /// The ink for cup and steam alike.
   final Color color;
 
-  /// The markup as `brew-challenge.jsx` draws it: the steam at
+  /// The design's `BrewCup` markup: the steam at
   /// `stroke * 0.72` and `opacity 0.85`, the cup at the family's 1.6.
   static const String _markup = '''
 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
