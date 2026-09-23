@@ -1,6 +1,7 @@
 #!/bin/sh
-# The repo's own rules, before the push: format, metrics, the guard tests, the
-# comment cap on changed files and the changelog check. Around half a minute.
+# The repo's own rules, before the push: format, metrics, the guard tests
+# `tool/guard_tests.dart` names, the comment cap on changed files and the
+# changelog check. Around a minute.
 # `flutter analyze` and the full suite stay in CI, which runs them on every
 # push anyway. Skip all with `git push --no-verify`; skip only the
 # changelog check with NO_CHANGELOG=1. The two checks that compare against a
@@ -20,7 +21,13 @@ unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE
 
 dart format --output=none --set-exit-if-changed lib test integration_test tool
 dart run dart_code_linter:metrics analyze lib --set-exit-on-violation-level=warning
-find test -name '*_guard_test.dart' -print0 | xargs -0 flutter test
+# Held first, then checked: piped straight into xargs, a selector that died
+# would hand `flutter test` no arguments and quietly run the whole suite.
+guards=$(dart run tool/guard_tests.dart)
+[ -n "$guards" ] || { echo 'tool/guard_tests.dart named no tests' >&2; exit 1; }
+# Word-splitting is the point here; test paths carry no spaces.
+# shellcheck disable=SC2086
+flutter test $guards
 
 # Both compare against the base; main itself has already been through them.
 if [ "$(git rev-parse --abbrev-ref HEAD)" != main ]; then

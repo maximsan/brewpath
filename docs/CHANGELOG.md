@@ -94,6 +94,15 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **A push now runs every guard, not the ones named like one.** The hook
+  picked them with `find -name '*_guard_test.dart'`, and most of the guards
+  were not named that way — including the one that forbids naming a font
+  weight, which let a violation through to CI. They are chosen by what they
+  read now, so a guard cannot stop guarding by being named plainly, and a test
+  fails if the hook stops asking. A test that is not a guard is excluded by
+  name, with its reason, so the list fails closed. The sweep goes from 35
+  tests to 220, and the push from about 5 seconds of guards to about 18.
+
 - **The floating top bar fades under its hairline, and two screens seal
   sooner.** The bar over Term of the Day, the mini-game intro, the paywall and
   both endings now draws the same soft band below its edge that every other
