@@ -156,6 +156,21 @@ void main() {
     expect(decoration.color!.a, 1.0);
   });
 
+  testWidgets('the spine is drawn one pixel wide, the row tall', (
+    tester,
+  ) async {
+    await _pump(tester, isCompleted: true, isCurrent: false);
+
+    final segments = find.descendant(
+      of: find.byType(PathSpine),
+      matching: find.byType(ColoredBox),
+    );
+    expect(segments, findsNWidgets(2));
+    final size = tester.getSize(segments.first);
+    expect(size.width, PathLessonRow.spineWidth);
+    expect(size.height, greaterThan(0));
+  });
+
   testWidgets('the row carries no Review button', (tester) async {
     // The design's `.lesson-row` has no button in it: the whole row opens the
     // lesson, and a finished one is replayed the same way it was played.

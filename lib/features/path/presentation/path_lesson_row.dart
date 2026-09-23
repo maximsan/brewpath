@@ -173,6 +173,8 @@ class PathSpine extends StatelessWidget {
       bottom: 0,
       width: PathLessonRow.spineWidth,
       child: Column(
+        // Stretched, or a childless box in a flex column sizes to zero width.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(child: isFirst ? const SizedBox.shrink() : line),
           Expanded(child: isLast ? const SizedBox.shrink() : line),
