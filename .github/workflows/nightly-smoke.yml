@@ -1,0 +1,153 @@
+name: nightly smoke
+
+# The smoke suite's trigger, and a choice of where it runs. Both paths are
+# here and exactly one fires: the repository variable SMOKE_RUNNER picks
+# `github` or `codemagic`, and unset means `github`. Which to prefer, and why
+# the schedule lives here rather than in Codemagic: docs/ci-cd.md.
+on:
+  schedule:
+    # 03:00 UTC. GitHub disables a cron in a repository with no activity for
+    # 60 days, which is the one way this can still stop quietly.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: "Where to run it, overriding SMOKE_RUNNER for this run"
+        type: choice
+        options: [default, github, codemagic]
+        default: default
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: "3.44.1"
+
+jobs:
+  # Both `if:`s read the same expression, rather than a job computing it, so
+  # that resolving the choice does not itself cost a billed minute.
+  on-github:
+    name: smoke (GitHub macOS)
+    if: >
+      (github.event.inputs.runner != 'default' && github.event.inputs.runner ||
+       vars.SMOKE_RUNNER || 'github') == 'github'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Whichever iPhone the runner image ships — pinning a model would break
+      # every time GitHub rolls the image forward. boot_simulator.sh erases and
+      # boots it, then waits until it can take an app launch; a preinstalled
+      # device can migrate its data for minutes, and a launch before that is
+      # refused.
+      - name: Boot an iPhone simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c "
+          import json, sys
+          runtimes = json.load(sys.stdin)['devices']
+          for runtime, devices in runtimes.items():
+              if 'iOS' not in runtime:
+                  continue
+              for device in devices:
+                  if device.get('isAvailable') and device['name'].startswith('iPhone'):
+                      print(device['udid'])
+                      sys.exit(0)
+          sys.exit('no available iPhone simulator on this runner')
+          ")
+          echo "Booting $UDID"
+          tool/ci/boot_simulator.sh "$UDID"
+          echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
+
+      # `flutter build`, not `xcodebuild` alone: the Flutter tool is what
+      # raises the generated plugin package's platform floor to the project's
+      # 16.0. Left at its default 13.0 the Firebase packages refuse to build —
+      # the error tool/reset_ios_spm.sh exists for.
+      - name: Build the smoke test app
+        run: flutter build ios --simulator --debug -t integration_test/smoke_test.dart
+
+      # Xcode launches the app and reports each Dart test as an XCTest result
+      # (ios/RunnerTests/RunnerTests.m). Not `flutter test integration_test`:
+      # it waits for the app's start-up line on a `log stream` it attaches
+      # *after* the launch, so when the app prints first it waits forever —
+      # half the pushes to main, back when this ran per-push. Reproduced
+      # 2026-09-04: attach three seconds late and the line is already gone.
+      - name: Smoke test
+        run: |
+          set -o pipefail
+          # No parallel testing: Xcode would clone the simulator and boot the
+          # clone all over again, re-paying the wait above.
+          xcodebuild test \
+            -workspace ios/Runner.xcworkspace -scheme Runner -configuration Debug \
+            -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+            -parallel-testing-enabled NO \
+            -derivedDataPath build/ios_integ \
+            -resultBundlePath smoke.xcresult \
+            2>&1 | tee smoke-xcodebuild.log \
+            | grep -E 'Test Case|Test Suite|Executed|error:|\*\* TEST'
+
+      # Kept whatever ends the job — the cap, a cancel — so a failure can be
+      # read afterwards instead of reconstructed from silence.
+      - name: Keep the smoke logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-logs
+          path: |
+            smoke-xcodebuild.log
+            smoke.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
+
+  on-codemagic:
+    name: smoke (Codemagic)
+    if: >
+      (github.event.inputs.runner != 'default' && github.event.inputs.runner ||
+       vars.SMOKE_RUNNER || 'github') == 'codemagic'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Fails early and by name: an unset secret would otherwise POST an empty
+      # token and come back looking like a Codemagic-side rejection.
+      - name: Check the credentials are present
+        env:
+          TOKEN: ${{ secrets.CODEMAGIC_API_TOKEN }}
+          APP_ID: ${{ secrets.CODEMAGIC_APP_ID }}
+        run: |
+          test -n "$TOKEN" || { echo "::error::CODEMAGIC_API_TOKEN is not set."; exit 1; }
+          test -n "$APP_ID" || { echo "::error::CODEMAGIC_APP_ID is not set."; exit 1; }
+
+      # `workflowId` is the key under `workflows:` in codemagic.yaml — `smoke` —
+      # not the `name:` beside it. An API-started build ignores any `triggering:`
+      # block, which is why that workflow carries none.
+      - name: Start the Codemagic build
+        env:
+          TOKEN: ${{ secrets.CODEMAGIC_API_TOKEN }}
+          APP_ID: ${{ secrets.CODEMAGIC_APP_ID }}
+        run: |
+          set -o pipefail
+          body=$(jq -nc --arg app "$APP_ID" \
+            '{appId: $app, workflowId: "smoke", branch: "main"}')
+          status=$(curl -sS -o response.json -w '%{http_code}' \
+            -X POST https://api.codemagic.io/builds \
+            -H "x-auth-token: $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$body")
+          cat response.json; echo
+          case "$status" in
+            200|201) ;;
+            *) echo "::error::Codemagic refused the build (HTTP $status)."; exit 1 ;;
+          esac
+          # Green here means the build *started*. It deliberately does not wait,
+          # because polling bills the wall clock of a fifteen-minute suite; the
+          # result comes from Codemagic's own notification.
+          echo "Started build $(jq -r '.buildId // "?"' response.json)"

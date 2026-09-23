@@ -77,7 +77,7 @@ terms: it is commented, and this doc does not restate it.
 | Workflow | Trigger | What it gates |
 |---|---|---|
 | `ios-build` | push to `main` | `flutter build ios --release --no-codesign` — no CocoaPods (SPM) and no Firebase plist while `kUseFirebase == false`. Then asserts `PrivacyInfo.xcprivacy` reached `Runner.app` and that the associated-domains entitlement is still wired: both are wired into the target by hand, and nothing else notices if a merge drops them (#166, #171) |
-| `smoke` | **nightly schedule** | Boots an iPhone simulator and runs `integration_test/smoke_test.dart` — the only job that *runs* the app rather than compiling it. Built by `flutter build ios --simulator` and run by `xcodebuild test`, which launches it and reports each Dart test as an XCTest result (`ios/RunnerTests/RunnerTests.m`), because `flutter test integration_test` can miss the app's start-up line and wait forever (the reason is in the workflow's comments). The simulator is erased and fully booted first (`tool/ci/boot_simulator.sh`) |
+| `smoke` | **nightly**, started over the API by `nightly-smoke.yml` | Boots an iPhone simulator and runs `integration_test/smoke_test.dart` — the only job that *runs* the app rather than compiling it. Built by `flutter build ios --simulator` and run by `xcodebuild test`, which launches it and reports each Dart test as an XCTest result (`ios/RunnerTests/RunnerTests.m`), because `flutter test integration_test` can miss the app's start-up line and wait forever (the reason is in the workflow's comments). The simulator is erased and fully booted first (`tool/ci/boot_simulator.sh`) |
 
 Two things about this table are worth stating plainly, because both are
 changes in what CI proves:
@@ -95,18 +95,47 @@ macOS budget, and moving it to a schedule is what keeps the month inside the
 free allowance. The cost: a push that breaks start-up is now found the
 following morning rather than within the hour.
 
-**The nightly schedule is not in `codemagic.yaml`.** Codemagic configures
-scheduled builds in its UI (Build scheduling), and the format has no key for
-them. The `smoke` workflow therefore carries no `triggering:` block at all, so
-nothing in the repository starts it — if the UI schedule is ever deleted, the
-suite silently stops running, which is the same failure #187 already caught
-once.
+### Where the nightly smoke runs
+
+**The schedule is a GitHub Actions cron either way.** Codemagic's own scheduled
+builds are a Team feature, and the free 500 macOS minutes a month are
+personal-account only, so no free plan can hold both. That turned out for the
+better: the trigger is declared in the repository, which is what #187 was
+about.
+
+[`.github/workflows/nightly-smoke.yml`](../.github/workflows/nightly-smoke.yml)
+carries both destinations and fires exactly one, chosen by the repository
+variable `SMOKE_RUNNER`:
+
+| `SMOKE_RUNNER` | Runs | Costs |
+|---|---|---|
+| unset or `github` | the suite on a GitHub macOS runner | nothing while the repo is public; **ten times Linux** once it is private |
+| `codemagic` | a POST to Codemagic's `/builds` API, starting the `smoke` workflow | ~14 real minutes against the free 500 a month |
+
+Switch with `gh variable set SMOKE_RUNNER --body codemagic` — no code change —
+or override for one run from the workflow's `runner` input. **Pick by
+visibility:** `github` while the repo is public, because the minutes are free
+and the result lands in the Actions tab; `codemagic` once it is private,
+because that is the whole reason Codemagic is here.
+
+The `codemagic` path needs two repository secrets, `CODEMAGIC_API_TOKEN` and
+`CODEMAGIC_APP_ID`; the job fails by name if either is missing. Two things it
+does not cover: it goes green when the build *starts*, not when it passes — it
+deliberately does not poll, because polling bills the wall clock of a
+fifteen-minute suite, so the result comes from Codemagic's own notification —
+and GitHub disables a cron in a repository with no activity for 60 days.
+
+The cost of holding both: the smoke steps exist twice, in this workflow and in
+`codemagic.yaml`. Nothing can share them, because the two formats are
+different products. A change to one is a change to both.
 
 ---
 
 ## Required secrets
 
-**None, on either platform.** The `ios-build` workflow compiles with Firebase
+**None for the builds themselves.** Only the optional `codemagic` nightly
+path needs any: `CODEMAGIC_API_TOKEN` and `CODEMAGIC_APP_ID`, both repository
+secrets, described above. The `ios-build` workflow compiles with Firebase
 gated off (`kUseFirebase == false`), so no `GoogleService-Info.plist` is needed
 at build time, and neither macOS workflow signs anything. A
 `GOOGLE_SERVICE_INFO_PLIST` secret only becomes necessary if a future job needs

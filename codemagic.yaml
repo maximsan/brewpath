@@ -89,11 +89,11 @@ workflows:
     max_build_duration: 60
     environment: *macos
     cache: *pub
-    # No `triggering` block, so nothing in the repository starts this: it runs
-    # on a nightly schedule set in the Codemagic UI, which this format cannot
-    # express. Delete that schedule and the suite stops silently — which is
-    # how it once failed for months unnoticed (#187). Why nightly, and what
-    # this alone proves: docs/ci-cd.md.
+    # No `triggering` block on purpose: this is started over the API by
+    # .github/workflows/nightly-smoke.yml, and an API-started build ignores
+    # one anyway. Codemagic's own scheduler is a Team feature and the free
+    # macOS minutes are personal-only, so the cron lives in the repository —
+    # where #187 says a trigger belongs. Why nightly: docs/ci-cd.md.
     scripts:
       - name: Install dependencies
         script: flutter pub get
