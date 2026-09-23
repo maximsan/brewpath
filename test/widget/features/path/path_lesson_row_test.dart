@@ -1,7 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
-import 'package:brew_path/core/icons/app_icon.dart';
-import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
@@ -36,6 +35,7 @@ Future<void> _pump(
   required bool isCurrent,
   MasteryResult mastery = MasteryResult.unscored,
   bool isLast = false,
+  bool isLocked = false,
   bool isPurchaseLocked = false,
 }) => tester.pumpWidget(
   ProviderScope(
@@ -49,6 +49,7 @@ Future<void> _pump(
             lesson: _lesson,
             isCompleted: isCompleted,
             isCurrent: isCurrent,
+            isLocked: isLocked,
             isPurchaseLocked: isPurchaseLocked,
             mastery: mastery,
           ),
@@ -134,10 +135,11 @@ void main() {
     expect(decoration.shape, BoxShape.circle);
   });
 
-  testWidgets('the current lesson tints its own well', (tester) async {
-    // `.lesson-row.current .path-node` is the accent at 7% *over* the page,
-    // not the page. It stays opaque either way — a translucent disc would let
-    // the spine show through the stop it exists to punch.
+  testWidgets('the current lesson keeps its well on the page canvas too', (
+    tester,
+  ) async {
+    // The compact Path tints nothing: `.lesson-row.current .path-node
+    // { background: var(--bg) }`, and the row behind it is transparent.
     await _pump(tester, isCompleted: false, isCurrent: true);
 
     final well = tester.widget<Container>(
@@ -150,8 +152,22 @@ void main() {
     );
     final decoration = well.decoration! as BoxDecoration;
 
-    expect(decoration.color, isNot(MoodColors.darkRoast.bg));
-    expect(decoration.color!.a, 1.0);
+    expect(decoration.color, MoodColors.darkRoast.bg);
+  });
+
+  testWidgets('the spine is drawn one pixel wide, the row tall', (
+    tester,
+  ) async {
+    await _pump(tester, isCompleted: true, isCurrent: false);
+
+    final segments = find.descendant(
+      of: find.byType(PathSpine),
+      matching: find.byType(ColoredBox),
+    );
+    expect(segments, findsNWidgets(2));
+    final size = tester.getSize(segments.first);
+    expect(size.width, PathLessonRow.spineWidth);
+    expect(size.height, greaterThan(0));
   });
 
   testWidgets('the row carries no Review button', (tester) async {
@@ -207,12 +223,10 @@ void main() {
 
       // Exactly one — the spine beside it carries no lock of its own, which is
       // the whole of #91's part 1.
-      final locks = find.byWidgetPredicate(
-        (widget) => widget is IconMark && widget.icon == AppIcon.lock,
-      );
+      final locks = find.byType(LockMark);
       expect(locks, findsOneWidget);
       expect(
-        tester.widget<IconMark>(locks).color,
+        tester.widget<LockMark>(locks).color,
         MoodColors.darkRoast.accent,
         reason: 'accent, not ink-mute: buying is something to do',
       );
@@ -294,11 +308,61 @@ void main() {
       await _pump(tester, isCompleted: false, isCurrent: false);
 
       expect(
-        find.byWidgetPredicate(
-          (widget) => widget is IconMark && widget.icon == AppIcon.lock,
-        ),
+        find.byType(LockMark),
         findsNothing,
       );
+    });
+  });
+
+  group('the progression lock', () {
+    // A lesson still ahead on the path: each finished lesson unlocks the next,
+    // so this one is drawn shut and answers nothing.
+    Future<void> pumpLocked(WidgetTester tester) =>
+        _pump(tester, isCompleted: false, isCurrent: false, isLocked: true);
+
+    testWidgets('draws one muted lock', (tester) async {
+      await pumpLocked(tester);
+
+      final locks = find.byType(LockMark);
+      expect(locks, findsOneWidget);
+      expect(
+        tester.widget<LockMark>(locks).color,
+        MoodColors.darkRoast.inkMute,
+      );
+    });
+
+    testWidgets('fades the whole row', (tester) async {
+      await pumpLocked(tester);
+
+      final opacity = tester.widget<Opacity>(
+        find.ancestor(
+          of: find.text('Where coffee grows'),
+          matching: find.byType(Opacity),
+        ),
+      );
+      expect(opacity.opacity, 0.4);
+    });
+
+    testWidgets('announces the lesson as locked', (tester) async {
+      final semantics = tester.ensureSemantics();
+      await pumpLocked(tester);
+
+      expect(
+        find.bySemanticsLabel('Where coffee grows, locked'),
+        findsOneWidget,
+      );
+      semantics.dispose();
+    });
+
+    testWidgets('does nothing on tap', (tester) async {
+      await pumpLocked(tester);
+
+      await tester.tap(find.text('Where coffee grows'));
+      await tester.pumpAndSettle();
+
+      // Neither the lesson nor the offer: there is nothing to open yet.
+      expect(find.text(PaywallCopy.gateTitle), findsNothing);
+      expect(tester.takeException(), isNull);
     });
   });
 }

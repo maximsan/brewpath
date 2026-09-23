@@ -46,6 +46,12 @@ abstract class AppLabels {
   // list. Announced as written; the row letters it.
   static const currentLesson = 'Current';
 
+  /// The mark on a lesson still ahead on the path.
+  static const lessonLocked = 'Locked';
+
+  /// What a screen reader hears for a lesson still ahead on the path.
+  static String lessonLockedSemantics(String title) => '$title, locked';
+
   // The eyebrow over the day's lead card. It names which of the card's two
   // states is showing, which is the only thing distinguishing a Keep Sharp
   // pick from a lesson at a glance.

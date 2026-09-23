@@ -3,6 +3,7 @@ import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
@@ -18,7 +19,7 @@ import '../support/widget_harness.dart';
 /// answer it.
 Finder _sharedHeader() => find.byType(AppHeader);
 Finder _headerTitled(String title) => find.widgetWithText(AppHeader, title);
-Finder _dictionaryButton() => find.byIcon(Icons.menu_book_outlined);
+Finder _dictionaryButton() => find.byType(OpenBookMark);
 Finder _savedButton() => find.byTooltip(SavedScreen.title);
 Finder _settingsButton() => findMark(AppIcon.gear);
 

@@ -2,6 +2,7 @@ import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/core/widgets/header_compact_title.dart';
@@ -83,8 +84,10 @@ class AppHeader extends ConsumerWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (final action in tab.actions)
+                  for (final (index, action) in tab.actions.indexed) ...[
+                    if (index > 0) const SizedBox(width: _entryGap),
                     _ActionButton(action: action),
+                  ],
                 ],
               ),
             ),
@@ -95,8 +98,20 @@ class AppHeader extends ConsumerWidget {
   }
 }
 
-/// How far the dot is inset from the button's top-right corner.
-const double _badgeInset = 6;
+/// The design's `gap: 10` between the entries.
+const double _entryGap = 10;
+
+/// An entry is a 44-px circle — `borderRadius: 999; background:
+/// var(--surface); border: 1px solid var(--rule)` — with its glyph centred.
+const double _entrySize = 44;
+
+/// The count dot sits on the circle's edge: `top: -1; right: -1`, ringed by
+/// `2px solid var(--bg)` so it reads over the glyph and the border alike.
+const double _dotOverhang = 1;
+const double _dotRing = 2;
+
+/// The gear's `size = 18`.
+const double _gearSize = 18;
 
 class _ActionButton extends StatelessWidget {
   const _ActionButton({required this.action});
@@ -110,16 +125,40 @@ class _ActionButton extends StatelessWidget {
     return switch (action) {
       HeaderAction.saved => const _SavedButton(),
       HeaderAction.dictionary => _RouteButton(
-        glyph: const Icon(Icons.menu_book_outlined),
+        glyph: OpenBookMark(color: context.mood.accent),
         tooltip: DictionaryHomeScreen.title,
         routeName: AppRoutes.dictionary.name,
       ),
       HeaderAction.settings => _RouteButton(
-        glyph: const IconMark(AppIcon.gear),
+        glyph: IconMark(AppIcon.gear, size: _gearSize, color: context.mood.ink),
         tooltip: 'Settings',
         routeName: AppRoutes.profileSettings.name,
       ),
     };
+  }
+}
+
+/// The circle every entry sits in.
+class _EntryRing extends StatelessWidget {
+  const _EntryRing({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mood = context.mood;
+
+    return Container(
+      width: _entrySize,
+      height: _entrySize,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: mood.surface,
+        shape: BoxShape.circle,
+        border: Border.all(color: mood.rule),
+      ),
+      child: child,
+    );
   }
 }
 
@@ -131,9 +170,7 @@ class _RouteButton extends StatelessWidget {
     required this.routeName,
   });
 
-  /// Either kind of glyph: `IconButton` colours whatever it is given through
-  /// an `IconTheme`, and both `Icon` and `IconMark` read one. The Dictionary
-  /// entry stays stock because the design draws no mark for it.
+  /// The mark in the ring, already in its own ink.
   final Widget glyph;
   final String tooltip;
   final String routeName;
@@ -141,9 +178,13 @@ class _RouteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: glyph,
+      icon: _EntryRing(child: glyph),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(
+        width: _entrySize,
+        height: _entrySize,
+      ),
       tooltip: tooltip,
-      color: context.mood.ink,
       onPressed: () => context.pushNamed(routeName),
     );
   }
@@ -171,23 +212,36 @@ class _SavedButton extends ConsumerWidget {
         ? SavedScreen.title
         : '${SavedScreen.title}, ${savedItemCount(count)}';
 
+    final mood = context.mood;
+
     return IconButton(
       icon: Stack(
         clipBehavior: Clip.none,
         children: [
-          const IconMark(AppIcon.bookmark),
+          _EntryRing(child: SavedBookmarkMark(color: mood.accent)),
           if (count > 0)
-            const Positioned(
-              top: -_badgeInset,
-              right: -_badgeInset,
-              child: SavedBadgeDot(),
+            Positioned(
+              top: -_dotOverhang,
+              right: -_dotOverhang,
+              child: Container(
+                padding: const EdgeInsets.all(_dotRing),
+                decoration: BoxDecoration(
+                  color: mood.bg,
+                  shape: BoxShape.circle,
+                ),
+                child: const SavedBadgeDot(),
+              ),
             ),
         ],
+      ),
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(
+        width: _entrySize,
+        height: _entrySize,
       ),
       // The tooltip is the button's accessible name, so this is what carries
       // the count to a screen reader.
       tooltip: label,
-      color: context.mood.ink,
       onPressed: () => context.pushNamed(AppRoutes.saved.name),
     );
   }

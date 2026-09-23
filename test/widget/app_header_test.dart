@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_header.dart';
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
@@ -253,9 +254,7 @@ void main() {
       await pump(tester, location: AppRoutes.learn.path);
 
       final saved = tester.getTopLeft(find.byTooltip(SavedScreen.title)).dx;
-      final dictionary = tester
-          .getTopLeft(find.byIcon(Icons.menu_book_outlined))
-          .dx;
+      final dictionary = tester.getTopLeft(find.byType(OpenBookMark)).dx;
       expect(saved, lessThan(dictionary));
     });
   });

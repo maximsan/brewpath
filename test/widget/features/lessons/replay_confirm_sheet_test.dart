@@ -247,6 +247,7 @@ void main() {
                 lesson: lesson,
                 isCompleted: true,
                 isCurrent: false,
+                isLocked: false,
                 isPurchaseLocked: false,
                 mastery: const MasteryResult(correct: 5, total: 5),
               ),

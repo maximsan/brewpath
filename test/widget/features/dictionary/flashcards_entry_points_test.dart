@@ -2,6 +2,7 @@ import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
@@ -67,10 +68,8 @@ Future<void> _openApp(WidgetTester tester) async {
 
 /// Opens the dictionary.
 ///
-/// Routed rather than tapped: the header's dictionary entry is a stock
-/// Material glyph rather than one of the app's marks, so there is nothing for
-/// `findMark` to find and a `byIcon` would be asserting the header's business
-/// rather than this drill's.
+/// Routed rather than tapped: reaching it through the header's entry would
+/// be asserting the header's business rather than this drill's.
 Future<void> _openDictionary(WidgetTester tester) async {
   _useTallViewport(tester);
   final container = await pumpWithProviders(tester, const BrewPathApp());
@@ -95,7 +94,7 @@ Finder _practiceRow() => find.descendant(
 /// Opens the Saved shelf from the Learn tab's header.
 Future<void> _openSaved(WidgetTester tester) async {
   await _openApp(tester);
-  await tester.tap(findMark(AppIcon.bookmark));
+  await tester.tap(find.byType(SavedBookmarkMark));
   await settleLoaders(tester);
 }
 

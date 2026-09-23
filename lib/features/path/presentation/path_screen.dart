@@ -55,9 +55,9 @@ class _PathScreenState extends ConsumerState<PathScreen> {
         data: (list) => ListView(
           // No room at the top: `TabLargeTitle` leaves it.
           padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
+            AppSpacing.gutter,
             0,
-            AppSpacing.md,
+            AppSpacing.gutter,
             AppSpacing.md,
           ),
           physics: const AlwaysScrollableScrollPhysics(),

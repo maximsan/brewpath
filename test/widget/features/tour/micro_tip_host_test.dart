@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
@@ -148,7 +149,7 @@ void main() {
     await armEveryTip();
 
     await pumpWithProviders(tester, const BrewPathApp());
-    await tester.tap(find.byIcon(Icons.menu_book_outlined));
+    await tester.tap(find.byType(OpenBookMark));
     await settleLoaders(tester);
     await letTipsSettle(tester);
 

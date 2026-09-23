@@ -44,6 +44,13 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Added
 
+- **A finished lesson's Coffee Challenge hangs under its row on the Path.**
+  Drawn as the design's challenge row — a diamond off the spine, a dashed card
+  with the cup and how long the brew takes, and a pill that reads *Start*,
+  *Resume* or *Active* — and the module's capstone takes the same row instead
+  of a boxed card. *Start* puts the brew on Today; a brewed row opens its
+  recap.
+
 - **The daily reminder actually arrives.** The Notifications switch and the
   Daily reminder row are back on Settings, and behind them is a real local
   notification: one a day at the chosen slot, skipped on a day already
@@ -118,6 +125,23 @@ You can always edit this file by hand instead — the helpers just save effort.
   ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 ### Changed
+
+- **Lessons still ahead on the Path are locked.** Each finished lesson unlocks
+  the next, as the App Guide already promised: a lesson past the current one
+  draws dimmed with a lock and does not open. With it, the Path takes the
+  design's 24 gutter ([#539](https://github.com/maximsan/brewpath/issues/539)),
+  its spine starts and ends at a module's first and last nodes, Reference's
+  title, glyph, thumbnails and count line follow the design, and the course
+  ending draws Roasty at the design's size.
+- **The Path reads as the design draws it: compact.** No hairline under a
+  lesson, no wash behind the current one, rows closer together, and the
+  challenge row without a card of its own. Every lock on the Path is the
+  design's own 13-by-15 mark rather than the icon catalogue's smaller one,
+  and the challenge cup is the design's brew cup with its steam.
+- **The header's two entries sit in the design's circles.** Saved and the
+  Dictionary are 44-point rings on the surface colour with a hairline edge,
+  their glyphs in the accent, ten apart, on every tab; Profile's gear takes
+  the same ring.
 
 - **A push now runs every guard, not the ones named like one.** The hook
   picked them with `find -name '*_guard_test.dart'`, and most of the guards

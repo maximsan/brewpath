@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/visual_guide_art.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
@@ -85,7 +86,7 @@ void main() {
         ),
         findsOneWidget,
       );
-      expect(findMark(AppIcon.lock), findsOneWidget);
+      expect(find.byType(LockMark), findsOneWidget);
     });
 
     testWidgets('refuses to open rather than opening onto nothing', (
@@ -174,7 +175,7 @@ void main() {
         lessThan(titles.indexOf('Roast Levels')),
         reason: 'bank order, not completion order',
       );
-      expect(find.text('6 more unlock as you learn'), findsOneWidget);
+      expect(find.text('6 MORE UNLOCK AS YOU LEARN'), findsOneWidget);
     });
 
     testWidgets('drops the count line once nothing is left', (tester) async {
@@ -185,7 +186,7 @@ void main() {
       await tester.tap(find.text('Reference'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('more unlock'), findsNothing);
+      expect(find.textContaining('MORE UNLOCK'), findsNothing);
     });
 
     testWidgets('opening a guide shows its whole entry', (tester) async {

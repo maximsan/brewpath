@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
@@ -37,11 +38,17 @@ String _lockedSubtitle({required bool byPurchase, required String? nextTitle}) {
       : LockedRowCopy.referenceUnlocksWith(nextTitle);
 }
 
-/// The section's own glyph and its lock mark. Sized here rather than borrowed
-/// from `AppSpacing`, whose stops are for spacing — an icon that resizes when
-/// a spacing stop is retuned is a coupling nobody asked for.
-const double _glyphSize = 24;
-const double _lockSize = 16;
+/// The section's own glyph (`<svg width="20">`) and its lock mark. Sized here
+/// rather than borrowed from `AppSpacing`, whose stops are for spacing — an
+/// icon that resizes when a spacing stop is retuned is a coupling nobody
+/// asked for.
+const double _glyphSize = 20;
+
+/// The lock every section header carries: `<LockMark size={13}/>`.
+const double _lockSize = 13;
+
+/// The well a guide's thumbnail sits in: `width: 36, height: 36`.
+const double _wellSize = 36;
 
 /// The last thing on Path: the illustrated references a learner has earned.
 ///
@@ -105,23 +112,25 @@ class _ReferenceSectionState extends ConsumerState<ReferenceSection> {
             SizedBox(
               width: ModuleGlyph.columnWidth,
               child: Center(
-                child: IconMark(AppIcon.module, size: _glyphSize, color: ink),
+                // Sage once it holds something — "learned", which is what a
+                // guide a lesson has taught is — and muted while it does not.
+                child: IconMark(
+                  AppIcon.module,
+                  size: _glyphSize,
+                  color: shelf.isLocked ? mood.inkMute : mood.sage,
+                ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(
                 _title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(color: ink),
+                style: AppText.title(mood: mood, color: ink),
               ),
             ),
           ],
         ),
-        trailing: shelf.isLocked
-            ? IconMark(AppIcon.lock, size: _lockSize, color: ink)
-            : null,
+        trailing: shelf.isLocked ? LockMark(size: _lockSize, color: ink) : null,
         below: Padding(
           padding: const EdgeInsets.only(
             top: AppSpacing.xs,
@@ -155,18 +164,19 @@ class _Guides extends StatelessWidget {
           _GuideRow(guide: shelf.earned[index], isFirst: index == 0),
         if (shelf.remaining > 0)
           Padding(
-            padding: const EdgeInsets.only(
-              top: AppSpacing.xs,
-              left: AppSpacing.xl,
+            padding: EdgeInsets.only(
+              top: OffTokens.referenceRemainingTop.value,
+              left: ModuleGlyph.titleInset,
             ),
-            // Mono, and not uppercased: this is a figure, which is what mono
-            // is for here — and a screen reader should read the promise as a
-            // sentence rather than shout it.
-            child: Text(
-              _remainingLine(shelf.remaining),
-              style: AppText.label(
-                mood: context.mood,
-                face: AppFace.mono,
+            // Uppercase is the type rule, not part of what the line says, so
+            // a screen reader gets the promise as a sentence rather than a
+            // shout — the same split `SmallcapsLabel` makes.
+            child: Semantics(
+              label: _remainingLine(shelf.remaining),
+              excludeSemantics: true,
+              child: Text(
+                _remainingLine(shelf.remaining).toUpperCase(),
+                style: AppText.micro(mood: context.mood, face: AppFace.mono),
               ),
             ),
           ),
@@ -196,18 +206,27 @@ class _GuideRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         child: Row(
           children: [
-            VisualGuideArt(
-              subject: guide.subject,
-              size: VisualGuideArtSize.row,
+            // The design's well: `background: var(--surface); border: 1px
+            // solid var(--rule); overflow: hidden`, with the drawing inside.
+            Container(
+              width: _wellSize,
+              height: _wellSize,
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(
+                color: mood.surface,
+                border: Border.all(color: mood.rule),
+                borderRadius: BorderRadius.circular(
+                  OffTokens.guideWellRadius.value,
+                ),
+              ),
+              child: VisualGuideArt(
+                subject: guide.subject,
+                size: VisualGuideArtSize.row,
+              ),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: Text(
-                guide.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: mood.ink),
-              ),
+              child: Text(guide.title, style: AppText.body(mood: mood)),
             ),
             IconMark(AppIcon.chevron, color: mood.inkMute),
           ],

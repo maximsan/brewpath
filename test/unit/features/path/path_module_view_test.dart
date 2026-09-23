@@ -62,6 +62,27 @@ void main() {
       expect(built[1].lessons.map((l) => l.lesson.id), ['m2l1', 'm2l2']);
     });
 
+    test('every lesson past the current one is locked, none before it', () {
+      final built = buildPathModules(
+        modules: _course(doneInFirst: 1, doneInSecond: 0, secondLocked: false),
+        lessonsById: _lessons,
+        completedIds: const {'m1l1'},
+        masteryById: const {},
+        hasCourse: true,
+      );
+
+      final locks = {
+        for (final module in built)
+          for (final entry in module.lessons) entry.lesson.id: entry.isLocked,
+      };
+      expect(locks, {
+        'm1l1': false,
+        'm1l2': false,
+        'm2l1': true,
+        'm2l2': true,
+      });
+    });
+
     test('exactly one lesson in the whole course is current', () {
       final built = buildPathModules(
         modules: _course(doneInFirst: 2, doneInSecond: 0, secondLocked: false),
