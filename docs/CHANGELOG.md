@@ -144,6 +144,14 @@ You can always edit this file by hand instead — the helpers just save effort.
   over the build, then its signature — where Settings keeps its one
   ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
+- **Settings and About sign off at the foot of the screen.** Both drew their
+  closing block as the last thing in a list, so on a page that does not fill
+  the screen — About, while the legal pages and the mailbox are still absent —
+  the version line floated halfway down over a stretch of nothing. It now
+  holds the bottom until the content is long enough to push it past, and
+  leaves the home indicator the room neither page was leaving it
+  ([#532](https://github.com/maximsan/brewpath/issues/532)).
+
 - **A settings row that leaves the app now says so before it is pressed.** The
   design's outward arrow stands in place of the chevron on About's and Help's
   external rows, and a screen reader announces them as links rather than
