@@ -25,6 +25,7 @@ enum VerdictPlacement {
   miniGame(
     mascot: _mascotOnCard,
     speaksInBody: false,
+    linksTerms: true,
     room: OffTokens.verdictRoomInMiniGame,
   ),
 
@@ -133,9 +134,9 @@ enum VerdictPlacement {
 
   /// Whether the explanation links the glossary terms it says (#99).
   ///
-  /// Only where the block marks a graded answer. A term entry is reference
-  /// rather than a lesson, and the two guess standings answer a guess rather
-  /// than mark it — the design draws a link in none of the three.
+  /// Only where the block marks a graded answer. The two reference standings
+  /// are look-ups rather than lessons, and the two guess standings answer a
+  /// guess rather than mark it — the design draws a link in none of the four.
   final bool linksTerms;
 
   /// The colour a wrong answer is named in.
