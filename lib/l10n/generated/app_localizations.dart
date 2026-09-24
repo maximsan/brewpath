@@ -189,6 +189,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{date}, {year}'**
   String replayConfirmDatedYear(String date, int year);
+
+  /// Eyebrow on a multiple-choice card, naming the format.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple choice · pick one'**
+  String get cardCueMcq;
+
+  /// Eyebrow on a card that takes several answers at once.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all that apply'**
+  String get cardCueMulti;
+
+  /// Eyebrow on a card where traits are dragged onto what they belong to.
+  ///
+  /// In en, this message translates to:
+  /// **'Match · drag to pair'**
+  String get cardCueMatch;
+
+  /// Eyebrow on a card answered by dialling a slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrate · dial to the target'**
+  String get cardCueSlider;
+
+  /// Eyebrow on a card answered by tapping items into order.
+  ///
+  /// In en, this message translates to:
+  /// **'Put in order · tap in sequence'**
+  String get cardCueSequence;
+
+  /// Eyebrow on a card that asks whether a statement holds.
+  ///
+  /// In en, this message translates to:
+  /// **'True or false'**
+  String get cardCueQuiz;
+
+  /// Eyebrow on a card that asks for the note behind a tasting clue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasting · name the note'**
+  String get cardCueFlavor;
+
+  /// Eyebrow on a card that asks for the fix for a cup that came out wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste Fix'**
+  String get cardCueTastefix;
+
+  /// Eyebrow on a card that asks for the process behind an unlabelled bag.
+  ///
+  /// In en, this message translates to:
+  /// **'Blind bag · read the beans'**
+  String get cardCueBagpick;
+
+  /// Eyebrow on a card answered by filling the blanks in a sentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the sentence'**
+  String get cardCueFill;
+
+  /// Verdict line when the learner named the bag's process correctly.
+  ///
+  /// In en, this message translates to:
+  /// **'Called it'**
+  String get bagpickCalledIt;
+
+  /// Name of the washed coffee process, as a bag-picking option.
+  ///
+  /// In en, this message translates to:
+  /// **'Washed'**
+  String get bagpickProcessWashed;
+
+  /// Name of the honey coffee process, as a bag-picking option.
+  ///
+  /// In en, this message translates to:
+  /// **'Honey'**
+  String get bagpickProcessHoney;
+
+  /// Name of the natural coffee process, as a bag-picking option.
+  ///
+  /// In en, this message translates to:
+  /// **'Natural'**
+  String get bagpickProcessNatural;
+
+  /// Verdict line naming the real process after a wrong call.
+  ///
+  /// In en, this message translates to:
+  /// **'{process}, actually'**
+  String bagpickActually(String process);
+
+  /// Caption over the beans drawn from an unlabelled bag.
+  ///
+  /// In en, this message translates to:
+  /// **'A sample of {sampleSize} green beans from this bag.'**
+  String bagpickSample(int sampleSize);
+
+  /// Says the bag's process is not printed on it.
+  ///
+  /// In en, this message translates to:
+  /// **'Process hidden'**
+  String get bagpickProcessHidden;
+
+  /// Prompt on a clue the learner has not opened yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to inspect'**
+  String get bagpickTapToInspect;
+
+  /// What a screen reader is told about the clue that gave the process away.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}. {body}. This was the tell.'**
+  String bagpickCueTell(String label, String body);
+
+  /// What a screen reader is told about an opened clue.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}. {body}'**
+  String bagpickCueRead(String label, String body);
+
+  /// Button that commits the order the learner tapped.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get sequenceSubmit;
+
+  /// Button that clears the order tapped so far.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get sequenceReset;
+
+  /// Verdict line when the sequence was right.
+  ///
+  /// In en, this message translates to:
+  /// **'In order'**
+  String get sequenceInOrder;
+
+  /// Explanation under a correct sequence verdict.
+  ///
+  /// In en, this message translates to:
+  /// **'Nailed the sequence.'**
+  String get sequenceNailedIt;
+
+  /// Explanation under a wrong sequence verdict.
+  ///
+  /// In en, this message translates to:
+  /// **'Not the right order this time.'**
+  String get sequenceWrongOrder;
+
+  /// Kicker over the reveal of the right order. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'CORRECT ORDER'**
+  String get sequenceCorrectOrder;
+
+  /// What a screen reader is told about a step's place in the run.
+  ///
+  /// In en, this message translates to:
+  /// **'position {position}'**
+  String sequencePosition(int position);
+
+  /// What a screen reader is told about a step that sits in the wrong place.
+  ///
+  /// In en, this message translates to:
+  /// **'belongs at {order}'**
+  String sequenceBelongsAt(int order);
+
+  /// Hint on a misplaced step, naming where it belongs.
+  ///
+  /// In en, this message translates to:
+  /// **'GOES #{order}'**
+  String sequenceGoesAt(int order);
+
+  /// Button that commits the slider setting.
+  ///
+  /// In en, this message translates to:
+  /// **'Check answer'**
+  String get sliderCheck;
+
+  /// Verdict line when the slider landed inside the target band.
+  ///
+  /// In en, this message translates to:
+  /// **'Dialed in'**
+  String get sliderDialedIn;
+
+  /// Label over the value the learner dialled.
+  ///
+  /// In en, this message translates to:
+  /// **'Your setting'**
+  String get sliderYourSetting;
+
+  /// Label over the value the card was asking for.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get sliderTarget;
+
+  /// Opens the drawer explaining the card's format.
+  ///
+  /// In en, this message translates to:
+  /// **'How to play'**
+  String get cardHowToPlay;
+
+  /// Closes the drawer explaining the card's format.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get cardHelpGotIt;
+
+  /// Eyebrow on a practical card. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'HANDS ON'**
+  String get practicalHandsOn;
+
+  /// Kicker over the rule a practical card leaves the learner with.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth knowing'**
+  String get practicalTakeaway;
+
+  /// Button that bookmarks a visual guide.
+  ///
+  /// In en, this message translates to:
+  /// **'Save this guide'**
+  String get visualSaveGuide;
+
+  /// Confirms a visual guide was bookmarked, and says where to find it.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved — review anytime in Saved'**
+  String get visualGuideSaved;
+
+  /// Verdict line when every answer on the card was right.
+  ///
+  /// In en, this message translates to:
+  /// **'All correct'**
+  String get cardAllCorrect;
+
+  /// Verdict line when the answer was right.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get cardCorrect;
+
+  /// Eyebrow over the question a predict card holds a guess for.
+  ///
+  /// In en, this message translates to:
+  /// **'First guess'**
+  String get predictFirstGuess;
+
+  /// Verdict line repeating the learner's held guess back to them.
+  ///
+  /// In en, this message translates to:
+  /// **'Your guess · {option}'**
+  String predictYourGuess(String option);
 }
 
 class _AppLocalizationsDelegate

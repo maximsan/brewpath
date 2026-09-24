@@ -7,21 +7,12 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/grinder_dial_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
 import 'package:brew_path/features/lessons/presentation/cards/slider_track.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// The commit affordance, before the setting has been checked.
-const String _checkLabel = 'Check answer';
-
-/// Verdicts, which name the band rule rather than a distance.
-const String _dialedIn = 'Dialed in';
-
-/// What the readout above the track is saying, before and after the commit.
-const String _yourSetting = 'Your setting';
-const String _target = 'Target';
 
 /// Floor under the readout, so committing never shifts the track out from
 /// under the learner's finger.
@@ -111,7 +102,7 @@ class _SliderCardViewState extends State<SliderCardView> {
       onContinue: widget.onContinue,
       cue: CardCue.slider,
       commit: CardCommit(
-        label: _checkLabel,
+        label: context.strings.sliderCheck,
         onCommit: _touched ? _check : null,
       ),
       children: [
@@ -150,7 +141,9 @@ class _SliderCardViewState extends State<SliderCardView> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          _checked ? _target : _yourSetting,
+          _checked
+              ? context.strings.sliderTarget
+              : context.strings.sliderYourSetting,
           style: AppText.label(
             mood: mood,
             color: _checked ? mood.sage : mood.inkMute,
@@ -202,7 +195,7 @@ class _SliderCardViewState extends State<SliderCardView> {
   /// sat; only this says whether the round was passed.
   List<Widget> _verdict(MoodColors mood) => [
     AnswerFeedback(
-      verdict: _within ? _dialedIn : notQuiteVerdict,
+      verdict: _within ? context.strings.sliderDialedIn : notQuiteVerdict,
       outcome: _within ? Verdict.right : Verdict.wrong,
       explanation: _card.feedback,
     ),

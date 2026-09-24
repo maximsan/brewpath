@@ -90,5 +90,266 @@
       "date": { "type": "String" },
       "year": { "type": "int" }
     }
+  },
+
+  "cardCueMcq": "Multiple choice · pick one",
+  "@cardCueMcq": {
+    "description": "Eyebrow on a multiple-choice card, naming the format."
+  },
+
+  "cardCueMulti": "Select all that apply",
+  "@cardCueMulti": {
+    "description": "Eyebrow on a card that takes several answers at once."
+  },
+
+  "cardCueMatch": "Match · drag to pair",
+  "@cardCueMatch": {
+    "description": "Eyebrow on a card where traits are dragged onto what they belong to."
+  },
+
+  "cardCueSlider": "Calibrate · dial to the target",
+  "@cardCueSlider": {
+    "description": "Eyebrow on a card answered by dialling a slider."
+  },
+
+  "cardCueSequence": "Put in order · tap in sequence",
+  "@cardCueSequence": {
+    "description": "Eyebrow on a card answered by tapping items into order."
+  },
+
+  "cardCueQuiz": "True or false",
+  "@cardCueQuiz": {
+    "description": "Eyebrow on a card that asks whether a statement holds."
+  },
+
+  "cardCueFlavor": "Tasting · name the note",
+  "@cardCueFlavor": {
+    "description": "Eyebrow on a card that asks for the note behind a tasting clue."
+  },
+
+  "cardCueTastefix": "Taste Fix",
+  "@cardCueTastefix": {
+    "description": "Eyebrow on a card that asks for the fix for a cup that came out wrong."
+  },
+
+  "cardCueBagpick": "Blind bag · read the beans",
+  "@cardCueBagpick": {
+    "description": "Eyebrow on a card that asks for the process behind an unlabelled bag."
+  },
+
+  "cardCueFill": "Complete the sentence",
+  "@cardCueFill": {
+    "description": "Eyebrow on a card answered by filling the blanks in a sentence."
+  },
+
+  "bagpickCalledIt": "Called it",
+  "@bagpickCalledIt": {
+    "description": "Verdict line when the learner named the bag's process correctly."
+  },
+
+  "bagpickProcessWashed": "Washed",
+  "@bagpickProcessWashed": {
+    "description": "Name of the washed coffee process, as a bag-picking option."
+  },
+
+  "bagpickProcessHoney": "Honey",
+  "@bagpickProcessHoney": {
+    "description": "Name of the honey coffee process, as a bag-picking option."
+  },
+
+  "bagpickProcessNatural": "Natural",
+  "@bagpickProcessNatural": {
+    "description": "Name of the natural coffee process, as a bag-picking option."
+  },
+
+  "bagpickActually": "{process}, actually",
+  "@bagpickActually": {
+    "description": "Verdict line naming the real process after a wrong call.",
+    "placeholders": {
+      "process": {
+        "type": "String"
+      }
+    }
+  },
+
+  "bagpickSample": "A sample of {sampleSize} green beans from this bag.",
+  "@bagpickSample": {
+    "description": "Caption over the beans drawn from an unlabelled bag.",
+    "placeholders": {
+      "sampleSize": {
+        "type": "int"
+      }
+    }
+  },
+
+  "bagpickProcessHidden": "Process hidden",
+  "@bagpickProcessHidden": {
+    "description": "Says the bag's process is not printed on it."
+  },
+
+  "bagpickTapToInspect": "Tap to inspect",
+  "@bagpickTapToInspect": {
+    "description": "Prompt on a clue the learner has not opened yet."
+  },
+
+  "bagpickCueTell": "{label}. {body}. This was the tell.",
+  "@bagpickCueTell": {
+    "description": "What a screen reader is told about the clue that gave the process away.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+
+  "bagpickCueRead": "{label}. {body}",
+  "@bagpickCueRead": {
+    "description": "What a screen reader is told about an opened clue.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+
+  "sequenceSubmit": "Submit",
+  "@sequenceSubmit": {
+    "description": "Button that commits the order the learner tapped."
+  },
+
+  "sequenceReset": "Reset",
+  "@sequenceReset": {
+    "description": "Button that clears the order tapped so far."
+  },
+
+  "sequenceInOrder": "In order",
+  "@sequenceInOrder": {
+    "description": "Verdict line when the sequence was right."
+  },
+
+  "sequenceNailedIt": "Nailed the sequence.",
+  "@sequenceNailedIt": {
+    "description": "Explanation under a correct sequence verdict."
+  },
+
+  "sequenceWrongOrder": "Not the right order this time.",
+  "@sequenceWrongOrder": {
+    "description": "Explanation under a wrong sequence verdict."
+  },
+
+  "sequenceCorrectOrder": "CORRECT ORDER",
+  "@sequenceCorrectOrder": {
+    "description": "Kicker over the reveal of the right order. Set upper case by the design."
+  },
+
+  "sequencePosition": "position {position}",
+  "@sequencePosition": {
+    "description": "What a screen reader is told about a step's place in the run.",
+    "placeholders": {
+      "position": {
+        "type": "int"
+      }
+    }
+  },
+
+  "sequenceBelongsAt": "belongs at {order}",
+  "@sequenceBelongsAt": {
+    "description": "What a screen reader is told about a step that sits in the wrong place.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+
+  "sequenceGoesAt": "GOES #{order}",
+  "@sequenceGoesAt": {
+    "description": "Hint on a misplaced step, naming where it belongs.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+
+  "sliderCheck": "Check answer",
+  "@sliderCheck": {
+    "description": "Button that commits the slider setting."
+  },
+
+  "sliderDialedIn": "Dialed in",
+  "@sliderDialedIn": {
+    "description": "Verdict line when the slider landed inside the target band."
+  },
+
+  "sliderYourSetting": "Your setting",
+  "@sliderYourSetting": {
+    "description": "Label over the value the learner dialled."
+  },
+
+  "sliderTarget": "Target",
+  "@sliderTarget": {
+    "description": "Label over the value the card was asking for."
+  },
+
+  "cardHowToPlay": "How to play",
+  "@cardHowToPlay": {
+    "description": "Opens the drawer explaining the card's format."
+  },
+
+  "cardHelpGotIt": "Got it",
+  "@cardHelpGotIt": {
+    "description": "Closes the drawer explaining the card's format."
+  },
+
+  "practicalHandsOn": "HANDS ON",
+  "@practicalHandsOn": {
+    "description": "Eyebrow on a practical card. Set upper case by the design."
+  },
+
+  "practicalTakeaway": "Worth knowing",
+  "@practicalTakeaway": {
+    "description": "Kicker over the rule a practical card leaves the learner with."
+  },
+
+  "visualSaveGuide": "Save this guide",
+  "@visualSaveGuide": {
+    "description": "Button that bookmarks a visual guide."
+  },
+
+  "visualGuideSaved": "Saved — review anytime in Saved",
+  "@visualGuideSaved": {
+    "description": "Confirms a visual guide was bookmarked, and says where to find it."
+  },
+
+  "cardAllCorrect": "All correct",
+  "@cardAllCorrect": {
+    "description": "Verdict line when every answer on the card was right."
+  },
+
+  "cardCorrect": "Correct",
+  "@cardCorrect": {
+    "description": "Verdict line when the answer was right."
+  },
+
+  "predictFirstGuess": "First guess",
+  "@predictFirstGuess": {
+    "description": "Eyebrow over the question a predict card holds a guess for."
+  },
+
+  "predictYourGuess": "Your guess · {option}",
+  "@predictYourGuess": {
+    "description": "Verdict line repeating the learner's held guess back to them.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
   }
 }

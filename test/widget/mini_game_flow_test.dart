@@ -14,6 +14,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_wi
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_reward.dart';
@@ -748,7 +749,10 @@ void main() {
     await _settle(tester);
 
     // The cue is the shared card shell's, so a game and a lesson cannot drift.
-    expect(find.text(CardCue.quiz.phrase.toUpperCase()), findsOneWidget);
+    expect(
+      find.text(CardCue.quiz.phrase(AppLocalizationsEn()).toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.byType(CardCueRow), findsOneWidget);
   });
 

@@ -16,6 +16,7 @@ import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -1389,7 +1390,10 @@ void main() {
     testWidgets('asks for every answer, and offers them all', (tester) async {
       await tester.pumpWidget(_host(_multi, _Signals()));
 
-      expect(find.text(CardCue.multi.phrase.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(CardCue.multi.phrase(AppLocalizationsEn()).toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text(_multi.prompt), findsOneWidget);
       for (final choice in _multi.choices) {
         expect(find.text(choice.text), findsOneWidget);

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<Map<String, dynamic>> _bank() {
@@ -51,14 +52,16 @@ void main() {
       };
 
       expect(written.keys, containsAll(CardCue.values));
-      written.forEach((cue, phrase) => expect(cue.phrase, phrase));
+      final strings = AppLocalizationsEn();
+      written.forEach((cue, phrase) => expect(cue.phrase(strings), phrase));
     });
 
     test('no phrase is pre-shouted — the type rule sets the case', () {
+      final strings = AppLocalizationsEn();
       for (final cue in CardCue.values) {
         expect(
-          cue.phrase,
-          isNot(cue.phrase.toUpperCase()),
+          cue.phrase(strings),
+          isNot(cue.phrase(strings).toUpperCase()),
           reason: '${cue.name} carries its own casing',
         );
       }

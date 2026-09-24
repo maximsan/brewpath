@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/icon_badge.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_kind_mark.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/card_kind_help.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -10,19 +11,13 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The kicker over the drawer's title.
-const String howToPlayLabel = 'How to play';
-
-/// What closes the drawer, which is the only thing it offers.
-const String _dismissLabel = 'Got it';
-
 /// Opens the drawer explaining how [help]'s format is played.
 Future<void> showHelpDrawer(BuildContext context, CardKindHelp help) {
   final mark = cardKindMark(help.kind);
 
   return showAppSheet<void>(
     context: context,
-    eyebrow: howToPlayLabel,
+    eyebrow: context.strings.cardHowToPlay,
     title: help.title,
     leading: mark == null ? null : HelpWell(mark: mark),
     builder: (_) => HelpDrawerBody(help: help),
@@ -85,7 +80,7 @@ class HelpDrawerBody extends StatelessWidget {
         ],
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: _dismissLabel,
+          label: context.strings.cardHelpGotIt,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],
