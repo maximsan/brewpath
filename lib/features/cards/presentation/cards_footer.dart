@@ -41,7 +41,7 @@ class CardsFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final count = '$remaining more to collect';
+    final count = context.strings.cardsRemaining(remaining);
 
     return Semantics(
       label: '$count. ${context.strings.cardsInvitation}',

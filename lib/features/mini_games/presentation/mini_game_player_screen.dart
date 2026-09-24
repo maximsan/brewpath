@@ -12,6 +12,7 @@ import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_scroll.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
@@ -186,9 +187,13 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
 
     final card = contentCardView(
       played[_index],
+      strings: context.strings,
       seed: cardSeed(nonce: _nonce, cardIndex: _index),
-      onSolved: _onSolved,
-      onContinue: _onContinue,
+      host: (
+        onSolved: _onSolved,
+        onContinue: _onContinue,
+        guess: GuessLoop.none,
+      ),
     );
     return SafeArea(
       top: false,

@@ -185,14 +185,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget _lessonContent(LessonModel lesson) {
     final card = contentCardView(
       lesson.cards[_index],
+      strings: context.strings,
       seed: cardSeed(nonce: _nonce, cardIndex: _index),
-      onSolved: _onSolved,
-      onContinue: () => _onContinue(lesson),
-      guess: GuessLoop(
-        held: _prediction,
-        // No `setState`: the card that took the guess is already showing it,
-        // and nothing else on screen reads it until the recall card mounts.
-        onGuess: (guess) => _prediction = guess,
+      host: (
+        onSolved: _onSolved,
+        onContinue: () => _onContinue(lesson),
+        guess: GuessLoop(
+          held: _prediction,
+          // No `setState`: the card that took the guess is already showing it,
+          // and nothing else on screen reads it until the recall card mounts.
+          onGuess: (guess) => _prediction = guess,
+        ),
       ),
     );
 

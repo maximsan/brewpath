@@ -196,7 +196,9 @@ class _SliderCardViewState extends State<SliderCardView> {
   /// sat; only this says whether the round was passed.
   List<Widget> _verdict(MoodColors mood) => [
     AnswerFeedback(
-      verdict: _within ? context.strings.sliderDialedIn : notQuiteVerdict,
+      verdict: _within
+          ? context.strings.sliderDialedIn
+          : context.strings.notQuite,
       outcome: _within ? Verdict.right : Verdict.wrong,
       explanation: _card.feedback,
     ),

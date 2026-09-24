@@ -2,6 +2,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -79,8 +80,8 @@ class TreeStageCountdown extends StatelessWidget {
   /// What a still tree says. The design states the reason: *"Most completions
   /// do not cross a stage threshold. Say how far the next one is, so a still
   /// tree reads as progress rather than nothing."*
-  static String stillTreeLine(int lessons) =>
-      '$lessons ${lessons == 1 ? 'lesson' : 'lessons'} to the next stage';
+  static String stillTreeLine(AppLocalizations strings, int lessons) =>
+      strings.treeLessonsToNextStage(lessons);
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +97,7 @@ class TreeStageCountdown extends StatelessWidget {
       padding: const EdgeInsets.only(top: gapAbove),
       child: Center(
         child: SmallcapsLabel(
-          stillTreeLine(toNext),
+          stillTreeLine(context.strings, toNext),
           color: context.mood.inkMute,
         ),
       ),

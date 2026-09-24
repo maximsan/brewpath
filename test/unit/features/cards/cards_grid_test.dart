@@ -1,4 +1,5 @@
 import 'package:brew_path/features/cards/domain/cards_grid.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
@@ -92,8 +93,8 @@ void main() {
       ]);
 
       // Zero-padded to two, against the catalogue's size — not the grid's.
-      expect(formatCardPlace(grid.first), '01 / 3');
-      expect(formatCardPlace(grid.last), '03 / 3');
+      expect(formatCardPlace(AppLocalizationsEn(), grid.first), '01 / 3');
+      expect(formatCardPlace(AppLocalizationsEn(), grid.last), '03 / 3');
     });
 
     test('an empty set draws nothing', () {

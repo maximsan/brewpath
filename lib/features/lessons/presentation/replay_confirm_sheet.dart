@@ -71,14 +71,7 @@ extension ReviewBeforeReplay on BuildContext {
       ),
       stakes: ConfirmStakes(
         lines: [
-          for (final line in replayConfirmLines(
-            strings: strings,
-            minutes: view.minutes,
-            cards: view.cards,
-            dayAlreadyEarned: view.dayAlreadyEarned,
-            lastCompletedDay: view.lastCompletedDay,
-            today: view.today,
-          ))
+          for (final line in replayConfirmLines(strings, view))
             ConfirmLine(label: line.label, value: line.value),
         ],
       ),

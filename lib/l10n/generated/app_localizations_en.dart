@@ -635,4 +635,113 @@ class AppLocalizationsEn extends AppLocalizations {
   String drillRunComplete(int score, int total, String encouragement) {
     return 'Run complete. You scored $score out of $total. $encouragement';
   }
+
+  @override
+  String get notQuite => 'Not quite';
+
+  @override
+  String get quizTrue => 'True';
+
+  @override
+  String get quizFalse => 'False';
+
+  @override
+  String get decisionGoodCall => 'Good call';
+
+  @override
+  String get decisionBackfire => 'That would backfire';
+
+  @override
+  String get tastefixGoodFix => 'Good fix';
+
+  @override
+  String get completionNextLesson => 'Next lesson';
+
+  @override
+  String get completionBackToPath => 'Back to Path';
+
+  @override
+  String get completionPracticeAgain => 'Practice this lesson again';
+
+  @override
+  String completionScoreLine(int correct, int total) {
+    return '$correct / $total correct';
+  }
+
+  @override
+  String treeLessonsToNextStage(int lessons) {
+    String _temp0 = intl.Intl.pluralLogic(
+      lessons,
+      locale: localeName,
+      other: '$lessons lessons',
+      one: '$lessons lesson',
+    );
+    return '$_temp0 to the next stage';
+  }
+
+  @override
+  String rewardPointsSpoken(int points) {
+    return '$points points earned';
+  }
+
+  @override
+  String rewardPointsLine(int points) {
+    return '+$points PTS';
+  }
+
+  @override
+  String drillScoreLine(int score, int total) {
+    return '$score / $total';
+  }
+
+  @override
+  String drillSpokenPlain(String value, String note, String line) {
+    return '$value $note. $line';
+  }
+
+  @override
+  String cardPlaceInSet(String place, int total) {
+    return '$place / $total';
+  }
+
+  @override
+  String cardsRemaining(int remaining) {
+    return '$remaining more to collect';
+  }
+
+  @override
+  String cardsEarnedOfTotal(int earned, int total) {
+    return '$earned of $total';
+  }
+
+  @override
+  String cardsCollectedSpoken(String count) {
+    return '$count cards collected';
+  }
+
+  @override
+  String practiceGroupSpoken(String label, int count) {
+    return '$label, $count';
+  }
+
+  @override
+  String practiceReplaySpoken(String lines) {
+    return '$lines. Replay.';
+  }
+
+  @override
+  String practiceMinutes(int minutes) {
+    return '~$minutes min';
+  }
+
+  @override
+  String get practiceFree => 'Free';
+
+  @override
+  String get practiceTwoMinutes => '~2 min';
+
+  @override
+  String todayBeginSpoken(String label, String title) {
+    return '$label: $title';
+  }
 }

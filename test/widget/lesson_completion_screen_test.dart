@@ -7,7 +7,6 @@ import 'package:brew_path/features/challenges/presentation/challenge_suggestion.
 import 'package:brew_path/features/companion/presentation/companion.dart';
 import 'package:brew_path/features/companion/presentation/roasty_moment.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
-import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
@@ -369,7 +368,10 @@ void main() {
         mastery: const MasteryResult(correct: 1, total: 5),
       );
 
-      expect(find.text(practiceAgainLabel), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().completionPracticeAgain),
+        findsOneWidget,
+      );
       // The design drops the chip: the score above already reports how the
       // run went, the button carries the verdict, and the Path row wears the
       // persistent one. Three times on one screen is noise.
@@ -389,7 +391,10 @@ void main() {
         find.text(MasteryBand.needsPractice.label.toUpperCase()),
         findsNothing,
       );
-      expect(find.text(practiceAgainLabel), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().completionPracticeAgain),
+        findsNothing,
+      );
       // The design gives only the weak run a chip: the score above it already
       // says how a good run went.
       expect(find.text(MasteryBand.perfect.label.toUpperCase()), findsNothing);
@@ -462,7 +467,10 @@ void main() {
       expect(tree.grows, isFalse);
       expect(
         find.text(
-          TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+          TreeStageCountdown.stillTreeLine(
+            AppLocalizationsEn(),
+            _lessonCount - 1,
+          ).toUpperCase(),
         ),
         findsOneWidget,
       );
@@ -491,7 +499,10 @@ void main() {
       final countdown = tester
           .getTopLeft(
             find.text(
-              TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+              TreeStageCountdown.stillTreeLine(
+                AppLocalizationsEn(),
+                _lessonCount - 1,
+              ).toUpperCase(),
             ),
           )
           .dy;
@@ -511,7 +522,10 @@ void main() {
       await pumpCompletion(tester, container);
 
       final line = find.text(
-        TreeStageCountdown.stillTreeLine(_lessonCount - 1).toUpperCase(),
+        TreeStageCountdown.stillTreeLine(
+          AppLocalizationsEn(),
+          _lessonCount - 1,
+        ).toUpperCase(),
       );
       // The line's own box, not its position: stretched, it fills the column
       // and its centre still lands mid-screen while the glyphs sit hard left.
@@ -616,7 +630,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(RewardCard), findsOneWidget);
-      expect(find.text(nextLessonLabel), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().completionNextLesson),
+        findsNothing,
+      );
       expect(find.text(AppLocalizationsEn().rewardCardLabel), findsNothing);
     });
   });
@@ -676,11 +693,17 @@ void main() {
 
       await pumpCompletion(tester, container);
 
-      expect(find.text(nextLessonLabel), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().completionNextLesson),
+        findsOneWidget,
+      );
       // The design's footer carries no second way out: the topbar's close
       // already goes to the Path, and offering it again made declining look
       // like a decision rather than the default.
-      expect(find.text(backToPathLabel), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().completionBackToPath),
+        findsNothing,
+      );
     });
 
     // The reachable case for the plain return: the course is finished, so
@@ -708,8 +731,14 @@ void main() {
 
       await pumpCompletion(tester, container);
 
-      expect(find.text(nextLessonLabel), findsNothing);
-      expect(find.text(backToPathLabel), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().completionNextLesson),
+        findsNothing,
+      );
+      expect(
+        find.text(AppLocalizationsEn().completionBackToPath),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the celebration is not a screen you are held on', (
@@ -918,7 +947,10 @@ void main() {
     expect(find.text('5 / 5 correct'), findsNothing);
     // The band still drives what the run is offered, even with no chip to
     // show it: the weak replay gets the invitation the clean run did not.
-    expect(find.text(practiceAgainLabel), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().completionPracticeAgain),
+      findsOneWidget,
+    );
   });
 
   // Completing a module's last lesson, then tapping its action, routes to the

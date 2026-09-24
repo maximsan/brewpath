@@ -63,11 +63,6 @@ class _ScoreLine extends StatelessWidget {
 
   final MasteryResult mastery;
 
-  /// The design writes the line out in words — `3 / 5 correct` — rather than
-  /// leaving a bare ratio to be read as anything.
-  static String read(MasteryResult mastery) =>
-      '${mastery.correct} / ${mastery.total} correct';
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
@@ -75,7 +70,10 @@ class _ScoreLine extends StatelessWidget {
       label: context.strings.completionScored(mastery.correct, mastery.total),
       excludeSemantics: true,
       child: Text(
-        read(mastery),
+        context.strings.completionScoreLine(
+          mastery.correct,
+          mastery.total,
+        ),
         style: AppText.body(
           mood: mood,
           color: mood.ink,

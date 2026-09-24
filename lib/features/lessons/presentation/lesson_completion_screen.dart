@@ -183,6 +183,7 @@ class _LessonCompletionScreenState
     mastery: widget.mastery,
     reward: reward,
     actions: completionActions(
+      strings: context.strings,
       lessonId: widget.lessonId,
       band: widget.mastery.band,
       nextLessonId: reward.nextLessonId,

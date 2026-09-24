@@ -45,7 +45,7 @@ class CardGridItemWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final item = placed.item;
     final mood = context.mood;
-    final number = formatCardPlace(placed);
+    final number = formatCardPlace(context.strings, placed);
 
     if (!item.isCollected) {
       return Opacity(

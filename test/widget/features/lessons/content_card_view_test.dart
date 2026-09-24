@@ -193,10 +193,13 @@ Widget _host(
       body: SingleChildScrollView(
         child: contentCardView(
           card,
+          strings: AppLocalizationsEn(),
           seed: cardSeed(nonce: nonce, cardIndex: 0),
-          onSolved: () => signals.solved++,
-          onContinue: () => signals.advanced++,
-          guess: GuessLoop(held: prediction, onGuess: onGuess),
+          host: (
+            onSolved: () => signals.solved++,
+            onContinue: () => signals.advanced++,
+            guess: GuessLoop(held: prediction, onGuess: onGuess),
+          ),
         ),
       ),
     ),
@@ -1130,7 +1133,10 @@ void main() {
       expect(find.text('Hold that thought.'), findsOneWidget);
       // Neither verdict word the graded cards use.
       expect(find.textContaining('CORRECT'), findsNothing);
-      expect(find.text(notQuiteVerdict.toUpperCase()), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().notQuite.toUpperCase()),
+        findsNothing,
+      );
     });
 
     testWidgets('predict re-labels the hold when the guess changes', (
@@ -1756,9 +1762,13 @@ void main() {
         expect(
           () => contentCardView(
             entry.value,
+            strings: AppLocalizationsEn(),
             seed: cardSeed(nonce: 1, cardIndex: 0),
-            onSolved: () {},
-            onContinue: () {},
+            host: (
+              onSolved: () {},
+              onContinue: () {},
+              guess: GuessLoop.none,
+            ),
           ),
           returnsNormally,
         );

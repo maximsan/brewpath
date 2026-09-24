@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/answer_feedback.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -183,7 +184,7 @@ class _Explanation extends StatelessWidget {
   Widget build(BuildContext context) {
     if (chosen == null) return const SizedBox.shrink();
     return AnswerFeedback(
-      verdict: wasCorrect ? _correct : notQuiteVerdict,
+      verdict: wasCorrect ? _correct : context.strings.notQuite,
       outcome: wasCorrect ? Verdict.right : Verdict.wrong,
       explanation: text,
       placement: VerdictPlacement.reference,

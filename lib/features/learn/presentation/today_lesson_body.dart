@@ -76,7 +76,10 @@ class TodayLessonBody extends StatelessWidget {
       action: PrimaryButton(
         label: AppLabels.beginLesson,
         // The lesson it opens, said once, where the reader is asked to act.
-        semanticsLabel: '${AppLabels.beginLesson}: ${lesson.title}',
+        semanticsLabel: context.strings.todayBeginSpoken(
+          AppLabels.beginLesson,
+          lesson.title,
+        ),
         onPressed: open,
       ),
     );

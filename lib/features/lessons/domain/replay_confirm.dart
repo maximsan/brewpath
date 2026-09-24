@@ -8,37 +8,45 @@ import 'package:brew_path/l10n/generated/app_localizations.dart';
 /// One line of the sheet: what it measures, and this run's answer.
 typedef ReplayConfirmLine = ({String label, String value});
 
-/// The sheet's four lines for a lesson of [minutes] and [cards].
+/// What the sheet is drawn from. The words are the widget's, off the `.arb`.
 ///
-/// [lastCompletedDay] is the stored last run, or the first completion for a
-/// lesson last finished before that day was recorded; null when neither is
-/// known, which leaves the line off rather than guessing at it.
-List<ReplayConfirmLine> replayConfirmLines({
-  required AppLocalizations strings,
-  required int minutes,
-  required int cards,
-  required bool dayAlreadyEarned,
-  required int? lastCompletedDay,
-  required DateTime today,
-}) => [
+/// `lastCompletedDay` is the stored last run, or the first completion for a
+/// lesson finished before that day was recorded; null when neither is known.
+typedef ReplayConfirmFacts = ({
+  String lessonTitle,
+  int minutes,
+  int cards,
+  bool dayAlreadyEarned,
+  int? lastCompletedDay,
+  DateTime today,
+});
+
+/// The sheet's four lines for the run [facts] describes.
+///
+/// A run with no day on record leaves the last line off rather than guessing
+/// at it, so the sheet shows three.
+List<ReplayConfirmLine> replayConfirmLines(
+  AppLocalizations strings,
+  ReplayConfirmFacts facts,
+) => [
   (
     label: strings.replayConfirmPointsLabel,
     value: strings.replayConfirmPointsValue,
   ),
   (
     label: strings.replayConfirmStreakLabel,
-    value: dayAlreadyEarned
+    value: facts.dayAlreadyEarned
         ? strings.replayConfirmStreakEarned
         : strings.replayConfirmStreakCounts,
   ),
   (
     label: strings.replayConfirmLengthLabel,
-    value: strings.replayConfirmLength(minutes, cards),
+    value: strings.replayConfirmLength(facts.minutes, facts.cards),
   ),
-  if (lastCompletedDay != null)
+  if (facts.lastCompletedDay case final day?)
     (
       label: strings.replayConfirmLastCompletedLabel,
-      value: dayName(strings, lastCompletedDay, today: today),
+      value: dayName(strings, day, today: facts.today),
     ),
 ];
 

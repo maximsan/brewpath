@@ -12,14 +12,14 @@ List<ReplayConfirmLine> _lines({
   int cards = 3,
   bool dayAlreadyEarned = false,
   int? lastCompletedDay,
-}) => replayConfirmLines(
-  strings: _strings,
+}) => replayConfirmLines(_strings, (
+  lessonTitle: 'Arabica vs Robusta',
   minutes: minutes,
   cards: cards,
   dayAlreadyEarned: dayAlreadyEarned,
   lastCompletedDay: lastCompletedDay ?? _daysBefore(3),
   today: _today,
-);
+));
 
 String _valueOf(List<ReplayConfirmLine> lines, String label) =>
     lines.firstWhere((line) => line.label == label).value;
@@ -54,14 +54,14 @@ void main() {
     });
 
     test('a lesson with no day on record shows three lines, not a blank', () {
-      final lines = replayConfirmLines(
-        strings: _strings,
+      final lines = replayConfirmLines(_strings, (
+        lessonTitle: 'Arabica vs Robusta',
         minutes: 4,
         cards: 7,
         dayAlreadyEarned: false,
         lastCompletedDay: null,
         today: _today,
-      );
+      ));
 
       expect(lines.length, 3);
       expect(lines.any((line) => line.label == 'Last completed'), isFalse);

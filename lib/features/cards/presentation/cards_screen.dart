@@ -140,7 +140,7 @@ class _CollectionCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count = '$earned of $total';
+    final count = context.strings.cardsEarnedOfTotal(earned, total);
     final style = AppText.label(
       mood: context.mood,
       face: AppFace.mono,
@@ -153,7 +153,7 @@ class _CollectionCount extends StatelessWidget {
       // also why the spoken label below keeps its own.
       count.toUpperCase(),
       style: style,
-      semanticsLabel: '$count cards collected',
+      semanticsLabel: context.strings.cardsCollectedSpoken(count),
     );
   }
 }

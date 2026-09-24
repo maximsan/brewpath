@@ -99,7 +99,7 @@ class _ConceptCardViewState extends State<ConceptCardView> {
           AnswerFeedback(
             verdict: _allRight
                 ? context.strings.cardAllCorrect
-                : notQuiteVerdict,
+                : context.strings.notQuite,
             outcome: _allRight ? Verdict.right : Verdict.wrong,
             // The design hands the block the card's *second* paragraph: a
             // reply to a checked answer rather than prose.

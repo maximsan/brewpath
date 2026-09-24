@@ -1155,6 +1155,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Run complete. You scored {score} out of {total}. {encouragement}'**
   String drillRunComplete(int score, int total, String encouragement);
+
+  /// The line every graded surface closes on when the answer was not right.
+  ///
+  /// In en, this message translates to:
+  /// **'Not quite'**
+  String get notQuite;
+
+  /// The affirmative option on a true-or-false card.
+  ///
+  /// In en, this message translates to:
+  /// **'True'**
+  String get quizTrue;
+
+  /// The negative option on a true-or-false card.
+  ///
+  /// In en, this message translates to:
+  /// **'False'**
+  String get quizFalse;
+
+  /// Verdict when a decision card's call pays off.
+  ///
+  /// In en, this message translates to:
+  /// **'Good call'**
+  String get decisionGoodCall;
+
+  /// Verdict when a decision card's call would go wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'That would backfire'**
+  String get decisionBackfire;
+
+  /// Verdict when a taste-fix card's fix worked.
+  ///
+  /// In en, this message translates to:
+  /// **'Good fix'**
+  String get tastefixGoodFix;
+
+  /// Button that opens the lesson queued behind the one just finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Next lesson'**
+  String get completionNextLesson;
+
+  /// Button that leaves a finished lesson when nothing is queued.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Path'**
+  String get completionBackToPath;
+
+  /// Invitation a weak run gets, in the action colour rather than a failure red.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice this lesson again'**
+  String get completionPracticeAgain;
+
+  /// How a finished run's score is drawn.
+  ///
+  /// In en, this message translates to:
+  /// **'{correct} / {total} correct'**
+  String completionScoreLine(int correct, int total);
+
+  /// How many lessons are left before the tree grows again.
+  ///
+  /// In en, this message translates to:
+  /// **'{lessons, plural, =1{{lessons} lesson} other{{lessons} lessons}} to the next stage'**
+  String treeLessonsToNextStage(int lessons);
+
+  /// What a screen reader is told a run paid.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} points earned'**
+  String rewardPointsSpoken(int points);
+
+  /// How points paid are drawn. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'+{points} PTS'**
+  String rewardPointsLine(int points);
+
+  /// How a finished drill's score is drawn.
+  ///
+  /// In en, this message translates to:
+  /// **'{score} / {total}'**
+  String drillScoreLine(int score, int total);
+
+  /// What a screen reader is told about an unscored drill result.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} {note}. {line}'**
+  String drillSpokenPlain(String value, String note, String line);
+
+  /// A card's place in the whole collection.
+  ///
+  /// In en, this message translates to:
+  /// **'{place} / {total}'**
+  String cardPlaceInSet(String place, int total);
+
+  /// Names the cards the grid does not draw.
+  ///
+  /// In en, this message translates to:
+  /// **'{remaining} more to collect'**
+  String cardsRemaining(int remaining);
+
+  /// How far the collection has got.
+  ///
+  /// In en, this message translates to:
+  /// **'{earned} of {total}'**
+  String cardsEarnedOfTotal(int earned, int total);
+
+  /// What a screen reader is told the collection holds, after the earned-of-total count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} cards collected'**
+  String cardsCollectedSpoken(String count);
+
+  /// What a screen reader is told about a practice group and its size.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, {count}'**
+  String practiceGroupSpoken(String label, int count);
+
+  /// What a screen reader is told about a replayable lesson row.
+  ///
+  /// In en, this message translates to:
+  /// **'{lines}. Replay.'**
+  String practiceReplaySpoken(String lines);
+
+  /// About how long a practice run takes.
+  ///
+  /// In en, this message translates to:
+  /// **'~{minutes} min'**
+  String practiceMinutes(int minutes);
+
+  /// Marks a practice the learner can run without the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get practiceFree;
+
+  /// About how long a vocab drill takes.
+  ///
+  /// In en, this message translates to:
+  /// **'~2 min'**
+  String get practiceTwoMinutes;
+
+  /// What a screen reader is told the Begin button opens.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {title}'**
+  String todayBeginSpoken(String label, String title);
 }
 
 class _AppLocalizationsDelegate

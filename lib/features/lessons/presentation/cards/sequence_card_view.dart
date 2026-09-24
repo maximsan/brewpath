@@ -191,7 +191,9 @@ class _SequenceCardViewState extends State<SequenceCardView> {
   /// got it right still leaves the round with the order written out.
   List<Widget> _verdict(MoodColors mood) => [
     AnswerFeedback(
-      verdict: _wasCorrect ? context.strings.sequenceInOrder : notQuiteVerdict,
+      verdict: _wasCorrect
+          ? context.strings.sequenceInOrder
+          : context.strings.notQuite,
       outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
       explanation: _wasCorrect
           ? context.strings.sequenceNailedIt

@@ -1131,5 +1131,224 @@
         "type": "String"
       }
     }
+  },
+
+  "notQuite": "Not quite",
+  "@notQuite": {
+    "description": "The line every graded surface closes on when the answer was not right."
+  },
+
+  "quizTrue": "True",
+  "@quizTrue": {
+    "description": "The affirmative option on a true-or-false card."
+  },
+
+  "quizFalse": "False",
+  "@quizFalse": {
+    "description": "The negative option on a true-or-false card."
+  },
+
+  "decisionGoodCall": "Good call",
+  "@decisionGoodCall": {
+    "description": "Verdict when a decision card's call pays off."
+  },
+
+  "decisionBackfire": "That would backfire",
+  "@decisionBackfire": {
+    "description": "Verdict when a decision card's call would go wrong."
+  },
+
+  "tastefixGoodFix": "Good fix",
+  "@tastefixGoodFix": {
+    "description": "Verdict when a taste-fix card's fix worked."
+  },
+
+  "completionNextLesson": "Next lesson",
+  "@completionNextLesson": {
+    "description": "Button that opens the lesson queued behind the one just finished."
+  },
+
+  "completionBackToPath": "Back to Path",
+  "@completionBackToPath": {
+    "description": "Button that leaves a finished lesson when nothing is queued."
+  },
+
+  "completionPracticeAgain": "Practice this lesson again",
+  "@completionPracticeAgain": {
+    "description": "Invitation a weak run gets, in the action colour rather than a failure red."
+  },
+
+  "completionScoreLine": "{correct} / {total} correct",
+  "@completionScoreLine": {
+    "description": "How a finished run's score is drawn.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "treeLessonsToNextStage": "{lessons, plural, =1{{lessons} lesson} other{{lessons} lessons}} to the next stage",
+  "@treeLessonsToNextStage": {
+    "description": "How many lessons are left before the tree grows again.",
+    "placeholders": {
+      "lessons": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardPointsSpoken": "{points} points earned",
+  "@rewardPointsSpoken": {
+    "description": "What a screen reader is told a run paid.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardPointsLine": "+{points} PTS",
+  "@rewardPointsLine": {
+    "description": "How points paid are drawn. Set upper case by the design.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+
+  "drillScoreLine": "{score} / {total}",
+  "@drillScoreLine": {
+    "description": "How a finished drill's score is drawn.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "drillSpokenPlain": "{value} {note}. {line}",
+  "@drillSpokenPlain": {
+    "description": "What a screen reader is told about an unscored drill result.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      },
+      "line": {
+        "type": "String"
+      }
+    }
+  },
+
+  "cardPlaceInSet": "{place} / {total}",
+  "@cardPlaceInSet": {
+    "description": "A card's place in the whole collection.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "cardsRemaining": "{remaining} more to collect",
+  "@cardsRemaining": {
+    "description": "Names the cards the grid does not draw.",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+
+  "cardsEarnedOfTotal": "{earned} of {total}",
+  "@cardsEarnedOfTotal": {
+    "description": "How far the collection has got.",
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "cardsCollectedSpoken": "{count} cards collected",
+  "@cardsCollectedSpoken": {
+    "description": "What a screen reader is told the collection holds, after the earned-of-total count.",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+
+  "practiceGroupSpoken": "{label}, {count}",
+  "@practiceGroupSpoken": {
+    "description": "What a screen reader is told about a practice group and its size.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "practiceReplaySpoken": "{lines}. Replay.",
+  "@practiceReplaySpoken": {
+    "description": "What a screen reader is told about a replayable lesson row.",
+    "placeholders": {
+      "lines": {
+        "type": "String"
+      }
+    }
+  },
+
+  "practiceMinutes": "~{minutes} min",
+  "@practiceMinutes": {
+    "description": "About how long a practice run takes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "practiceFree": "Free",
+  "@practiceFree": {
+    "description": "Marks a practice the learner can run without the course."
+  },
+
+  "practiceTwoMinutes": "~2 min",
+  "@practiceTwoMinutes": {
+    "description": "About how long a vocab drill takes."
+  },
+
+  "todayBeginSpoken": "{label}: {title}",
+  "@todayBeginSpoken": {
+    "description": "What a screen reader is told the Begin button opens.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
   }
 }
