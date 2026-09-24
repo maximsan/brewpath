@@ -331,6 +331,9 @@ Both destructive actions use a `danger` `ConfirmSheet`.
 **About screen** (`A FIELD GUIDE TO COFFEE`) — **6 rows, not a static page**:
 `THE FINE PRINT` → Privacy policy · Terms of use · Acknowledgements · Open-source licenses;
 `SAY SOMETHING` → Rate BrewPath · Say hello (`hi@brewpath.app`). Plus the version line.
+⚠️ **The app draws four of these six.** Acknowledgements and Open-source
+licenses were cut by the owner on 24 September ([#532](https://github.com/maximsan/brewpath/issues/532));
+the rest is what the design asks for. See [§7.3](07-components.md).
 
 **Help and support** — `COMMON QUESTIONS` (the 4 FAQ rows above) plus
 `GET IN TOUCH` → Email support (`hi@brewpath.app`) · Report a problem.
