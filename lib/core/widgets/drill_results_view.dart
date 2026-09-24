@@ -79,9 +79,9 @@ class DrillResultsView extends StatelessWidget {
   bool get _celebratory => _outcome?.celebratory ?? false;
 
   /// The big value.
-  String get _value {
+  String _value(AppLocalizations strings) {
     final outcome = _outcome;
-    return _headline ?? '${outcome!.score} / ${outcome.total}';
+    return _headline ?? strings.drillScoreLine(outcome!.score, outcome.total);
   }
 
   /// The line under it.
@@ -89,7 +89,7 @@ class DrillResultsView extends StatelessWidget {
 
   /// One sentence, so a reader gets the result rather than three fragments.
   String _announcement(AppLocalizations strings) => _outcome == null
-      ? '$_value $_note. $_line'
+      ? strings.drillSpokenPlain(_value(strings), _note ?? '', _line)
       : strings.drillRunComplete(
           _outcome.score,
           _outcome.total,
@@ -126,7 +126,7 @@ class DrillResultsView extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       Text(
-                        _value,
+                        _value(context.strings),
                         style: theme.textTheme.displaySmall?.copyWith(
                           color: mood.ink,
                         ),
