@@ -256,6 +256,30 @@ void main() {
       ]);
     });
 
+    test('a folder that writes none leaves the term with none', () {
+      final records = overlayTranslations(
+        master: [
+          {
+            'id': 'coffee',
+            'term': 'Coffee',
+            'aliases': ['coffee', 'beans'],
+          },
+        ],
+        translated: [
+          {'id': 'coffee', 'term': 'Kawa'},
+        ],
+        assetPath: 'assets/content/l10n/pl/dictionary_terms.json',
+      );
+
+      expect(
+        records.first['aliases'],
+        isNull,
+        reason:
+            'English forms are the wrong keys in a Polish bank: they would '
+            'decide which terms a lesson mentions, and so the free pool',
+      );
+    });
+
     test('a term with fewer aliases than English keeps only its own', () {
       final records = overlayTranslations(
         master: [

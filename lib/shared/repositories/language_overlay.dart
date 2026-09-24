@@ -29,11 +29,11 @@ const Set<String> searchKeyFields = {'aliases'};
 
 /// Fields a language owns outright, which never fall back to English.
 ///
-/// Nobody is owed one, so an omission is an answer rather than a gap
-/// (ADR-0025). Matched by bare name at every depth, and a match drops the
-/// master's own value, so a name here must mean the same thing in every bank
-/// that carries it.
-const Set<String> fieldsThatNeverFallBack = {'pron'};
+/// The two ADR-0025 gives the language rather than the master: a respelling
+/// nobody is owed, and the inflected forms only it knows. Neither is prose,
+/// so ADR-0027's reason to keep English — that the reader keeps reading —
+/// does not reach them, and English would be an answer they never gave.
+const Set<String> fieldsThatNeverFallBack = {'pron', 'aliases'};
 
 /// The translation tool's bookkeeping, stripped before a model sees a record.
 ///
@@ -92,7 +92,9 @@ Map<String, dynamic> _mergeRecord(
 /// [master]'s fields with [translation]'s written over them, bookkeeping gone.
 ///
 /// [where] names the entry and the field path under it, so a refusal says
-/// which piece of text to redraft rather than which file.
+/// which piece of text to redraft rather than which file. A field that never
+/// falls back is matched by bare name at every depth and drops the master's
+/// own value, so such a name must mean one thing in every bank.
 Map<String, dynamic> _mergeMap(
   Map<String, dynamic> master,
   Map<String, dynamic> translation,

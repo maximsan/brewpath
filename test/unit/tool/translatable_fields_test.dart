@@ -119,12 +119,12 @@ void main() {
 
     expect(
       fieldsThatNeverFallBack,
-      registers.optional,
+      registers.optional.union(registers.searchKeys),
       reason:
-          'the two are held equal on purpose: a field nobody is owed must not '
-          "fall back, because the omission is the language's answer and "
-          'English would be shown as that answer. Marking a new field optional '
-          'means deciding that here too',
+          'the two the tool does not treat as prose are the two the language '
+          'owns, and English standing in for either is an answer it never '
+          'gave. Held equal on purpose: registering a new field as optional '
+          'or as a search key means deciding that here too',
     );
     expect(
       searchKeyFields,
