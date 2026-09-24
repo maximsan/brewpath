@@ -24,10 +24,10 @@ const double sliderTrackSpan = sliderTrackMax - sliderTrackMin;
 
 /// The words a round reads its track back in.
 ///
-/// Almost always the round's own `scale`, which every shipped round carries.
-/// One that carries none falls back to a scale built from its end labels, as
-/// the design source does, so a position on the track always reads as
-/// something concrete rather than a bare number.
+/// Always the round's own `scale` against today's banks. The fallback built
+/// from its end labels is therefore unreachable and still worth having: a
+/// position on the track must always read as something concrete rather than
+/// a bare number.
 List<String> sliderBands({
   required AppLocalizations strings,
   required List<String> scale,
@@ -36,11 +36,11 @@ List<String> sliderBands({
 }) => scale.isNotEmpty
     ? scale
     : [
-        strings.sliderVeryLeft(leftLabel),
+        strings.sliderVeryEnd(leftLabel),
         leftLabel,
         strings.sliderMiddle,
         rightLabel,
-        strings.sliderVeryLeft(rightLabel),
+        strings.sliderVeryEnd(rightLabel),
       ];
 
 /// Which of [bandCount] descriptive bands [value] reads as.

@@ -41,10 +41,10 @@ class CardsFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final count = context.strings.cardsRemaining(remaining);
+    final count = context.strings.collectiblesRemaining(remaining);
 
     return Semantics(
-      label: '$count. ${context.strings.cardsInvitation}',
+      label: '$count. ${context.strings.collectiblesInvitation}',
       excludeSemantics: true,
       child: DecoratedBox(
         decoration: ShapeDecoration(
@@ -71,7 +71,7 @@ class CardsFooter extends StatelessWidget {
                     ),
                     SizedBox(height: OffTokens.cardsFooterLineGap.value),
                     Text(
-                      context.strings.cardsInvitation,
+                      context.strings.collectiblesInvitation,
                       style: AppText.support(mood: mood),
                     ),
                   ],

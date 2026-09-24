@@ -180,6 +180,8 @@ class _MatchBoardViewState extends State<MatchBoardView>
         if (_miss != null)
           Semantics(
             liveRegion: true,
+            // The design marks a miss in berry and shakes it, which is
+            // nothing at all to a learner who cannot see it.
             label: context.strings.matchWrongDrop,
             child: const SizedBox.shrink(),
           ),

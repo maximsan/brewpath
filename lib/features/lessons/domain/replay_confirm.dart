@@ -1,4 +1,8 @@
 /// What the confirm sheet says before a lesson is replayed (#573).
+///
+/// Written for this app rather than ported: the design's line says a replay
+/// changes nothing for points *and* streak, and here a replay protects the
+/// day — so the two facts no longer fit on one line.
 library;
 
 import 'package:brew_path/core/utils/date_utils.dart';
@@ -29,6 +33,7 @@ List<ReplayConfirmLine> replayConfirmLines(
   AppLocalizations strings,
   ReplayConfirmFacts facts,
 ) => [
+  // A replay pays nothing (§5.1), so this line never varies.
   (
     label: strings.replayConfirmPointsLabel,
     value: strings.replayConfirmPointsValue,

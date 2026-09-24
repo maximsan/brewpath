@@ -58,8 +58,8 @@ class CardChallengeCorner extends StatelessWidget {
 
     return Semantics(
       label: tried
-          ? context.strings.cardChallengeTried
-          : context.strings.cardChallengeToEarn,
+          ? context.strings.collectibleChallengeTried
+          : context.strings.collectibleChallengeToEarn,
       excludeSemantics: true,
       child: Container(
         width: _cornerSize,

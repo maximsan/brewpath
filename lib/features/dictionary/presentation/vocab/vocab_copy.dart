@@ -162,7 +162,8 @@ abstract final class VocabCopy {
     AppLocalizations strings,
     String answer, {
     required bool isCorrect,
-  }) => isCorrect ? correctVerdict : "${strings.notQuite} — it's $answer";
+  }) =>
+      isCorrect ? correctVerdict : "${strings.verdictNotQuite} — it's $answer";
 
   /// The right-answer line.
   static const correctVerdict = 'Correct';

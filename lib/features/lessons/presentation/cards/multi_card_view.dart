@@ -90,7 +90,7 @@ class _MultiCardViewState extends State<MultiCardView> {
     final mood = context.mood;
     final verdict = _wasCorrect
         ? context.strings.cardAllCorrect
-        : context.strings.notQuite;
+        : context.strings.verdictNotQuite;
 
     return CardShell(
       latched: _submitted,

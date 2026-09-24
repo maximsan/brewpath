@@ -15,8 +15,8 @@ String earnLine(
   required String? lessonTitle,
   required String moduleTag,
 }) => lessonTitle == null || lessonTitle.isEmpty
-    ? strings.cardEarnByModule(moduleTag)
-    : strings.cardEarnByLesson(lessonTitle);
+    ? strings.collectibleEarnByModule(moduleTag)
+    : strings.collectibleEarnByLesson(lessonTitle);
 
 /// The title of the lesson that awards a card, or null when none does.
 @riverpod

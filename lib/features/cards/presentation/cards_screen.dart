@@ -35,7 +35,7 @@ class CardsScreen extends ConsumerWidget {
     return Scaffold(
       body: cards.when(
         loading: () => Semantics(
-          label: context.strings.cardsLoading,
+          label: context.strings.collectiblesLoading,
           child: const LoadingIndicator(),
         ),
         // Excluded rather than merged, as the mini-game player's error branch
@@ -44,7 +44,7 @@ class CardsScreen extends ConsumerWidget {
         // offered — `ErrorView` grows a Retry button when handed `onRetry`,
         // and this would silence it.
         error: (error, _) => Semantics(
-          label: context.strings.cardsLoadFailed,
+          label: context.strings.collectiblesLoadFailed,
           excludeSemantics: true,
           child: ErrorView(message: '$error'),
         ),
@@ -140,7 +140,7 @@ class _CollectionCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count = context.strings.cardsEarnedOfTotal(earned, total);
+    final count = context.strings.collectiblesEarnedOfTotal(earned, total);
     final style = AppText.label(
       mood: context.mood,
       face: AppFace.mono,
@@ -153,7 +153,7 @@ class _CollectionCount extends StatelessWidget {
       // also why the spoken label below keeps its own.
       count.toUpperCase(),
       style: style,
-      semanticsLabel: context.strings.cardsCollectedSpoken(count),
+      semanticsLabel: context.strings.collectiblesCollectedSpoken(count),
     );
   }
 }

@@ -10,9 +10,6 @@ import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The tag naming an answer the learner did not pick.
-const String _missedTag = 'MISSED';
-
 /// The design keeps the outline hairline in every state — [CardOptionTile]'s
 /// default. Only a pre-submit pick reads heavier: `.ms-choice.on` lays
 /// `box-shadow: inset 0 0 0 1px` in the border's own colour over the 1px
@@ -151,7 +148,7 @@ class _MultiOptionRow extends StatelessWidget {
       dashed: skin.dashed,
       semanticsLabel: [
         text,
-        if (picked) 'selected',
+        if (picked) context.strings.optionSelected,
         mark.semantics(context.strings),
       ].nonNulls.join(', '),
       child: Row(
@@ -161,7 +158,7 @@ class _MultiOptionRow extends StatelessWidget {
           Expanded(child: Text(text, style: theme.textTheme.bodyLarge)),
           if (mark == MultiMark.missed)
             Text(
-              _missedTag,
+              context.strings.optionMissedTag,
               // `.ms-tag` is the micro step in the row's own sage — not the
               // label step in
               // muted ink. The row is already sage to its border, box and

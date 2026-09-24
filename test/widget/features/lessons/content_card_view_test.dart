@@ -1134,7 +1134,7 @@ void main() {
       // Neither verdict word the graded cards use.
       expect(find.textContaining('CORRECT'), findsNothing);
       expect(
-        find.text(AppLocalizationsEn().notQuite.toUpperCase()),
+        find.text(AppLocalizationsEn().verdictNotQuite.toUpperCase()),
         findsNothing,
       );
     });

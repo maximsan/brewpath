@@ -22,7 +22,7 @@ typedef PickerLine =
 String _defaultVerdict(
   AppLocalizations strings, {
   required bool wasCorrect,
-}) => wasCorrect ? strings.cardCorrect : strings.notQuite;
+}) => wasCorrect ? strings.cardCorrect : strings.verdictNotQuite;
 
 /// The copy slots the three graded picking kinds fill differently.
 ///

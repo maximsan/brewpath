@@ -469,10 +469,6 @@
     }
   },
 
-  "visualSaveCaptionSaved": "Saved — review anytime in Saved",
-  "@visualSaveCaptionSaved": {
-    "description": "Caption on the save control once a guide is bookmarked."
-  },
 
   "tastefixStartingPoint": "STARTING POINT",
   "@tastefixStartingPoint": {
@@ -519,9 +515,9 @@
     }
   },
 
-  "sliderVeryLeft": "Very {label}",
-  "@sliderVeryLeft": {
-    "description": "End label on a calibrate track, naming its far end.",
+  "sliderVeryEnd": "Very {label}",
+  "@sliderVeryEnd": {
+    "description": "End label on a calibrate track. Used for both ends: {label} is the round's own word for that end, so it reads 'Very Fine' at one and 'Very Coarse' at the other.",
     "placeholders": {
       "label": {
         "type": "String"
@@ -569,39 +565,24 @@
     "description": "End of the payoff sentence when the guess missed."
   },
 
-  "payoffSpokenRight": "{opener} {pick} {andRight}",
+  "payoffSpokenRight": "Before the lesson you guessed {pick} — and you were right.",
   "@payoffSpokenRight": {
-    "description": "The payoff read as one sentence for a screen reader, when the guess landed.",
+    "description": "The payoff read as one sentence for a screen reader, when the guess landed. The visible version sets {pick} as a chip, which announces nothing on its own.",
     "placeholders": {
-      "opener": {
-        "type": "String"
-      },
       "pick": {
-        "type": "String"
-      },
-      "andRight": {
         "type": "String"
       }
     }
   },
 
-  "payoffSpokenWrong": "{opener} {pick}{butActually} {answer} {nowYouKnow}",
+  "payoffSpokenWrong": "Before the lesson you guessed {pick}. It's {answer} — now you know why.",
   "@payoffSpokenWrong": {
-    "description": "The payoff read as one sentence for a screen reader, when the guess missed.",
+    "description": "The payoff read as one sentence for a screen reader, when the guess missed. The visible version sets both words as chips, which announce nothing on their own.",
     "placeholders": {
-      "opener": {
-        "type": "String"
-      },
       "pick": {
         "type": "String"
       },
-      "butActually": {
-        "type": "String"
-      },
       "answer": {
-        "type": "String"
-      },
-      "nowYouKnow": {
         "type": "String"
       }
     }
@@ -1047,33 +1028,33 @@
     "description": "Shown when the catalog has nothing to offer."
   },
 
-  "cardsLoading": "Loading your collection",
-  "@cardsLoading": {
+  "collectiblesLoading": "Loading your collection",
+  "@collectiblesLoading": {
     "description": "Announced while the card collection is being read."
   },
 
-  "cardsLoadFailed": "Your collection could not be loaded.",
-  "@cardsLoadFailed": {
+  "collectiblesLoadFailed": "Your collection could not be loaded.",
+  "@collectiblesLoadFailed": {
     "description": "Shown when the card collection cannot be read."
   },
 
-  "cardsInvitation": "Finish lessons to reveal new cards.",
-  "@cardsInvitation": {
+  "collectiblesInvitation": "Finish lessons to reveal new cards.",
+  "@collectiblesInvitation": {
     "description": "Line under the collection, saying how new cards arrive."
   },
 
-  "cardChallengeTried": "Challenge tried",
-  "@cardChallengeTried": {
+  "collectibleChallengeTried": "Challenge tried",
+  "@collectibleChallengeTried": {
     "description": "Marks a card whose brew challenge the learner has attempted."
   },
 
-  "cardChallengeToEarn": "Challenge to earn",
-  "@cardChallengeToEarn": {
+  "collectibleChallengeToEarn": "Challenge to earn",
+  "@collectibleChallengeToEarn": {
     "description": "Marks a card whose brew challenge is still to attempt."
   },
 
-  "cardNumber": "CARD {number}",
-  "@cardNumber": {
+  "collectibleNumber": "CARD {number}",
+  "@collectibleNumber": {
     "description": "Number over a card in the collection. Set upper case by the design.",
     "placeholders": {
       "number": {
@@ -1082,23 +1063,23 @@
     }
   },
 
-  "cardGoToCourse": "Go to the course",
-  "@cardGoToCourse": {
+  "collectibleGoToCourse": "Go to the course",
+  "@collectibleGoToCourse": {
     "description": "Button on a locked card that opens the lesson which awards it."
   },
 
-  "cardFactLabel": "Fact",
-  "@cardFactLabel": {
+  "collectibleFactLabel": "Fact",
+  "@collectibleFactLabel": {
     "description": "Kicker over the fact on a card's sheet."
   },
 
-  "cardMemorableLabel": "Memorable",
-  "@cardMemorableLabel": {
+  "collectibleMemorableLabel": "Memorable",
+  "@collectibleMemorableLabel": {
     "description": "Kicker over the keepsake line on a reward card."
   },
 
-  "cardEarnByModule": "Earn this by finishing {moduleTag}",
-  "@cardEarnByModule": {
+  "collectibleEarnByModule": "Earn this by finishing {moduleTag}",
+  "@collectibleEarnByModule": {
     "description": "Says a card is earned by finishing a module.",
     "placeholders": {
       "moduleTag": {
@@ -1107,8 +1088,8 @@
     }
   },
 
-  "cardEarnByLesson": "Earn this by completing {lessonTitle}",
-  "@cardEarnByLesson": {
+  "collectibleEarnByLesson": "Earn this by completing {lessonTitle}",
+  "@collectibleEarnByLesson": {
     "description": "Says a card is earned by finishing one lesson.",
     "placeholders": {
       "lessonTitle": {
@@ -1133,8 +1114,8 @@
     }
   },
 
-  "notQuite": "Not quite",
-  "@notQuite": {
+  "verdictNotQuite": "Not quite",
+  "@verdictNotQuite": {
     "description": "The line every graded surface closes on when the answer was not right."
   },
 
@@ -1250,8 +1231,8 @@
     }
   },
 
-  "cardPlaceInSet": "{place} / {total}",
-  "@cardPlaceInSet": {
+  "collectiblePlaceInSet": "{place} / {total}",
+  "@collectiblePlaceInSet": {
     "description": "A card's place in the whole collection.",
     "placeholders": {
       "place": {
@@ -1263,8 +1244,8 @@
     }
   },
 
-  "cardsRemaining": "{remaining} more to collect",
-  "@cardsRemaining": {
+  "collectiblesRemaining": "{remaining} more to collect",
+  "@collectiblesRemaining": {
     "description": "Names the cards the grid does not draw.",
     "placeholders": {
       "remaining": {
@@ -1273,8 +1254,8 @@
     }
   },
 
-  "cardsEarnedOfTotal": "{earned} of {total}",
-  "@cardsEarnedOfTotal": {
+  "collectiblesEarnedOfTotal": "{earned} of {total}",
+  "@collectiblesEarnedOfTotal": {
     "description": "How far the collection has got.",
     "placeholders": {
       "earned": {
@@ -1286,8 +1267,8 @@
     }
   },
 
-  "cardsCollectedSpoken": "{count} cards collected",
-  "@cardsCollectedSpoken": {
+  "collectiblesCollectedSpoken": "{count} cards collected",
+  "@collectiblesCollectedSpoken": {
     "description": "What a screen reader is told the collection holds, after the earned-of-total count.",
     "placeholders": {
       "count": {
@@ -1350,5 +1331,25 @@
         "type": "String"
       }
     }
+  },
+
+  "optionMissedTag": "MISSED",
+  "@optionMissedTag": {
+    "description": "Tag on an answer the learner did not pick. Set upper case by the design."
+  },
+
+  "optionSelected": "selected",
+  "@optionSelected": {
+    "description": "Spoken suffix on an option the learner has ticked."
+  },
+
+  "optionCorrectMark": "correct",
+  "@optionCorrectMark": {
+    "description": "Spoken suffix on a sequence step that sits in the right place."
+  },
+
+  "grinderClicksUnit": "CLICKS",
+  "@grinderClicksUnit": {
+    "description": "Unit under the number on the grinder dial. Set upper case by the design."
   }
 }

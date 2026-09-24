@@ -39,7 +39,7 @@ void main() {
       // The keepsake line the app assembled and rendered nowhere.
       expect(find.text(_card.fact), findsOneWidget);
       expect(
-        find.text(AppLocalizationsEn().cardMemorableLabel.toUpperCase()),
+        find.text(AppLocalizationsEn().collectibleMemorableLabel.toUpperCase()),
         findsOneWidget,
       );
     });

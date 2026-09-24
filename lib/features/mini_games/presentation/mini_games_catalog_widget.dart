@@ -16,12 +16,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The mini-game catalog under Learn → Practice → Games.
+/// The mini-game catalog, grouped by kind in [miniGameKinds]' fixed order so
+/// adding a game never reshuffles the shelf.
 ///
-/// Grouped by kind in the fixed order [miniGameKinds] declares, so adding a
-/// game never reshuffles the shelf. The kind's glyph and name sit on the
-/// heading, never on a row. Every row opens its intro: whether a build can
-/// play a game is disclosed on the intro's action, not by dimming the row.
+/// The kind's glyph and name sit on the heading, never a row, and rows indent
+/// under it (`paddingLeft: 30`). A build that cannot play a game says so on
+/// the intro's action, never by dimming a row into looking paywalled.
 class MiniGamesCatalogWidget extends StatelessWidget {
   /// Creates a [MiniGamesCatalogWidget].
   const MiniGamesCatalogWidget({

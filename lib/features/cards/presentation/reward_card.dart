@@ -133,7 +133,7 @@ class _RewardCardState extends State<RewardCard>
       const SizedBox(height: AppSpacing.md),
       Divider(height: 1, thickness: 1, color: mood.rule),
       const SizedBox(height: AppSpacing.base),
-      SmallcapsLabel(context.strings.cardMemorableLabel),
+      SmallcapsLabel(context.strings.collectibleMemorableLabel),
       const SizedBox(height: AppSpacing.xs),
       // The keepsake line, set in the display face: it is the thing a learner
       // is meant to carry away, and the app rendered it nowhere until now.

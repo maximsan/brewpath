@@ -42,11 +42,12 @@ enum Verdict {
   };
 }
 
-/// The block that closes every graded surface — and holds the one guess that is
-/// never graded: a mascot, a mono verdict line, the explanation under it. One
-/// component, because nine hand-rolled copies drifted apart in the design. The
-/// verdict is a **live region**: it arrives on commit with no focus change, so
-/// without it a screen reader hears every mark and never the outcome.
+/// The block that closes every graded surface — and holds the one guess that
+/// is never graded: a mascot, a mono verdict line, the explanation under it.
+///
+/// One component, because nine hand-rolled copies drifted apart in the design,
+/// and its wrong line is the shared `verdictNotQuite` for the same reason. The
+/// verdict is a live region, or a reader hears every mark and never the run.
 class AnswerFeedback extends StatelessWidget {
   /// Creates an [AnswerFeedback].
   const AnswerFeedback({

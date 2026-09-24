@@ -230,7 +230,7 @@ PickerCopy _tastefixCopy(TastefixCard card) => PickerCopy(
   explain: (_, {required wasCorrect}) => card.explanation,
   // A fix that worked, not an answer that was right.
   verdict: (strings, {required wasCorrect}) =>
-      wasCorrect ? strings.tastefixGoodFix : strings.notQuite,
+      wasCorrect ? strings.tastefixGoodFix : strings.verdictNotQuite,
 );
 
 /// The tasting clue takes the scenario slot: it is what the learner is reading

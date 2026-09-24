@@ -184,9 +184,9 @@ KeepSharpResolution? keepSharpResolutionFor({
 /// The day's game, skipping any already played today.
 ///
 /// The rule is "two different games", so a fixed pick would send the learner
-/// back into the game they just finished. Once every format has been played
-/// the card stops offering a CTA; the fall back to the full list exists
-/// because [keepSharpDailyChoice] indexes modulo length.
+/// back into the one just finished and Start could never satisfy it. Once all
+/// are played no CTA is offered; the fall back to the full list exists because
+/// [keepSharpDailyChoice] indexes modulo length and an empty list would throw.
 String _nextUnplayed(
   int dayNumber,
   List<String> playable,

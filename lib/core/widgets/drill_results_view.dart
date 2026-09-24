@@ -25,9 +25,9 @@ typedef DrillAction = ({String label, VoidCallback onPressed});
 /// The end of a run: what was scored, a word about it, and the two ways out.
 ///
 /// One results screen for every drill, so finishing cannot come to mean two
-/// different things (#381). Nothing here is written anywhere: the score lives
-/// as long as this screen does, and that a run finished is the player's to
-/// record.
+/// different things — the roast meter's consolidation (#381) a layer up.
+/// Nothing here is written anywhere: the score lives as long as this screen
+/// does, and that a run finished is the player's to record.
 class DrillResultsView extends StatelessWidget {
   /// A drill that was **scored**: so many right out of so many asked.
   const DrillResultsView({
@@ -89,7 +89,7 @@ class DrillResultsView extends StatelessWidget {
 
   /// One sentence, so a reader gets the result rather than three fragments.
   String _announcement(AppLocalizations strings) => _outcome == null
-      ? strings.drillSpokenPlain(_value(strings), _note ?? '', _line)
+      ? strings.drillSpokenPlain(_value(strings), _note!, _line)
       : strings.drillRunComplete(
           _outcome.score,
           _outcome.total,

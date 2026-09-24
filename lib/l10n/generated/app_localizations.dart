@@ -538,12 +538,6 @@ abstract class AppLocalizations {
   /// **'Place under {target}'**
   String matchPlaceUnder(String target);
 
-  /// Caption on the save control once a guide is bookmarked.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved — review anytime in Saved'**
-  String get visualSaveCaptionSaved;
-
   /// Kicker over the cup as it was brewed. Set upper case by the design.
   ///
   /// In en, this message translates to:
@@ -590,7 +584,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Very {label}'**
-  String sliderVeryLeft(String label);
+  String sliderVeryEnd(String label);
 
   /// Label for the centre of a calibrate track.
   ///
@@ -640,23 +634,17 @@ abstract class AppLocalizations {
   /// **'— now you know why.'**
   String get payoffNowYouKnow;
 
-  /// The payoff read as one sentence for a screen reader, when the guess landed.
+  /// The payoff read as one sentence for a screen reader, when the guess landed. The visible version sets {pick} as a chip, which announces nothing on its own.
   ///
   /// In en, this message translates to:
-  /// **'{opener} {pick} {andRight}'**
-  String payoffSpokenRight(String opener, String pick, String andRight);
+  /// **'Before the lesson you guessed {pick} — and you were right.'**
+  String payoffSpokenRight(String pick);
 
-  /// The payoff read as one sentence for a screen reader, when the guess missed.
+  /// The payoff read as one sentence for a screen reader, when the guess missed. The visible version sets both words as chips, which announce nothing on their own.
   ///
   /// In en, this message translates to:
-  /// **'{opener} {pick}{butActually} {answer} {nowYouKnow}'**
-  String payoffSpokenWrong(
-    String opener,
-    String pick,
-    String butActually,
-    String answer,
-    String nowYouKnow,
-  );
+  /// **'Before the lesson you guessed {pick}. It\'s {answer} — now you know why.'**
+  String payoffSpokenWrong(String pick, String answer);
 
   /// What a screen reader is told about the learner's place in the lesson.
   ///
@@ -1088,67 +1076,67 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Loading your collection'**
-  String get cardsLoading;
+  String get collectiblesLoading;
 
   /// Shown when the card collection cannot be read.
   ///
   /// In en, this message translates to:
   /// **'Your collection could not be loaded.'**
-  String get cardsLoadFailed;
+  String get collectiblesLoadFailed;
 
   /// Line under the collection, saying how new cards arrive.
   ///
   /// In en, this message translates to:
   /// **'Finish lessons to reveal new cards.'**
-  String get cardsInvitation;
+  String get collectiblesInvitation;
 
   /// Marks a card whose brew challenge the learner has attempted.
   ///
   /// In en, this message translates to:
   /// **'Challenge tried'**
-  String get cardChallengeTried;
+  String get collectibleChallengeTried;
 
   /// Marks a card whose brew challenge is still to attempt.
   ///
   /// In en, this message translates to:
   /// **'Challenge to earn'**
-  String get cardChallengeToEarn;
+  String get collectibleChallengeToEarn;
 
   /// Number over a card in the collection. Set upper case by the design.
   ///
   /// In en, this message translates to:
   /// **'CARD {number}'**
-  String cardNumber(String number);
+  String collectibleNumber(String number);
 
   /// Button on a locked card that opens the lesson which awards it.
   ///
   /// In en, this message translates to:
   /// **'Go to the course'**
-  String get cardGoToCourse;
+  String get collectibleGoToCourse;
 
   /// Kicker over the fact on a card's sheet.
   ///
   /// In en, this message translates to:
   /// **'Fact'**
-  String get cardFactLabel;
+  String get collectibleFactLabel;
 
   /// Kicker over the keepsake line on a reward card.
   ///
   /// In en, this message translates to:
   /// **'Memorable'**
-  String get cardMemorableLabel;
+  String get collectibleMemorableLabel;
 
   /// Says a card is earned by finishing a module.
   ///
   /// In en, this message translates to:
   /// **'Earn this by finishing {moduleTag}'**
-  String cardEarnByModule(String moduleTag);
+  String collectibleEarnByModule(String moduleTag);
 
   /// Says a card is earned by finishing one lesson.
   ///
   /// In en, this message translates to:
   /// **'Earn this by completing {lessonTitle}'**
-  String cardEarnByLesson(String lessonTitle);
+  String collectibleEarnByLesson(String lessonTitle);
 
   /// What a screen reader is told a finished run came to.
   ///
@@ -1160,7 +1148,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Not quite'**
-  String get notQuite;
+  String get verdictNotQuite;
 
   /// The affirmative option on a true-or-false card.
   ///
@@ -1250,25 +1238,25 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{place} / {total}'**
-  String cardPlaceInSet(String place, int total);
+  String collectiblePlaceInSet(String place, int total);
 
   /// Names the cards the grid does not draw.
   ///
   /// In en, this message translates to:
   /// **'{remaining} more to collect'**
-  String cardsRemaining(int remaining);
+  String collectiblesRemaining(int remaining);
 
   /// How far the collection has got.
   ///
   /// In en, this message translates to:
   /// **'{earned} of {total}'**
-  String cardsEarnedOfTotal(int earned, int total);
+  String collectiblesEarnedOfTotal(int earned, int total);
 
   /// What a screen reader is told the collection holds, after the earned-of-total count.
   ///
   /// In en, this message translates to:
   /// **'{count} cards collected'**
-  String cardsCollectedSpoken(String count);
+  String collectiblesCollectedSpoken(String count);
 
   /// What a screen reader is told about a practice group and its size.
   ///
@@ -1305,6 +1293,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}: {title}'**
   String todayBeginSpoken(String label, String title);
+
+  /// Tag on an answer the learner did not pick. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'MISSED'**
+  String get optionMissedTag;
+
+  /// Spoken suffix on an option the learner has ticked.
+  ///
+  /// In en, this message translates to:
+  /// **'selected'**
+  String get optionSelected;
+
+  /// Spoken suffix on a sequence step that sits in the right place.
+  ///
+  /// In en, this message translates to:
+  /// **'correct'**
+  String get optionCorrectMark;
+
+  /// Unit under the number on the grinder dial. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'CLICKS'**
+  String get grinderClicksUnit;
 }
 
 class _AppLocalizationsDelegate

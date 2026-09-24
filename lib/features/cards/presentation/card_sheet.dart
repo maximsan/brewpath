@@ -31,9 +31,9 @@ Future<CardSheetIntent?> showCardSheet(
 /// One collectible, as the sheet reads it: what it is, what it says, and the
 /// line worth keeping.
 ///
-/// The title is the sheet primitive's, where the design sets this one card a
-/// step larger — a deliberate divergence, recorded on #385. The artwork is
-/// extracted from the design source rather than redrawn (#480).
+/// The title is the sheet primitive's: the design sets this card
+/// `--t-display` against `--t-title` elsewhere, and the app keeps one sheet
+/// dressing (#385). Art is extracted rather than redrawn (#480).
 class CardSheetBody extends ConsumerWidget {
   /// Creates a [CardSheetBody].
   const CardSheetBody({required this.item, super.key});
@@ -93,7 +93,7 @@ class _Keepsake extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SmallcapsLabel(context.strings.cardFactLabel, isHeader: true),
+        SmallcapsLabel(context.strings.collectibleFactLabel, isHeader: true),
         const SizedBox(height: AppSpacing.xs),
         Text(fact, style: AppText.heading(mood: context.mood)),
       ],

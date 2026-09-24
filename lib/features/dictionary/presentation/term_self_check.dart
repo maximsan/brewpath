@@ -184,7 +184,7 @@ class _Explanation extends StatelessWidget {
   Widget build(BuildContext context) {
     if (chosen == null) return const SizedBox.shrink();
     return AnswerFeedback(
-      verdict: wasCorrect ? _correct : context.strings.notQuite,
+      verdict: wasCorrect ? _correct : context.strings.verdictNotQuite,
       outcome: wasCorrect ? Verdict.right : Verdict.wrong,
       explanation: text,
       placement: VerdictPlacement.reference,

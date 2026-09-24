@@ -11,10 +11,10 @@ import 'package:brew_path/l10n/generated/app_localizations.dart';
 
 /// The games whose kind renderers exist in this build.
 ///
-/// A registry rather than a card-kind lookup, so a game is playable only when
-/// someone says so. Read by the intro's action and by Keep Sharp, never by the
-/// catalog row. It holds the whole catalog today; the guard test pairs it with
-/// [deliberatelyNotPlayable] so the next addition fails until ruled on (#311).
+/// A registry, so a game is playable only when someone says so; read by the
+/// intro's action and Keep Sharp, never by a row that would look paywalled.
+/// Holds the whole catalog as of #124; two games once sat unplayable for want
+/// of a line (#311), so the guard test pairs it with [deliberatelyNotPlayable].
 const Set<String> playableMiniGameIds = {
   'g-quiz',
   'g-match',

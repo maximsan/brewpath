@@ -1,20 +1,11 @@
 import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
+import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'replay_confirm_providers.g.dart';
-
-/// What the sheet is drawn from. The words are the widget's, off the `.arb`.
-typedef ReplayConfirmFacts = ({
-  String lessonTitle,
-  int minutes,
-  int cards,
-  bool dayAlreadyEarned,
-  int? lastCompletedDay,
-  DateTime today,
-});
 
 /// What to ask before replaying [lessonId], or null when nothing should be
 /// asked — the lesson is unfinished, or the course no longer carries it.

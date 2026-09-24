@@ -22,7 +22,7 @@ typedef PlacedCard = ({CardWithCollection item, int place, int total});
 /// Here rather than in the widget because it is arithmetic over the set, like
 /// everything else in this file, and it can be checked without pumping one.
 String formatCardPlace(AppLocalizations strings, PlacedCard placed) =>
-    strings.cardPlaceInSet(
+    strings.collectiblePlaceInSet(
       placed.place.toString().padLeft(2, '0'),
       placed.total,
     );

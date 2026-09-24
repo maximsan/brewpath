@@ -64,16 +64,9 @@ class RecallPayoff extends StatelessWidget {
 /// The payoff as one sentence, for a reader that cannot see the chips: a
 /// `WidgetSpan` announces nothing, so a screen reader would otherwise hear it
 /// with its two most important words missing.
+///
+/// Said twice, so the `.arb` carries it twice — once as the fragments the
+/// spans are built from, once whole. A wording edit must land on both.
 String spokenPayoff(AppLocalizations strings, HeldGuess guess) => guess.wasRight
-    ? strings.payoffSpokenRight(
-        strings.payoffOpener,
-        guess.pick,
-        strings.payoffAndRight,
-      )
-    : strings.payoffSpokenWrong(
-        strings.payoffOpener,
-        guess.pick,
-        strings.payoffButActually,
-        guess.answer,
-        strings.payoffNowYouKnow,
-      );
+    ? strings.payoffSpokenRight(guess.pick)
+    : strings.payoffSpokenWrong(guess.pick, guess.answer);

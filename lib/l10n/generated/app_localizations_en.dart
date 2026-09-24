@@ -281,9 +281,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get visualSaveCaptionSaved => 'Saved — review anytime in Saved';
-
-  @override
   String get tastefixStartingPoint => 'STARTING POINT';
 
   @override
@@ -309,7 +306,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String sliderVeryLeft(String label) {
+  String sliderVeryEnd(String label) {
     return 'Very $label';
   }
 
@@ -338,19 +335,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payoffNowYouKnow => '— now you know why.';
 
   @override
-  String payoffSpokenRight(String opener, String pick, String andRight) {
-    return '$opener $pick $andRight';
+  String payoffSpokenRight(String pick) {
+    return 'Before the lesson you guessed $pick — and you were right.';
   }
 
   @override
-  String payoffSpokenWrong(
-    String opener,
-    String pick,
-    String butActually,
-    String answer,
-    String nowYouKnow,
-  ) {
-    return '$opener $pick$butActually $answer $nowYouKnow';
+  String payoffSpokenWrong(String pick, String answer) {
+    return 'Before the lesson you guessed $pick. It\'s $answer — now you know why.';
   }
 
   @override
@@ -593,41 +584,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get miniGamesEmpty => 'No mini-games available yet.';
 
   @override
-  String get cardsLoading => 'Loading your collection';
+  String get collectiblesLoading => 'Loading your collection';
 
   @override
-  String get cardsLoadFailed => 'Your collection could not be loaded.';
+  String get collectiblesLoadFailed => 'Your collection could not be loaded.';
 
   @override
-  String get cardsInvitation => 'Finish lessons to reveal new cards.';
+  String get collectiblesInvitation => 'Finish lessons to reveal new cards.';
 
   @override
-  String get cardChallengeTried => 'Challenge tried';
+  String get collectibleChallengeTried => 'Challenge tried';
 
   @override
-  String get cardChallengeToEarn => 'Challenge to earn';
+  String get collectibleChallengeToEarn => 'Challenge to earn';
 
   @override
-  String cardNumber(String number) {
+  String collectibleNumber(String number) {
     return 'CARD $number';
   }
 
   @override
-  String get cardGoToCourse => 'Go to the course';
+  String get collectibleGoToCourse => 'Go to the course';
 
   @override
-  String get cardFactLabel => 'Fact';
+  String get collectibleFactLabel => 'Fact';
 
   @override
-  String get cardMemorableLabel => 'Memorable';
+  String get collectibleMemorableLabel => 'Memorable';
 
   @override
-  String cardEarnByModule(String moduleTag) {
+  String collectibleEarnByModule(String moduleTag) {
     return 'Earn this by finishing $moduleTag';
   }
 
   @override
-  String cardEarnByLesson(String lessonTitle) {
+  String collectibleEarnByLesson(String lessonTitle) {
     return 'Earn this by completing $lessonTitle';
   }
 
@@ -637,7 +628,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get notQuite => 'Not quite';
+  String get verdictNotQuite => 'Not quite';
 
   @override
   String get quizTrue => 'True';
@@ -700,22 +691,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String cardPlaceInSet(String place, int total) {
+  String collectiblePlaceInSet(String place, int total) {
     return '$place / $total';
   }
 
   @override
-  String cardsRemaining(int remaining) {
+  String collectiblesRemaining(int remaining) {
     return '$remaining more to collect';
   }
 
   @override
-  String cardsEarnedOfTotal(int earned, int total) {
+  String collectiblesEarnedOfTotal(int earned, int total) {
     return '$earned of $total';
   }
 
   @override
-  String cardsCollectedSpoken(String count) {
+  String collectiblesCollectedSpoken(String count) {
     return '$count cards collected';
   }
 
@@ -744,4 +735,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String todayBeginSpoken(String label, String title) {
     return '$label: $title';
   }
+
+  @override
+  String get optionMissedTag => 'MISSED';
+
+  @override
+  String get optionSelected => 'selected';
+
+  @override
+  String get optionCorrectMark => 'correct';
+
+  @override
+  String get grinderClicksUnit => 'CLICKS';
 }

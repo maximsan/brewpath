@@ -155,7 +155,7 @@ class _SequenceCardViewState extends State<SequenceCardView> {
       semanticsLabel: [
         item.label,
         if (mark.isPlaced) context.strings.sequencePosition(position + 1),
-        if (mark == SequenceStepMark.right) 'correct',
+        if (mark == SequenceStepMark.right) context.strings.optionCorrectMark,
         if (mark == SequenceStepMark.wrong)
           context.strings.sequenceBelongsAt(item.order),
       ].join(', '),
@@ -193,7 +193,7 @@ class _SequenceCardViewState extends State<SequenceCardView> {
     AnswerFeedback(
       verdict: _wasCorrect
           ? context.strings.sequenceInOrder
-          : context.strings.notQuite,
+          : context.strings.verdictNotQuite,
       outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
       explanation: _wasCorrect
           ? context.strings.sequenceNailedIt

@@ -57,7 +57,7 @@ class CardLockedFace extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: context.strings.cardGoToCourse,
+          label: context.strings.collectibleGoToCourse,
           // Answers the sheet rather than navigating from inside it. Whoever
           // opened this owns the route it sits on and has to leave that route
           // before going anywhere — a `go` from here would strand the page

@@ -25,8 +25,6 @@ import 'package:go_router/go_router.dart';
 /// `padding-top: 108`.
 const double _designScrollPad = 108;
 
-/// The line the design opens the body on, where the bar used to say it.
-
 /// What the game is and how it is played, before any round runs.
 ///
 /// Backing out here costs nothing: no run has begun, so there is nothing to

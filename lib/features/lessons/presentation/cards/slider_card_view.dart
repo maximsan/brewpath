@@ -198,7 +198,7 @@ class _SliderCardViewState extends State<SliderCardView> {
     AnswerFeedback(
       verdict: _within
           ? context.strings.sliderDialedIn
-          : context.strings.notQuite,
+          : context.strings.verdictNotQuite,
       outcome: _within ? Verdict.right : Verdict.wrong,
       explanation: _card.feedback,
     ),

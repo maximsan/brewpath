@@ -28,12 +28,12 @@ const double _lockedOpacity = 0.32;
 const double _lockedLineOpacity = 0.55;
 const double _lockedMarkOpacity = 0.45;
 
-/// One tile in the Cards grid.
+/// One tile in the Cards grid: its place in the set when earned — `04 / 37` —
+/// and a receding face when locked, so a gap is a known one.
 ///
-/// Earned, it names its place in the set and wears its kind's wash; locked, it
-/// recedes but still says which card it is, so a gap is a known one. The
-/// design's `VISUAL GUIDE` line is not ported, because no collectible is of
-/// that kind. The artwork is extracted rather than redrawn (#480).
+/// The design's `VISUAL GUIDE` line is unported, but the tint table keeps its
+/// row so the branch returns with the content. Art is extracted, not redrawn,
+/// and a kind the design has not drawn falls back to its module's mark (#480).
 class CardGridItemWidget extends ConsumerWidget {
   /// Creates a [CardGridItemWidget].
   const CardGridItemWidget({required this.placed, super.key});
@@ -69,7 +69,7 @@ class CardGridItemWidget extends ConsumerWidget {
       surface: cardTint(mood, item.card.kind),
       onTap: () => unawaited(showCardSheet(context, item)),
       corner: CardChallengeCorner.forState(challenge),
-      top: _SubLine(context.strings.cardNumber(number)),
+      top: _SubLine(context.strings.collectibleNumber(number)),
       bottom: Text(
         item.card.title,
         maxLines: 2,
