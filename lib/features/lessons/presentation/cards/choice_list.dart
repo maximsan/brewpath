@@ -1,5 +1,7 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +121,7 @@ class ChoiceList extends StatelessWidget {
       semanticsLabel: [
         option.text,
         subtitle,
-        mark.semantics,
+        mark.semantics(context.strings),
       ].nonNulls.join(', '),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -141,13 +143,16 @@ class ChoiceList extends StatelessWidget {
 
 /// How a committed option is drawn — and, for a screen reader, said.
 enum _OptionMark {
-  none(null),
-  chosen('chosen'),
-  correct('correct answer'),
-  wrong('your answer, incorrect');
-
-  const _OptionMark(this.semantics);
+  none,
+  chosen,
+  correct,
+  wrong;
 
   /// Spoken suffix, because the mark is otherwise carried by colour alone.
-  final String? semantics;
+  String? semantics(AppLocalizations strings) => switch (this) {
+    _OptionMark.none => null,
+    _OptionMark.chosen => strings.optionChosen,
+    _OptionMark.correct => strings.optionCorrectAnswer,
+    _OptionMark.wrong => strings.optionYourAnswerIncorrect,
+  };
 }

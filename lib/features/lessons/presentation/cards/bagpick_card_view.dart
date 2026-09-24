@@ -6,6 +6,8 @@ import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
@@ -13,14 +15,13 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The verdict on a call that was right.
-const String _calledIt = 'Called it';
-
-/// How each process reads to a learner. The bank stores the key.
-const Map<String, String> _processLabels = {
-  'washed': 'Washed',
-  'honey': 'Honey',
-  'natural': 'Natural',
+/// How each process reads to a learner, or null for a key the bank has grown
+/// since. The bank stores the key.
+String? _processLabel(AppLocalizations strings, String key) => switch (key) {
+  'washed' => strings.bagpickProcessWashed,
+  'honey' => strings.bagpickProcessHoney,
+  'natural' => strings.bagpickProcessNatural,
+  _ => null,
 };
 
 /// An unlabelled bag, a sample of three seeds, and three things to inspect.
@@ -74,9 +75,13 @@ class _BagpickCardViewState extends State<BagpickCardView> {
   ///
   /// No full stop: it is a smallcaps kicker rather than a sentence, and the
   /// app had been closing both readings with one the design does not write.
-  String _verdict(BagpickCard card) => _wasCorrect
-      ? _calledIt
-      : '${_processLabels[card.answer] ?? card.answer}, actually';
+  String _verdict(BagpickCard card) {
+    final strings = context.strings;
+    if (_wasCorrect) return strings.bagpickCalledIt;
+    return strings.bagpickActually(
+      _processLabel(strings, card.answer) ?? card.answer,
+    );
+  }
 
   /// Whether [cueId] is showing its text. Committing reveals them all, so the
   /// explanation can point at a cue the learner never opened.
@@ -109,7 +114,9 @@ class _BagpickCardViewState extends State<BagpickCardView> {
           bag: card.bag,
           origin: card.origin,
           bean: card.bean,
-          revealed: _latched ? _processLabels[card.answer] : null,
+          revealed: _latched
+              ? _processLabel(context.strings, card.answer)
+              : null,
           sampleSize: _sampleSize,
           beanSize: _beanSize,
           tallBeanSize: _tallBeanSize,
@@ -135,7 +142,7 @@ class _BagpickCardViewState extends State<BagpickCardView> {
           options: [
             for (final process in widget.options)
               ChoiceOption(
-                text: _processLabels[process] ?? process,
+                text: _processLabel(context.strings, process) ?? process,
                 isCorrect: process == card.answer,
               ),
           ],
@@ -209,7 +216,7 @@ class _BagPanel extends StatelessWidget {
             Text(origin, style: text.bodyMedium?.copyWith(color: mood.ink)),
             const SizedBox(height: AppSpacing.md),
             Semantics(
-              label: 'A sample of $sampleSize green beans from this bag.',
+              label: context.strings.bagpickSample(sampleSize),
               excludeSemantics: true,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -263,7 +270,7 @@ class _ProcessPill extends StatelessWidget {
       child: Padding(
         padding: _padding,
         child: Text(
-          revealed ?? 'Process hidden',
+          revealed ?? context.strings.bagpickProcessHidden,
           style: Theme.of(
             context,
           ).textTheme.labelSmall?.copyWith(color: labelColour),
@@ -293,13 +300,13 @@ class _CueRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = context.mood;
     final text = Theme.of(context).textTheme;
-    final body = revealed ? cue.text : 'Tap to inspect';
+    final body = revealed ? cue.text : context.strings.bagpickTapToInspect;
 
     return Semantics(
       button: onTap != null,
       label: isTell
-          ? '${cue.label}. $body. This was the tell.'
-          : '${cue.label}. $body',
+          ? context.strings.bagpickCueTell(cue.label, body)
+          : context.strings.bagpickCueRead(cue.label, body),
       onTap: onTap,
       excludeSemantics: true,
       child: Material(

@@ -2,6 +2,7 @@ import 'package:brew_path/features/lessons/presentation/cards/match_anchors.dart
 import 'package:brew_path/features/lessons/presentation/cards/match_motion.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_standing.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_tile.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,7 @@ class _Trait extends StatelessWidget {
     final state = board.traitState(index);
     final placed = board.placed.contains(index);
     final spoken = placed
-        ? '${pair.left}, paired with ${pair.right}'
+        ? context.strings.matchPairedWith(pair.left, pair.right)
         : pair.left;
 
     final tile = MatchTile(
@@ -203,7 +204,7 @@ class _Answer extends StatelessWidget {
                 text: target,
                 state: state,
                 align: TextAlign.end,
-                semanticsLabel: 'Place under $target',
+                semanticsLabel: context.strings.matchPlaceUnder(target),
                 onTap: board.cleared
                     ? null
                     : () => columns.callbacks.onTarget(target),

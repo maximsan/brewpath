@@ -4,6 +4,7 @@ import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,7 +28,10 @@ void main() {
   ) async {
     for (final guess in [_right, _missed]) {
       await pump(tester, guess);
-      expect(find.text(openingGuessLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().payoffOpeningGuess.toUpperCase()),
+        findsOneWidget,
+      );
     }
   });
 

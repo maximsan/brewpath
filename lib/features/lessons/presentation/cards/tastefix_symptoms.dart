@@ -1,13 +1,11 @@
 import 'package:brew_path/core/widgets/fade_up.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
-
-/// What the design's Balanced state says once the cup is fixed.
-const String tastefixBalancedLabel = 'Balanced';
 
 /// How much of the chip's own colour fills it — `var(--berry) 13%`.
 const double _symptomFill = 0.13;
@@ -37,17 +35,18 @@ class TastefixSymptoms extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final balancedLabel = context.strings.tastefixBalanced;
 
     if (reaction.isBalanced) {
       return Semantics(
-        label: 'Result: $tastefixBalancedLabel',
+        label: context.strings.tastefixResultSemantics(balancedLabel),
         // Announced, not merely relabelled: the cup changing is the feedback,
         // and a reader whose focus sits on the choices would otherwise miss it.
         liveRegion: true,
         excludeSemantics: true,
         child: FadeUp(
           child: _Chip(
-            text: tastefixBalancedLabel,
+            text: balancedLabel,
             tint: mood.sage,
             fill: _balancedFill,
           ),
@@ -56,7 +55,7 @@ class TastefixSymptoms extends StatelessWidget {
     }
 
     return Semantics(
-      label: 'Tastes: ${tags.join(', ')}',
+      label: context.strings.tastefixTastesSemantics(tags.join(', ')),
       liveRegion: reaction.isWorsened,
       excludeSemantics: true,
       child: Wrap(

@@ -1,16 +1,12 @@
 /// The rules a calibrate card is judged by, with no widget attached.
 ///
-/// A calibrate round is one value on a fixed track, a target somewhere along
-/// it, and a tolerance either side. The learner drags, commits, and the card
-/// pays its one success signal only if the committed value landed inside the
-/// band — a single all-or-nothing verdict, never a distance score, because a
-/// fraction here would have to mean something to mastery and mastery counts
-/// whole cards. See `card_boundary.dart`.
-///
-/// The arithmetic lives here so "is 62 inside 55 ± 14", "which band does 88
-/// read as" and "where does the band sit on the track" are answerable without
-/// pumping a widget (#124).
+/// One value on a fixed track, a target, and a tolerance either side. The
+/// verdict is all-or-nothing rather than a distance, because mastery counts
+/// whole cards (`card_boundary.dart`); the arithmetic lives here so it can be
+/// checked without pumping a widget (#124).
 library;
+
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 
 /// The low end of the track. Every authored target and tolerance is on this
 /// scale, so nothing rescales between the bank and the dial.
@@ -28,34 +24,31 @@ const double sliderTrackSpan = sliderTrackMax - sliderTrackMin;
 
 /// The words a round reads its track back in.
 ///
-/// Almost always the round's own `scale` — five authored descriptions, from
-/// "Powder — chokes the machine" to "Breadcrumbs — French press". Every one of
-/// the 19 shipped slider rounds carries one.
-///
-/// A round that carries none falls back to a scale built from its end labels,
-/// as the design source does, rather than to the raw number. That fallback is
-/// unreachable against today's banks and is still worth having: the point of
-/// the bands is that a position on a track "always reads as something concrete
-/// instead of a bare number", and a round authored without a scale is exactly
-/// where that would quietly stop being true.
+/// Almost always the round's own `scale`, which every shipped round carries.
+/// One that carries none falls back to a scale built from its end labels, as
+/// the design source does, so a position on the track always reads as
+/// something concrete rather than a bare number.
 List<String> sliderBands({
+  required AppLocalizations strings,
   required List<String> scale,
   required String leftLabel,
   required String rightLabel,
 }) => scale.isNotEmpty
     ? scale
-    : ['Very $leftLabel', leftLabel, 'Middle', rightLabel, 'Very $rightLabel'];
+    : [
+        strings.sliderVeryLeft(leftLabel),
+        leftLabel,
+        strings.sliderMiddle,
+        rightLabel,
+        strings.sliderVeryLeft(rightLabel),
+      ];
 
 /// Which of [bandCount] descriptive bands [value] reads as.
 ///
-/// The bands divide the track evenly and are what the learner actually reads —
-/// "Sea salt — pour-over" rather than 71. The top of the track belongs to the
-/// last band rather than to a band past the end of the list, which is the whole
-/// of the clamp below and the reason it is not left to the division alone.
-///
-/// Asking for a band out of no bands is a programming error rather than a
-/// value to fall back on — [sliderBands] is what guarantees there are always
-/// some, so a caller that reached here empty skipped it.
+/// The bands divide the track evenly. The top of the track belongs to the last
+/// band rather than to one past the end of the list, which is what the clamp
+/// below is for; asking for a band out of none is a programming error, since
+/// [sliderBands] guarantees there are always some.
 int sliderBandIndex({required double value, required int bandCount}) {
   assert(bandCount > 0, 'a track with no bands has nothing to read back');
   final width = sliderTrackSpan / bandCount;
@@ -76,11 +69,9 @@ bool sliderWithinTarget({
 
 /// Whether this round is about grind size, and so draws the grinder's collar.
 ///
-/// Read off the round's own end labels, which is the test the design source
-/// makes: `FINER`/`COARSER` is the vocabulary of exactly one axis, and it is
-/// the one axis a real grinder has a numbered part for. The alternative — a
-/// field on the card saying "draw the dial" — would put a rendering decision
-/// in the content bank, which the extractor would then have to author.
+/// Read off the round's own end labels, as the design source does:
+/// `FINER`/`COARSER` is the vocabulary of one axis, and a field on the card
+/// saying "draw the dial" would put a rendering decision in the bank.
 bool sliderIsGrind({required String leftLabel, required String rightLabel}) =>
     leftLabel == 'FINER' && rightLabel == 'COARSER';
 

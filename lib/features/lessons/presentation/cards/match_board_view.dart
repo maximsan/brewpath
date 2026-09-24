@@ -10,28 +10,12 @@ import 'package:brew_path/features/lessons/presentation/cards/match_columns.dart
 import 'package:brew_path/features/lessons/presentation/cards/match_line.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_lines_painter.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_standing.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// The two lines that explain either outcome — the design's own wording, which
-/// says what the all-first-time rule is rather than only that it was missed.
-/// The verdict itself is `matchBoardVerdict`, beside the board's other rules.
-const String _clearedClean =
-    'Every pair first time. That is the one that '
-    'counts.';
-const String _clearedNotClean =
-    'Cleared it, but not first time — the board only scores when every pair '
-    'lands on the first try.';
-
-/// What a bad drop says to a screen reader.
-///
-/// The design marks a miss in berry and shakes it, which is nothing at all to
-/// a learner who cannot see it — so the board keeps an announcement the sighted
-/// board does not draw.
-const String missAnnouncement = 'Not that one — try it somewhere else.';
 
 /// A board of traits and the answers they sort into.
 ///
@@ -196,14 +180,16 @@ class _MatchBoardViewState extends State<MatchBoardView>
         if (_miss != null)
           Semantics(
             liveRegion: true,
-            label: missAnnouncement,
+            label: context.strings.matchWrongDrop,
             child: const SizedBox.shrink(),
           ),
         if (_cleared) ...[
           AnswerFeedback(
-            verdict: matchBoardVerdict(_wrongDrops),
+            verdict: matchBoardVerdict(context.strings, _wrongDrops),
             outcome: _faulted ? Verdict.wrong : Verdict.right,
-            explanation: _faulted ? _clearedNotClean : _clearedClean,
+            explanation: _faulted
+                ? context.strings.matchClearedNotClean
+                : context.strings.matchClearedClean,
           ),
         ],
       ],

@@ -2,18 +2,11 @@ import 'package:brew_path/features/lessons/presentation/cards/graded_picker.dart
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction_box.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
-
-/// What the panel calls itself before a fix, and after one that worked.
-const String _startingPoint = 'STARTING POINT';
-const String _fixed = 'FIXED';
-
-/// The eyebrow over the chips, which names what the row is showing.
-const String _tastes = 'TASTES';
-const String _result = 'RESULT';
 
 /// How much of its tint the panel washes over the surface — the design's
 /// `var(--berry) 8%` unfixed, and `var(--sage) 14%` once balanced.
@@ -121,7 +114,11 @@ class TastefixPanel extends StatelessWidget {
                     : Color.lerp(mood.inkMute, mood.berry, _stateLabelBerry),
                 tracking: AppTracking.hint,
               ),
-              child: Text(balanced ? _fixed : _startingPoint),
+              child: Text(
+                balanced
+                    ? context.strings.tastefixFixed
+                    : context.strings.tastefixStartingPoint,
+              ),
             ),
             SizedBox(height: OffTokens.tastefixPanelGap.value),
             Text(scenario, style: AppText.support(color: mood.ink)),
@@ -129,7 +126,9 @@ class TastefixPanel extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  balanced ? _result : _tastes,
+                  balanced
+                      ? context.strings.tastefixResult
+                      : context.strings.tastefixTastes,
                   style: AppText.label(
                     mood: mood,
                     face: AppFace.mono,

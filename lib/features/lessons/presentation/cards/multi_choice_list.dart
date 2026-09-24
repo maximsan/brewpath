@@ -4,6 +4,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_box.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_scoring.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -151,7 +152,7 @@ class _MultiOptionRow extends StatelessWidget {
       semanticsLabel: [
         text,
         if (picked) 'selected',
-        mark.semantics,
+        mark.semantics(context.strings),
       ].nonNulls.join(', '),
       child: Row(
         children: [

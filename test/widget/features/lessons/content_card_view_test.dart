@@ -780,7 +780,10 @@ void main() {
       await _tapText(tester, 'Grind finer');
       await tester.pumpAndSettle();
 
-      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().tastefixBalanced.toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text('SOUR'), findsNothing);
       expect(find.text('FIXED'), findsOneWidget);
     });
@@ -795,7 +798,10 @@ void main() {
 
       // The second tap is refused, so the cup stays worsened rather than
       // settling to Balanced behind a latch that never moved.
-      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().tastefixBalanced.toUpperCase()),
+        findsNothing,
+      );
       expect(find.text('SOUR'), findsOneWidget);
     });
   });
@@ -926,7 +932,10 @@ void main() {
       await _tapText(tester, 'The seed of a cherry');
 
       expect(find.byType(RecallPayoff), findsOneWidget);
-      expect(find.text(openingGuessLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().payoffOpeningGuess.toUpperCase()),
+        findsOneWidget,
+      );
     });
 
     testWidgets('recall says nothing about a guess that was never made', (

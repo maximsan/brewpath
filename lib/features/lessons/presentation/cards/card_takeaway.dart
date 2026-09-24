@@ -1,3 +1,4 @@
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -5,16 +6,10 @@ import 'package:flutter/material.dart';
 
 /// The closing line a card sets off from its body — a rule, a takeaway, a note.
 ///
-/// One treatment for every card that has one: a hairline, a mono kicker, then
-/// the line itself in the display face at heading size in full ink. Only
-/// [label] changes between callers.
-///
-/// It is deliberately **not** grey body copy. The line sits directly under a
-/// card's body, and set in the same size and colour it reads as one more
-/// paragraph of that body rather than a different class of thing.
-///
-/// Read as a single node so a screen reader delivers the kicker and the line
-/// together, rather than a bare label followed by an unattached sentence.
+/// A hairline, a mono kicker, then the line in the display face at heading
+/// size in full ink; only [label] changes between callers. Deliberately not
+/// grey body copy, which would read as one more paragraph. Read as a single
+/// node so the kicker and the line are delivered together.
 class CardTakeaway extends StatelessWidget {
   /// Creates a [CardTakeaway].
   const CardTakeaway({required this.label, required this.text, super.key});
@@ -31,7 +26,7 @@ class CardTakeaway extends StatelessWidget {
     final mood = context.mood;
 
     return Semantics(
-      label: '$label. $text',
+      label: context.strings.takeawaySemantics(label, text),
       excludeSemantics: true,
       child: Container(
         padding: const EdgeInsets.only(top: AppSpacing.md),

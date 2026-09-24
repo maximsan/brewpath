@@ -212,4 +212,144 @@ class AppLocalizationsEn extends AppLocalizations {
   String predictYourGuess(String option) {
     return 'Your guess · $option';
   }
+
+  @override
+  String get optionChosen => 'chosen';
+
+  @override
+  String get optionCorrectAnswer => 'correct answer';
+
+  @override
+  String get optionYourAnswerIncorrect => 'your answer, incorrect';
+
+  @override
+  String get optionMissedAnswer => 'missed — this was an answer';
+
+  @override
+  String fillOptionChosen(String option) {
+    return '$option, chosen';
+  }
+
+  @override
+  String fillOptionAnswer(String option) {
+    return '$option, the answer';
+  }
+
+  @override
+  String fillOptionNotAnswer(String option) {
+    return '$option, not the answer';
+  }
+
+  @override
+  String takeawaySemantics(String label, String text) {
+    return '$label. $text';
+  }
+
+  @override
+  String get matchCleanBoard => 'Clean board';
+
+  @override
+  String matchWrongDrops(int wrongDrops) {
+    String _temp0 = intl.Intl.pluralLogic(
+      wrongDrops,
+      locale: localeName,
+      other: '$wrongDrops wrong drops',
+      one: '1 wrong drop',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get matchClearedClean =>
+      'Every pair first time. That is the one that counts.';
+
+  @override
+  String get matchClearedNotClean =>
+      'Cleared it, but not first time — the board only scores when every pair lands on the first try.';
+
+  @override
+  String get matchWrongDrop => 'Not that one — try it somewhere else.';
+
+  @override
+  String matchPairedWith(String left, String right) {
+    return '$left, paired with $right';
+  }
+
+  @override
+  String matchPlaceUnder(String target) {
+    return 'Place under $target';
+  }
+
+  @override
+  String get visualSaveCaptionSaved => 'Saved — review anytime in Saved';
+
+  @override
+  String get tastefixStartingPoint => 'STARTING POINT';
+
+  @override
+  String get tastefixFixed => 'FIXED';
+
+  @override
+  String get tastefixTastes => 'TASTES';
+
+  @override
+  String get tastefixResult => 'RESULT';
+
+  @override
+  String get tastefixBalanced => 'Balanced';
+
+  @override
+  String tastefixResultSemantics(String result) {
+    return 'Result: $result';
+  }
+
+  @override
+  String tastefixTastesSemantics(String tags) {
+    return 'Tastes: $tags';
+  }
+
+  @override
+  String sliderVeryLeft(String label) {
+    return 'Very $label';
+  }
+
+  @override
+  String get sliderMiddle => 'Middle';
+
+  @override
+  String get optionCorrect => 'correct';
+
+  @override
+  String get optionIncorrect => 'incorrect';
+
+  @override
+  String get payoffOpeningGuess => 'Your opening guess';
+
+  @override
+  String get payoffOpener => 'Before the lesson you guessed';
+
+  @override
+  String get payoffAndRight => '— and you were right.';
+
+  @override
+  String get payoffButActually => '. It\'s';
+
+  @override
+  String get payoffNowYouKnow => '— now you know why.';
+
+  @override
+  String payoffSpokenRight(String opener, String pick, String andRight) {
+    return '$opener $pick $andRight';
+  }
+
+  @override
+  String payoffSpokenWrong(
+    String opener,
+    String pick,
+    String butActually,
+    String answer,
+    String nowYouKnow,
+  ) {
+    return '$opener $pick$butActually $answer $nowYouKnow';
+  }
 }

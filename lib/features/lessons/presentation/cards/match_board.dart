@@ -1,13 +1,12 @@
 /// The rules a match board is judged by, with no widget attached.
 ///
-/// A board is a set of facts and the few answers they sort into. It clears
-/// when every fact is placed, but it only *pays* when it clears without a
-/// wrong drop — the card's single success signal is all-or-nothing, so a
-/// board finished the hard way scores zero while still letting the learner
-/// move on. Keeping that here means the rule is unit-testable and the widget
-/// holds none of it (#122).
+/// A board clears when every fact is placed, but pays only when it clears
+/// with no wrong drop — all-or-nothing, so a board finished the hard way
+/// scores zero and still lets the learner move on. Kept here so the rule is
+/// unit-testable and the widget holds none of it (#122).
 library;
 
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 
 /// The distinct answers the facts sort into, in first-appearance order.
@@ -40,8 +39,7 @@ bool matchBoardPaysSignal({required bool cleared, required bool faulted}) =>
 /// The design names the cost rather than only the miss — `2 WRONG DROPS` — so
 /// the count has to reach the wording, and the singular has to be right at one.
 /// Here rather than in the widget so it can be checked without pumping a board.
-String matchBoardVerdict(int wrongDrops) => switch (wrongDrops) {
-  0 => 'Clean board',
-  1 => '1 wrong drop',
-  _ => '$wrongDrops wrong drops',
-};
+String matchBoardVerdict(AppLocalizations strings, int wrongDrops) =>
+    wrongDrops == 0
+    ? strings.matchCleanBoard
+    : strings.matchWrongDrops(wrongDrops);

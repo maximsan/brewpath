@@ -447,6 +447,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your guess · {option}'**
   String predictYourGuess(String option);
+
+  /// Spoken suffix on the option a learner picked.
+  ///
+  /// In en, this message translates to:
+  /// **'chosen'**
+  String get optionChosen;
+
+  /// Spoken suffix on the option that was right.
+  ///
+  /// In en, this message translates to:
+  /// **'correct answer'**
+  String get optionCorrectAnswer;
+
+  /// Spoken suffix on a wrong option the learner picked.
+  ///
+  /// In en, this message translates to:
+  /// **'your answer, incorrect'**
+  String get optionYourAnswerIncorrect;
+
+  /// Spoken suffix on a right option the learner did not pick.
+  ///
+  /// In en, this message translates to:
+  /// **'missed — this was an answer'**
+  String get optionMissedAnswer;
+
+  /// What a screen reader is told about a word the learner put in a blank.
+  ///
+  /// In en, this message translates to:
+  /// **'{option}, chosen'**
+  String fillOptionChosen(String option);
+
+  /// What a screen reader is told about the word that belonged in a blank.
+  ///
+  /// In en, this message translates to:
+  /// **'{option}, the answer'**
+  String fillOptionAnswer(String option);
+
+  /// What a screen reader is told about a word that did not belong in a blank.
+  ///
+  /// In en, this message translates to:
+  /// **'{option}, not the answer'**
+  String fillOptionNotAnswer(String option);
+
+  /// What a screen reader is told about a card's closing note.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}. {text}'**
+  String takeawaySemantics(String label, String text);
+
+  /// Verdict when every pair landed on the first try.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean board'**
+  String get matchCleanBoard;
+
+  /// Verdict counting the misplaced drops on a match board.
+  ///
+  /// In en, this message translates to:
+  /// **'{wrongDrops, plural, =1{1 wrong drop} other{{wrongDrops} wrong drops}}'**
+  String matchWrongDrops(int wrongDrops);
+
+  /// Explanation under a clean match board.
+  ///
+  /// In en, this message translates to:
+  /// **'Every pair first time. That is the one that counts.'**
+  String get matchClearedClean;
+
+  /// Explanation under a match board cleared with misses.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared it, but not first time — the board only scores when every pair lands on the first try.'**
+  String get matchClearedNotClean;
+
+  /// Announced when a dragged fact lands on the wrong target.
+  ///
+  /// In en, this message translates to:
+  /// **'Not that one — try it somewhere else.'**
+  String get matchWrongDrop;
+
+  /// What a screen reader is told about a completed pair.
+  ///
+  /// In en, this message translates to:
+  /// **'{left}, paired with {right}'**
+  String matchPairedWith(String left, String right);
+
+  /// What a screen reader is told a drop target would do.
+  ///
+  /// In en, this message translates to:
+  /// **'Place under {target}'**
+  String matchPlaceUnder(String target);
+
+  /// Caption on the save control once a guide is bookmarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved — review anytime in Saved'**
+  String get visualSaveCaptionSaved;
+
+  /// Kicker over the cup as it was brewed. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'STARTING POINT'**
+  String get tastefixStartingPoint;
+
+  /// Kicker over the cup after the fix. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'FIXED'**
+  String get tastefixFixed;
+
+  /// Kicker over what the cup tastes of. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'TASTES'**
+  String get tastefixTastes;
+
+  /// Kicker over what the fix came to. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'RESULT'**
+  String get tastefixResult;
+
+  /// Name for a cup with nothing left to fix.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get tastefixBalanced;
+
+  /// What a screen reader is told the fix came to.
+  ///
+  /// In en, this message translates to:
+  /// **'Result: {result}'**
+  String tastefixResultSemantics(String result);
+
+  /// What a screen reader is told the cup tastes of.
+  ///
+  /// In en, this message translates to:
+  /// **'Tastes: {tags}'**
+  String tastefixTastesSemantics(String tags);
+
+  /// End label on a calibrate track, naming its far end.
+  ///
+  /// In en, this message translates to:
+  /// **'Very {label}'**
+  String sliderVeryLeft(String label);
+
+  /// Label for the centre of a calibrate track.
+  ///
+  /// In en, this message translates to:
+  /// **'Middle'**
+  String get sliderMiddle;
+
+  /// Spoken suffix on an option the learner picked that was an answer.
+  ///
+  /// In en, this message translates to:
+  /// **'correct'**
+  String get optionCorrect;
+
+  /// Spoken suffix on an option the learner picked that was not an answer.
+  ///
+  /// In en, this message translates to:
+  /// **'incorrect'**
+  String get optionIncorrect;
+
+  /// Verdict line over the reply to the guess the lesson opened with.
+  ///
+  /// In en, this message translates to:
+  /// **'Your opening guess'**
+  String get payoffOpeningGuess;
+
+  /// Start of the payoff sentence, before the learner's guess.
+  ///
+  /// In en, this message translates to:
+  /// **'Before the lesson you guessed'**
+  String get payoffOpener;
+
+  /// End of the payoff sentence when the guess landed.
+  ///
+  /// In en, this message translates to:
+  /// **'— and you were right.'**
+  String get payoffAndRight;
+
+  /// Turn in the payoff sentence when the guess missed, before the real answer.
+  ///
+  /// In en, this message translates to:
+  /// **'. It\'s'**
+  String get payoffButActually;
+
+  /// End of the payoff sentence when the guess missed.
+  ///
+  /// In en, this message translates to:
+  /// **'— now you know why.'**
+  String get payoffNowYouKnow;
+
+  /// The payoff read as one sentence for a screen reader, when the guess landed.
+  ///
+  /// In en, this message translates to:
+  /// **'{opener} {pick} {andRight}'**
+  String payoffSpokenRight(String opener, String pick, String andRight);
+
+  /// The payoff read as one sentence for a screen reader, when the guess missed.
+  ///
+  /// In en, this message translates to:
+  /// **'{opener} {pick}{butActually} {answer} {nowYouKnow}'**
+  String payoffSpokenWrong(
+    String opener,
+    String pick,
+    String butActually,
+    String answer,
+    String nowYouKnow,
+  );
 }
 
 class _AppLocalizationsDelegate

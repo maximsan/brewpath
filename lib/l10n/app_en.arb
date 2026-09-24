@@ -351,5 +351,259 @@
         "type": "String"
       }
     }
+  },
+
+  "optionChosen": "chosen",
+  "@optionChosen": {
+    "description": "Spoken suffix on the option a learner picked."
+  },
+
+  "optionCorrectAnswer": "correct answer",
+  "@optionCorrectAnswer": {
+    "description": "Spoken suffix on the option that was right."
+  },
+
+  "optionYourAnswerIncorrect": "your answer, incorrect",
+  "@optionYourAnswerIncorrect": {
+    "description": "Spoken suffix on a wrong option the learner picked."
+  },
+
+  "optionMissedAnswer": "missed — this was an answer",
+  "@optionMissedAnswer": {
+    "description": "Spoken suffix on a right option the learner did not pick."
+  },
+
+  "fillOptionChosen": "{option}, chosen",
+  "@fillOptionChosen": {
+    "description": "What a screen reader is told about a word the learner put in a blank.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "fillOptionAnswer": "{option}, the answer",
+  "@fillOptionAnswer": {
+    "description": "What a screen reader is told about the word that belonged in a blank.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "fillOptionNotAnswer": "{option}, not the answer",
+  "@fillOptionNotAnswer": {
+    "description": "What a screen reader is told about a word that did not belong in a blank.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "takeawaySemantics": "{label}. {text}",
+  "@takeawaySemantics": {
+    "description": "What a screen reader is told about a card's closing note.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+
+  "matchCleanBoard": "Clean board",
+  "@matchCleanBoard": {
+    "description": "Verdict when every pair landed on the first try."
+  },
+
+  "matchWrongDrops": "{wrongDrops, plural, =1{1 wrong drop} other{{wrongDrops} wrong drops}}",
+  "@matchWrongDrops": {
+    "description": "Verdict counting the misplaced drops on a match board.",
+    "placeholders": {
+      "wrongDrops": {
+        "type": "int"
+      }
+    }
+  },
+
+  "matchClearedClean": "Every pair first time. That is the one that counts.",
+  "@matchClearedClean": {
+    "description": "Explanation under a clean match board."
+  },
+
+  "matchClearedNotClean": "Cleared it, but not first time — the board only scores when every pair lands on the first try.",
+  "@matchClearedNotClean": {
+    "description": "Explanation under a match board cleared with misses."
+  },
+
+  "matchWrongDrop": "Not that one — try it somewhere else.",
+  "@matchWrongDrop": {
+    "description": "Announced when a dragged fact lands on the wrong target."
+  },
+
+  "matchPairedWith": "{left}, paired with {right}",
+  "@matchPairedWith": {
+    "description": "What a screen reader is told about a completed pair.",
+    "placeholders": {
+      "left": {
+        "type": "String"
+      },
+      "right": {
+        "type": "String"
+      }
+    }
+  },
+
+  "matchPlaceUnder": "Place under {target}",
+  "@matchPlaceUnder": {
+    "description": "What a screen reader is told a drop target would do.",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+
+  "visualSaveCaptionSaved": "Saved — review anytime in Saved",
+  "@visualSaveCaptionSaved": {
+    "description": "Caption on the save control once a guide is bookmarked."
+  },
+
+  "tastefixStartingPoint": "STARTING POINT",
+  "@tastefixStartingPoint": {
+    "description": "Kicker over the cup as it was brewed. Set upper case by the design."
+  },
+
+  "tastefixFixed": "FIXED",
+  "@tastefixFixed": {
+    "description": "Kicker over the cup after the fix. Set upper case by the design."
+  },
+
+  "tastefixTastes": "TASTES",
+  "@tastefixTastes": {
+    "description": "Kicker over what the cup tastes of. Set upper case by the design."
+  },
+
+  "tastefixResult": "RESULT",
+  "@tastefixResult": {
+    "description": "Kicker over what the fix came to. Set upper case by the design."
+  },
+
+  "tastefixBalanced": "Balanced",
+  "@tastefixBalanced": {
+    "description": "Name for a cup with nothing left to fix."
+  },
+
+  "tastefixResultSemantics": "Result: {result}",
+  "@tastefixResultSemantics": {
+    "description": "What a screen reader is told the fix came to.",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      }
+    }
+  },
+
+  "tastefixTastesSemantics": "Tastes: {tags}",
+  "@tastefixTastesSemantics": {
+    "description": "What a screen reader is told the cup tastes of.",
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+
+  "sliderVeryLeft": "Very {label}",
+  "@sliderVeryLeft": {
+    "description": "End label on a calibrate track, naming its far end.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "sliderMiddle": "Middle",
+  "@sliderMiddle": {
+    "description": "Label for the centre of a calibrate track."
+  },
+
+  "optionCorrect": "correct",
+  "@optionCorrect": {
+    "description": "Spoken suffix on an option the learner picked that was an answer."
+  },
+
+  "optionIncorrect": "incorrect",
+  "@optionIncorrect": {
+    "description": "Spoken suffix on an option the learner picked that was not an answer."
+  },
+
+  "payoffOpeningGuess": "Your opening guess",
+  "@payoffOpeningGuess": {
+    "description": "Verdict line over the reply to the guess the lesson opened with."
+  },
+
+  "payoffOpener": "Before the lesson you guessed",
+  "@payoffOpener": {
+    "description": "Start of the payoff sentence, before the learner's guess."
+  },
+
+  "payoffAndRight": "— and you were right.",
+  "@payoffAndRight": {
+    "description": "End of the payoff sentence when the guess landed."
+  },
+
+  "payoffButActually": ". It's",
+  "@payoffButActually": {
+    "description": "Turn in the payoff sentence when the guess missed, before the real answer."
+  },
+
+  "payoffNowYouKnow": "— now you know why.",
+  "@payoffNowYouKnow": {
+    "description": "End of the payoff sentence when the guess missed."
+  },
+
+  "payoffSpokenRight": "{opener} {pick} {andRight}",
+  "@payoffSpokenRight": {
+    "description": "The payoff read as one sentence for a screen reader, when the guess landed.",
+    "placeholders": {
+      "opener": {
+        "type": "String"
+      },
+      "pick": {
+        "type": "String"
+      },
+      "andRight": {
+        "type": "String"
+      }
+    }
+  },
+
+  "payoffSpokenWrong": "{opener} {pick}{butActually} {answer} {nowYouKnow}",
+  "@payoffSpokenWrong": {
+    "description": "The payoff read as one sentence for a screen reader, when the guess missed.",
+    "placeholders": {
+      "opener": {
+        "type": "String"
+      },
+      "pick": {
+        "type": "String"
+      },
+      "butActually": {
+        "type": "String"
+      },
+      "answer": {
+        "type": "String"
+      },
+      "nowYouKnow": {
+        "type": "String"
+      }
+    }
   }
 }

@@ -69,6 +69,7 @@ class _SliderCardViewState extends State<SliderCardView> {
 
   /// The words this round reads its track back in.
   List<String> get _bands => sliderBands(
+    strings: context.strings,
     scale: _card.scale,
     leftLabel: _card.leftLabel,
     rightLabel: _card.rightLabel,
