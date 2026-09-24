@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/progress/domain/tree_frames.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -35,8 +36,8 @@ class LessonCompletionTree extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       label: _grew
-          ? 'Your coffee tree grew to stage $toStage'
-          : 'Your coffee tree, stage $toStage',
+          ? context.strings.treeGrewToStage(toStage)
+          : context.strings.treeAtStage(toStage),
       excludeSemantics: true,
       child: GrowingTree(
         fromStage: fromStage,

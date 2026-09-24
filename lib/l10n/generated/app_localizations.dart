@@ -657,6 +657,246 @@ abstract class AppLocalizations {
     String answer,
     String nowYouKnow,
   );
+
+  /// What a screen reader is told about the learner's place in the lesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Card {index} of {total}'**
+  String lessonCardOfCount(int index, int total);
+
+  /// Announced while a lesson is still being read.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the lesson'**
+  String get lessonLoading;
+
+  /// Shown when the course no longer carries the lesson that was opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson not found'**
+  String get lessonNotFound;
+
+  /// Shown when a lesson carries nothing to play.
+  ///
+  /// In en, this message translates to:
+  /// **'This lesson has no cards.'**
+  String get lessonNoCards;
+
+  /// Kicker over the screen that closes a first run of a lesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson complete'**
+  String get completionEyebrowComplete;
+
+  /// Kicker over the screen that closes a replay, which pays nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'Review complete'**
+  String get completionEyebrowReview;
+
+  /// Headline closing a lesson answered without a miss.
+  ///
+  /// In en, this message translates to:
+  /// **'Perfect run!'**
+  String get completionBeatPerfect;
+
+  /// Headline closing a lesson answered well.
+  ///
+  /// In en, this message translates to:
+  /// **'Mastered it.'**
+  String get completionBeatMastered;
+
+  /// Headline closing a weak run. Congratulates rather than corrects.
+  ///
+  /// In en, this message translates to:
+  /// **'Good start.'**
+  String get completionBeatNeedsPractice;
+
+  /// Headline closing a run with no stored score.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice work.'**
+  String get completionBeatNeutral;
+
+  /// What a screen reader is told the run came to.
+  ///
+  /// In en, this message translates to:
+  /// **'Scored {correct} out of {total}'**
+  String completionScored(int correct, int total);
+
+  /// Label on the reward row for a streak freeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze earned'**
+  String get rewardFreezeLabel;
+
+  /// Line under the streak-freeze reward, saying what it covers.
+  ///
+  /// In en, this message translates to:
+  /// **'One missed day is covered.'**
+  String get rewardFreezeDetail;
+
+  /// Label on the reward row for a collectible card.
+  ///
+  /// In en, this message translates to:
+  /// **'New card'**
+  String get rewardCardLabel;
+
+  /// What a screen reader is told when the tree advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Your coffee tree grew to stage {stage}'**
+  String treeGrewToStage(int stage);
+
+  /// What a screen reader is told about the tree when it did not advance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your coffee tree, stage {stage}'**
+  String treeAtStage(int stage);
+
+  /// Button that opens the daily practice after the course is finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Keep Sharp'**
+  String get courseStartKeepSharp;
+
+  /// Headline on the screen that closes the whole course. Foundations is the course's name.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished Foundations'**
+  String get courseFinishedFoundations;
+
+  /// What a screen reader is told the finished course came to.
+  ///
+  /// In en, this message translates to:
+  /// **'What you did: {lessons} lessons completed, {rewards} Module Rewards earned, a longest streak of {streak} days.'**
+  String courseStatsSpoken(int lessons, int rewards, int streak);
+
+  /// Label on the finished-course figure counting lessons.
+  ///
+  /// In en, this message translates to:
+  /// **'Lessons completed'**
+  String get courseStatLessons;
+
+  /// Label on the finished-course figure counting module rewards.
+  ///
+  /// In en, this message translates to:
+  /// **'Module Rewards'**
+  String get courseStatRewards;
+
+  /// Label on the finished-course figure for the longest run of days.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest streak'**
+  String get courseStatStreak;
+
+  /// Line under a finished Keep Sharp card when the day has no phrase of its own.
+  ///
+  /// In en, this message translates to:
+  /// **'Done for today.'**
+  String get keepSharpDoneFallback;
+
+  /// Kicker over the daily practice card. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'KEEP SHARP'**
+  String get keepSharpKicker;
+
+  /// What a screen reader is told about a finished Keep Sharp card.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Sharp complete for today. {phrase}'**
+  String keepSharpCompleteSpoken(String phrase);
+
+  /// Button that begins the day's recommended practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get keepSharpStart;
+
+  /// What a screen reader is told the start button opens.
+  ///
+  /// In en, this message translates to:
+  /// **'Start: {title}'**
+  String keepSharpStartSpoken(String title);
+
+  /// What a screen reader is told when no practice can be recommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Sharp: no recommendation today. Practice anything below to keep your streak alive.'**
+  String get keepSharpNoneSpoken;
+
+  /// Line shown when no practice can be recommended today.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice anything below to keep your streak alive.'**
+  String get keepSharpNone;
+
+  /// Name of the mini-games practice on the Keep Sharp card.
+  ///
+  /// In en, this message translates to:
+  /// **'Mini-games'**
+  String get keepSharpMiniGamesTitle;
+
+  /// What finishing the mini-games practice takes.
+  ///
+  /// In en, this message translates to:
+  /// **'Play two different games today.'**
+  String get keepSharpMiniGamesRule;
+
+  /// Name of the vocab practice on the Keep Sharp card.
+  ///
+  /// In en, this message translates to:
+  /// **'Vocab game'**
+  String get keepSharpVocabTitle;
+
+  /// What finishing the vocab practice takes.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish one vocab round.'**
+  String get keepSharpVocabRule;
+
+  /// Name of the flashcard practice on the Keep Sharp card.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcards'**
+  String get keepSharpFlashcardsTitle;
+
+  /// What finishing the flashcard practice takes.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your saved terms.'**
+  String get keepSharpFlashcardsRule;
+
+  /// Name of the lesson-replay practice on the Keep Sharp card.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay a lesson'**
+  String get keepSharpReplayTitle;
+
+  /// What finishing the lesson-replay practice takes.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish a replay of any lesson you\'ve completed.'**
+  String get keepSharpReplayRule;
+
+  /// Eyebrow naming a lesson's place in its module and how long it runs. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'LESSON {number}/{total} · ~{minutes} MIN'**
+  String lessonPositionShort(int number, int total, int minutes);
+
+  /// What a screen reader is told about a lesson's place and length.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson {number} of {total}, about {minutes} minutes'**
+  String lessonPositionSpoken(int number, int total, int minutes);
+
+  /// Mark on a finished module that paid a streak freeze.
+  ///
+  /// In en, this message translates to:
+  /// **'Freeze earned · One missed day covered'**
+  String get moduleFreezeEarned;
 }
 
 class _AppLocalizationsDelegate

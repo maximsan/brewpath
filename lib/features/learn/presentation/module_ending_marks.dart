@@ -1,4 +1,5 @@
 import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -10,15 +11,13 @@ class FreezeEarnedLine extends StatelessWidget {
   /// Creates a [FreezeEarnedLine].
   const FreezeEarnedLine({super.key});
 
-  /// The whole line, written as one sentence because it is drawn as one.
-  static const String label = 'Freeze earned · One missed day covered';
-
   /// The design's `FreezeMark size={14}` here.
   static const double markSize = 14;
 
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final label = context.strings.moduleFreezeEarned;
 
     return Semantics(
       label: label,

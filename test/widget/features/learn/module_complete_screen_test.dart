@@ -13,6 +13,7 @@ import 'package:brew_path/features/learn/presentation/module_ending_marks.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -349,7 +350,7 @@ void main() {
       );
 
       expect(
-        find.text(FreezeEarnedLine.label.toUpperCase()),
+        find.text(AppLocalizationsEn().moduleFreezeEarned.toUpperCase()),
         findsOneWidget,
       );
     });

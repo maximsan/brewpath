@@ -352,4 +352,145 @@ class AppLocalizationsEn extends AppLocalizations {
   ) {
     return '$opener $pick$butActually $answer $nowYouKnow';
   }
+
+  @override
+  String lessonCardOfCount(int index, int total) {
+    return 'Card $index of $total';
+  }
+
+  @override
+  String get lessonLoading => 'Loading the lesson';
+
+  @override
+  String get lessonNotFound => 'Lesson not found';
+
+  @override
+  String get lessonNoCards => 'This lesson has no cards.';
+
+  @override
+  String get completionEyebrowComplete => 'Lesson complete';
+
+  @override
+  String get completionEyebrowReview => 'Review complete';
+
+  @override
+  String get completionBeatPerfect => 'Perfect run!';
+
+  @override
+  String get completionBeatMastered => 'Mastered it.';
+
+  @override
+  String get completionBeatNeedsPractice => 'Good start.';
+
+  @override
+  String get completionBeatNeutral => 'Nice work.';
+
+  @override
+  String completionScored(int correct, int total) {
+    return 'Scored $correct out of $total';
+  }
+
+  @override
+  String get rewardFreezeLabel => 'Freeze earned';
+
+  @override
+  String get rewardFreezeDetail => 'One missed day is covered.';
+
+  @override
+  String get rewardCardLabel => 'New card';
+
+  @override
+  String treeGrewToStage(int stage) {
+    return 'Your coffee tree grew to stage $stage';
+  }
+
+  @override
+  String treeAtStage(int stage) {
+    return 'Your coffee tree, stage $stage';
+  }
+
+  @override
+  String get courseStartKeepSharp => 'Start Keep Sharp';
+
+  @override
+  String get courseFinishedFoundations => 'You finished Foundations';
+
+  @override
+  String courseStatsSpoken(int lessons, int rewards, int streak) {
+    return 'What you did: $lessons lessons completed, $rewards Module Rewards earned, a longest streak of $streak days.';
+  }
+
+  @override
+  String get courseStatLessons => 'Lessons completed';
+
+  @override
+  String get courseStatRewards => 'Module Rewards';
+
+  @override
+  String get courseStatStreak => 'Longest streak';
+
+  @override
+  String get keepSharpDoneFallback => 'Done for today.';
+
+  @override
+  String get keepSharpKicker => 'KEEP SHARP';
+
+  @override
+  String keepSharpCompleteSpoken(String phrase) {
+    return 'Keep Sharp complete for today. $phrase';
+  }
+
+  @override
+  String get keepSharpStart => 'Start';
+
+  @override
+  String keepSharpStartSpoken(String title) {
+    return 'Start: $title';
+  }
+
+  @override
+  String get keepSharpNoneSpoken =>
+      'Keep Sharp: no recommendation today. Practice anything below to keep your streak alive.';
+
+  @override
+  String get keepSharpNone =>
+      'Practice anything below to keep your streak alive.';
+
+  @override
+  String get keepSharpMiniGamesTitle => 'Mini-games';
+
+  @override
+  String get keepSharpMiniGamesRule => 'Play two different games today.';
+
+  @override
+  String get keepSharpVocabTitle => 'Vocab game';
+
+  @override
+  String get keepSharpVocabRule => 'Finish one vocab round.';
+
+  @override
+  String get keepSharpFlashcardsTitle => 'Flashcards';
+
+  @override
+  String get keepSharpFlashcardsRule => 'Review your saved terms.';
+
+  @override
+  String get keepSharpReplayTitle => 'Replay a lesson';
+
+  @override
+  String get keepSharpReplayRule =>
+      'Finish a replay of any lesson you\'ve completed.';
+
+  @override
+  String lessonPositionShort(int number, int total, int minutes) {
+    return 'LESSON $number/$total · ~$minutes MIN';
+  }
+
+  @override
+  String lessonPositionSpoken(int number, int total, int minutes) {
+    return 'Lesson $number of $total, about $minutes minutes';
+  }
+
+  @override
+  String get moduleFreezeEarned => 'Freeze earned · One missed day covered';
 }

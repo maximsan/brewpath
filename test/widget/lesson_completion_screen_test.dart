@@ -10,7 +10,6 @@ import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_completion_service.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.dart';
-import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_screen.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.dart';
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
@@ -20,6 +19,7 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -320,7 +320,10 @@ void main() {
 
       await pumpCompletion(tester, container);
 
-      expect(find.text(completeEyebrow.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().completionEyebrowComplete.toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text(_titleOfFirst), findsOneWidget);
       // The headline the lesson's name replaced.
       expect(find.text('Lesson complete!'), findsNothing);
@@ -406,10 +409,13 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(
-        find.text(RewardBeats.freezeLabel),
+        find.text(AppLocalizationsEn().rewardFreezeLabel),
         findsOneWidget,
       );
-      expect(find.text(RewardBeats.freezeDetail), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().rewardFreezeDetail),
+        findsOneWidget,
+      );
     });
 
     testWidgets('an ordinary day does not', (tester) async {
@@ -422,7 +428,7 @@ void main() {
       await pumpCompletion(tester, container);
 
       expect(
-        find.text(RewardBeats.freezeLabel),
+        find.text(AppLocalizationsEn().rewardFreezeLabel),
         findsNothing,
       );
     });
@@ -542,8 +548,12 @@ void main() {
       await qualifyDaysBefore(tester, freezeEarnDays - 1);
       await pumpCompletion(tester, container);
 
-      final freeze = tester.getRect(find.text(RewardBeats.freezeLabel)).top;
-      final card = tester.getRect(find.text(RewardBeats.cardLabel)).top;
+      final freeze = tester
+          .getRect(find.text(AppLocalizationsEn().rewardFreezeLabel))
+          .top;
+      final card = tester
+          .getRect(find.text(AppLocalizationsEn().rewardCardLabel))
+          .top;
       final offer = tester
           .getRect(find.text(ChallengeSuggestion.offerLabel))
           .top;
@@ -580,7 +590,7 @@ void main() {
       addTearDown(container.dispose);
 
       await pumpCompletion(tester, container);
-      await tester.tap(find.text(RewardBeats.cardLabel));
+      await tester.tap(find.text(AppLocalizationsEn().rewardCardLabel));
       await tester.pumpAndSettle();
       expect(find.byType(RewardCard), findsOneWidget);
 
@@ -588,7 +598,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(RewardCard), findsNothing);
-      expect(find.text(RewardBeats.cardLabel), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().rewardCardLabel), findsOneWidget);
     });
 
     testWidgets('exactly one face is built at a time', (tester) async {
@@ -602,12 +612,12 @@ void main() {
       // would put its controls in the reading order twice.
       expect(find.byTooltip(AppLabels.flipBack), findsNothing);
 
-      await tester.tap(find.text(RewardBeats.cardLabel));
+      await tester.tap(find.text(AppLocalizationsEn().rewardCardLabel));
       await tester.pumpAndSettle();
 
       expect(find.byType(RewardCard), findsOneWidget);
       expect(find.text(nextLessonLabel), findsNothing);
-      expect(find.text(RewardBeats.cardLabel), findsNothing);
+      expect(find.text(AppLocalizationsEn().rewardCardLabel), findsNothing);
     });
   });
 
@@ -620,11 +630,11 @@ void main() {
 
       await pumpCompletion(tester, container);
       expect(
-        find.text(RewardBeats.cardLabel),
+        find.text(AppLocalizationsEn().rewardCardLabel),
         findsOneWidget,
       );
 
-      final row = find.text(RewardBeats.cardLabel);
+      final row = find.text(AppLocalizationsEn().rewardCardLabel);
       await tester.ensureVisible(row);
       await tester.pumpAndSettle();
       await tester.tap(row);
@@ -648,7 +658,7 @@ void main() {
       final freeze = tester.getSemantics(
         find
             .ancestor(
-              of: find.text(RewardBeats.freezeLabel),
+              of: find.text(AppLocalizationsEn().rewardFreezeLabel),
               matching: find.byType(Semantics),
             )
             .first,
@@ -787,7 +797,10 @@ void main() {
 
     expect(find.byType(RoastyMoment), findsOneWidget);
     expect(find.byType(Companion), findsOneWidget);
-    expect(find.text(completionBeatTitle(MasteryBand.perfect)), findsOneWidget);
+    expect(
+      find.text(completionBeatTitle(AppLocalizationsEn(), MasteryBand.perfect)),
+      findsOneWidget,
+    );
     // The content is not built until the beat is over.
     expect(find.text(_titleOfFirst), findsNothing);
 
@@ -856,14 +869,17 @@ void main() {
       mastery: const MasteryResult(correct: 4, total: 5),
     );
 
-    expect(find.text(reviewEyebrow.toUpperCase()), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().completionEyebrowReview.toUpperCase()),
+      findsOneWidget,
+    );
     expect(find.text('4 / 5 correct'), findsOneWidget);
     // No payout line of any kind: the screen used to read '+2 PTS · Practice'
     // or 'Practice points already earned today'.
     expect(find.textContaining('PTS'), findsNothing);
     // A replay pays nothing, so the rail has no row to draw at all.
     expect(
-      find.text(RewardBeats.cardLabel),
+      find.text(AppLocalizationsEn().rewardCardLabel),
       findsNothing,
     );
   });

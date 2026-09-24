@@ -605,5 +605,274 @@
         "type": "String"
       }
     }
+  },
+
+  "lessonCardOfCount": "Card {index} of {total}",
+  "@lessonCardOfCount": {
+    "description": "What a screen reader is told about the learner's place in the lesson.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "lessonLoading": "Loading the lesson",
+  "@lessonLoading": {
+    "description": "Announced while a lesson is still being read."
+  },
+
+  "lessonNotFound": "Lesson not found",
+  "@lessonNotFound": {
+    "description": "Shown when the course no longer carries the lesson that was opened."
+  },
+
+  "lessonNoCards": "This lesson has no cards.",
+  "@lessonNoCards": {
+    "description": "Shown when a lesson carries nothing to play."
+  },
+
+  "completionEyebrowComplete": "Lesson complete",
+  "@completionEyebrowComplete": {
+    "description": "Kicker over the screen that closes a first run of a lesson."
+  },
+
+  "completionEyebrowReview": "Review complete",
+  "@completionEyebrowReview": {
+    "description": "Kicker over the screen that closes a replay, which pays nothing."
+  },
+
+  "completionBeatPerfect": "Perfect run!",
+  "@completionBeatPerfect": {
+    "description": "Headline closing a lesson answered without a miss."
+  },
+
+  "completionBeatMastered": "Mastered it.",
+  "@completionBeatMastered": {
+    "description": "Headline closing a lesson answered well."
+  },
+
+  "completionBeatNeedsPractice": "Good start.",
+  "@completionBeatNeedsPractice": {
+    "description": "Headline closing a weak run. Congratulates rather than corrects."
+  },
+
+  "completionBeatNeutral": "Nice work.",
+  "@completionBeatNeutral": {
+    "description": "Headline closing a run with no stored score."
+  },
+
+  "completionScored": "Scored {correct} out of {total}",
+  "@completionScored": {
+    "description": "What a screen reader is told the run came to.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardFreezeLabel": "Freeze earned",
+  "@rewardFreezeLabel": {
+    "description": "Label on the reward row for a streak freeze."
+  },
+
+  "rewardFreezeDetail": "One missed day is covered.",
+  "@rewardFreezeDetail": {
+    "description": "Line under the streak-freeze reward, saying what it covers."
+  },
+
+  "rewardCardLabel": "New card",
+  "@rewardCardLabel": {
+    "description": "Label on the reward row for a collectible card."
+  },
+
+  "treeGrewToStage": "Your coffee tree grew to stage {stage}",
+  "@treeGrewToStage": {
+    "description": "What a screen reader is told when the tree advanced.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+
+  "treeAtStage": "Your coffee tree, stage {stage}",
+  "@treeAtStage": {
+    "description": "What a screen reader is told about the tree when it did not advance.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+
+  "courseStartKeepSharp": "Start Keep Sharp",
+  "@courseStartKeepSharp": {
+    "description": "Button that opens the daily practice after the course is finished."
+  },
+
+  "courseFinishedFoundations": "You finished Foundations",
+  "@courseFinishedFoundations": {
+    "description": "Headline on the screen that closes the whole course. Foundations is the course's name."
+  },
+
+  "courseStatsSpoken": "What you did: {lessons} lessons completed, {rewards} Module Rewards earned, a longest streak of {streak} days.",
+  "@courseStatsSpoken": {
+    "description": "What a screen reader is told the finished course came to.",
+    "placeholders": {
+      "lessons": {
+        "type": "int"
+      },
+      "rewards": {
+        "type": "int"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+
+  "courseStatLessons": "Lessons completed",
+  "@courseStatLessons": {
+    "description": "Label on the finished-course figure counting lessons."
+  },
+
+  "courseStatRewards": "Module Rewards",
+  "@courseStatRewards": {
+    "description": "Label on the finished-course figure counting module rewards."
+  },
+
+  "courseStatStreak": "Longest streak",
+  "@courseStatStreak": {
+    "description": "Label on the finished-course figure for the longest run of days."
+  },
+
+  "keepSharpDoneFallback": "Done for today.",
+  "@keepSharpDoneFallback": {
+    "description": "Line under a finished Keep Sharp card when the day has no phrase of its own."
+  },
+
+  "keepSharpKicker": "KEEP SHARP",
+  "@keepSharpKicker": {
+    "description": "Kicker over the daily practice card. Set upper case by the design."
+  },
+
+  "keepSharpCompleteSpoken": "Keep Sharp complete for today. {phrase}",
+  "@keepSharpCompleteSpoken": {
+    "description": "What a screen reader is told about a finished Keep Sharp card.",
+    "placeholders": {
+      "phrase": {
+        "type": "String"
+      }
+    }
+  },
+
+  "keepSharpStart": "Start",
+  "@keepSharpStart": {
+    "description": "Button that begins the day's recommended practice."
+  },
+
+  "keepSharpStartSpoken": "Start: {title}",
+  "@keepSharpStartSpoken": {
+    "description": "What a screen reader is told the start button opens.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "keepSharpNoneSpoken": "Keep Sharp: no recommendation today. Practice anything below to keep your streak alive.",
+  "@keepSharpNoneSpoken": {
+    "description": "What a screen reader is told when no practice can be recommended."
+  },
+
+  "keepSharpNone": "Practice anything below to keep your streak alive.",
+  "@keepSharpNone": {
+    "description": "Line shown when no practice can be recommended today."
+  },
+
+  "keepSharpMiniGamesTitle": "Mini-games",
+  "@keepSharpMiniGamesTitle": {
+    "description": "Name of the mini-games practice on the Keep Sharp card."
+  },
+
+  "keepSharpMiniGamesRule": "Play two different games today.",
+  "@keepSharpMiniGamesRule": {
+    "description": "What finishing the mini-games practice takes."
+  },
+
+  "keepSharpVocabTitle": "Vocab game",
+  "@keepSharpVocabTitle": {
+    "description": "Name of the vocab practice on the Keep Sharp card."
+  },
+
+  "keepSharpVocabRule": "Finish one vocab round.",
+  "@keepSharpVocabRule": {
+    "description": "What finishing the vocab practice takes."
+  },
+
+  "keepSharpFlashcardsTitle": "Flashcards",
+  "@keepSharpFlashcardsTitle": {
+    "description": "Name of the flashcard practice on the Keep Sharp card."
+  },
+
+  "keepSharpFlashcardsRule": "Review your saved terms.",
+  "@keepSharpFlashcardsRule": {
+    "description": "What finishing the flashcard practice takes."
+  },
+
+  "keepSharpReplayTitle": "Replay a lesson",
+  "@keepSharpReplayTitle": {
+    "description": "Name of the lesson-replay practice on the Keep Sharp card."
+  },
+
+  "keepSharpReplayRule": "Finish a replay of any lesson you've completed.",
+  "@keepSharpReplayRule": {
+    "description": "What finishing the lesson-replay practice takes."
+  },
+
+  "lessonPositionShort": "LESSON {number}/{total} · ~{minutes} MIN",
+  "@lessonPositionShort": {
+    "description": "Eyebrow naming a lesson's place in its module and how long it runs. Set upper case by the design.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "lessonPositionSpoken": "Lesson {number} of {total}, about {minutes} minutes",
+  "@lessonPositionSpoken": {
+    "description": "What a screen reader is told about a lesson's place and length.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "moduleFreezeEarned": "Freeze earned · One missed day covered",
+  "@moduleFreezeEarned": {
+    "description": "Mark on a finished module that paid a streak freeze."
   }
 }

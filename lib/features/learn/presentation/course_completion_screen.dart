@@ -10,6 +10,7 @@ import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
 import 'package:brew_path/features/learn/domain/course_completion_providers.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -90,7 +91,7 @@ class _CourseCompletionScreenState
       body: SafeArea(
         bottom: false,
         child: StickyActionBar(
-          label: 'Start Keep Sharp',
+          label: context.strings.courseStartKeepSharp,
           onPressed: _handOffToKeepSharp,
           // Centres when the moment fits and scrolls when it does not, which
           // the bar owns — the design's `margin: auto 0` on this screen.
@@ -129,7 +130,7 @@ class _CourseCompletionScreenState
         Semantics(
           header: true,
           child: Text(
-            'You finished Foundations',
+            context.strings.courseFinishedFoundations,
             textAlign: TextAlign.center,
             style: AppText.display(mood: mood),
           ),
@@ -146,10 +147,11 @@ class _CourseCompletionScreenState
   /// *Day streak*, so each label says what its number actually is.
   Widget _statsSummary(MoodColors mood, _Stats stats) {
     return Semantics(
-      label:
-          'What you did: ${stats.lessons} lessons completed, '
-          '${stats.moduleRewards} Module Rewards earned, '
-          'a longest streak of ${stats.longestStreak} days.',
+      label: context.strings.courseStatsSpoken(
+        stats.lessons,
+        stats.moduleRewards,
+        stats.longestStreak,
+      ),
       child: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -158,17 +160,17 @@ class _CourseCompletionScreenState
           child: Column(
             children: [
               _StatRow(
-                label: 'Lessons completed',
+                label: context.strings.courseStatLessons,
                 value: '${stats.lessons}',
                 rule: mood.rule,
               ),
               _StatRow(
-                label: 'Module Rewards',
+                label: context.strings.courseStatRewards,
                 value: '${stats.moduleRewards}',
                 rule: mood.rule,
               ),
               _StatRow(
-                label: 'Longest streak',
+                label: context.strings.courseStatStreak,
                 value: '${stats.longestStreak}',
                 rule: null,
               ),
