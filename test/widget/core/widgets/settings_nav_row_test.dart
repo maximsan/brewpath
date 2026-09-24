@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/outward_mark.dart';
 import 'package:brew_path/core/widgets/settings_nav_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +19,7 @@ final Matcher _isLink = isSemantics(isLink: true);
 void main() {
   Future<void> pump(WidgetTester tester, Widget row) => tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(body: ListView(children: [row])),
     ),

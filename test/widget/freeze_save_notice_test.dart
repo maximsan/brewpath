@@ -3,6 +3,7 @@ import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/progress/domain/freeze_save_notice.dart';
 import 'package:brew_path/features/progress/presentation/freeze_save_notice_card.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,6 +38,7 @@ Future<void> pumpCard(WidgetTester tester) async {
     ProviderScope(
       overrides: [currentDayProvider.overrideWithValue(_today)],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: const Scaffold(body: FreezeSaveNoticeCard()),
       ),

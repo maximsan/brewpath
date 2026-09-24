@@ -19,4 +19,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nameSkip => 'Skip for now';
+
+  @override
+  String get replayConfirmConfirm => 'Review lesson';
+
+  @override
+  String get replayConfirmCancel => 'Not now';
+
+  @override
+  String replayConfirmTitle(String lessonTitle) {
+    return '$lessonTitle?';
+  }
+
+  @override
+  String get replayConfirmPointsLabel => 'Points';
+
+  @override
+  String get replayConfirmPointsValue => 'No change';
+
+  @override
+  String get replayConfirmStreakLabel => 'Streak';
+
+  @override
+  String get replayConfirmStreakCounts => 'Counts for today';
+
+  @override
+  String get replayConfirmStreakEarned => 'Already earned today';
+
+  @override
+  String get replayConfirmLengthLabel => 'Length';
+
+  @override
+  String get replayConfirmLastCompletedLabel => 'Last completed';
+
+  @override
+  String replayConfirmLength(int minutes, int cards) {
+    String _temp0 = intl.Intl.pluralLogic(
+      cards,
+      locale: localeName,
+      other: '$cards cards',
+      one: '$cards card',
+    );
+    return '~$minutes min · $_temp0';
+  }
+
+  @override
+  String replayConfirmDatedYear(String date, int year) {
+    return '$date, $year';
+  }
 }

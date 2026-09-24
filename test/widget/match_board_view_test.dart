@@ -3,6 +3,7 @@ import 'package:brew_path/features/lessons/presentation/cards/match_board.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_board_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_lines_painter.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_tile.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +37,7 @@ Widget _host(
   bool reducedMotion = false,
 }) => ProviderScope(
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: MediaQuery(
       data: MediaQueryData(disableAnimations: reducedMotion),

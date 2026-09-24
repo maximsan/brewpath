@@ -13,6 +13,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_game_player_scre
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/content_reward.dart';
@@ -286,6 +287,7 @@ Future<void> _pump(
           tester.view,
         ).copyWith(disableAnimations: disableAnimations),
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
         ),

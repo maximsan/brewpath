@@ -4,6 +4,7 @@ import 'package:brew_path/core/widgets/link_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ Future<void> _pumpCard(WidgetTester tester, _Signals signals) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: Scaffold(
           body: SingleChildScrollView(

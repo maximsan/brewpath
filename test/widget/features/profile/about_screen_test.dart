@@ -10,6 +10,7 @@ import 'package:brew_path/features/profile/presentation/settings/about_screen.da
 import 'package:brew_path/features/profile/presentation/settings/account_sync_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/services/links/link_opener.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,11 @@ void main() {
           if (appStoreId != null)
             appStoreReviewProvider.overrideWithValue(reviewPage(appStoreId)),
         ],
-        child: MaterialApp(theme: AppTheme.cupping, home: screen),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          theme: AppTheme.cupping,
+          home: screen,
+        ),
       ),
     );
     await tester.pump();

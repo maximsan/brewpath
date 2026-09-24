@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_log_sheet.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +15,7 @@ void main() {
   }) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Builder(
           builder: (context) => Scaffold(
@@ -76,6 +78,7 @@ void main() {
     ChallengeLogResult? result;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Builder(
           builder: (context) => Scaffold(
@@ -108,6 +111,7 @@ void main() {
     var resolved = false;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Builder(
           builder: (context) => Scaffold(
@@ -166,6 +170,7 @@ void main() {
     ChallengeLogResult? result;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Builder(
           builder: (context) => Scaffold(

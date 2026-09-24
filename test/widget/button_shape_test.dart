@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,6 +24,7 @@ ShapeBorder _paintedShape(WidgetTester tester, Finder button) {
 Future<void> _pump(WidgetTester tester, ThemeData theme, Widget button) async {
   await tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: theme,
       home: Scaffold(body: Center(child: button)),
     ),
@@ -56,6 +58,7 @@ void main() {
     // Material's pill. Both read `AppRadii.chrome`, so the two cannot drift.
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: Scaffold(
           body: PrimaryButton(label: 'x', onPressed: () {}),

@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/swipe/swipe_deck_stack.dart';
 import 'package:brew_path/core/swipe/swipe_geometry.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,6 +13,7 @@ Widget _app({
   bool canAdvance = false,
   bool canBack = false,
 }) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.darkRoast,
   home: Scaffold(
     body: Center(

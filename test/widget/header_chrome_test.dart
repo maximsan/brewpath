@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brew_path/core/widgets/header_chrome.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,6 +14,7 @@ Widget _harness({
   ScrollController? controller,
 }) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: ThemeData(extensions: const [MoodColors.darkRoast]),
     home: MediaQuery(
       data: MediaQueryData(disableAnimations: disableAnimations),

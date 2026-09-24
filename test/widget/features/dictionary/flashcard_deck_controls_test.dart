@@ -4,6 +4,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_deck_controls.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +18,7 @@ Future<void> _pump(
   required bool isOnLast,
 }) => tester.pumpWidget(
   MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: Scaffold(
       body: Center(

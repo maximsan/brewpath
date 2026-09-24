@@ -12,6 +12,7 @@ import 'package:brew_path/features/dictionary/presentation/term_of_day_copy.dart
 import 'package:brew_path/features/dictionary/presentation/term_of_day_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +95,7 @@ Future<void> _pumpScreen(
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         routerConfig: GoRouter(
           routes: [

@@ -6,6 +6,7 @@ import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
 import 'package:brew_path/features/lessons/presentation/cards/help_drawer.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_kind_help.dart';
 import 'package:brew_path/shared/repositories/card_kind_help_repository.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -50,6 +51,7 @@ void main() {
           ),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: theme ?? AppTheme.darkRoast,
           home: const Scaffold(body: CardCueRow(cue: CardCue.match)),
         ),

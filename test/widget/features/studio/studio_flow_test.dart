@@ -10,6 +10,7 @@ import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/widgets/light_pill.dart';
 import 'package:brew_path/features/studio/presentation/widgets/plant_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ void main() {
   Widget host({required bool isPlus}) => ProviderScope(
     overrides: [courseEntitlementProvider.overrideWith((_) async => isPlus)],
     child: MaterialApp.router(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.cupping,
       routerConfig: GoRouter(
         initialLocation: '/studio',
@@ -163,6 +165,7 @@ void main() {
           courseEntitlementProvider.overrideWith((_) async => false),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const Scaffold(body: StudioDoorTile()),
         ),
@@ -191,6 +194,7 @@ void main() {
           courseEntitlementProvider.overrideWith((_) async => true),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const Scaffold(body: StudioDoorTile()),
         ),

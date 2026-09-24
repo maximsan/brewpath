@@ -19,6 +19,7 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -103,6 +104,7 @@ ProviderContainer _buildContainer() => ProviderContainer(
 /// completion companion renders a static frame. Without it, the companion's
 /// idle loop never settles and `settleLoaders`' final `pumpAndSettle` hangs.
 Widget _app(Widget home) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.cupping,
   home: home,
   builder: (context, child) => MediaQuery(
@@ -746,6 +748,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
           builder: (context, child) => MediaQuery(
@@ -934,6 +937,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
           builder: (context, child) => MediaQuery(

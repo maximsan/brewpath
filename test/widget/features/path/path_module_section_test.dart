@@ -10,6 +10,7 @@ import 'package:brew_path/features/path/domain/path_density.dart';
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_module_section.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -86,6 +87,7 @@ Future<void> _pump(
   ProviderScope(
     overrides: [plusPitchProvider.overrideWith((ref) async => _pitch)],
     child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(
         body: ListView(
@@ -218,6 +220,7 @@ void main() {
           savedChallengesProvider.overrideWith((ref) async => const []),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.darkRoast,
           home: Scaffold(
             body: ListView(

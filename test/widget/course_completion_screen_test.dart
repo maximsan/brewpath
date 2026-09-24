@@ -8,6 +8,7 @@ import 'package:brew_path/features/progress/domain/completed_lessons.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
@@ -95,6 +96,7 @@ Future<void> _pump(
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
         ),

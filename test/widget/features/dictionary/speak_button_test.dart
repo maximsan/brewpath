@@ -3,6 +3,7 @@ import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
 import 'package:brew_path/features/dictionary/presentation/speaker_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/services/speech/speech_providers.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -44,6 +45,7 @@ const _view = DictionaryView(
 Widget _wrap(DictionaryTerm term, FakeSpeechService speech) => ProviderScope(
   overrides: [speechServiceProvider.overrideWithValue(speech)],
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: Scaffold(
       body: TermEntryBody(view: _view, term: term),

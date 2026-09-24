@@ -5,12 +5,12 @@ import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/today_lesson_body.dart';
 import 'package:brew_path/features/learn/presentation/today_locked_body.dart';
-import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/services/payments/granted_payments_service.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
@@ -156,8 +156,11 @@ void main() {
       await settleLoaders(tester);
 
       // Every row here is a finished lesson, so the shelf asks first (#573).
-      expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
-      await tester.tap(find.text(ReplayConfirmCopy.confirm));
+      expect(
+        find.text(AppLocalizationsEn().replayConfirmConfirm),
+        findsOneWidget,
+      );
+      await tester.tap(find.text(AppLocalizationsEn().replayConfirmConfirm));
       await settleLoaders(tester);
 
       expect(find.byType(LessonScreen), findsOneWidget);

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -162,6 +163,7 @@ void main() {
       late TextStyle resolved;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: DefaultTextStyle(
             style: AppText.display(mood: MoodColors.darkRoast),
             child: Builder(

@@ -1,7 +1,9 @@
 import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+final _strings = AppLocalizationsEn();
 final _today = DateTime(2026, 9, 20);
 int _daysBefore(int days) => epochDay(_today) - days;
 
@@ -11,6 +13,7 @@ List<ReplayConfirmLine> _lines({
   bool dayAlreadyEarned = false,
   int? lastCompletedDay,
 }) => replayConfirmLines(
+  strings: _strings,
   minutes: minutes,
   cards: cards,
   dayAlreadyEarned: dayAlreadyEarned,
@@ -32,10 +35,10 @@ void main() {
     });
 
     test('the streak line switches on whether the day is already earned', () {
-      expect(_valueOf(_lines(), 'Streak'), ReplayConfirmCopy.streakCounts);
+      expect(_valueOf(_lines(), 'Streak'), _strings.replayConfirmStreakCounts);
       expect(
         _valueOf(_lines(dayAlreadyEarned: true), 'Streak'),
-        ReplayConfirmCopy.streakEarned,
+        _strings.replayConfirmStreakEarned,
       );
     });
 
@@ -52,6 +55,7 @@ void main() {
 
     test('a lesson with no day on record shows three lines, not a blank', () {
       final lines = replayConfirmLines(
+        strings: _strings,
         minutes: 4,
         cards: 7,
         dayAlreadyEarned: false,
@@ -66,24 +70,24 @@ void main() {
 
   group('naming the last run', () {
     test('names the days a learner can still place', () {
-      expect(dayName(epochDay(_today), today: _today), 'Today');
-      expect(dayName(_daysBefore(1), today: _today), 'Yesterday');
+      expect(dayName(_strings, epochDay(_today), today: _today), 'Today');
+      expect(dayName(_strings, _daysBefore(1), today: _today), 'Yesterday');
       // 2026-09-20 is a Sunday, so three days back is the Thursday.
-      expect(dayName(_daysBefore(3), today: _today), 'Thursday');
+      expect(dayName(_strings, _daysBefore(3), today: _today), 'Thursday');
     });
 
     test('falls back to the date once the weekday stops meaning one day', () {
-      expect(dayName(_daysBefore(7), today: _today), 'Sun, Sep 13');
-      expect(dayName(_daysBefore(87), today: _today), 'Thu, Jun 25');
+      expect(dayName(_strings, _daysBefore(7), today: _today), 'Sun, Sep 13');
+      expect(dayName(_strings, _daysBefore(87), today: _today), 'Thu, Jun 25');
     });
 
     test('carries the year once the run is not from this one', () {
       expect(
-        dayName(epochDay(DateTime(2025, 6, 25)), today: _today),
+        dayName(_strings, epochDay(DateTime(2025, 6, 25)), today: _today),
         'Wed, Jun 25, 2025',
       );
       expect(
-        dayName(epochDay(DateTime(2026, 1, 2)), today: _today),
+        dayName(_strings, epochDay(DateTime(2026, 1, 2)), today: _today),
         'Fri, Jan 2',
       );
     });
@@ -91,7 +95,7 @@ void main() {
 
   test('the title asks about the lesson by name', () {
     expect(
-      ReplayConfirmCopy.title('Arabica vs Robusta'),
+      _strings.replayConfirmTitle('Arabica vs Robusta'),
       'Arabica vs Robusta?',
     );
   });

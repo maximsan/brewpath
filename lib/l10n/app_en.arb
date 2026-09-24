@@ -19,5 +19,76 @@
   "nameSkip": "Skip for now",
   "@nameSkip": {
     "description": "Button that moves on without a name. Says the question can come back, which Settings makes true."
+  },
+
+  "replayConfirmConfirm": "Review lesson",
+  "@replayConfirmConfirm": {
+    "description": "Button that starts a replay of a lesson already finished."
+  },
+
+  "replayConfirmCancel": "Not now",
+  "@replayConfirmCancel": {
+    "description": "Button that closes the replay sheet without starting anything."
+  },
+
+  "replayConfirmTitle": "{lessonTitle}?",
+  "@replayConfirmTitle": {
+    "description": "Title of the replay sheet: the lesson's name, asked as a question.",
+    "placeholders": {
+      "lessonTitle": { "type": "String" }
+    }
+  },
+
+  "replayConfirmPointsLabel": "Points",
+  "@replayConfirmPointsLabel": {
+    "description": "Label of the replay sheet line about points."
+  },
+
+  "replayConfirmPointsValue": "No change",
+  "@replayConfirmPointsValue": {
+    "description": "Value of the points line: a replay pays nothing."
+  },
+
+  "replayConfirmStreakLabel": "Streak",
+  "@replayConfirmStreakLabel": {
+    "description": "Label of the replay sheet line about the daily streak."
+  },
+
+  "replayConfirmStreakCounts": "Counts for today",
+  "@replayConfirmStreakCounts": {
+    "description": "Streak line on a day the replay would still protect."
+  },
+
+  "replayConfirmStreakEarned": "Already earned today",
+  "@replayConfirmStreakEarned": {
+    "description": "Streak line on a day already covered by something else."
+  },
+
+  "replayConfirmLengthLabel": "Length",
+  "@replayConfirmLengthLabel": {
+    "description": "Label of the replay sheet line about how long the lesson runs."
+  },
+
+  "replayConfirmLastCompletedLabel": "Last completed",
+  "@replayConfirmLastCompletedLabel": {
+    "description": "Label of the replay sheet line about when the lesson was last finished."
+  },
+
+  "replayConfirmLength": "~{minutes} min \u00b7 {cards, plural, =1{{cards} card} other{{cards} cards}}",
+  "@replayConfirmLength": {
+    "description": "How long a replay runs and how many cards it holds.",
+    "placeholders": {
+      "minutes": { "type": "int" },
+      "cards": { "type": "int" }
+    }
+  },
+
+  "replayConfirmDatedYear": "{date}, {year}",
+  "@replayConfirmDatedYear": {
+    "description": "A past run's date once it is not this year, so an old run cannot pass as this year's.",
+    "placeholders": {
+      "date": { "type": "String" },
+      "year": { "type": "int" }
+    }
   }
 }

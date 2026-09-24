@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,6 +32,7 @@ Map<String, String> _thresholdsChosenInLib() {
 /// A page that says whether it has scrolled, over a list, optionally with a
 /// second list nested inside a row of it.
 Widget _host({Object? resetKey, bool nested = false}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   home: Scaffold(
     body: ScrollFlagScope(
       resetKey: resetKey,

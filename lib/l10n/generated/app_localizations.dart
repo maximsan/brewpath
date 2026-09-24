@@ -117,6 +117,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Skip for now'**
   String get nameSkip;
+
+  /// Button that starts a replay of a lesson already finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Review lesson'**
+  String get replayConfirmConfirm;
+
+  /// Button that closes the replay sheet without starting anything.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get replayConfirmCancel;
+
+  /// Title of the replay sheet: the lesson's name, asked as a question.
+  ///
+  /// In en, this message translates to:
+  /// **'{lessonTitle}?'**
+  String replayConfirmTitle(String lessonTitle);
+
+  /// Label of the replay sheet line about points.
+  ///
+  /// In en, this message translates to:
+  /// **'Points'**
+  String get replayConfirmPointsLabel;
+
+  /// Value of the points line: a replay pays nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No change'**
+  String get replayConfirmPointsValue;
+
+  /// Label of the replay sheet line about the daily streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get replayConfirmStreakLabel;
+
+  /// Streak line on a day the replay would still protect.
+  ///
+  /// In en, this message translates to:
+  /// **'Counts for today'**
+  String get replayConfirmStreakCounts;
+
+  /// Streak line on a day already covered by something else.
+  ///
+  /// In en, this message translates to:
+  /// **'Already earned today'**
+  String get replayConfirmStreakEarned;
+
+  /// Label of the replay sheet line about how long the lesson runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Length'**
+  String get replayConfirmLengthLabel;
+
+  /// Label of the replay sheet line about when the lesson was last finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Last completed'**
+  String get replayConfirmLastCompletedLabel;
+
+  /// How long a replay runs and how many cards it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'~{minutes} min · {cards, plural, =1{{cards} card} other{{cards} cards}}'**
+  String replayConfirmLength(int minutes, int cards);
+
+  /// A past run's date once it is not this year, so an old run cannot pass as this year's.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}, {year}'**
+  String replayConfirmDatedYear(String date, int year);
 }
 
 class _AppLocalizationsDelegate

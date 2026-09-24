@@ -12,6 +12,7 @@ import 'package:brew_path/features/learn/presentation/module_complete_screen.dar
 import 'package:brew_path/features/learn/presentation/module_ending_marks.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/presentation/growing_tree.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/models/module_model.dart';
@@ -49,6 +50,7 @@ ModuleSummary _summary({
 /// Pumped with animations **on** by default: the flip is the subject, and a
 /// harness that disabled them everywhere could not tell a turn from a jump.
 Widget _app(Widget home, {bool reducedMotion = false}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.cupping,
   home: home,
   builder: (context, child) => MediaQuery(

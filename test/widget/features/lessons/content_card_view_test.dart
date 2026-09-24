@@ -15,6 +15,7 @@ import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -185,6 +186,7 @@ Widget _host(
   ValueChanged<HeldGuess>? onGuess,
 }) => ProviderScope(
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.darkRoast,
     home: Scaffold(
       body: SingleChildScrollView(
