@@ -1,6 +1,7 @@
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
+import 'package:brew_path/features/monetization/domain/return_location.dart';
 import 'package:brew_path/features/monetization/presentation/paywall_screen.dart';
+import 'package:brew_path/features/monetization/presentation/return_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,19 +24,10 @@ class PaywallRoute extends StatelessWidget {
     // the lock's screen with the lock gone.
     onPurchased: () => context.goNamed(
       AppRoutes.purchaseWelcome.name,
-      queryParameters: returnTo == null ? const {} : welcomeReturnTo(returnTo!),
+      queryParameters: returnQuery(returnTo),
     ),
     // A recovery is not a sale: no celebration, back to where the lock was.
-    onRestored: () => _back(context),
-    onDeclined: () => _back(context),
+    onRestored: () => context.goBackTo(returnTo),
+    onDeclined: () => context.goBackTo(returnTo),
   );
-
-  void _back(BuildContext context) {
-    final back = returnTo;
-    if (back == null) {
-      context.goNamed(AppRoutes.learn.name);
-    } else {
-      context.go(back);
-    }
-  }
 }

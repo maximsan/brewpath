@@ -7,7 +7,7 @@ import 'package:brew_path/features/monetization/domain/paywall_view_provider.dar
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
-import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
+import 'package:brew_path/features/monetization/domain/return_location.dart';
 import 'package:brew_path/features/monetization/presentation/paywall_route.dart';
 import 'package:brew_path/services/payments/store_product.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
@@ -79,7 +79,7 @@ void main() {
     addTearDown(container.dispose);
 
     final paywall = Uri.parse(AppRoutes.paywall.path).replace(
-      queryParameters: returnTo == null ? null : welcomeReturnTo(returnTo),
+      queryParameters: returnTo == null ? null : returnQuery(returnTo),
     );
 
     router = GoRouter(
@@ -89,7 +89,7 @@ void main() {
           path: AppRoutes.paywall.path,
           name: AppRoutes.paywall.name,
           builder: (_, state) =>
-              PaywallRoute(returnTo: welcomeReturnIn(state.uri)),
+              PaywallRoute(returnTo: returnLocationIn(state.uri)),
         ),
         stub(AppRoutes.purchaseWelcome),
         stub(AppRoutes.learn),
@@ -127,7 +127,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(router.state.uri.path, AppRoutes.purchaseWelcome.path);
-    expect(welcomeReturnIn(router.state.uri), AppRoutes.path.path);
+    expect(returnLocationIn(router.state.uri), AppRoutes.path.path);
   });
 
   testWidgets('Maybe later goes back to the lock, with nothing bought', (

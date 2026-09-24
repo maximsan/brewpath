@@ -8,8 +8,8 @@ import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
-import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
 import 'package:brew_path/features/monetization/domain/purchased_term.dart';
+import 'package:brew_path/features/monetization/domain/return_location.dart';
 import 'package:brew_path/features/monetization/presentation/paywall_route.dart';
 import 'package:brew_path/features/monetization/presentation/paywall_screen.dart';
 import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
@@ -86,13 +86,13 @@ void main() {
           path: AppRoutes.purchaseWelcome.path,
           name: AppRoutes.purchaseWelcome.name,
           builder: (_, state) =>
-              PurchaseWelcomeRoute(returnTo: welcomeReturnIn(state.uri)),
+              PurchaseWelcomeRoute(returnTo: returnLocationIn(state.uri)),
         ),
         GoRoute(
           path: AppRoutes.paywall.path,
           name: AppRoutes.paywall.name,
           builder: (_, state) =>
-              PaywallRoute(returnTo: welcomeReturnIn(state.uri)),
+              PaywallRoute(returnTo: returnLocationIn(state.uri)),
         ),
       ],
     );
@@ -243,7 +243,7 @@ void main() {
     expect(find.byType(PaywallScreen), findsOneWidget);
     expect(find.byType(PlanPicker), findsOneWidget);
     expect(router.state.uri.path, AppRoutes.paywall.path);
-    expect(welcomeReturnIn(router.state.uri), AppRoutes.path.path);
+    expect(returnLocationIn(router.state.uri), AppRoutes.path.path);
 
     // Not the arm's default: the plan the learner picked is the one bought.
     await tester.tap(find.text(paywallPlans[PlusTerm.monthly]!.name));

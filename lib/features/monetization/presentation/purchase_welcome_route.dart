@@ -2,6 +2,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/domain/purchased_term.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_screen.dart';
+import 'package:brew_path/features/monetization/presentation/return_navigation.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,14 +26,11 @@ class PurchaseWelcomeRoute extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final term = ref.watch(purchasedTermProvider) ?? PlusTerm.lifetime;
-    final back = returnTo;
 
     return PurchaseWelcomeScreen(
       plan: paywallPlans[term]!,
       onOpenStudio: () => context.goNamed(AppRoutes.studio.name),
-      onContinue: back == null
-          ? () => context.goNamed(AppRoutes.learn.name)
-          : () => context.go(back),
+      onContinue: () => context.goBackTo(returnTo),
     );
   }
 }

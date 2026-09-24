@@ -12,7 +12,7 @@ import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/domain/purchase_exit.dart';
-import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
+import 'package:brew_path/features/monetization/domain/return_location.dart';
 import 'package:brew_path/features/monetization/presentation/plus_pitch_list.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_outcome_line.dart';
 import 'package:brew_path/services/links/open_link.dart';
@@ -35,10 +35,7 @@ Future<void> showPlusGate(BuildContext context, PlusGateTrigger trigger) {
   // its own context behind. Absent only where a single screen is pumped on its
   // own, which is a test, and where there is nowhere to celebrate anyway.
   final router = GoRouter.maybeOf(context);
-  final raisedAt = router?.state.uri.toString();
-  final returnTo = raisedAt == null
-      ? const <String, String>{}
-      : welcomeReturnTo(raisedAt);
+  final returnTo = returnQuery(router?.state.uri.toString());
 
   return showAppSheet<void>(
     context: context,
@@ -104,13 +101,14 @@ class _PlusGateBodyState extends ConsumerState<_PlusGateBody> {
     final mood = context.mood;
     final pitch = ref.watch(plusPitchProvider);
     final purchase = ref.watch(plusPurchaseProvider);
-    final view = ref.watch(paywallViewProvider);
-    final offer = view.asData?.value;
+    final pricing = ref.watch(paywallViewProvider);
+    final offer = pricing.asData?.value;
     final handOff = widget.onHandOff;
     // The switch (ADR-0032): the arm the store reports decides whether this
-    // sheet takes money, so the action, its footer and the store's required
-    // links are all decided from the one answer.
-    final handsOff = handOff != null && (offer?.offersAChoice ?? false);
+    // sheet takes money. Nothing under the action is drawn until it has
+    // answered, so the sheet never shows store chrome it is about to remove.
+    final paywallTakesOver = handOff != null && (offer?.offersAChoice ?? false);
+    final sells = !pricing.isLoading && !paywallTakesOver;
     final isWorking = purchase == PlusPurchaseState.working;
 
     ref.listen(plusPurchaseProvider, (_, next) => _exit.settle(next));
@@ -128,14 +126,14 @@ class _PlusGateBodyState extends ConsumerState<_PlusGateBody> {
         const SizedBox(height: AppSpacing.lg),
         PurchaseOutcomeLine(state: purchase),
         _GateAction(
-          view: offer,
+          offer: offer,
           isWorking: isWorking,
-          withFooter: !handsOff,
+          withFooter: sells,
           // Held until the store has said which arm this is: a tap before
           // that would buy the default plan on an arm that offers a choice.
-          onPressed: isWorking || view.isLoading
+          onPressed: isWorking || pricing.isLoading
               ? null
-              : handsOff
+              : paywallTakesOver
               ? handOff
               : () => ref.read(plusPurchaseProvider.notifier).buy(),
         ),
@@ -144,7 +142,7 @@ class _PlusGateBodyState extends ConsumerState<_PlusGateBody> {
           label: PaywallCopy.notNow,
           onPressed: isWorking ? null : () => Navigator.of(context).pop(),
         ),
-        if (!handsOff) ...[
+        if (sells) ...[
           const SizedBox(height: AppSpacing.xs),
           Center(
             child: LinkButton(
@@ -167,22 +165,22 @@ class _PlusGateBodyState extends ConsumerState<_PlusGateBody> {
 /// disagree about what is sold.
 class _GateAction extends StatelessWidget {
   const _GateAction({
-    required this.view,
+    required this.offer,
     required this.isWorking,
     required this.withFooter,
     required this.onPressed,
   });
 
-  final PaywallView? view;
+  final PaywallView? offer;
   final bool isWorking;
   final bool withFooter;
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final config = paywallModels[view?.model ?? MonetizationModel.oneTime]!;
-    final price = view?.planFor(null).price;
-    final perMonth = view?.fromPerMonth;
+    final config = paywallModels[offer?.model ?? MonetizationModel.oneTime]!;
+    final price = offer?.planFor(null).price;
+    final perMonth = offer?.fromPerMonth;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

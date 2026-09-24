@@ -2,8 +2,8 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
-import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
 import 'package:brew_path/features/monetization/domain/purchased_term.dart';
+import 'package:brew_path/features/monetization/domain/return_location.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +43,7 @@ void main() {
     }
 
     final welcome = Uri.parse(AppRoutes.purchaseWelcome.path).replace(
-      queryParameters: returnTo == null ? null : welcomeReturnTo(returnTo),
+      queryParameters: returnTo == null ? null : returnQuery(returnTo),
     );
 
     router = GoRouter(
@@ -53,7 +53,7 @@ void main() {
           path: AppRoutes.purchaseWelcome.path,
           name: AppRoutes.purchaseWelcome.name,
           builder: (_, state) =>
-              PurchaseWelcomeRoute(returnTo: welcomeReturnIn(state.uri)),
+              PurchaseWelcomeRoute(returnTo: returnLocationIn(state.uri)),
         ),
         stub(AppRoutes.learn),
         // The Studio sits under Profile in the real router, and the stub keeps
