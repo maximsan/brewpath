@@ -5,6 +5,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:brew_path/shared/repositories/language_overlay.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -73,6 +74,31 @@ process.stdout.write(JSON.stringify([
   return (jsonDecode(result.stdout.toString()) as List).cast<String>().toSet();
 }
 
+/// The two registers the overlay keeps its own copy of, by bare field name.
+Map<String, Set<String>> _overlayRegisters() {
+  const script = '''
+const f = require('./tool/draft_language/fields.js');
+process.stdout.write(JSON.stringify({
+  optional: Object.keys(f.OPTIONAL),
+  searchKeys: [...f.SEARCH_KEYS],
+}));
+''';
+  final result = Process.runSync('node', ['-e', script]);
+  expect(result.exitCode, 0, reason: result.stderr.toString());
+  final registers =
+      jsonDecode(result.stdout.toString()) as Map<String, dynamic>;
+  return {
+    for (final register in registers.entries)
+      register.key: (register.value as List)
+          .cast<String>()
+          .map(_fieldNameIn)
+          .toSet(),
+  };
+}
+
+/// The bare field in [path] — `dictionary_terms.aliases[]` is `aliases`.
+String _fieldNameIn(String path) => path.split('.').last.replaceAll('[]', '');
+
 /// The option lists a mirrored answer chooses from — keys by design.
 Set<String> _mirrorOptionPaths() {
   const script = '''
@@ -98,6 +124,27 @@ void main() {
       reason:
           'the register classifies paths the banks no longer carry — a rename '
           'left these behind, and the real field is now unclassified',
+    );
+  });
+
+  test('the overlay classifies the fields the tool classifies', () {
+    // The overlay cannot read the tool at run time, so it keeps its own copy
+    // of these two registers. This is what stops the copies drifting.
+    final registers = _overlayRegisters();
+
+    expect(
+      fieldsThatNeverFallBack,
+      registers['optional'],
+      reason:
+          'a field nobody is owed must not fall back: an omission is the '
+          "language's answer, and English would be shown as that answer",
+    );
+    expect(
+      searchKeyFields,
+      registers['searchKeys'],
+      reason:
+          'a search key is not prose, and the overlay has to know that before '
+          'it refuses one for being shorter than the English',
     );
   });
 

@@ -27,6 +27,13 @@ const String nativeReviewedField = 'nativeReviewed';
 /// *prose* being silently replaced, which these are not.
 const Set<String> searchKeyFields = {'aliases'};
 
+/// Fields a language owns outright, which never fall back to English.
+///
+/// An English respelling is an instruction a reader of another language
+/// cannot follow, so ADR-0025 never shows them one. The drafting tool asks
+/// nobody for these, so an omission is an answer rather than a gap.
+const Set<String> fieldsThatNeverFallBack = {'pron'};
+
 /// The translation tool's bookkeeping, stripped before a model sees a record.
 ///
 /// It travels in the folder because the folder is both what the owner reviews
@@ -39,10 +46,9 @@ const Set<String> bookkeepingFields = {
 
 /// [master]'s records with [translated]'s text laid over them, by id.
 ///
-/// Per field at every depth: a translated field wins and anything omitted
-/// stays English. Only an omission falls back — a short list or an unknown
-/// field would replace text rather than fall back, so both are refused the
-/// way ADR-0018 refuses broken content.
+/// Per field at every depth: a translated field wins, anything omitted stays
+/// English bar the fields a language owns outright, and a short list or an
+/// unknown field is refused the way ADR-0018 refuses broken content.
 List<Map<String, dynamic>> overlayTranslations({
   required List<Map<String, dynamic>> master,
   required List<Map<String, dynamic>> translated,
@@ -91,7 +97,8 @@ Map<String, dynamic> _mergeMap(
   Map<String, dynamic> translation,
   String where,
 ) {
-  final merged = <String, dynamic>{...master};
+  final merged = <String, dynamic>{...master}
+    ..removeWhere((field, _) => fieldsThatNeverFallBack.contains(field));
   for (final field in translation.entries) {
     if (bookkeepingFields.contains(field.key)) continue;
     if (!master.containsKey(field.key)) {
@@ -100,6 +107,9 @@ Map<String, dynamic> _mergeMap(
         '— check it against the English bank, because a misspelt key leaves '
         'the real one in English',
       );
+    }
+    if (field.value == null && fieldsThatNeverFallBack.contains(field.key)) {
+      continue;
     }
     merged[field.key] = _mergeValue(
       master[field.key],
