@@ -55,6 +55,11 @@ abstract class AppRoutes {
     'purchaseWelcome',
     '/purchase-welcome',
   );
+
+  /// The offer outside the intro, where a lock hands off to it when the arm
+  /// sells more than one plan (ADR-0032). Root-level like the celebration,
+  /// and it carries the same `from` query the celebration returns to.
+  static const paywall = AppRoute('paywall', '/paywall');
   static const learn = AppRoute('learn', '/learn');
   static const courseComplete = AppRoute('courseComplete', '/course-complete');
   static const lesson = AppRoute('lesson', 'lesson/:lessonId');

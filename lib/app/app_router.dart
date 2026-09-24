@@ -22,6 +22,7 @@ import 'package:brew_path/features/mini_games/presentation/mini_game_intro_scree
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
+import 'package:brew_path/features/monetization/presentation/paywall_route.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
@@ -168,6 +169,14 @@ GoRouter appRouter(Ref ref) {
         name: AppRoutes.purchaseWelcome.name,
         builder: (context, state) =>
             PurchaseWelcomeRoute(returnTo: welcomeReturnIn(state.uri)),
+      ),
+      // The offer a lock hands off to on an arm with a plan to choose
+      // (ADR-0032). Root-level for the same reason as the celebration.
+      GoRoute(
+        path: AppRoutes.paywall.path,
+        name: AppRoutes.paywall.name,
+        builder: (context, state) =>
+            PaywallRoute(returnTo: welcomeReturnIn(state.uri)),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell),
