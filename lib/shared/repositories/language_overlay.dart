@@ -29,9 +29,10 @@ const Set<String> searchKeyFields = {'aliases'};
 
 /// Fields a language owns outright, which never fall back to English.
 ///
-/// An English respelling is an instruction a reader of another language
-/// cannot follow, so ADR-0025 never shows them one. The drafting tool asks
-/// nobody for these, so an omission is an answer rather than a gap.
+/// Nobody is owed one, so an omission is an answer rather than a gap
+/// (ADR-0025). Matched by bare name at every depth, and a match drops the
+/// master's own value, so a name here must mean the same thing in every bank
+/// that carries it.
 const Set<String> fieldsThatNeverFallBack = {'pron'};
 
 /// The translation tool's bookkeeping, stripped before a model sees a record.

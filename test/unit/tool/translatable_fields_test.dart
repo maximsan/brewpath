@@ -14,21 +14,33 @@ const _generated = 'assets/content/generated';
 /// A value that reads as a key rather than as words: one lowercase token.
 final _looksLikeAKey = RegExp(r'^[a-z][a-z0-9_-]*$');
 
-/// Asks the tool what it would do with each path, so the test and the tool
-/// cannot disagree about the register.
-Map<String, String> _classify(List<String> paths) {
-  const script = '''
-const { classify, mirrorOf } = require('./tool/draft_language/fields.js');
-const paths = JSON.parse(process.argv[1]);
-process.stdout.write(JSON.stringify(Object.fromEntries(
-  paths.map((path) => [path, mirrorOf(path) ? 'mirror' : classify(path)]),
-)));
-''';
-  final result = Process.runSync('node', ['-e', script, jsonEncode(paths)]);
+/// What `fields.js` answers for [expression], with `f` bound to the register.
+///
+/// Every question below goes through here, so the test and the tool cannot
+/// disagree about the register — and [arguments] reach it as `process.argv`.
+Object? _askTheRegister(
+  String expression, [
+  List<String> arguments = const [],
+]) {
+  final script =
+      "const f = require('./tool/draft_language/fields.js');\n"
+      'process.stdout.write(JSON.stringify($expression));';
+  final result = Process.runSync('node', ['-e', script, ...arguments]);
   expect(result.exitCode, 0, reason: result.stderr.toString());
-  return (jsonDecode(result.stdout.toString()) as Map<String, dynamic>)
-      .cast<String, String>();
+  return jsonDecode(result.stdout.toString());
 }
+
+/// What the tool would do with each of [paths].
+Map<String, String> _classify(List<String> paths) =>
+    (_askTheRegister(
+              '''
+Object.fromEntries(JSON.parse(process.argv[1]).map(
+  (path) => [path, f.mirrorOf(path) ? 'mirror' : f.classify(path)],
+))''',
+              [jsonEncode(paths)],
+            )!
+            as Map<String, dynamic>)
+        .cast<String, String>();
 
 /// Every string in the committed banks, by the register's path.
 Map<String, List<String>> _stringsByPath() {
@@ -58,57 +70,30 @@ Map<String, List<String>> _stringsByPath() {
   return found;
 }
 
+/// The paths [expression] answers with.
+Set<String> _pathsFrom(String expression) =>
+    (_askTheRegister(expression)! as List).cast<String>().toSet();
+
 /// Every path the register names, whatever it names it.
-Set<String> _registeredPaths() {
-  const script = '''
-const f = require('./tool/draft_language/fields.js');
-process.stdout.write(JSON.stringify([
+Set<String> _registeredPaths() => _pathsFrom('''
+[
   ...Object.keys(f.STRUCTURAL),
   ...Object.keys(f.MIRRORS),
   ...Object.keys(f.OPTIONAL),
   ...f.SEARCH_KEYS,
-]));
-''';
-  final result = Process.runSync('node', ['-e', script]);
-  expect(result.exitCode, 0, reason: result.stderr.toString());
-  return (jsonDecode(result.stdout.toString()) as List).cast<String>().toSet();
-}
+]''');
+
+/// The option lists a mirrored answer chooses from — keys by design.
+Set<String> _mirrorOptionPaths() => _pathsFrom('Object.values(f.MIRRORS)');
 
 /// The two registers the overlay keeps its own copy of, by bare field name.
-Map<String, Set<String>> _overlayRegisters() {
-  const script = '''
-const f = require('./tool/draft_language/fields.js');
-process.stdout.write(JSON.stringify({
-  optional: Object.keys(f.OPTIONAL),
-  searchKeys: [...f.SEARCH_KEYS],
-}));
-''';
-  final result = Process.runSync('node', ['-e', script]);
-  expect(result.exitCode, 0, reason: result.stderr.toString());
-  final registers =
-      jsonDecode(result.stdout.toString()) as Map<String, dynamic>;
-  return {
-    for (final register in registers.entries)
-      register.key: (register.value as List)
-          .cast<String>()
-          .map(_fieldNameIn)
-          .toSet(),
-  };
-}
+({Set<String> optional, Set<String> searchKeys}) _overlayRegisters() => (
+  optional: _pathsFrom('Object.keys(f.OPTIONAL)').map(_fieldNameIn).toSet(),
+  searchKeys: _pathsFrom('[...f.SEARCH_KEYS]').map(_fieldNameIn).toSet(),
+);
 
 /// The bare field in [path] — `dictionary_terms.aliases[]` is `aliases`.
 String _fieldNameIn(String path) => path.split('.').last.replaceAll('[]', '');
-
-/// The option lists a mirrored answer chooses from — keys by design.
-Set<String> _mirrorOptionPaths() {
-  const script = '''
-const { MIRRORS } = require('./tool/draft_language/fields.js');
-process.stdout.write(JSON.stringify(Object.values(MIRRORS)));
-''';
-  final result = Process.runSync('node', ['-e', script]);
-  expect(result.exitCode, 0, reason: result.stderr.toString());
-  return (jsonDecode(result.stdout.toString()) as List).cast<String>().toSet();
-}
 
 void main() {
   test('the register still names a field for every path it claims', () {
@@ -134,14 +119,16 @@ void main() {
 
     expect(
       fieldsThatNeverFallBack,
-      registers['optional'],
+      registers.optional,
       reason:
-          'a field nobody is owed must not fall back: an omission is the '
-          "language's answer, and English would be shown as that answer",
+          'the two are held equal on purpose: a field nobody is owed must not '
+          "fall back, because the omission is the language's answer and "
+          'English would be shown as that answer. Marking a new field optional '
+          'means deciding that here too',
     );
     expect(
       searchKeyFields,
-      registers['searchKeys'],
+      registers.searchKeys,
       reason:
           'a search key is not prose, and the overlay has to know that before '
           'it refuses one for being shorter than the English',

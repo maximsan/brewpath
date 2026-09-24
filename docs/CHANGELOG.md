@@ -123,8 +123,9 @@ You can always edit this file by hand instead — the helpers just save effort.
   English word, so a language that supplies none now shows none: the chip and
   the speak button are simply absent, rather than falling back to *uh-RAB-ih-kuh*
   under a translated term. English is untouched, and the overlay's list of
-  fields that never fall back is now checked against the drafting tool's own,
-  so the two cannot drift ([#666](https://github.com/maximsan/brewpath/issues/666)).
+  fields that never fall back is now held equal to the drafting tool's list of
+  the fields nobody is owed, so marking a new one optional means deciding here
+  too ([#666](https://github.com/maximsan/brewpath/issues/666)).
 
 - **The paywall no longer spins for the best part of a minute before admitting
   it has no offer to show.** A provider that fails keeps Riverpod's loading
