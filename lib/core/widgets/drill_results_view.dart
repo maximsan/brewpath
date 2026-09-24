@@ -2,6 +2,8 @@ import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/companion/domain/companion_reaction.dart';
 import 'package:brew_path/features/companion/presentation/companion_celebration.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -22,12 +24,10 @@ typedef DrillAction = ({String label, VoidCallback onPressed});
 
 /// The end of a run: what was scored, a word about it, and the two ways out.
 ///
-/// One results screen for every drill in the app, so finishing cannot come to
-/// mean two different things — the roast meter's consolidation (#381) a layer
-/// up.
-///
-/// Nothing here is written anywhere: the score lives as long as this screen
-/// does, and the *fact* that a run finished is recorded by the player.
+/// One results screen for every drill, so finishing cannot come to mean two
+/// different things (#381). Nothing here is written anywhere: the score lives
+/// as long as this screen does, and that a run finished is the player's to
+/// record.
 class DrillResultsView extends StatelessWidget {
   /// A drill that was **scored**: so many right out of so many asked.
   const DrillResultsView({
@@ -88,10 +88,13 @@ class DrillResultsView extends StatelessWidget {
   String get _line => _message ?? _outcome!.encouragement;
 
   /// One sentence, so a reader gets the result rather than three fragments.
-  String get _announcement => _outcome == null
+  String _announcement(AppLocalizations strings) => _outcome == null
       ? '$_value $_note. $_line'
-      : 'Run complete. You scored ${_outcome.score} '
-            'out of ${_outcome.total}. ${_outcome.encouragement}';
+      : strings.drillRunComplete(
+          _outcome.score,
+          _outcome.total,
+          _outcome.encouragement,
+        );
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +109,7 @@ class DrillResultsView extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Semantics(
-                  label: _announcement,
+                  label: _announcement(context.strings),
                   excludeSemantics: true,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

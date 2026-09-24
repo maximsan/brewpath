@@ -18,6 +18,7 @@ import 'package:brew_path/features/mini_games/domain/mini_game_completion.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -117,7 +118,10 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
               : RoastMeter(
                   position: _index + 1,
                   total: data.length,
-                  semanticsLabel: 'Round ${_index + 1} of ${data.length}',
+                  semanticsLabel: context.strings.miniGameRoundOf(
+                    _index + 1,
+                    data.length,
+                  ),
                 ),
           orElse: () => null,
         ),
@@ -134,11 +138,11 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
   Widget _rounds(AsyncValue<List<ContentCard>> rounds) {
     return rounds.when(
       loading: () => Semantics(
-        label: 'Loading the rounds',
+        label: context.strings.miniGameRoundsLoading,
         child: const LoadingIndicator(),
       ),
       error: (error, _) => Semantics(
-        label: 'These rounds could not be loaded.',
+        label: context.strings.miniGameRoundsFailed,
         excludeSemantics: true,
         child: ErrorView(message: '$error'),
       ),
@@ -149,9 +153,9 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
   Widget _buildRun(List<ContentCard> bank) {
     if (bank.isEmpty) {
       return Semantics(
-        label: 'This mini-game has no rounds yet.',
+        label: context.strings.miniGameNoRounds,
         excludeSemantics: true,
-        child: const ErrorView(message: 'This mini-game has no rounds yet.'),
+        child: ErrorView(message: context.strings.miniGameNoRounds),
       );
     }
 
@@ -163,6 +167,7 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
           score: _score,
           total: played.length,
           encouragement: runEncouragement(
+            context.strings,
             score: _score,
             total: played.length,
           ),
@@ -171,8 +176,11 @@ class _MiniGamePlayerScreenState extends ConsumerState<MiniGamePlayerScreen> {
             total: played.length,
           ),
         ),
-        primary: (label: 'Play again', onPressed: _playAgain),
-        secondary: (label: 'Done', onPressed: _done),
+        primary: (
+          label: context.strings.miniGamePlayAgain,
+          onPressed: _playAgain,
+        ),
+        secondary: (label: context.strings.miniGameDone, onPressed: _done),
       );
     }
 

@@ -874,5 +874,262 @@
   "moduleFreezeEarned": "Freeze earned · One missed day covered",
   "@moduleFreezeEarned": {
     "description": "Mark on a finished module that paid a streak freeze."
+  },
+
+  "miniGameKindMatch": "Match",
+  "@miniGameKindMatch": {
+    "description": "Name of the match mini-game in the catalog."
+  },
+
+  "miniGameKindQuiz": "True or false",
+  "@miniGameKindQuiz": {
+    "description": "Name of the true-or-false mini-game in the catalog."
+  },
+
+  "miniGameKindFlavor": "Name the note",
+  "@miniGameKindFlavor": {
+    "description": "Name of the tasting mini-game in the catalog."
+  },
+
+  "miniGameKindBagpick": "Blind bag",
+  "@miniGameKindBagpick": {
+    "description": "Name of the blind-bag mini-game in the catalog."
+  },
+
+  "miniGameKindTastefix": "Taste fix",
+  "@miniGameKindTastefix": {
+    "description": "Name of the taste-fix mini-game in the catalog."
+  },
+
+  "miniGameKindSlider": "Calibrate",
+  "@miniGameKindSlider": {
+    "description": "Name of the calibrate mini-game in the catalog."
+  },
+
+  "miniGameKindSequence": "Sequence",
+  "@miniGameKindSequence": {
+    "description": "Name of the put-in-order mini-game in the catalog."
+  },
+
+  "drillNothingToPlay": "Nothing to play here yet.",
+  "@drillNothingToPlay": {
+    "description": "Closing line when a run had no rounds."
+  },
+
+  "drillCleanSweep": "A clean sweep. Every one of them.",
+  "@drillCleanSweep": {
+    "description": "Closing line when every round was right."
+  },
+
+  "drillSharpWork": "Sharp work — that is the mark.",
+  "@drillSharpWork": {
+    "description": "Closing line for a strong run."
+  },
+
+  "drillAllMissed": "Every one of these is worth another look.",
+  "@drillAllMissed": {
+    "description": "Closing line when no round was right."
+  },
+
+  "drillWorthAnotherRun": "Worth another run — the explanations stick.",
+  "@drillWorthAnotherRun": {
+    "description": "Closing line for a middling run."
+  },
+
+  "miniGameKicker": "Mini-game",
+  "@miniGameKicker": {
+    "description": "Kicker over a mini-game's opening screen."
+  },
+
+  "miniGameLoading": "Loading the mini-game",
+  "@miniGameLoading": {
+    "description": "Announced while a mini-game is being read."
+  },
+
+  "miniGameLoadFailed": "That mini-game could not be loaded.",
+  "@miniGameLoadFailed": {
+    "description": "Shown when a mini-game cannot be read."
+  },
+
+  "miniGameNotInCatalog": "That mini-game is not in the catalog.",
+  "@miniGameNotInCatalog": {
+    "description": "Shown when the catalog no longer carries the game that was opened."
+  },
+
+  "miniGameHowToPlay": "HOW TO PLAY",
+  "@miniGameHowToPlay": {
+    "description": "Kicker over a mini-game's rules. Set upper case by the design."
+  },
+
+  "miniGamePlay": "Play",
+  "@miniGamePlay": {
+    "description": "Button that starts a mini-game."
+  },
+
+  "miniGameNotPlayable": "Not playable yet",
+  "@miniGameNotPlayable": {
+    "description": "Button state for a mini-game the learner cannot start."
+  },
+
+  "miniGameRoundOf": "Round {index} of {total}",
+  "@miniGameRoundOf": {
+    "description": "What a screen reader is told about the learner's place in a run.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "miniGameRoundsLoading": "Loading the rounds",
+  "@miniGameRoundsLoading": {
+    "description": "Announced while a mini-game's rounds are being read."
+  },
+
+  "miniGameRoundsFailed": "These rounds could not be loaded.",
+  "@miniGameRoundsFailed": {
+    "description": "Shown when a mini-game's rounds cannot be read."
+  },
+
+  "miniGameNoRounds": "This mini-game has no rounds yet.",
+  "@miniGameNoRounds": {
+    "description": "Shown when a mini-game carries nothing to play."
+  },
+
+  "miniGamePlayAgain": "Play again",
+  "@miniGamePlayAgain": {
+    "description": "Button that runs the same mini-game again."
+  },
+
+  "miniGameDone": "Done",
+  "@miniGameDone": {
+    "description": "Button that leaves a finished mini-game."
+  },
+
+  "miniGameGateNotNow": "Not now",
+  "@miniGameGateNotNow": {
+    "description": "Button that closes the sheet in front of a locked mini-game."
+  },
+
+  "miniGameTaughtIn": "TAUGHT IN MODULE {number} · {label}",
+  "@miniGameTaughtIn": {
+    "description": "Says which module teaches a locked mini-game. Set upper case by the design.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "miniGameFullCourse": "This game comes with the full course.",
+  "@miniGameFullCourse": {
+    "description": "Says a locked mini-game opens with the purchase."
+  },
+
+  "miniGameFree": "Free",
+  "@miniGameFree": {
+    "description": "Marks a mini-game the learner can play without the course."
+  },
+
+  "miniGameLockedHint": "Shows the module that teaches it",
+  "@miniGameLockedHint": {
+    "description": "Hint on a locked mini-game row, saying what tapping it does."
+  },
+
+  "miniGamesEmpty": "No mini-games available yet.",
+  "@miniGamesEmpty": {
+    "description": "Shown when the catalog has nothing to offer."
+  },
+
+  "cardsLoading": "Loading your collection",
+  "@cardsLoading": {
+    "description": "Announced while the card collection is being read."
+  },
+
+  "cardsLoadFailed": "Your collection could not be loaded.",
+  "@cardsLoadFailed": {
+    "description": "Shown when the card collection cannot be read."
+  },
+
+  "cardsInvitation": "Finish lessons to reveal new cards.",
+  "@cardsInvitation": {
+    "description": "Line under the collection, saying how new cards arrive."
+  },
+
+  "cardChallengeTried": "Challenge tried",
+  "@cardChallengeTried": {
+    "description": "Marks a card whose brew challenge the learner has attempted."
+  },
+
+  "cardChallengeToEarn": "Challenge to earn",
+  "@cardChallengeToEarn": {
+    "description": "Marks a card whose brew challenge is still to attempt."
+  },
+
+  "cardNumber": "CARD {number}",
+  "@cardNumber": {
+    "description": "Number over a card in the collection. Set upper case by the design.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+
+  "cardGoToCourse": "Go to the course",
+  "@cardGoToCourse": {
+    "description": "Button on a locked card that opens the lesson which awards it."
+  },
+
+  "cardFactLabel": "Fact",
+  "@cardFactLabel": {
+    "description": "Kicker over the fact on a card's sheet."
+  },
+
+  "cardMemorableLabel": "Memorable",
+  "@cardMemorableLabel": {
+    "description": "Kicker over the keepsake line on a reward card."
+  },
+
+  "cardEarnByModule": "Earn this by finishing {moduleTag}",
+  "@cardEarnByModule": {
+    "description": "Says a card is earned by finishing a module.",
+    "placeholders": {
+      "moduleTag": {
+        "type": "String"
+      }
+    }
+  },
+
+  "cardEarnByLesson": "Earn this by completing {lessonTitle}",
+  "@cardEarnByLesson": {
+    "description": "Says a card is earned by finishing one lesson.",
+    "placeholders": {
+      "lessonTitle": {
+        "type": "String"
+      }
+    }
+  },
+
+  "drillRunComplete": "Run complete. You scored {score} out of {total}. {encouragement}",
+  "@drillRunComplete": {
+    "description": "What a screen reader is told a finished run came to.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "encouragement": {
+        "type": "String"
+      }
+    }
   }
 }

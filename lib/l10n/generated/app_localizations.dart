@@ -897,6 +897,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Freeze earned · One missed day covered'**
   String get moduleFreezeEarned;
+
+  /// Name of the match mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Match'**
+  String get miniGameKindMatch;
+
+  /// Name of the true-or-false mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'True or false'**
+  String get miniGameKindQuiz;
+
+  /// Name of the tasting mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Name the note'**
+  String get miniGameKindFlavor;
+
+  /// Name of the blind-bag mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Blind bag'**
+  String get miniGameKindBagpick;
+
+  /// Name of the taste-fix mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Taste fix'**
+  String get miniGameKindTastefix;
+
+  /// Name of the calibrate mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibrate'**
+  String get miniGameKindSlider;
+
+  /// Name of the put-in-order mini-game in the catalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Sequence'**
+  String get miniGameKindSequence;
+
+  /// Closing line when a run had no rounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to play here yet.'**
+  String get drillNothingToPlay;
+
+  /// Closing line when every round was right.
+  ///
+  /// In en, this message translates to:
+  /// **'A clean sweep. Every one of them.'**
+  String get drillCleanSweep;
+
+  /// Closing line for a strong run.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharp work — that is the mark.'**
+  String get drillSharpWork;
+
+  /// Closing line when no round was right.
+  ///
+  /// In en, this message translates to:
+  /// **'Every one of these is worth another look.'**
+  String get drillAllMissed;
+
+  /// Closing line for a middling run.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth another run — the explanations stick.'**
+  String get drillWorthAnotherRun;
+
+  /// Kicker over a mini-game's opening screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Mini-game'**
+  String get miniGameKicker;
+
+  /// Announced while a mini-game is being read.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the mini-game'**
+  String get miniGameLoading;
+
+  /// Shown when a mini-game cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'That mini-game could not be loaded.'**
+  String get miniGameLoadFailed;
+
+  /// Shown when the catalog no longer carries the game that was opened.
+  ///
+  /// In en, this message translates to:
+  /// **'That mini-game is not in the catalog.'**
+  String get miniGameNotInCatalog;
+
+  /// Kicker over a mini-game's rules. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'HOW TO PLAY'**
+  String get miniGameHowToPlay;
+
+  /// Button that starts a mini-game.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get miniGamePlay;
+
+  /// Button state for a mini-game the learner cannot start.
+  ///
+  /// In en, this message translates to:
+  /// **'Not playable yet'**
+  String get miniGameNotPlayable;
+
+  /// What a screen reader is told about the learner's place in a run.
+  ///
+  /// In en, this message translates to:
+  /// **'Round {index} of {total}'**
+  String miniGameRoundOf(int index, int total);
+
+  /// Announced while a mini-game's rounds are being read.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the rounds'**
+  String get miniGameRoundsLoading;
+
+  /// Shown when a mini-game's rounds cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'These rounds could not be loaded.'**
+  String get miniGameRoundsFailed;
+
+  /// Shown when a mini-game carries nothing to play.
+  ///
+  /// In en, this message translates to:
+  /// **'This mini-game has no rounds yet.'**
+  String get miniGameNoRounds;
+
+  /// Button that runs the same mini-game again.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get miniGamePlayAgain;
+
+  /// Button that leaves a finished mini-game.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get miniGameDone;
+
+  /// Button that closes the sheet in front of a locked mini-game.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get miniGameGateNotNow;
+
+  /// Says which module teaches a locked mini-game. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'TAUGHT IN MODULE {number} · {label}'**
+  String miniGameTaughtIn(int number, String label);
+
+  /// Says a locked mini-game opens with the purchase.
+  ///
+  /// In en, this message translates to:
+  /// **'This game comes with the full course.'**
+  String get miniGameFullCourse;
+
+  /// Marks a mini-game the learner can play without the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get miniGameFree;
+
+  /// Hint on a locked mini-game row, saying what tapping it does.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows the module that teaches it'**
+  String get miniGameLockedHint;
+
+  /// Shown when the catalog has nothing to offer.
+  ///
+  /// In en, this message translates to:
+  /// **'No mini-games available yet.'**
+  String get miniGamesEmpty;
+
+  /// Announced while the card collection is being read.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your collection'**
+  String get cardsLoading;
+
+  /// Shown when the card collection cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Your collection could not be loaded.'**
+  String get cardsLoadFailed;
+
+  /// Line under the collection, saying how new cards arrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish lessons to reveal new cards.'**
+  String get cardsInvitation;
+
+  /// Marks a card whose brew challenge the learner has attempted.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge tried'**
+  String get cardChallengeTried;
+
+  /// Marks a card whose brew challenge is still to attempt.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenge to earn'**
+  String get cardChallengeToEarn;
+
+  /// Number over a card in the collection. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'CARD {number}'**
+  String cardNumber(String number);
+
+  /// Button on a locked card that opens the lesson which awards it.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the course'**
+  String get cardGoToCourse;
+
+  /// Kicker over the fact on a card's sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Fact'**
+  String get cardFactLabel;
+
+  /// Kicker over the keepsake line on a reward card.
+  ///
+  /// In en, this message translates to:
+  /// **'Memorable'**
+  String get cardMemorableLabel;
+
+  /// Says a card is earned by finishing a module.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn this by finishing {moduleTag}'**
+  String cardEarnByModule(String moduleTag);
+
+  /// Says a card is earned by finishing one lesson.
+  ///
+  /// In en, this message translates to:
+  /// **'Earn this by completing {lessonTitle}'**
+  String cardEarnByLesson(String lessonTitle);
+
+  /// What a screen reader is told a finished run came to.
+  ///
+  /// In en, this message translates to:
+  /// **'Run complete. You scored {score} out of {total}. {encouragement}'**
+  String drillRunComplete(int score, int total, String encouragement);
 }
 
 class _AppLocalizationsDelegate

@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/dashed_rounded_border.dart';
 import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +24,10 @@ const double _openBorder = 0.5;
 
 /// The mark in a tile's corner when its challenge is offered or done.
 ///
-/// Solid for a challenge that has been brewed, dashed for one still open: the
-/// design uses the same two languages the rest of the app does for *done* and
-/// *available*, so the pair reads without a legend.
-///
-/// The design writes the ring as a bare `1px dashed` and names no pattern, so
-/// it takes the app's own dash rhythm from [DashedRoundedBorder] rather than
-/// inventing a second one.
+/// Solid for a challenge brewed, dashed for one still open — the app's own two
+/// languages for *done* and *available*, so the pair reads without a legend.
+/// The design names no dash pattern, so it takes the rhythm from
+/// [DashedRoundedBorder].
 class CardChallengeCorner extends StatelessWidget {
   const CardChallengeCorner._({required this.state});
 
@@ -59,7 +57,9 @@ class CardChallengeCorner extends StatelessWidget {
     );
 
     return Semantics(
-      label: tried ? 'Challenge tried' : 'Challenge to earn',
+      label: tried
+          ? context.strings.cardChallengeTried
+          : context.strings.cardChallengeToEarn,
       excludeSemantics: true,
       child: Container(
         width: _cornerSize,

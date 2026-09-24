@@ -2,6 +2,7 @@ import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/cards/domain/card_unlock.dart';
 import 'package:brew_path/features/cards/presentation/card_art_well.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -16,11 +17,9 @@ enum CardSheetIntent {
 
 /// A card the learner has not earned: its face, and nothing behind it.
 ///
-/// [ADR-0015](../../../../docs/adr/0015-a-link-to-an-unearned-card-shows-its-face-not-its-payload.md)
-/// — the art, the title (the sheet's own) and the lesson that earns it, with
-/// a way in. **Not** the summary and **not** the keepsake line: those are the
-/// lesson's reward, and card ids read `c1`, `c-m2l1`, so this sheet is
-/// reachable by guessing as well as by a shared link.
+/// The art, the title and the lesson that earns it, with a way in — not the
+/// summary and not the keepsake line, which are the lesson's reward
+/// ([ADR-0015](../../../../docs/adr/0015-a-link-to-an-unearned-card-shows-its-face-not-its-payload.md)).
 class CardLockedFace extends ConsumerWidget {
   /// Creates a [CardLockedFace] for [card].
   const CardLockedFace({required this.card, super.key});
@@ -49,12 +48,16 @@ class CardLockedFace extends ConsumerWidget {
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          earnLine(lessonTitle: lessonTitle, moduleTag: card.moduleTag),
+          earnLine(
+            context.strings,
+            lessonTitle: lessonTitle,
+            moduleTag: card.moduleTag,
+          ),
           style: text.bodyLarge?.copyWith(color: mood.inkMute),
         ),
         const SizedBox(height: AppSpacing.lg),
         PrimaryButton(
-          label: 'Go to the course',
+          label: context.strings.cardGoToCourse,
           // Answers the sheet rather than navigating from inside it. Whoever
           // opened this owns the route it sits on and has to leave that route
           // before going anywhere — a `go` from here would strand the page

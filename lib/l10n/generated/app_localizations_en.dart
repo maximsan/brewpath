@@ -493,4 +493,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get moduleFreezeEarned => 'Freeze earned · One missed day covered';
+
+  @override
+  String get miniGameKindMatch => 'Match';
+
+  @override
+  String get miniGameKindQuiz => 'True or false';
+
+  @override
+  String get miniGameKindFlavor => 'Name the note';
+
+  @override
+  String get miniGameKindBagpick => 'Blind bag';
+
+  @override
+  String get miniGameKindTastefix => 'Taste fix';
+
+  @override
+  String get miniGameKindSlider => 'Calibrate';
+
+  @override
+  String get miniGameKindSequence => 'Sequence';
+
+  @override
+  String get drillNothingToPlay => 'Nothing to play here yet.';
+
+  @override
+  String get drillCleanSweep => 'A clean sweep. Every one of them.';
+
+  @override
+  String get drillSharpWork => 'Sharp work — that is the mark.';
+
+  @override
+  String get drillAllMissed => 'Every one of these is worth another look.';
+
+  @override
+  String get drillWorthAnotherRun =>
+      'Worth another run — the explanations stick.';
+
+  @override
+  String get miniGameKicker => 'Mini-game';
+
+  @override
+  String get miniGameLoading => 'Loading the mini-game';
+
+  @override
+  String get miniGameLoadFailed => 'That mini-game could not be loaded.';
+
+  @override
+  String get miniGameNotInCatalog => 'That mini-game is not in the catalog.';
+
+  @override
+  String get miniGameHowToPlay => 'HOW TO PLAY';
+
+  @override
+  String get miniGamePlay => 'Play';
+
+  @override
+  String get miniGameNotPlayable => 'Not playable yet';
+
+  @override
+  String miniGameRoundOf(int index, int total) {
+    return 'Round $index of $total';
+  }
+
+  @override
+  String get miniGameRoundsLoading => 'Loading the rounds';
+
+  @override
+  String get miniGameRoundsFailed => 'These rounds could not be loaded.';
+
+  @override
+  String get miniGameNoRounds => 'This mini-game has no rounds yet.';
+
+  @override
+  String get miniGamePlayAgain => 'Play again';
+
+  @override
+  String get miniGameDone => 'Done';
+
+  @override
+  String get miniGameGateNotNow => 'Not now';
+
+  @override
+  String miniGameTaughtIn(int number, String label) {
+    return 'TAUGHT IN MODULE $number · $label';
+  }
+
+  @override
+  String get miniGameFullCourse => 'This game comes with the full course.';
+
+  @override
+  String get miniGameFree => 'Free';
+
+  @override
+  String get miniGameLockedHint => 'Shows the module that teaches it';
+
+  @override
+  String get miniGamesEmpty => 'No mini-games available yet.';
+
+  @override
+  String get cardsLoading => 'Loading your collection';
+
+  @override
+  String get cardsLoadFailed => 'Your collection could not be loaded.';
+
+  @override
+  String get cardsInvitation => 'Finish lessons to reveal new cards.';
+
+  @override
+  String get cardChallengeTried => 'Challenge tried';
+
+  @override
+  String get cardChallengeToEarn => 'Challenge to earn';
+
+  @override
+  String cardNumber(String number) {
+    return 'CARD $number';
+  }
+
+  @override
+  String get cardGoToCourse => 'Go to the course';
+
+  @override
+  String get cardFactLabel => 'Fact';
+
+  @override
+  String get cardMemorableLabel => 'Memorable';
+
+  @override
+  String cardEarnByModule(String moduleTag) {
+    return 'Earn this by finishing $moduleTag';
+  }
+
+  @override
+  String cardEarnByLesson(String lessonTitle) {
+    return 'Earn this by completing $lessonTitle';
+  }
+
+  @override
+  String drillRunComplete(int score, int total, String encouragement) {
+    return 'Run complete. You scored $score out of $total. $encouragement';
+  }
 }

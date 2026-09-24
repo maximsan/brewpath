@@ -8,6 +8,7 @@ import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/card_tint.dart';
 import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -29,20 +30,10 @@ const double _lockedMarkOpacity = 0.45;
 
 /// One tile in the Cards grid.
 ///
-/// Earned, it names its place in the set, wears its kind's wash, and carries a
-/// corner when a Coffee Challenge is offered or done. Locked, it recedes but
-/// still says **which** card it is — `04 / 37` — so a gap in the collection is
-/// a known one rather than an anonymous blank.
-///
-/// **The design's `VISUAL GUIDE` top line is not ported.** It replaces the
-/// `CARD NN` line for one kind, and no collectible in the bank is of that
-/// kind — the tint table keeps its row, so the branch comes back with the
-/// content rather than needing to be remembered.
-///
-/// **The artwork is the card's own.** All thirty-seven drawings are extracted
-/// from the design source rather than redrawn (#480), and the wash under them
-/// is the card's own too. A kind the design has not drawn falls back to its
-/// module's mark, which is what every card showed before.
+/// Earned, it names its place in the set and wears its kind's wash; locked, it
+/// recedes but still says which card it is, so a gap is a known one. The
+/// design's `VISUAL GUIDE` line is not ported, because no collectible is of
+/// that kind. The artwork is extracted rather than redrawn (#480).
 class CardGridItemWidget extends ConsumerWidget {
   /// Creates a [CardGridItemWidget].
   const CardGridItemWidget({required this.placed, super.key});
@@ -78,7 +69,7 @@ class CardGridItemWidget extends ConsumerWidget {
       surface: cardTint(mood, item.card.kind),
       onTap: () => unawaited(showCardSheet(context, item)),
       corner: CardChallengeCorner.forState(challenge),
-      top: _SubLine('CARD $number'),
+      top: _SubLine(context.strings.cardNumber(number)),
       bottom: Text(
         item.card.title,
         maxLines: 2,
