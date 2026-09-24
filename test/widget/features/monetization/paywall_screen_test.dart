@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
+import 'package:brew_path/core/widgets/loading_indicator.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/monetization/config/paywall_config.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
@@ -347,5 +348,54 @@ void main() {
       reason: 'a paywall that cannot name a price must not take money',
     );
     expect(find.text(PaywallCopy.storeUnreachable), findsOneWidget);
+  });
+
+  testWidgets('a store that cannot be reached says so at once, not after '
+      'every retry', (tester) async {
+    // Riverpod retries a failed provider on a growing delay and keeps the
+    // loading flag on through all of it, so matching `AsyncError()` left a
+    // spinner up for the best part of a minute before the message came. An
+    // `Exception`, as a store failure is: an `Error` is never retried.
+    final container = ProviderContainer(
+      overrides: [
+        plusPitchProvider.overrideWith((ref) async => pitch),
+        paywallViewProvider.overrideWith(
+          (ref) async => throw Exception('no store'),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.cupping,
+          home: PaywallScreen(
+            onPurchased: () => exits.add('purchased'),
+            onRestored: () => exits.add('restored'),
+            onDeclined: () => exits.add('declined'),
+          ),
+        ),
+      ),
+    );
+    // Two plain pumps: the failure lands on the first, the screen on the
+    // second. A settle would wait on the retries this exists to not wait on.
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.byType(LoadingIndicator), findsNothing);
+    expect(find.text(PaywallCopy.storeUnreachable), findsOneWidget);
+    expect(
+      find.byType(PrimaryButton),
+      findsNothing,
+      reason: 'the unreachable state, not the offer with its button disabled',
+    );
+
+    await tester.tap(find.text(PaywallCopy.maybeLater));
+    expect(exits, ['declined']);
+
+    // In the body, not a teardown: disposing is what cancels the retry the
+    // provider has pending, and the pending-timer check runs before teardown.
+    container.dispose();
   });
 }
