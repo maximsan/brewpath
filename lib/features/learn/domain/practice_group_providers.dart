@@ -19,9 +19,6 @@ class OpenPracticeGroups extends _$OpenPracticeGroups {
 
   /// Shuts [group] if it is open, opens it otherwise.
   void toggle(PracticeGroupKind group) => state = state.contains(group)
-      ? {
-          for (final open in state)
-            if (open != group) open,
-        }
+      ? state.difference({group})
       : {...state, group};
 }

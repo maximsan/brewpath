@@ -29,10 +29,10 @@ void main() {
     expect(groups.last.lessons.map((entry) => entry.lesson.id), ['m2l1']);
   });
 
-  test("a group's label is the eyebrow its lessons carry", () {
+  test("a group's label is its module's own", () {
     final groups = groupLessonsByModule([_lesson('m1l1', beans)]);
 
-    expect(groups.single.label, 'MODULE 1 · BEANS');
+    expect(groups.single.label, beans.label);
   });
 
   test('nothing finished is no groups at all', () {

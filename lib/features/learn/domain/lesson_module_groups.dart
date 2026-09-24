@@ -15,9 +15,8 @@ class LessonModuleGroup {
   /// Its finished lessons, in course order.
   final List<LessonWithModule> lessons;
 
-  /// The header's label: the `MODULE 1 · BEANS` eyebrow every lesson here
-  /// already carries, lifted off the rows and onto the group.
-  String get label => lessons.first.lesson.moduleLabel;
+  /// The header's label — the module's own word, `BEANS`, beside its glyph.
+  String get label => module.label;
 }
 
 /// [lessons] grouped by module, in the order the modules are first met.

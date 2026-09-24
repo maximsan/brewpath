@@ -52,13 +52,14 @@ class MiniGamesCatalogWidget extends StatelessWidget {
             locked: group.games.every(
               (format) => !isMiniGameOpen(format, hasCourse: hasCourse),
             ),
-            mark: group.mark == null
-                ? null
-                : IconMark(
-                    group.mark!,
-                    size: PracticeSubGroup.markSize,
-                    color: mood.inkMute,
-                  ),
+            mark: switch (group.mark) {
+              null => null,
+              final mark => IconMark(
+                mark,
+                size: PracticeSubGroup.markSize,
+                color: mood.inkMute,
+              ),
+            },
             children: [
               for (final format in group.games)
                 _FormatRow(format: format, hasCourse: hasCourse),

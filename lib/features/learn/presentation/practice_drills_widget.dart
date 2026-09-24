@@ -27,7 +27,7 @@ class PracticeDrillsWidget extends StatelessWidget {
   /// step.
   static const int rowCount = 2;
 
-  /// The marks' drawn size, matching the kind glyphs they sit above.
+  /// The design's `<ReplayIcon kind={it.kind}/>` at its default `size = 20`.
   static const double _markSize = 20;
 
   @override
