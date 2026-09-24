@@ -8,20 +8,20 @@ import 'package:brew_path/features/companion/presentation/companion_celebration.
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
+import 'package:brew_path/features/learn/domain/practice_group_providers.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// The Keep Sharp state of the Today card: one recommended practice type for
 /// the day, the type's own completion rule, Roasty resting beside them, and a
-/// CTA to its surface. Once the recommendation's rule is met, the card
-/// acknowledges with an animated Roasty and a short phrase — the whole reward
-/// (§6): no repeat points, no tree growth. With no recommendation (empty
-/// pool) it degrades to a quiet caught-up note — never a dead end promising
-/// future modules.
-class KeepSharpCardBody extends StatelessWidget {
+/// Start. Once the rule is met, the card acknowledges with an animated Roasty
+/// and a short phrase — the whole reward (§6): no repeat points, no tree
+/// growth. With no recommendation it degrades to a quiet caught-up note.
+class KeepSharpCardBody extends ConsumerWidget {
   /// Creates a [KeepSharpCardBody].
   const KeepSharpCardBody({
     required this.recommendation,
@@ -51,7 +51,7 @@ class KeepSharpCardBody extends StatelessWidget {
   static const String _fallbackPhrase = 'Done for today.';
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final mood = context.mood;
     final recommended = recommendation;
@@ -87,7 +87,7 @@ class KeepSharpCardBody extends StatelessWidget {
             _acknowledgedBody(theme, mood),
           ] else ...[
             const SizedBox(height: AppSpacing.base),
-            _recommendationBody(context, theme, mood, recommended),
+            _recommendationBody(context, ref, theme, mood, recommended),
           ],
         ],
       ),
@@ -127,6 +127,7 @@ class KeepSharpCardBody extends StatelessWidget {
 
   Widget _recommendationBody(
     BuildContext context,
+    WidgetRef ref,
     ThemeData theme,
     MoodColors mood,
     KeepSharpRecommendation recommended,
@@ -165,12 +166,23 @@ class KeepSharpCardBody extends StatelessWidget {
         // Sized by Material, not `PrimaryButton`: this is an action
         // inside a card, not the screen's CTA.
         FilledButton(
-          onPressed: () =>
-              unawaited(context.goToActivity(recommended.destination)),
+          onPressed: () => _start(context, ref, recommended.start),
           child: Text('Start', semanticsLabel: 'Start: ${copy.title}'),
         ),
       ],
     );
+  }
+
+  /// What Start does: opens the practice group the type lives in, on this
+  /// tab, or goes to the drill's own surface. Opening a group starts no
+  /// activity, so only the second route asks the free day's cap.
+  void _start(BuildContext context, WidgetRef ref, KeepSharpStart start) {
+    switch (start) {
+      case OpenPracticeGroup(:final group):
+        ref.read(openPracticeGroupsProvider.notifier).open(group);
+      case OpenSurface(:final destination):
+        unawaited(context.goToActivity(destination));
+    }
   }
 
   /// The column Roasty rests beside.

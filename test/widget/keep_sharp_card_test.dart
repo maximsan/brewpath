@@ -4,11 +4,12 @@ import 'package:brew_path/features/companion/application/companion_providers.dar
 import 'package:brew_path/features/companion/domain/companion_lines.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
+import 'package:brew_path/features/learn/domain/practice_group.dart';
+import 'package:brew_path/features/learn/domain/practice_group_providers.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,10 +17,26 @@ import 'package:go_router/go_router.dart';
 
 import '../support/widget_harness.dart';
 
-final _miniGames = KeepSharpRecommendation(
+const _miniGames = KeepSharpRecommendation(
   type: PracticeType.miniGames,
-  destination: miniGameRun('g-quiz'),
+  start: OpenPracticeGroup(PracticeGroupKind.games),
 );
+
+const _replay = KeepSharpRecommendation(
+  type: PracticeType.lessonReplay,
+  start: OpenPracticeGroup(PracticeGroupKind.lessons),
+);
+
+final _vocab = KeepSharpRecommendation(
+  type: PracticeType.vocabGame,
+  start: OpenSurface(vocabGame),
+);
+
+/// Which practice groups the Start above the list has opened.
+Set<PracticeGroupKind> _openGroups(WidgetTester tester) =>
+    ProviderScope.containerOf(
+      tester.element(find.byType(MaterialApp)),
+    ).read(openPracticeGroupsProvider);
 
 /// The design seats him at `size={84}` beside the title and rule.
 const double _designRoastySize = 84;
@@ -56,16 +73,9 @@ Future<void> _pump(
         ),
         routes: [
           GoRoute(
-            path: AppRoutes.miniGameIntro.path,
-            name: AppRoutes.miniGameIntro.name,
-            builder: (_, state) =>
-                Text('game ${state.pathParameters['gameId']}'),
-          ),
-          GoRoute(
-            path: AppRoutes.lesson.path,
-            name: AppRoutes.lesson.name,
-            builder: (_, state) =>
-                Text('replay ${state.pathParameters['lessonId']}'),
+            path: AppRoutes.vocabGame.path,
+            name: AppRoutes.vocabGame.name,
+            builder: (_, _) => const Text('the vocab drill'),
           ),
         ],
       ),
@@ -108,25 +118,35 @@ void main() {
     expect(find.text('No lessons left to study.'), findsNothing);
   });
 
-  testWidgets('the CTA navigates to the recommended surface by name', (
+  testWidgets("a drill's CTA navigates to its surface by name", (
+    tester,
+  ) async {
+    await _pump(tester, keepSharp: _vocab);
+
+    await tester.tap(find.text('Start'));
+    await settleLoaders(tester);
+
+    expect(find.text('the vocab drill'), findsOneWidget);
+    expect(_openGroups(tester), isEmpty);
+  });
+
+  testWidgets('the mini-games CTA opens the Games group and goes nowhere', (
     tester,
   ) async {
     await _pump(tester, keepSharp: _miniGames);
 
     await tester.tap(find.text('Start'));
-    await settleLoaders(tester);
+    // One frame, not a settle: the resting Roasty on the card never settles.
+    await tester.pump();
 
-    expect(find.text('game g-quiz'), findsOneWidget);
+    expect(_openGroups(tester), {PracticeGroupKind.games});
+    expect(find.text('Start'), findsOneWidget, reason: 'still on the tab');
   });
 
-  testWidgets('a replay recommendation shows its rule and routes to a replay', (
+  testWidgets('a replay recommendation shows its rule and opens Lessons', (
     tester,
   ) async {
-    final replay = KeepSharpRecommendation(
-      type: PracticeType.lessonReplay,
-      destination: lessonRun('lesson_where_coffee'),
-    );
-    await _pump(tester, keepSharp: replay);
+    await _pump(tester, keepSharp: _replay);
 
     expect(
       find.text("Finish a replay of any lesson you've completed."),
@@ -134,9 +154,10 @@ void main() {
     );
 
     await tester.tap(find.text('Start'));
-    await settleLoaders(tester);
+    await tester.pump();
 
-    expect(find.text('replay lesson_where_coffee'), findsOneWidget);
+    expect(_openGroups(tester), {PracticeGroupKind.lessons});
+    expect(find.text('Start'), findsOneWidget, reason: 'still on the tab');
   });
 
   testWidgets('reduced motion renders the card without animating', (
@@ -147,7 +168,7 @@ void main() {
         data: const MediaQueryData(disableAnimations: true),
         child: MaterialApp(
           theme: AppTheme.cupping,
-          home: Scaffold(
+          home: const Scaffold(
             body: TodayCardWidget(today: null, keepSharp: _miniGames),
           ),
         ),
@@ -213,7 +234,7 @@ void main() {
           data: const MediaQueryData(disableAnimations: true),
           child: MaterialApp(
             theme: AppTheme.cupping,
-            home: Scaffold(
+            home: const Scaffold(
               body: TodayCardWidget(
                 today: null,
                 keepSharp: _miniGames,
@@ -285,10 +306,6 @@ void main() {
   testWidgets('the layout holds when the rule wraps at a large text size', (
     tester,
   ) async {
-    final replay = KeepSharpRecommendation(
-      type: PracticeType.lessonReplay,
-      destination: lessonRun('lesson_where_coffee'),
-    );
     await tester.pumpWidget(
       MediaQuery(
         data: const MediaQueryData(
@@ -296,13 +313,13 @@ void main() {
         ),
         child: MaterialApp(
           theme: AppTheme.cupping,
-          home: Scaffold(
+          home: const Scaffold(
             // Scrolls like the Learn screen does, so only a sideways
             // overflow can fail this.
             body: SingleChildScrollView(
               child: SizedBox(
                 width: _narrowPhoneWidth,
-                child: TodayCardWidget(today: null, keepSharp: replay),
+                child: TodayCardWidget(today: null, keepSharp: _replay),
               ),
             ),
           ),

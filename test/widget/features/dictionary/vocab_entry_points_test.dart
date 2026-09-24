@@ -1,6 +1,8 @@
 // The three ways into the drill, and what each promises before it is tapped.
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
@@ -10,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../support/find_mark.dart';
 import '../../../support/widget_harness.dart';
 
 /// Pumps [child] under a router whose vocab route only records that it was
@@ -104,29 +107,33 @@ void main() {
   group("the Learn tab's practice row", () {
     testWidgets('opens the drill', (tester) async {
       expect(
-        await _pumpEntry(tester, const PracticeDrillsWidget(hasCourse: false)),
+        await _pumpEntry(tester, const PracticeDrillsWidget()),
         AppRoutes.vocabGame.name,
       );
     });
 
-    testWidgets('is free, and says so, with no lock', (tester) async {
+    testWidgets('reads DICTIONARY, with no lock and no meta', (tester) async {
       // ADR-0004: the drills are content-scoped, never feature-gated. A lock
-      // mark here would say the opposite of what is true.
+      // mark here would say the opposite of what is true — and the eyebrow
+      // says where the drill draws from, the one thing the title does not.
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
             theme: AppTheme.cupping,
-            home: const Scaffold(body: PracticeDrillsWidget(hasCourse: false)),
+            home: const Scaffold(body: PracticeDrillsWidget()),
           ),
         ),
       );
 
       expect(
-        find.text('FREE'),
+        find.text(AppLabels.practiceDrillEyebrow.toUpperCase()),
         findsNWidgets(2),
-        reason: 'both drills are free — flashcards joined the card (#97)',
+        reason: 'both drills draw from the dictionary',
       );
-      expect(find.text(VocabCopy.rowSubtitle.toUpperCase()), findsOneWidget);
+      expect(findMark(AppIcon.lock), findsNothing);
+      expect(findMark(AppIcon.chevron), findsNWidgets(2));
+      expect(find.text('FREE'), findsNothing);
+      expect(find.text(VocabCopy.rowSubtitle.toUpperCase()), findsNothing);
     });
   });
 }

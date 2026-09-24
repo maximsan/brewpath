@@ -3,18 +3,36 @@ import 'package:brew_path/features/learn/presentation/practice/practice_group.da
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// Holds the open flag the way the list view does, so the group under test
+/// can be toggled by its own header.
+class _Host extends StatefulWidget {
+  const _Host({required this.isLast});
+
+  final bool isLast;
+
+  @override
+  State<_Host> createState() => _HostState();
+}
+
+class _HostState extends State<_Host> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) => PracticeGroup(
+    label: 'Games',
+    count: 15,
+    isOpen: _open,
+    onToggle: () => setState(() => _open = !_open),
+    isLast: widget.isLast,
+    children: const [Text('a row'), Text('another row')],
+  );
+}
+
 Future<void> _pump(WidgetTester tester, {bool isLast = false}) =>
     tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.darkRoast,
-        home: Scaffold(
-          body: PracticeGroup(
-            label: 'Games',
-            count: 15,
-            isLast: isLast,
-            children: const [Text('a row'), Text('another row')],
-          ),
-        ),
+        home: Scaffold(body: _Host(isLast: isLast)),
       ),
     );
 

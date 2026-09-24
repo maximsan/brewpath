@@ -15,7 +15,7 @@ abstract final class VocabCopy {
   /// The screen's name, and the label of every entry point.
   static const title = 'Guess the term';
 
-  /// The eyebrow on a practice row — what the drill asks of you.
+  /// The quick chip's hint — what the drill asks of you.
   static const rowSubtitle = 'From the definition';
 
   /// The line under the title on setup.

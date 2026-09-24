@@ -211,9 +211,10 @@ void main() {
       await _openApp(tester);
 
       expect(_practiceRow(), findsOneWidget);
+      // Both drills read DICTIONARY: the row is told apart by its title.
       expect(
-        find.text(FlashcardsCopy.practiceRowEyebrow.toUpperCase()),
-        findsOneWidget,
+        find.text(AppLabels.practiceDrillEyebrow.toUpperCase()),
+        findsNWidgets(PracticeDrillsWidget.rowCount),
       );
     });
 

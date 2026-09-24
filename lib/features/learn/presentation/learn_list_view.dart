@@ -9,6 +9,8 @@ import 'package:brew_path/features/challenges/presentation/saved_challenges_list
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/domain/lesson_position.dart';
+import 'package:brew_path/features/learn/domain/practice_group.dart';
+import 'package:brew_path/features/learn/domain/practice_group_providers.dart';
 import 'package:brew_path/features/learn/presentation/practice/practice_group.dart';
 import 'package:brew_path/features/learn/presentation/practice_any_lesson_widget.dart';
 import 'package:brew_path/features/learn/presentation/practice_drills_widget.dart';
@@ -199,6 +201,8 @@ class _PracticeShelf extends ConsumerWidget {
         const <LessonWithModule>[];
     final miniGames =
         ref.watch(miniGameFormatsProvider).asData?.value ?? const [];
+    final openGroups = ref.watch(openPracticeGroupsProvider);
+    final groups = ref.read(openPracticeGroupsProvider.notifier);
 
     return TourAnchor(
       step: TourStep.practice,
@@ -219,16 +223,20 @@ class _PracticeShelf extends ConsumerWidget {
             PracticeGroup(
               label: AppLabels.practiceLessonsGroup,
               count: finishedLessons.length,
+              isOpen: openGroups.contains(PracticeGroupKind.lessons),
+              onToggle: () => groups.toggle(PracticeGroupKind.lessons),
               children: [PracticeAnyLessonWidget(lessons: finishedLessons)],
             ),
           PracticeGroup(
             label: AppLabels.practiceGamesGroup,
             count: PracticeDrillsWidget.rowCount + miniGames.length,
+            isOpen: openGroups.contains(PracticeGroupKind.games),
+            onToggle: () => groups.toggle(PracticeGroupKind.games),
             isLast: true,
             children: [
               // The dictionary drills lead the group (ADR-0004): free, always
               // visible, and a learner's cheapest way to protect the day.
-              PracticeDrillsWidget(hasCourse: hasCourse),
+              const PracticeDrillsWidget(),
               // This row gates its tap on `hasCourse`, so an unlocked frame
               // let someone start a paid game for free.
               MiniGamesCatalogWidget(formats: miniGames, hasCourse: hasCourse),
