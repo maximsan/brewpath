@@ -18,6 +18,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -199,7 +200,13 @@ Future<void> playThrough(
   for (var round = 0; round < rounds; round++) {
     await answer(tester, correctly: correctly);
     final isLast = round == rounds - 1;
-    await tester.tap(find.text(isLast ? VocabCopy.seeScore : VocabCopy.next));
+    await tester.tap(
+      find.text(
+        isLast
+            ? AppLocalizationsEn().vocabSeeScore
+            : AppLocalizationsEn().vocabNext,
+      ),
+    );
     if (isLast) {
       await settle(tester);
     } else {
@@ -211,7 +218,7 @@ Future<void> playThrough(
 /// The round-length card for [length], found by its label rather than by its
 /// figure: a deck's count in the column beside it can be the same number.
 Finder _lengthCard(int length) => find.ancestor(
-  of: find.text(VocabCopy.lengthNames[length]!),
+  of: find.text(VocabCopy.lengthName(AppLocalizationsEn(), length)),
   matching: find.byType(PickCard),
 );
 
@@ -262,7 +269,7 @@ void main() {
 
       unawaited(router.pushNamed<void>(AppRoutes.vocabGame.name));
       await tester.pumpAndSettle();
-      expect(find.text(VocabCopy.start), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().vocabStart), findsOneWidget);
 
       await tester.tap(find.byTooltip('Close'));
       await tester.pumpAndSettle();
@@ -275,10 +282,16 @@ void main() {
     testWidgets('opens on the deck and length choices', (tester) async {
       await _pump(tester);
 
-      expect(find.text(VocabCopy.title), findsOneWidget);
-      expect(find.text(VocabCopy.deckHeading.toUpperCase()), findsOneWidget);
-      expect(find.text(VocabCopy.lengthHeading.toUpperCase()), findsOneWidget);
-      expect(find.text(VocabCopy.start), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().vocabTitle), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().vocabDeckHeading.toUpperCase()),
+        findsOneWidget,
+      );
+      expect(
+        find.text(AppLocalizationsEn().vocabLengthHeading.toUpperCase()),
+        findsOneWidget,
+      );
+      expect(find.text(AppLocalizationsEn().vocabStart), findsOneWidget);
     });
 
     testWidgets('offers only the lengths the pool can fill', (tester) async {
@@ -303,7 +316,12 @@ void main() {
     ) async {
       await _pump(tester, pools: _pools(saved: vocabMinimumPool - 1));
 
-      expect(find.textContaining(VocabCopy.savedDeckShort), findsOneWidget);
+      expect(
+        find.textContaining(
+          AppLocalizationsEn().vocabSavedDeckShort(vocabMinimumPool),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a full saved shelf opens the deck and is the default', (
@@ -311,7 +329,10 @@ void main() {
     ) async {
       await _pump(tester, pools: _pools(saved: vocabMinimumPool));
 
-      expect(find.textContaining(VocabCopy.savedDeckReady), findsOneWidget);
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabSavedDeckReady),
+        findsOneWidget,
+      );
     });
 
     testWidgets("a free learner's All deck is not called the glossary", (
@@ -319,9 +340,18 @@ void main() {
     ) async {
       await _pump(tester);
 
-      expect(find.textContaining(VocabCopy.yourTermsDeck), findsOneWidget);
-      expect(find.textContaining(VocabCopy.yourTermsNote), findsOneWidget);
-      expect(find.textContaining(VocabCopy.allDeckNote), findsNothing);
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabYourTermsDeck),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabYourTermsNote),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabAllDeckNote),
+        findsNothing,
+      );
     });
 
     testWidgets('a paying learner is told they get the whole glossary', (
@@ -331,9 +361,18 @@ void main() {
       // is every term, reference entries included.
       await _pump(tester, pools: _pools(hasCourse: true));
 
-      expect(find.textContaining(VocabCopy.allDeck), findsOneWidget);
-      expect(find.textContaining(VocabCopy.allDeckNote), findsOneWidget);
-      expect(find.textContaining(VocabCopy.yourTermsNote), findsNothing);
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabAllDeck),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabAllDeckNote),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabYourTermsNote),
+        findsNothing,
+      );
     });
 
     testWidgets('the misses deck is unavailable until four are owed', (
@@ -341,12 +380,18 @@ void main() {
     ) async {
       await _pump(tester, pools: _pools(missed: vocabMinimumPool - 1));
 
-      expect(find.textContaining(VocabCopy.missesDeck), findsOneWidget);
-      expect(find.textContaining(VocabCopy.missesDeckShort), findsOneWidget);
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabMissesDeck),
+        findsOneWidget,
+      );
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabMissesDeckShort),
+        findsOneWidget,
+      );
 
       final deck = tester.widget<PickCard>(
         find.ancestor(
-          of: find.textContaining(VocabCopy.missesDeck),
+          of: find.textContaining(AppLocalizationsEn().vocabMissesDeck),
           matching: find.byType(PickCard),
         ),
       );
@@ -358,12 +403,15 @@ void main() {
     ) async {
       await _pump(tester, pools: _pools(missed: vocabMinimumPool));
 
-      expect(find.textContaining(VocabCopy.missesDeckReady), findsOneWidget);
-      expect(find.text(VocabCopy.missesDeck), findsOneWidget);
+      expect(
+        find.textContaining(AppLocalizationsEn().vocabMissesDeckReady),
+        findsOneWidget,
+      );
+      expect(find.text(AppLocalizationsEn().vocabMissesDeck), findsOneWidget);
 
       final deck = tester.widget<PickCard>(
         find.ancestor(
-          of: find.text(VocabCopy.missesDeck),
+          of: find.text(AppLocalizationsEn().vocabMissesDeck),
           matching: find.byType(PickCard),
         ),
       );
@@ -382,7 +430,7 @@ void main() {
       }
       final whole = tester.widget<PickCard>(
         find.ancestor(
-          of: find.text(VocabCopy.wholeDeck),
+          of: find.text(AppLocalizationsEn().vocabWholeDeck),
           matching: find.byType(PickCard),
         ),
       );
@@ -390,13 +438,13 @@ void main() {
       expect(whole.onTap, isNull);
       expect(whole.titleFace, AppFace.mono);
       expect(
-        tester.getCenter(find.text(VocabCopy.wholeDeck)).dx,
+        tester.getCenter(find.text(AppLocalizationsEn().vocabWholeDeck)).dx,
         moreOrLessEquals(
           tester
               .getCenter(
                 find.descendant(
                   of: find.ancestor(
-                    of: find.text(VocabCopy.wholeDeck),
+                    of: find.text(AppLocalizationsEn().vocabWholeDeck),
                     matching: find.byType(PickCard),
                   ),
                   matching: find.text('$vocabMinimumPool'),
@@ -438,13 +486,13 @@ void main() {
 
       final misses = tester.widget<PickCard>(
         find.ancestor(
-          of: find.textContaining(VocabCopy.missesDeck),
+          of: find.textContaining(AppLocalizationsEn().vocabMissesDeck),
           matching: find.byType(PickCard),
         ),
       );
       final saved = tester.widget<PickCard>(
         find.ancestor(
-          of: find.textContaining(VocabCopy.savedDeck),
+          of: find.textContaining(AppLocalizationsEn().vocabSavedDeck),
           matching: find.byType(PickCard),
         ),
       );
@@ -458,11 +506,19 @@ void main() {
     ) async {
       await _pump(tester, pools: _pools(missed: vocabMinimumPool));
 
-      await tester.tap(find.textContaining(VocabCopy.missesDeck));
+      await tester.tap(
+        find.textContaining(AppLocalizationsEn().vocabMissesDeck),
+      );
       await tester.pumpAndSettle();
 
-      expect(find.text(VocabCopy.longerMissRoundsHint), findsOneWidget);
-      expect(find.text(VocabCopy.longerRoundsHint), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().vocabLongerMissRoundsHint),
+        findsOneWidget,
+      );
+      expect(
+        find.text(AppLocalizationsEn().vocabLongerRoundsHint),
+        findsNothing,
+      );
     });
 
     testWidgets('a choice the rules cannot offer is disabled, not just faint', (
@@ -476,7 +532,7 @@ void main() {
       final deep = tester.widget<PickCard>(_lengthCard(vocabLengths.last));
       final savedDeck = tester.widget<PickCard>(
         find.ancestor(
-          of: find.textContaining(VocabCopy.savedDeck),
+          of: find.textContaining(AppLocalizationsEn().vocabSavedDeck),
           matching: find.byType(PickCard),
         ),
       );
@@ -490,10 +546,13 @@ void main() {
     testWidgets('start deals a question with four choices', (tester) async {
       await _pump(tester);
 
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
-      expect(find.text(VocabCopy.questionLead.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().vocabQuestionLead.toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.byType(OutlinedButton), findsNWidgets(vocabChoiceCount));
       expect(find.byType(RoastMeter), findsOneWidget);
     });
@@ -502,12 +561,12 @@ void main() {
       tester,
     ) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       final button = tester.widget<FilledButton>(
         find.ancestor(
-          of: find.text(VocabCopy.next),
+          of: find.text(AppLocalizationsEn().vocabNext),
           matching: find.byType(FilledButton),
         ),
       );
@@ -517,19 +576,22 @@ void main() {
 
     testWidgets('a wrong answer still names the right term', (tester) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       await answer(tester, correctly: false);
 
       expect(find.textContaining('NOT QUITE'), findsOneWidget);
-      expect(find.text(VocabCopy.readEntry.toUpperCase()), findsNothing);
-      expect(find.text(VocabCopy.readEntry), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().vocabReadEntry.toUpperCase()),
+        findsNothing,
+      );
+      expect(find.text(AppLocalizationsEn().vocabReadEntry), findsOneWidget);
     });
 
     testWidgets('the verdict stands where a vocab round does', (tester) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       await answer(tester, correctly: true);
@@ -544,7 +606,7 @@ void main() {
   group('the score', () {
     testWidgets('a clean run scores every round', (tester) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       await playThrough(tester, rounds: vocabLengths.first);
@@ -558,7 +620,7 @@ void main() {
 
     testWidgets('a run of wrong answers scores none of them', (tester) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       await playThrough(tester, rounds: vocabLengths.first, correctly: false);
@@ -568,21 +630,21 @@ void main() {
 
     testWidgets('change round returns to setup', (tester) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
       await playThrough(tester, rounds: vocabLengths.first);
 
-      await tester.tap(find.text(VocabCopy.changeRound));
+      await tester.tap(find.text(AppLocalizationsEn().vocabChangeRound));
       await tester.pumpAndSettle();
 
-      expect(find.text(VocabCopy.start), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().vocabStart), findsOneWidget);
     });
   });
 
   group('what answering writes to the review deck', () {
     testWidgets('a wrong answer adds the term, in any deck', (tester) async {
       final container = await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       final asked = _accessible.firstWhere(
@@ -602,7 +664,7 @@ void main() {
       tester,
     ) async {
       final container = await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       final asked = _accessible.firstWhere(
@@ -622,13 +684,14 @@ void main() {
       tester,
     ) async {
       await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
       await playThrough(tester, rounds: vocabLengths.first, correctly: false);
 
       expect(
         find.textContaining(
           VocabCopy.reviewDeckLine(
+            AppLocalizationsEn(),
             vocabLengths.first,
             fromReviewDeck: false,
           ).trim(),
@@ -638,7 +701,7 @@ void main() {
 
       // A second, clean drill must not report the first one's misses: the
       // count is per drill, not per visit to the screen.
-      await tester.tap(find.text(VocabCopy.playAgain));
+      await tester.tap(find.text(AppLocalizationsEn().vocabPlayAgain));
       await tester.pumpAndSettle();
       await playThrough(tester, rounds: vocabLengths.first);
 
@@ -654,9 +717,11 @@ void main() {
         tester,
         pools: _pools(missed: _accessible.length),
       );
-      await tester.tap(find.textContaining(VocabCopy.missesDeck));
+      await tester.tap(
+        find.textContaining(AppLocalizationsEn().vocabMissesDeck),
+      );
       await tester.pumpAndSettle();
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
       await playThrough(tester, rounds: vocabLengths.first, correctly: false);
 
@@ -670,7 +735,7 @@ void main() {
       // The deck is not the drill's score: a question answered wrong was
       // answered wrong, whether or not the learner stayed for the total.
       final container = await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       await answer(tester, correctly: false);
@@ -689,7 +754,7 @@ void main() {
       tester,
     ) async {
       final container = await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       await playThrough(tester, rounds: vocabLengths.first);
@@ -721,12 +786,12 @@ void main() {
         now: DateTime.now(),
       );
 
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
       await playThrough(tester, rounds: vocabLengths.first);
       await settle(tester);
 
-      await tester.tap(find.text(VocabCopy.playAgain));
+      await tester.tap(find.text(AppLocalizationsEn().vocabPlayAgain));
       await settle(tester);
 
       expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
@@ -741,7 +806,7 @@ void main() {
 
     testWidgets('an abandoned drill records nothing', (tester) async {
       final container = await _pump(tester);
-      await tester.tap(find.text(VocabCopy.start));
+      await tester.tap(find.text(AppLocalizationsEn().vocabStart));
       await tester.pumpAndSettle();
 
       // One question answered, then the learner leaves.
@@ -765,8 +830,11 @@ void main() {
       );
 
       expect(find.byType(VocabTeachingView), findsOneWidget);
-      expect(find.text(VocabCopy.teachingTitle), findsOneWidget);
-      expect(find.text(VocabCopy.start), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().vocabTeachingTitle),
+        findsOneWidget,
+      );
+      expect(find.text(AppLocalizationsEn().vocabStart), findsNothing);
     });
   });
 }

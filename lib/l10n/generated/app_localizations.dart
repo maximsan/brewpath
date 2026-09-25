@@ -1509,6 +1509,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Flip and recall'**
   String get flashcardsPracticeRowEyebrow;
+
+  /// Name of the vocab drill, on every surface that opens it.
+  ///
+  /// In en, this message translates to:
+  /// **'Guess the term'**
+  String get vocabTitle;
+
+  /// Eyebrow on a practice row, saying what the drill asks.
+  ///
+  /// In en, this message translates to:
+  /// **'From the definition'**
+  String get vocabRowSubtitle;
+
+  /// Line under the title on the drill's setup screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Read a definition, pick the term. Choose your deck and how long a round you want.'**
+  String get vocabSetupBlurb;
+
+  /// Heading over the deck choices on setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck'**
+  String get vocabDeckHeading;
+
+  /// Heading over the length choices on setup.
+  ///
+  /// In en, this message translates to:
+  /// **'Round length'**
+  String get vocabLengthHeading;
+
+  /// Name of the shortest offered round.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick'**
+  String get vocabLengthQuick;
+
+  /// Name of the middle offered round.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get vocabLengthStandard;
+
+  /// Name of the longest offered round.
+  ///
+  /// In en, this message translates to:
+  /// **'Deep'**
+  String get vocabLengthDeep;
+
+  /// The bookmarked-terms deck's row.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved terms'**
+  String get vocabSavedDeck;
+
+  /// What the saved deck offers once it has enough on it.
+  ///
+  /// In en, this message translates to:
+  /// **'The terms you have bookmarked'**
+  String get vocabSavedDeckReady;
+
+  /// What the saved deck says before it has enough. Stated as the number it needs, so the row explains itself rather than only refusing.
+  ///
+  /// In en, this message translates to:
+  /// **'Save {minimum} or more terms to unlock'**
+  String vocabSavedDeckShort(int minimum);
+
+  /// The missed-terms deck's row.
+  ///
+  /// In en, this message translates to:
+  /// **'Review misses'**
+  String get vocabMissesDeck;
+
+  /// What the misses deck offers once enough terms are owed a review.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms you have missed before'**
+  String get vocabMissesDeckReady;
+
+  /// What the misses deck says before then. States the condition rather than asking for it — nobody sets out to miss questions.
+  ///
+  /// In en, this message translates to:
+  /// **'Miss a few first'**
+  String get vocabMissesDeckShort;
+
+  /// The all-terms deck's row, for a learner who owns the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole glossary'**
+  String get vocabAllDeck;
+
+  /// The all-terms deck's row for a free learner, whose pool the course scoped.
+  ///
+  /// In en, this message translates to:
+  /// **'Your terms'**
+  String get vocabYourTermsDeck;
+
+  /// What the all-terms deck holds for a learner who owns the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Every term in the dictionary'**
+  String get vocabAllDeckNote;
+
+  /// What a free learner's deck holds. Mentioned, not taught — ADR-0014's rule.
+  ///
+  /// In en, this message translates to:
+  /// **'Every term your lessons mention'**
+  String get vocabYourTermsNote;
+
+  /// The whole-deck length card, shown when no offered length fits.
+  ///
+  /// In en, this message translates to:
+  /// **'Every term in this deck'**
+  String get vocabWholeDeck;
+
+  /// Nudge under a saved deck too short for the longer rounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Longer rounds unlock as you bookmark more terms.'**
+  String get vocabLongerRoundsHint;
+
+  /// Nudge under a misses deck too short for the longer rounds.
+  ///
+  /// In en, this message translates to:
+  /// **'Longer rounds unlock as you log more misses.'**
+  String get vocabLongerMissRoundsHint;
+
+  /// Starts the drill.
+  ///
+  /// In en, this message translates to:
+  /// **'Start round'**
+  String get vocabStart;
+
+  /// The question's lead-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Which term means…'**
+  String get vocabQuestionLead;
+
+  /// Advances past an answered question.
+  ///
+  /// In en, this message translates to:
+  /// **'Next question'**
+  String get vocabNext;
+
+  /// Ends the last question.
+  ///
+  /// In en, this message translates to:
+  /// **'See score'**
+  String get vocabSeeScore;
+
+  /// Link out of an answered question into the term's entry.
+  ///
+  /// In en, this message translates to:
+  /// **'See the full entry'**
+  String get vocabReadEntry;
+
+  /// Runs the drill again with a fresh draw.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get vocabPlayAgain;
+
+  /// Returns to setup to pick a different deck or length.
+  ///
+  /// In en, this message translates to:
+  /// **'Change round'**
+  String get vocabChangeRound;
+
+  /// Heading shown when the pool cannot fill a question. The drill never pads from the full glossary.
+  ///
+  /// In en, this message translates to:
+  /// **'A few more terms first'**
+  String get vocabTeachingTitle;
+
+  /// Body of the teaching state, naming what would actually help.
+  ///
+  /// In en, this message translates to:
+  /// **'The game draws on the terms your lessons mention, and it needs at least {minimum}. Play a lesson or two and come back.'**
+  String vocabTeachingBody(int minimum);
+
+  /// The teaching state's way out.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to learning'**
+  String get vocabTeachingAction;
+
+  /// Announced while the drill's pools resolve.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the drill'**
+  String get vocabLoading;
+
+  /// Shown when the drill's pools cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'This drill could not be loaded.'**
+  String get vocabLoadFailed;
+
+  /// What a screen reader is told about the learner's place in a round.
+  ///
+  /// In en, this message translates to:
+  /// **'Question {position} of {total}'**
+  String vocabProgress(int position, int total);
+
+  /// What a screen reader is told about the right choice once a question is answered.
+  ///
+  /// In en, this message translates to:
+  /// **'{term}, correct'**
+  String vocabAnsweredChoiceCorrect(String term);
+
+  /// What a screen reader is told about a wrong choice once a question is answered.
+  ///
+  /// In en, this message translates to:
+  /// **'{term}, incorrect'**
+  String vocabAnsweredChoiceIncorrect(String term);
+
+  /// Verdict over a missed question. Names the term, which is the whole teaching moment.
+  ///
+  /// In en, this message translates to:
+  /// **'{notQuite} — it\'s {answer}'**
+  String vocabVerdictWrong(String notQuite, String answer);
+
+  /// Verdict over an answered question the learner got right.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get vocabCorrectVerdict;
+
+  /// What the score adds when the round was drawn from the review deck, where a missed term was already in it. Opens on a space, joining the line before it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{ The {count} term you missed was kept in your review deck.} other{ The {count} terms you missed were kept in your review deck.}}'**
+  String vocabReviewDeckKept(int count);
+
+  /// What the score adds when the round was not drawn from the review deck. Opens on a space, joining the line before it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{ The {count} term you missed was added to your review deck.} other{ The {count} terms you missed were added to your review deck.}}'**
+  String vocabReviewDeckAdded(int count);
+
+  /// Line under a score for a round with no questions.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to drill here yet.'**
+  String get vocabNothingToDrill;
+
+  /// Line under a perfect score.
+  ///
+  /// In en, this message translates to:
+  /// **'Every one of them. That is the whole deck.'**
+  String get vocabWholeDeckScore;
+
+  /// Line under a strong score.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharp palate. You know these cold.'**
+  String get vocabSharpPalate;
+
+  /// Line under a middling score.
+  ///
+  /// In en, this message translates to:
+  /// **'Solid round — run it back to sharpen up.'**
+  String get vocabSolidRound;
+
+  /// Line under a weak score.
+  ///
+  /// In en, this message translates to:
+  /// **'Worth another pass. The definitions stick faster the second time.'**
+  String get vocabWorthAnotherPass;
 }
 
 class _AppLocalizationsDelegate

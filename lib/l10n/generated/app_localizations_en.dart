@@ -884,4 +884,172 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flashcardsPracticeRowEyebrow => 'Flip and recall';
+
+  @override
+  String get vocabTitle => 'Guess the term';
+
+  @override
+  String get vocabRowSubtitle => 'From the definition';
+
+  @override
+  String get vocabSetupBlurb =>
+      'Read a definition, pick the term. Choose your deck and how long a round you want.';
+
+  @override
+  String get vocabDeckHeading => 'Deck';
+
+  @override
+  String get vocabLengthHeading => 'Round length';
+
+  @override
+  String get vocabLengthQuick => 'Quick';
+
+  @override
+  String get vocabLengthStandard => 'Standard';
+
+  @override
+  String get vocabLengthDeep => 'Deep';
+
+  @override
+  String get vocabSavedDeck => 'Saved terms';
+
+  @override
+  String get vocabSavedDeckReady => 'The terms you have bookmarked';
+
+  @override
+  String vocabSavedDeckShort(int minimum) {
+    return 'Save $minimum or more terms to unlock';
+  }
+
+  @override
+  String get vocabMissesDeck => 'Review misses';
+
+  @override
+  String get vocabMissesDeckReady => 'Terms you have missed before';
+
+  @override
+  String get vocabMissesDeckShort => 'Miss a few first';
+
+  @override
+  String get vocabAllDeck => 'Whole glossary';
+
+  @override
+  String get vocabYourTermsDeck => 'Your terms';
+
+  @override
+  String get vocabAllDeckNote => 'Every term in the dictionary';
+
+  @override
+  String get vocabYourTermsNote => 'Every term your lessons mention';
+
+  @override
+  String get vocabWholeDeck => 'Every term in this deck';
+
+  @override
+  String get vocabLongerRoundsHint =>
+      'Longer rounds unlock as you bookmark more terms.';
+
+  @override
+  String get vocabLongerMissRoundsHint =>
+      'Longer rounds unlock as you log more misses.';
+
+  @override
+  String get vocabStart => 'Start round';
+
+  @override
+  String get vocabQuestionLead => 'Which term means…';
+
+  @override
+  String get vocabNext => 'Next question';
+
+  @override
+  String get vocabSeeScore => 'See score';
+
+  @override
+  String get vocabReadEntry => 'See the full entry';
+
+  @override
+  String get vocabPlayAgain => 'Play again';
+
+  @override
+  String get vocabChangeRound => 'Change round';
+
+  @override
+  String get vocabTeachingTitle => 'A few more terms first';
+
+  @override
+  String vocabTeachingBody(int minimum) {
+    return 'The game draws on the terms your lessons mention, and it needs at least $minimum. Play a lesson or two and come back.';
+  }
+
+  @override
+  String get vocabTeachingAction => 'Back to learning';
+
+  @override
+  String get vocabLoading => 'Loading the drill';
+
+  @override
+  String get vocabLoadFailed => 'This drill could not be loaded.';
+
+  @override
+  String vocabProgress(int position, int total) {
+    return 'Question $position of $total';
+  }
+
+  @override
+  String vocabAnsweredChoiceCorrect(String term) {
+    return '$term, correct';
+  }
+
+  @override
+  String vocabAnsweredChoiceIncorrect(String term) {
+    return '$term, incorrect';
+  }
+
+  @override
+  String vocabVerdictWrong(String notQuite, String answer) {
+    return '$notQuite — it\'s $answer';
+  }
+
+  @override
+  String get vocabCorrectVerdict => 'Correct';
+
+  @override
+  String vocabReviewDeckKept(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: ' The $count terms you missed were kept in your review deck.',
+      one: ' The $count term you missed was kept in your review deck.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String vocabReviewDeckAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: ' The $count terms you missed were added to your review deck.',
+      one: ' The $count term you missed was added to your review deck.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get vocabNothingToDrill => 'Nothing to drill here yet.';
+
+  @override
+  String get vocabWholeDeckScore =>
+      'Every one of them. That is the whole deck.';
+
+  @override
+  String get vocabSharpPalate => 'Sharp palate. You know these cold.';
+
+  @override
+  String get vocabSolidRound => 'Solid round — run it back to sharpen up.';
+
+  @override
+  String get vocabWorthAnotherPass =>
+      'Worth another pass. The definitions stick faster the second time.';
 }

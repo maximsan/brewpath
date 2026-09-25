@@ -61,7 +61,10 @@ class VocabQuestionView extends StatelessWidget {
             if (question.categoryLabel case final label?)
               SmallcapsLabel(label, color: mood.inkMute),
             const SizedBox(height: AppSpacing.sm),
-            SmallcapsLabel(VocabCopy.questionLead, color: mood.accentText),
+            SmallcapsLabel(
+              context.strings.vocabQuestionLead,
+              color: mood.accentText,
+            ),
             const SizedBox(height: AppSpacing.xs),
             // The definition is the question, set at title size: it is the
             // thing being read, not a label over the thing.
@@ -125,7 +128,7 @@ class _Verdict extends StatelessWidget {
       outcome: isCorrect ? Verdict.right : Verdict.wrong,
       placement: VerdictPlacement.vocabRound,
       extra: LinkButton(
-        label: VocabCopy.readEntry,
+        label: context.strings.vocabReadEntry,
         onPressed: () => unawaited(context.pushDictionaryTerm(round.answer.id)),
       ),
     );

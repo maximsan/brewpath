@@ -1549,5 +1549,276 @@
   "flashcardsPracticeRowEyebrow": "Flip and recall",
   "@flashcardsPracticeRowEyebrow": {
     "description": "Eyebrow on the Learn tab's flashcards practice row."
+  },
+
+  "vocabTitle": "Guess the term",
+  "@vocabTitle": {
+    "description": "Name of the vocab drill, on every surface that opens it."
+  },
+
+  "vocabRowSubtitle": "From the definition",
+  "@vocabRowSubtitle": {
+    "description": "Eyebrow on a practice row, saying what the drill asks."
+  },
+
+  "vocabSetupBlurb": "Read a definition, pick the term. Choose your deck and how long a round you want.",
+  "@vocabSetupBlurb": {
+    "description": "Line under the title on the drill's setup screen."
+  },
+
+  "vocabDeckHeading": "Deck",
+  "@vocabDeckHeading": {
+    "description": "Heading over the deck choices on setup."
+  },
+
+  "vocabLengthHeading": "Round length",
+  "@vocabLengthHeading": {
+    "description": "Heading over the length choices on setup."
+  },
+
+  "vocabLengthQuick": "Quick",
+  "@vocabLengthQuick": {
+    "description": "Name of the shortest offered round."
+  },
+
+  "vocabLengthStandard": "Standard",
+  "@vocabLengthStandard": {
+    "description": "Name of the middle offered round."
+  },
+
+  "vocabLengthDeep": "Deep",
+  "@vocabLengthDeep": {
+    "description": "Name of the longest offered round."
+  },
+
+  "vocabSavedDeck": "Saved terms",
+  "@vocabSavedDeck": {
+    "description": "The bookmarked-terms deck's row."
+  },
+
+  "vocabSavedDeckReady": "The terms you have bookmarked",
+  "@vocabSavedDeckReady": {
+    "description": "What the saved deck offers once it has enough on it."
+  },
+
+  "vocabSavedDeckShort": "Save {minimum} or more terms to unlock",
+  "@vocabSavedDeckShort": {
+    "description": "What the saved deck says before it has enough. Stated as the number it needs, so the row explains itself rather than only refusing.",
+    "placeholders": {
+      "minimum": {
+        "type": "int"
+      }
+    }
+  },
+
+  "vocabMissesDeck": "Review misses",
+  "@vocabMissesDeck": {
+    "description": "The missed-terms deck's row."
+  },
+
+  "vocabMissesDeckReady": "Terms you have missed before",
+  "@vocabMissesDeckReady": {
+    "description": "What the misses deck offers once enough terms are owed a review."
+  },
+
+  "vocabMissesDeckShort": "Miss a few first",
+  "@vocabMissesDeckShort": {
+    "description": "What the misses deck says before then. States the condition rather than asking for it — nobody sets out to miss questions."
+  },
+
+  "vocabAllDeck": "Whole glossary",
+  "@vocabAllDeck": {
+    "description": "The all-terms deck's row, for a learner who owns the course."
+  },
+
+  "vocabYourTermsDeck": "Your terms",
+  "@vocabYourTermsDeck": {
+    "description": "The all-terms deck's row for a free learner, whose pool the course scoped."
+  },
+
+  "vocabAllDeckNote": "Every term in the dictionary",
+  "@vocabAllDeckNote": {
+    "description": "What the all-terms deck holds for a learner who owns the course."
+  },
+
+  "vocabYourTermsNote": "Every term your lessons mention",
+  "@vocabYourTermsNote": {
+    "description": "What a free learner's deck holds. Mentioned, not taught — ADR-0014's rule."
+  },
+
+  "vocabWholeDeck": "Every term in this deck",
+  "@vocabWholeDeck": {
+    "description": "The whole-deck length card, shown when no offered length fits."
+  },
+
+  "vocabLongerRoundsHint": "Longer rounds unlock as you bookmark more terms.",
+  "@vocabLongerRoundsHint": {
+    "description": "Nudge under a saved deck too short for the longer rounds."
+  },
+
+  "vocabLongerMissRoundsHint": "Longer rounds unlock as you log more misses.",
+  "@vocabLongerMissRoundsHint": {
+    "description": "Nudge under a misses deck too short for the longer rounds."
+  },
+
+  "vocabStart": "Start round",
+  "@vocabStart": {
+    "description": "Starts the drill."
+  },
+
+  "vocabQuestionLead": "Which term means…",
+  "@vocabQuestionLead": {
+    "description": "The question's lead-in."
+  },
+
+  "vocabNext": "Next question",
+  "@vocabNext": {
+    "description": "Advances past an answered question."
+  },
+
+  "vocabSeeScore": "See score",
+  "@vocabSeeScore": {
+    "description": "Ends the last question."
+  },
+
+  "vocabReadEntry": "See the full entry",
+  "@vocabReadEntry": {
+    "description": "Link out of an answered question into the term's entry."
+  },
+
+  "vocabPlayAgain": "Play again",
+  "@vocabPlayAgain": {
+    "description": "Runs the drill again with a fresh draw."
+  },
+
+  "vocabChangeRound": "Change round",
+  "@vocabChangeRound": {
+    "description": "Returns to setup to pick a different deck or length."
+  },
+
+  "vocabTeachingTitle": "A few more terms first",
+  "@vocabTeachingTitle": {
+    "description": "Heading shown when the pool cannot fill a question. The drill never pads from the full glossary."
+  },
+
+  "vocabTeachingBody": "The game draws on the terms your lessons mention, and it needs at least {minimum}. Play a lesson or two and come back.",
+  "@vocabTeachingBody": {
+    "description": "Body of the teaching state, naming what would actually help.",
+    "placeholders": {
+      "minimum": {
+        "type": "int"
+      }
+    }
+  },
+
+  "vocabTeachingAction": "Back to learning",
+  "@vocabTeachingAction": {
+    "description": "The teaching state's way out."
+  },
+
+  "vocabLoading": "Loading the drill",
+  "@vocabLoading": {
+    "description": "Announced while the drill's pools resolve."
+  },
+
+  "vocabLoadFailed": "This drill could not be loaded.",
+  "@vocabLoadFailed": {
+    "description": "Shown when the drill's pools cannot be read."
+  },
+
+  "vocabProgress": "Question {position} of {total}",
+  "@vocabProgress": {
+    "description": "What a screen reader is told about the learner's place in a round.",
+    "placeholders": {
+      "position": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "vocabAnsweredChoiceCorrect": "{term}, correct",
+  "@vocabAnsweredChoiceCorrect": {
+    "description": "What a screen reader is told about the right choice once a question is answered.",
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    }
+  },
+
+  "vocabAnsweredChoiceIncorrect": "{term}, incorrect",
+  "@vocabAnsweredChoiceIncorrect": {
+    "description": "What a screen reader is told about a wrong choice once a question is answered.",
+    "placeholders": {
+      "term": {
+        "type": "String"
+      }
+    }
+  },
+
+  "vocabVerdictWrong": "{notQuite} — it's {answer}",
+  "@vocabVerdictWrong": {
+    "description": "Verdict over a missed question. Names the term, which is the whole teaching moment.",
+    "placeholders": {
+      "notQuite": {
+        "type": "String"
+      },
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+
+  "vocabCorrectVerdict": "Correct",
+  "@vocabCorrectVerdict": {
+    "description": "Verdict over an answered question the learner got right."
+  },
+
+  "vocabReviewDeckKept": "{count, plural, =1{ The {count} term you missed was kept in your review deck.} other{ The {count} terms you missed were kept in your review deck.}}",
+  "@vocabReviewDeckKept": {
+    "description": "What the score adds when the round was drawn from the review deck, where a missed term was already in it. Opens on a space, joining the line before it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "vocabReviewDeckAdded": "{count, plural, =1{ The {count} term you missed was added to your review deck.} other{ The {count} terms you missed were added to your review deck.}}",
+  "@vocabReviewDeckAdded": {
+    "description": "What the score adds when the round was not drawn from the review deck. Opens on a space, joining the line before it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "vocabNothingToDrill": "Nothing to drill here yet.",
+  "@vocabNothingToDrill": {
+    "description": "Line under a score for a round with no questions."
+  },
+
+  "vocabWholeDeckScore": "Every one of them. That is the whole deck.",
+  "@vocabWholeDeckScore": {
+    "description": "Line under a perfect score."
+  },
+
+  "vocabSharpPalate": "Sharp palate. You know these cold.",
+  "@vocabSharpPalate": {
+    "description": "Line under a strong score."
+  },
+
+  "vocabSolidRound": "Solid round — run it back to sharpen up.",
+  "@vocabSolidRound": {
+    "description": "Line under a middling score."
+  },
+
+  "vocabWorthAnotherPass": "Worth another pass. The definitions stick faster the second time.",
+  "@vocabWorthAnotherPass": {
+    "description": "Line under a weak score."
   }
 }

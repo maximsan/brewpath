@@ -20,6 +20,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_question_
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_setup_view.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -215,7 +216,10 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
             ? RoastMeter(
                 position: _index + 1,
                 total: total,
-                semanticsLabel: VocabCopy.progress(_index + 1, total),
+                semanticsLabel: context.strings.vocabProgress(
+                  _index + 1,
+                  total,
+                ),
               )
             : null,
       ),
@@ -225,11 +229,11 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
         padding: FloatTopbar.barRoom(context),
         child: pools.when(
           loading: () => Semantics(
-            label: VocabCopy.loading,
+            label: context.strings.vocabLoading,
             child: const LoadingIndicator(),
           ),
           error: (error, _) => Semantics(
-            label: VocabCopy.loadFailed,
+            label: context.strings.vocabLoadFailed,
             excludeSemantics: true,
             child: ErrorView(message: '$error'),
           ),
@@ -270,7 +274,9 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
       picked: _picked,
       onPick: _pick,
       next: (
-        label: isLast ? VocabCopy.seeScore : VocabCopy.next,
+        label: isLast
+            ? context.strings.vocabSeeScore
+            : context.strings.vocabNext,
         onPressed: _next,
       ),
     );
@@ -284,18 +290,26 @@ class _VocabGameScreenState extends ConsumerState<VocabGameScreen> {
         score: _score,
         total: total,
         encouragement:
-            VocabCopy.encouragement(score: _score, total: total) +
+            VocabCopy.encouragement(
+              context.strings,
+              score: _score,
+              total: total,
+            ) +
             VocabCopy.reviewDeckLine(
+              context.strings,
               _missed,
               fromReviewDeck: _deck == VocabDeck.misses,
             ),
         celebratory: isCelebratoryScore(score: _score, total: total),
       ),
       primary: (
-        label: VocabCopy.playAgain,
+        label: context.strings.vocabPlayAgain,
         onPressed: () => _start(pools),
       ),
-      secondary: (label: VocabCopy.changeRound, onPressed: _changeRound),
+      secondary: (
+        label: context.strings.vocabChangeRound,
+        onPressed: _changeRound,
+      ),
     );
   }
 }

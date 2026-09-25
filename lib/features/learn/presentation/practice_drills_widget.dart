@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
-import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
@@ -61,8 +60,8 @@ class PracticeDrillsWidget extends StatelessWidget {
             color: mood.inkMute,
             accent: mood.accent,
           ),
-          title: VocabCopy.title,
-          sub: VocabCopy.rowSubtitle,
+          title: context.strings.vocabTitle,
+          sub: context.strings.vocabRowSubtitle,
           meta: _meta(context.strings),
           onTap: () => unawaited(context.pushActivity(vocabGame)),
         ),

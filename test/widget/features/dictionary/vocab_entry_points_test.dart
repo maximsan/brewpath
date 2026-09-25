@@ -2,10 +2,10 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
-import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice_drills_widget.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,7 +51,7 @@ Future<String?> _pumpEntry(WidgetTester tester, Widget child) async {
   );
   await tester.pumpAndSettle();
 
-  await tester.tap(find.text(VocabCopy.title));
+  await tester.tap(find.text(AppLocalizationsEn().vocabTitle));
   // Not pumpAndSettle: the row asks the free day's allowance before it opens
   // the drill (#216), and that read is real database I/O.
   await settleLoaders(tester);
@@ -103,7 +103,10 @@ void main() {
         ),
       );
 
-      expect(find.bySemanticsLabel(VocabCopy.title), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(AppLocalizationsEn().vocabTitle),
+        findsOneWidget,
+      );
       semantics.dispose();
     });
   });
@@ -134,7 +137,10 @@ void main() {
         findsNWidgets(2),
         reason: 'both drills are free — flashcards joined the card (#97)',
       );
-      expect(find.text(VocabCopy.rowSubtitle.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().vocabRowSubtitle.toUpperCase()),
+        findsOneWidget,
+      );
     });
   });
 }

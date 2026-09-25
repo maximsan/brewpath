@@ -4,6 +4,7 @@ import 'package:brew_path/core/widgets/section_header.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -54,11 +55,17 @@ class VocabSetupView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(VocabCopy.title, style: AppText.display(mood: mood)),
+            Text(
+              context.strings.vocabTitle,
+              style: AppText.display(mood: mood),
+            ),
             const SizedBox(height: AppSpacing.xs),
-            Text(VocabCopy.setupBlurb, style: AppText.body(mood: mood)),
+            Text(
+              context.strings.vocabSetupBlurb,
+              style: AppText.body(mood: mood),
+            ),
             const SizedBox(height: AppSpacing.lg),
-            const SectionHeader(VocabCopy.deckHeading),
+            SectionHeader(context.strings.vocabDeckHeading),
             const SizedBox(height: AppSpacing.xs),
             _DeckCard(
               deck: VocabDeck.saved,
@@ -82,7 +89,7 @@ class VocabSetupView extends StatelessWidget {
               onChoice: onChoice,
             ),
             const SizedBox(height: AppSpacing.lg),
-            const SectionHeader(VocabCopy.lengthHeading),
+            SectionHeader(context.strings.vocabLengthHeading),
             const SizedBox(height: AppSpacing.xs),
             _Lengths(
               fits: fits,
@@ -95,13 +102,16 @@ class VocabSetupView extends StatelessWidget {
               const SizedBox(height: AppSpacing.xs),
               Text(
                 choice.deck == VocabDeck.misses
-                    ? VocabCopy.longerMissRoundsHint
-                    : VocabCopy.longerRoundsHint,
+                    ? context.strings.vocabLongerMissRoundsHint
+                    : context.strings.vocabLongerRoundsHint,
                 style: AppText.support(mood: mood),
               ),
             ],
             const SizedBox(height: AppSpacing.xl),
-            PrimaryButton(label: VocabCopy.start, onPressed: onStart),
+            PrimaryButton(
+              label: context.strings.vocabStart,
+              onPressed: onStart,
+            ),
           ],
         ),
       ),
@@ -132,6 +142,7 @@ class _DeckCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final available = deck == VocabDeck.all || vocabDeckAvailable(size);
     final row = VocabCopy.deckRow(
+      context.strings,
       deck,
       hasCourse: hasCourse,
       available: available,
@@ -171,7 +182,7 @@ class _Lengths extends StatelessWidget {
     if (fits.isEmpty) {
       return PickCard.centred(
         title: '$poolSize',
-        description: VocabCopy.wholeDeck,
+        description: context.strings.vocabWholeDeck,
         selected: true,
         onTap: null,
         titleFace: AppFace.mono,
@@ -193,7 +204,7 @@ class _Lengths extends StatelessWidget {
             Expanded(
               child: PickCard.centred(
                 title: '$length',
-                description: VocabCopy.lengthNames[length] ?? '',
+                description: VocabCopy.lengthName(context.strings, length),
                 selected: active == length,
                 onTap: fits.contains(length)
                     ? () => onChoice((deck: choice.deck, length: length))

@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/primary_button.dart';
-import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
+import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -7,12 +8,10 @@ import 'package:flutter/material.dart';
 
 /// What the drill shows when the learner's pool cannot fill a question.
 ///
-/// It never pads from the full glossary: that would hand a free learner the
-/// premium term names the tier rule exists to withhold (#57). So the drill
-/// declines and points at what would fix it.
-///
-/// Unreachable on the shipped banks, and kept because the pool is derived —
-/// narrowing the free lesson list makes it reachable with no edit here.
+/// It never pads from the full glossary, which would hand a free learner the
+/// premium term names the tier rule withholds (#57), so it declines and points
+/// at the fix. Unreachable on the shipped banks and kept because the pool is
+/// derived: narrowing the free lesson list makes it reachable with no edit.
 class VocabTeachingView extends StatelessWidget {
   /// Creates a [VocabTeachingView].
   const VocabTeachingView({required this.onDone, super.key});
@@ -26,24 +25,32 @@ class VocabTeachingView extends StatelessWidget {
 
     return SafeArea(
       child: Semantics(
-        label: '${VocabCopy.teachingTitle}. ${VocabCopy.teachingBody}',
+        label:
+            '${context.strings.vocabTeachingTitle}. '
+            '${context.strings.vocabTeachingBody(vocabMinimumPool)}',
         excludeSemantics: true,
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.gutter),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(VocabCopy.title, style: AppText.display(mood: mood)),
+              Text(
+                context.strings.vocabTitle,
+                style: AppText.display(mood: mood),
+              ),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                VocabCopy.teachingTitle,
+                context.strings.vocabTeachingTitle,
                 style: AppText.heading(mood: mood),
               ),
               const SizedBox(height: AppSpacing.xs),
-              Text(VocabCopy.teachingBody, style: AppText.body(mood: mood)),
+              Text(
+                context.strings.vocabTeachingBody(vocabMinimumPool),
+                style: AppText.body(mood: mood),
+              ),
               const Spacer(),
               PrimaryButton(
-                label: VocabCopy.teachingAction,
+                label: context.strings.vocabTeachingAction,
                 onPressed: onDone,
               ),
             ],

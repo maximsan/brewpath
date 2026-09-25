@@ -4,7 +4,6 @@ import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart'
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
-import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/l10n/app_strings.dart';
@@ -124,8 +123,8 @@ class _VocabChip extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: VocabCopy.title,
-      hint: VocabCopy.rowSubtitle,
+      label: context.strings.vocabTitle,
+      hint: context.strings.vocabRowSubtitle,
       onTap: open,
       excludeSemantics: true,
       child: Material(
@@ -153,7 +152,7 @@ class _VocabChip extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
-                    VocabCopy.title,
+                    context.strings.vocabTitle,
                     overflow: TextOverflow.ellipsis,
                     style: AppText.support(mood: mood),
                   ),
