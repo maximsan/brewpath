@@ -580,7 +580,7 @@ abstract class AppLocalizations {
   /// **'Tastes: {tags}'**
   String tastefixTastesSemantics(String tags);
 
-  /// End label on a calibrate track, naming its far end.
+  /// End label on a calibrate track. Used for both ends: {label} is the round's own word for that end, so it reads 'Very Fine' at one and 'Very Coarse' at the other.
   ///
   /// In en, this message translates to:
   /// **'Very {label}'**
@@ -1317,6 +1317,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CLICKS'**
   String get grinderClicksUnit;
+
+  /// Name of the daily term drill, on its banner and its screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Term of the Day'**
+  String get termOfDayTitle;
+
+  /// Footer on the Term of the Day banner, saying what tapping it does.
+  ///
+  /// In en, this message translates to:
+  /// **'Open entry'**
+  String get termOfDayOpenEntry;
+
+  /// Action on the Term of the Day screen. It promises the whole entry, so it raises the gate for a learner without the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the full entry'**
+  String get termOfDayReadFull;
+
+  /// The way out of the Term of the Day screen, under its action.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get termOfDayBack;
+
+  /// Label over the part of a term's entry that needs the course.
+  ///
+  /// In en, this message translates to:
+  /// **'Full explanation · Plus'**
+  String get termEntryFullExplanation;
+
+  /// Says what would open a gated term entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Comes with the full course.'**
+  String get termEntryComesWithCourse;
+
+  /// What a screen reader is told the gated row does and what opens it.
+  ///
+  /// In en, this message translates to:
+  /// **'{action}. {offer}'**
+  String termEntryGateSemantics(String action, String offer);
+
+  /// Count over a search that found something. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'{found, plural, =1{{found} RESULT} other{{found} RESULTS}}'**
+  String searchResultCount(int found);
+
+  /// Line under a search that found nothing, when the list was emptied by a filter rather than a query.
+  ///
+  /// In en, this message translates to:
+  /// **'No terms match that search.'**
+  String get searchNoMatchesLine;
+
+  /// What a screen reader is told when a search found nothing and there is no query to name.
+  ///
+  /// In en, this message translates to:
+  /// **'No terms match that search'**
+  String get searchNoMatchesLabel;
+
+  /// Line under a search that found nothing for a typed query.
+  ///
+  /// In en, this message translates to:
+  /// **'No terms match “{query}”. Try a broader word — or browse by category.'**
+  String searchNoMatchesForLine(String query);
+
+  /// What a screen reader is told when a typed search found nothing.
+  ///
+  /// In en, this message translates to:
+  /// **'No terms match that search: {query}'**
+  String searchNoMatchesForLabel(String query);
+
+  /// Name of the flashcards drill, on every entry point and on the screen itself.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcards'**
+  String get flashcardsTitle;
+
+  /// Empty state: what a deck is made of and how to make one. It teaches rather than apologises.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookmark terms in the dictionary and they become a flashcard deck here — flip to test yourself.'**
+  String get flashcardsEmptyBody;
+
+  /// Empty state when the saved terms are all outside the learner's free lessons (#468). Names both ways out.
+  ///
+  /// In en, this message translates to:
+  /// **'The terms you saved are not in your free lessons, so there is nothing to flip yet. Bookmark a term one of your lessons mentions, or unlock the full course to practise all of them.'**
+  String get flashcardsEmptyOutOfReachBody;
+
+  /// The empty state's one action.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the dictionary'**
+  String get flashcardsBrowse;
+
+  /// Label over a flashcard's front face.
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get flashcardsFront;
+
+  /// Label over a flashcard's back face.
+  ///
+  /// In en, this message translates to:
+  /// **'Definition'**
+  String get flashcardsBack;
+
+  /// Foot of a flashcard's front face, saying what a tap does.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to reveal'**
+  String get flashcardsTapToReveal;
+
+  /// Foot of a flashcard's back face.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see term'**
+  String get flashcardsTapToSeeTerm;
+
+  /// Link under a revealed flashcard.
+  ///
+  /// In en, this message translates to:
+  /// **'View full entry'**
+  String get flashcardsViewEntry;
+
+  /// Ends the review on the last card. The only button the deck keeps.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get flashcardsFinish;
+
+  /// The focus-revealed way back through the deck, which a pointer user never sees.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous card'**
+  String get flashcardsPreviousCard;
+
+  /// The forward twin of the way back, shown until the last card.
+  ///
+  /// In en, this message translates to:
+  /// **'Next card'**
+  String get flashcardsNextCard;
+
+  /// Re-deals the same cards in a new order.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle deck'**
+  String get flashcardsShuffle;
+
+  /// What the results number counts.
+  ///
+  /// In en, this message translates to:
+  /// **'{cards, plural, =1{Term reviewed} other{Terms reviewed}}'**
+  String flashcardsReviewedNote(int cards);
+
+  /// The message closing a finished deck.
+  ///
+  /// In en, this message translates to:
+  /// **'That’s every term you’ve saved. Run it back shuffled, or bookmark more in the dictionary.'**
+  String get flashcardsResultsMessage;
+
+  /// The results' primary action.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuffle and go again'**
+  String get flashcardsGoAgain;
+
+  /// The results' way out.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get flashcardsDone;
+
+  /// The line over the deck, counting what is in it.
+  ///
+  /// In en, this message translates to:
+  /// **'{cards, plural, =1{{cards} saved term} other{{cards} saved terms}}'**
+  String flashcardsDeckLine(int cards);
+
+  /// The shelf's row into the drill.
+  ///
+  /// In en, this message translates to:
+  /// **'{cards, plural, =1{Study {cards} term as flashcards} other{Study {cards} terms as flashcards}}'**
+  String flashcardsStudyRow(int cards);
+
+  /// Eyebrow on the Learn tab's flashcards practice row.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip and recall'**
+  String get flashcardsPracticeRowEyebrow;
 }
 
 class _AppLocalizationsDelegate

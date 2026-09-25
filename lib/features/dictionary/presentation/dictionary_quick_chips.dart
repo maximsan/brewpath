@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -57,11 +57,14 @@ class _FlashcardsChip extends StatelessWidget {
     final mood = context.mood;
     void open() => unawaited(context.pushActivity(flashcardReview));
 
+    final strings = context.strings;
+
     return Semantics(
       button: true,
       label: cards == null
-          ? FlashcardsCopy.title
-          : '${FlashcardsCopy.title}, ${FlashcardsCopy.deckLine(cards!)}',
+          ? strings.flashcardsTitle
+          : '${strings.flashcardsTitle}, '
+                '${strings.flashcardsDeckLine(cards!)}',
       onTap: open,
       excludeSemantics: true,
       child: Material(
@@ -89,7 +92,7 @@ class _FlashcardsChip extends StatelessWidget {
                 const SizedBox(width: AppSpacing.xs),
                 Expanded(
                   child: Text(
-                    FlashcardsCopy.title,
+                    context.strings.flashcardsTitle,
                     overflow: TextOverflow.ellipsis,
                     style: AppText.support(mood: mood),
                   ),

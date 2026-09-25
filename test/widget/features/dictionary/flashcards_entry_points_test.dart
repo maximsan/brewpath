@@ -5,13 +5,13 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/learn/presentation/practice_drills_widget.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,14 +81,14 @@ Future<void> _openDictionary(WidgetTester tester) async {
 /// underneath this pushed route carries a practice row of the same name.
 Finder _chip() => find.descendant(
   of: find.byType(DictionaryQuickChips),
-  matching: find.text(FlashcardsCopy.title),
+  matching: find.text(AppLocalizationsEn().flashcardsTitle),
 );
 
 /// The Flashcards row in the Learn tab's practice card — scoped for the same
 /// reason, since the card now holds the vocab drill's row beside it.
 Finder _practiceRow() => find.descendant(
   of: find.byType(PracticeDrillsWidget),
-  matching: find.text(FlashcardsCopy.title),
+  matching: find.text(AppLocalizationsEn().flashcardsTitle),
 );
 
 /// Opens the Saved shelf from the Learn tab's header.
@@ -151,7 +151,7 @@ void main() {
       final handle = tester.ensureSemantics();
       expect(
         tester.getSemantics(find.byType(SavedStudyRow)).label,
-        FlashcardsCopy.studyRow(1),
+        AppLocalizationsEn().flashcardsStudyRow(1),
       );
       handle.dispose();
 
@@ -175,7 +175,7 @@ void main() {
       final handle = tester.ensureSemantics();
       expect(
         tester.getSemantics(find.byType(SavedStudyRow)).label,
-        FlashcardsCopy.title,
+        AppLocalizationsEn().flashcardsTitle,
       );
       handle.dispose();
 
@@ -212,7 +212,9 @@ void main() {
 
       expect(_practiceRow(), findsOneWidget);
       expect(
-        find.text(FlashcardsCopy.practiceRowEyebrow.toUpperCase()),
+        find.text(
+          AppLocalizationsEn().flashcardsPracticeRowEyebrow.toUpperCase(),
+        ),
         findsOneWidget,
       );
     });

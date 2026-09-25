@@ -3,8 +3,8 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_deck_controls.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -42,7 +42,7 @@ void main() {
 
     final finish = tester.getRect(
       find.ancestor(
-        of: find.text(FlashcardsCopy.finish),
+        of: find.text(AppLocalizationsEn().flashcardsFinish),
         matching: find.byType(PrimaryButton),
       ),
     );
@@ -66,7 +66,7 @@ void main() {
 
     final previous = tester.getRect(
       find.ancestor(
-        of: find.text(FlashcardsCopy.previousCard),
+        of: find.text(AppLocalizationsEn().flashcardsPreviousCard),
         matching: find.byType(OutlinedButton),
       ),
     );
@@ -77,7 +77,10 @@ void main() {
       reason: "the design's `flex: 1` beside Finish",
     );
     expect(
-      tester.getRect(find.text(FlashcardsCopy.finish)).center.dx,
+      tester
+          .getRect(find.text(AppLocalizationsEn().flashcardsFinish))
+          .center
+          .dx,
       greaterThan(_rowWidth / 2),
       reason: 'Finish moves over to share the row',
     );

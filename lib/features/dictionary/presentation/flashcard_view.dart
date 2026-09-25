@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:brew_path/core/widgets/flip_geometry.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_face.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:flutter/material.dart';
 
@@ -102,8 +102,8 @@ class _FlashcardViewState extends State<FlashcardView>
           ? '${term.term}. ${term.shortExplanation}'
           : term.term,
       hint: widget.isRevealed
-          ? FlashcardsCopy.tapToSeeTerm
-          : FlashcardsCopy.tapToReveal,
+          ? context.strings.flashcardsTapToSeeTerm
+          : context.strings.flashcardsTapToReveal,
       onTap: widget.onFlip,
       excludeSemantics: true,
       child: GestureDetector(

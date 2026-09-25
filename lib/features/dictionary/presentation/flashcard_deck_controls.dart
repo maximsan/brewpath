@@ -1,6 +1,6 @@
 import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +68,7 @@ class _FlashcardDeckControlsState extends State<FlashcardDeckControls> {
           _share(
             standing: _previousStanding,
             child: FocusRevealedButton(
-              label: FlashcardsCopy.previousCard,
+              label: context.strings.flashcardsPreviousCard,
               ring: ring,
               height: FlashcardDeckControls.revealedHeight,
               onPressed: widget.onPrevious,
@@ -81,7 +81,7 @@ class _FlashcardDeckControlsState extends State<FlashcardDeckControls> {
         if (widget.isOnLast)
           Expanded(
             child: PrimaryButton(
-              label: FlashcardsCopy.finish,
+              label: context.strings.flashcardsFinish,
               onPressed: widget.onNext,
             ),
           )
@@ -89,7 +89,7 @@ class _FlashcardDeckControlsState extends State<FlashcardDeckControls> {
           _share(
             standing: _nextStanding,
             child: FocusRevealedButton(
-              label: FlashcardsCopy.nextCard,
+              label: context.strings.flashcardsNextCard,
               ring: ring,
               height: FlashcardDeckControls.revealedHeight,
               onPressed: widget.onNext,

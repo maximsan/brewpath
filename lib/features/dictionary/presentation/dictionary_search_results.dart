@@ -1,4 +1,4 @@
-import 'package:brew_path/features/dictionary/presentation/dictionary_search_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -24,7 +24,7 @@ class DictionarySearchCount extends StatelessWidget {
         right: AppSpacing.gutter,
       ),
       child: Text(
-        DictionarySearchCopy.count(count),
+        context.strings.searchResultCount(count),
         style: AppText.label(
           mood: context.mood,
           face: AppFace.mono,
@@ -47,7 +47,16 @@ class DictionaryNoMatches extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final copy = DictionarySearchCopy.noMatches(query);
+    final strings = context.strings;
+    final copy = query.isEmpty
+        ? (
+            line: strings.searchNoMatchesLine,
+            label: strings.searchNoMatchesLabel,
+          )
+        : (
+            line: strings.searchNoMatchesForLine(query),
+            label: strings.searchNoMatchesForLabel(query),
+          );
 
     return Semantics(
       label: copy.label,

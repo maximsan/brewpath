@@ -5,8 +5,8 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +50,9 @@ class SavedStudyRow extends ConsumerWidget {
       // with the header and the first row into one announcement.
       container: true,
       button: true,
-      label: cards == 0 ? FlashcardsCopy.title : FlashcardsCopy.studyRow(cards),
+      label: cards == 0
+          ? context.strings.flashcardsTitle
+          : context.strings.flashcardsStudyRow(cards),
       // The pill only names the destination, so the deck size lives here —
       // and so does the tap, since excluding the children drops the InkWell's.
       onTap: open,
@@ -64,7 +66,10 @@ class SavedStudyRow extends ConsumerWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SmallcapsLabel(FlashcardsCopy.title, color: mood.accentText),
+              SmallcapsLabel(
+                context.strings.flashcardsTitle,
+                color: mood.accentText,
+              ),
               const SizedBox(width: _arrowGap),
               IconMark(AppIcon.arrow, size: _arrowSize, color: mood.accentText),
             ],

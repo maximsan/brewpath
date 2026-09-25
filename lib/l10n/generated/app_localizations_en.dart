@@ -747,4 +747,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get grinderClicksUnit => 'CLICKS';
+
+  @override
+  String get termOfDayTitle => 'Term of the Day';
+
+  @override
+  String get termOfDayOpenEntry => 'Open entry';
+
+  @override
+  String get termOfDayReadFull => 'Read the full entry';
+
+  @override
+  String get termOfDayBack => 'Back';
+
+  @override
+  String get termEntryFullExplanation => 'Full explanation · Plus';
+
+  @override
+  String get termEntryComesWithCourse => 'Comes with the full course.';
+
+  @override
+  String termEntryGateSemantics(String action, String offer) {
+    return '$action. $offer';
+  }
+
+  @override
+  String searchResultCount(int found) {
+    String _temp0 = intl.Intl.pluralLogic(
+      found,
+      locale: localeName,
+      other: '$found RESULTS',
+      one: '$found RESULT',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get searchNoMatchesLine => 'No terms match that search.';
+
+  @override
+  String get searchNoMatchesLabel => 'No terms match that search';
+
+  @override
+  String searchNoMatchesForLine(String query) {
+    return 'No terms match “$query”. Try a broader word — or browse by category.';
+  }
+
+  @override
+  String searchNoMatchesForLabel(String query) {
+    return 'No terms match that search: $query';
+  }
+
+  @override
+  String get flashcardsTitle => 'Flashcards';
+
+  @override
+  String get flashcardsEmptyBody =>
+      'Bookmark terms in the dictionary and they become a flashcard deck here — flip to test yourself.';
+
+  @override
+  String get flashcardsEmptyOutOfReachBody =>
+      'The terms you saved are not in your free lessons, so there is nothing to flip yet. Bookmark a term one of your lessons mentions, or unlock the full course to practise all of them.';
+
+  @override
+  String get flashcardsBrowse => 'Browse the dictionary';
+
+  @override
+  String get flashcardsFront => 'Term';
+
+  @override
+  String get flashcardsBack => 'Definition';
+
+  @override
+  String get flashcardsTapToReveal => 'Tap to reveal';
+
+  @override
+  String get flashcardsTapToSeeTerm => 'Tap to see term';
+
+  @override
+  String get flashcardsViewEntry => 'View full entry';
+
+  @override
+  String get flashcardsFinish => 'Finish';
+
+  @override
+  String get flashcardsPreviousCard => 'Previous card';
+
+  @override
+  String get flashcardsNextCard => 'Next card';
+
+  @override
+  String get flashcardsShuffle => 'Shuffle deck';
+
+  @override
+  String flashcardsReviewedNote(int cards) {
+    String _temp0 = intl.Intl.pluralLogic(
+      cards,
+      locale: localeName,
+      other: 'Terms reviewed',
+      one: 'Term reviewed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flashcardsResultsMessage =>
+      'That’s every term you’ve saved. Run it back shuffled, or bookmark more in the dictionary.';
+
+  @override
+  String get flashcardsGoAgain => 'Shuffle and go again';
+
+  @override
+  String get flashcardsDone => 'Done';
+
+  @override
+  String flashcardsDeckLine(int cards) {
+    String _temp0 = intl.Intl.pluralLogic(
+      cards,
+      locale: localeName,
+      other: '$cards saved terms',
+      one: '$cards saved term',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String flashcardsStudyRow(int cards) {
+    String _temp0 = intl.Intl.pluralLogic(
+      cards,
+      locale: localeName,
+      other: 'Study $cards terms as flashcards',
+      one: 'Study $cards term as flashcards',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get flashcardsPracticeRowEyebrow => 'Flip and recall';
 }

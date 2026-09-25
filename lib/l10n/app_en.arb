@@ -1351,5 +1351,203 @@
   "grinderClicksUnit": "CLICKS",
   "@grinderClicksUnit": {
     "description": "Unit under the number on the grinder dial. Set upper case by the design."
+  },
+
+  "termOfDayTitle": "Term of the Day",
+  "@termOfDayTitle": {
+    "description": "Name of the daily term drill, on its banner and its screen."
+  },
+
+  "termOfDayOpenEntry": "Open entry",
+  "@termOfDayOpenEntry": {
+    "description": "Footer on the Term of the Day banner, saying what tapping it does."
+  },
+
+  "termOfDayReadFull": "Read the full entry",
+  "@termOfDayReadFull": {
+    "description": "Action on the Term of the Day screen. It promises the whole entry, so it raises the gate for a learner without the course."
+  },
+
+  "termOfDayBack": "Back",
+  "@termOfDayBack": {
+    "description": "The way out of the Term of the Day screen, under its action."
+  },
+
+  "termEntryFullExplanation": "Full explanation · Plus",
+  "@termEntryFullExplanation": {
+    "description": "Label over the part of a term's entry that needs the course."
+  },
+
+  "termEntryComesWithCourse": "Comes with the full course.",
+  "@termEntryComesWithCourse": {
+    "description": "Says what would open a gated term entry."
+  },
+
+  "termEntryGateSemantics": "{action}. {offer}",
+  "@termEntryGateSemantics": {
+    "description": "What a screen reader is told the gated row does and what opens it.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      },
+      "offer": {
+        "type": "String"
+      }
+    }
+  },
+
+  "searchResultCount": "{found, plural, =1{{found} RESULT} other{{found} RESULTS}}",
+  "@searchResultCount": {
+    "description": "Count over a search that found something. Set upper case by the design.",
+    "placeholders": {
+      "found": {
+        "type": "int"
+      }
+    }
+  },
+
+  "searchNoMatchesLine": "No terms match that search.",
+  "@searchNoMatchesLine": {
+    "description": "Line under a search that found nothing, when the list was emptied by a filter rather than a query."
+  },
+
+  "searchNoMatchesLabel": "No terms match that search",
+  "@searchNoMatchesLabel": {
+    "description": "What a screen reader is told when a search found nothing and there is no query to name."
+  },
+
+  "searchNoMatchesForLine": "No terms match “{query}”. Try a broader word — or browse by category.",
+  "@searchNoMatchesForLine": {
+    "description": "Line under a search that found nothing for a typed query.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+
+  "searchNoMatchesForLabel": "No terms match that search: {query}",
+  "@searchNoMatchesForLabel": {
+    "description": "What a screen reader is told when a typed search found nothing.",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+
+  "flashcardsTitle": "Flashcards",
+  "@flashcardsTitle": {
+    "description": "Name of the flashcards drill, on every entry point and on the screen itself."
+  },
+
+  "flashcardsEmptyBody": "Bookmark terms in the dictionary and they become a flashcard deck here — flip to test yourself.",
+  "@flashcardsEmptyBody": {
+    "description": "Empty state: what a deck is made of and how to make one. It teaches rather than apologises."
+  },
+
+  "flashcardsEmptyOutOfReachBody": "The terms you saved are not in your free lessons, so there is nothing to flip yet. Bookmark a term one of your lessons mentions, or unlock the full course to practise all of them.",
+  "@flashcardsEmptyOutOfReachBody": {
+    "description": "Empty state when the saved terms are all outside the learner's free lessons (#468). Names both ways out."
+  },
+
+  "flashcardsBrowse": "Browse the dictionary",
+  "@flashcardsBrowse": {
+    "description": "The empty state's one action."
+  },
+
+  "flashcardsFront": "Term",
+  "@flashcardsFront": {
+    "description": "Label over a flashcard's front face."
+  },
+
+  "flashcardsBack": "Definition",
+  "@flashcardsBack": {
+    "description": "Label over a flashcard's back face."
+  },
+
+  "flashcardsTapToReveal": "Tap to reveal",
+  "@flashcardsTapToReveal": {
+    "description": "Foot of a flashcard's front face, saying what a tap does."
+  },
+
+  "flashcardsTapToSeeTerm": "Tap to see term",
+  "@flashcardsTapToSeeTerm": {
+    "description": "Foot of a flashcard's back face."
+  },
+
+  "flashcardsViewEntry": "View full entry",
+  "@flashcardsViewEntry": {
+    "description": "Link under a revealed flashcard."
+  },
+
+  "flashcardsFinish": "Finish",
+  "@flashcardsFinish": {
+    "description": "Ends the review on the last card. The only button the deck keeps."
+  },
+
+  "flashcardsPreviousCard": "Previous card",
+  "@flashcardsPreviousCard": {
+    "description": "The focus-revealed way back through the deck, which a pointer user never sees."
+  },
+
+  "flashcardsNextCard": "Next card",
+  "@flashcardsNextCard": {
+    "description": "The forward twin of the way back, shown until the last card."
+  },
+
+  "flashcardsShuffle": "Shuffle deck",
+  "@flashcardsShuffle": {
+    "description": "Re-deals the same cards in a new order."
+  },
+
+  "flashcardsReviewedNote": "{cards, plural, =1{Term reviewed} other{Terms reviewed}}",
+  "@flashcardsReviewedNote": {
+    "description": "What the results number counts.",
+    "placeholders": {
+      "cards": {
+        "type": "int"
+      }
+    }
+  },
+
+  "flashcardsResultsMessage": "That’s every term you’ve saved. Run it back shuffled, or bookmark more in the dictionary.",
+  "@flashcardsResultsMessage": {
+    "description": "The message closing a finished deck."
+  },
+
+  "flashcardsGoAgain": "Shuffle and go again",
+  "@flashcardsGoAgain": {
+    "description": "The results' primary action."
+  },
+
+  "flashcardsDone": "Done",
+  "@flashcardsDone": {
+    "description": "The results' way out."
+  },
+
+  "flashcardsDeckLine": "{cards, plural, =1{{cards} saved term} other{{cards} saved terms}}",
+  "@flashcardsDeckLine": {
+    "description": "The line over the deck, counting what is in it.",
+    "placeholders": {
+      "cards": {
+        "type": "int"
+      }
+    }
+  },
+
+  "flashcardsStudyRow": "{cards, plural, =1{Study {cards} term as flashcards} other{Study {cards} terms as flashcards}}",
+  "@flashcardsStudyRow": {
+    "description": "The shelf's row into the drill.",
+    "placeholders": {
+      "cards": {
+        "type": "int"
+      }
+    }
+  },
+
+  "flashcardsPracticeRowEyebrow": "Flip and recall",
+  "@flashcardsPracticeRowEyebrow": {
+    "description": "Eyebrow on the Learn tab's flashcards practice row."
   }
 }

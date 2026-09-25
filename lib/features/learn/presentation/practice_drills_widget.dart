@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
@@ -51,8 +50,8 @@ class PracticeDrillsWidget extends StatelessWidget {
             color: mood.inkMute,
             accent: mood.accent,
           ),
-          title: FlashcardsCopy.title,
-          sub: FlashcardsCopy.practiceRowEyebrow,
+          title: context.strings.flashcardsTitle,
+          sub: context.strings.flashcardsPracticeRowEyebrow,
           meta: _meta(context.strings),
           onTap: () => unawaited(context.pushActivity(flashcardReview)),
         ),

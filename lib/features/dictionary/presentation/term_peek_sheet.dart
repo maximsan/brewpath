@@ -4,21 +4,19 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart';
-import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Opens [termId] in a sheet over whatever the learner is already looking at.
 ///
-/// Checking a word should not cost the screen you were on — so this is a sheet
-/// rather than a push, and it offers a way through to the full entry.
-///
-/// The term is resolved here rather than inside the sheet because the shared
-/// primitive takes the title up front — it is the sheet's heading and its
-/// accessible name, and both have to exist before the route opens.
+/// A sheet rather than a push, because checking a word should not cost the
+/// screen you were on. The term is resolved here because the shared primitive
+/// takes the title up front: it is the heading and the accessible name, and
+/// both must exist before the route opens.
 Future<void> showTermPeekSheet(BuildContext context, String termId) {
   final view = ProviderScope.containerOf(
     context,
@@ -71,8 +69,8 @@ class TermPeekSheet extends ConsumerWidget {
               // course the page is not the full entry, so this does not say so.
               child: Text(
                 view.hasCourse
-                    ? TermEntryCopy.readFullEntry
-                    : TermEntryCopy.openEntry,
+                    ? context.strings.termOfDayReadFull
+                    : context.strings.termOfDayOpenEntry,
               ),
             ),
           ],

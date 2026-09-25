@@ -8,12 +8,12 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_status_style.dart';
 import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
-import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
 import 'package:brew_path/features/dictionary/presentation/term_sources_section.dart';
 import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
 import 'package:brew_path/features/monetization/domain/free_tier.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -88,7 +88,7 @@ class TermEntryBody extends ConsumerWidget {
         if (!view.hasCourse && term.hasFullEntry) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: TermEntryCopy.fullExplanation,
+            label: context.strings.termEntryFullExplanation,
             accent: true,
             child: TermFullEntryGate(term: term.term),
           ),

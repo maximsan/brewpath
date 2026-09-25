@@ -17,10 +17,10 @@ import 'package:brew_path/features/dictionary/domain/flashcard_round.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_deal_view.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
@@ -131,7 +131,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                 // `rematch` — "run it back" — rather than the design's own
                 // shuffle glyph, which the icon set does not carry.
                 icon: const IconMark(AppIcon.rematch),
-                tooltip: FlashcardsCopy.shuffle,
+                tooltip: context.strings.flashcardsShuffle,
                 onPressed: () => _shuffle(cards.length),
               )
             : null,
@@ -185,13 +185,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     if (round.isFinished) {
       return DrillResultsView.counted(
         headline: '${cards.length}',
-        note: FlashcardsCopy.reviewedNote(cards.length),
-        message: FlashcardsCopy.resultsMessage,
+        note: context.strings.flashcardsReviewedNote(cards.length),
+        message: context.strings.flashcardsResultsMessage,
         primary: (
-          label: FlashcardsCopy.goAgain,
+          label: context.strings.flashcardsGoAgain,
           onPressed: () => _shuffle(cards.length),
         ),
-        secondary: (label: FlashcardsCopy.done, onPressed: _close),
+        secondary: (label: context.strings.flashcardsDone, onPressed: _close),
       );
     }
 

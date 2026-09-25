@@ -3,7 +3,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day_providers.dart';
-import 'package:brew_path/features/dictionary/presentation/term_of_day_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -37,11 +37,10 @@ const Alignment _washTo = Alignment(0.375, 0.927);
 
 /// Today's term, offered on the dictionary's index.
 ///
-/// **Silent when there is nothing to offer.** An empty pool is not an error
-/// state and gets no apology: the shelf below it is the screen's actual
-/// content, and a banner explaining its own absence would be the loudest thing
-/// on the page. `TermOfDayBanner` returns nothing, exactly as the design's own
-/// `if (!term) return null` does.
+/// Silent when there is nothing to offer: an empty pool is not an error and
+/// gets no apology, since a banner explaining its own absence would be the
+/// loudest thing on a page whose shelf is the real content. Returns nothing,
+/// as the design's own `if (!term) return null` does.
 class TermOfDayBanner extends ConsumerWidget {
   /// Creates a [TermOfDayBanner].
   const TermOfDayBanner({required this.onOpen, super.key});
@@ -68,8 +67,9 @@ class _Banner extends StatelessWidget {
   /// what the word means. The *Open entry* footer is left out — the label
   /// below already says this is a button, and reading the affordance twice is
   /// how a card starts sounding like a form.
-  String get _announcement =>
-      '${TermOfDayCopy.title}. ${term.term}. ${term.shortExplanation}';
+  String _announcement(BuildContext context) =>
+      '${context.strings.termOfDayTitle}. ${term.term}. '
+      '${term.shortExplanation}';
 
   /// The card's own frame: the accent-tinted rule, the wash falling to the
   /// surface, and the lift that sets it above the rows below.
@@ -97,10 +97,12 @@ class _Banner extends StatelessWidget {
   );
 
   /// What this is, and which corner of the shelf it came from.
-  Widget _kicker(Color accent) => Row(
+  Widget _kicker(BuildContext context, Color accent) => Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Flexible(child: SmallcapsLabel(TermOfDayCopy.title, color: accent)),
+      Flexible(
+        child: SmallcapsLabel(context.strings.termOfDayTitle, color: accent),
+      ),
       IconMark(moduleMark(term.categoryId), size: _glyphSize, color: accent),
     ],
   );
@@ -121,9 +123,9 @@ class _Banner extends StatelessWidget {
   );
 
   /// What a tap does, said in the design's own words.
-  Widget _footer(Color accent) => Row(
+  Widget _footer(BuildContext context, Color accent) => Row(
     children: [
-      SmallcapsLabel(TermOfDayCopy.openEntry, color: accent),
+      SmallcapsLabel(context.strings.termOfDayOpenEntry, color: accent),
       const SizedBox(width: AppSpacing.xs),
       IconMark(AppIcon.arrow, size: _arrowSize, color: accent),
     ],
@@ -135,7 +137,7 @@ class _Banner extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: _announcement,
+      label: _announcement(context),
       // **The action, not just the flag.** `excludeSemantics` drops the
       // InkWell's own semantics along with the text's, and a node that says
       // "button" without carrying a tap leaves a screen reader announcing
@@ -160,7 +162,7 @@ class _Banner extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _kicker(mood.accent),
+                  _kicker(context, mood.accent),
                   const SizedBox(height: AppSpacing.base),
                   _word(mood),
                   const SizedBox(height: AppSpacing.sm),
@@ -169,7 +171,7 @@ class _Banner extends StatelessWidget {
                     style: AppText.body(color: mood.inkMute),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  _footer(mood.accent),
+                  _footer(context, mood.accent),
                 ],
               ),
             ),

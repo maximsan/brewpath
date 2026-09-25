@@ -5,7 +5,6 @@ import 'package:brew_path/core/widgets/focus_revealed_button.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_deck_controls.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_view.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_empty_view.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_screen.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
@@ -13,6 +12,7 @@ import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter/material.dart';
@@ -126,8 +126,8 @@ void main() {
     await _pump(tester);
 
     expect(find.byType(FlashcardsEmptyView), findsOneWidget);
-    expect(find.text(FlashcardsCopy.emptyBody), findsOneWidget);
-    expect(find.text(FlashcardsCopy.browse), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().flashcardsEmptyBody), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().flashcardsBrowse), findsOneWidget);
     expect(
       find.byType(RoastMeter),
       findsNothing,
@@ -142,8 +142,11 @@ void main() {
     // tier at all — the second body must not leak into it.
     await _pump(tester, hasCourse: false);
 
-    expect(find.text(FlashcardsCopy.emptyBody), findsOneWidget);
-    expect(find.text(FlashcardsCopy.emptyOutOfReachBody), findsNothing);
+    expect(find.text(AppLocalizationsEn().flashcardsEmptyBody), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().flashcardsEmptyOutOfReachBody),
+      findsNothing,
+    );
   });
 
   testWidgets('saved, but none of it in reach, says so instead', (
@@ -155,9 +158,12 @@ void main() {
     await _pump(tester, hasCourse: false);
 
     expect(find.byType(FlashcardsEmptyView), findsOneWidget);
-    expect(find.text(FlashcardsCopy.emptyOutOfReachBody), findsOneWidget);
     expect(
-      find.text(FlashcardsCopy.emptyBody),
+      find.text(AppLocalizationsEn().flashcardsEmptyOutOfReachBody),
+      findsOneWidget,
+    );
+    expect(
+      find.text(AppLocalizationsEn().flashcardsEmptyBody),
       findsNothing,
       reason: 'telling them to bookmark terms is the lie this fixes',
     );
@@ -170,7 +176,7 @@ void main() {
     expect(find.byType(FlashcardView), findsOneWidget);
     expect(find.text('Arabica'), findsOneWidget);
     expect(
-      find.text(FlashcardsCopy.tapToReveal.toUpperCase()),
+      find.text(AppLocalizationsEn().flashcardsTapToReveal.toUpperCase()),
       findsOneWidget,
       reason: 'a card that opened revealed would test nothing',
     );
@@ -184,11 +190,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.text(FlashcardsCopy.tapToSeeTerm.toUpperCase()),
+      find.text(AppLocalizationsEn().flashcardsTapToSeeTerm.toUpperCase()),
       findsOneWidget,
     );
     expect(
-      find.text(FlashcardsCopy.viewEntry),
+      find.text(AppLocalizationsEn().flashcardsViewEntry),
       findsOneWidget,
       reason: "the entry link is the revealed card's continuation",
     );
@@ -201,7 +207,7 @@ void main() {
     await _pump(tester);
 
     expect(
-      find.text(FlashcardsCopy.viewEntry),
+      find.text(AppLocalizationsEn().flashcardsViewEntry),
       findsNothing,
       reason: 'a link to "more" before the reveal undercuts the recall',
     );
@@ -227,8 +233,8 @@ void main() {
     await _seed([_arabica]);
     await _pump(tester);
 
-    expect(find.text(FlashcardsCopy.finish), findsOneWidget);
-    expect(find.text(FlashcardsCopy.nextCard), findsNothing);
+    expect(find.text(AppLocalizationsEn().flashcardsFinish), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().flashcardsNextCard), findsNothing);
   });
 
   testWidgets('the deck keeps no visible Prev or Next, only the stack', (
@@ -287,11 +293,17 @@ void main() {
     await _seed([_arabica, _robusta]);
     await _pump(tester);
 
-    expect(find.text(FlashcardsCopy.previousCard), findsNothing);
+    expect(
+      find.text(AppLocalizationsEn().flashcardsPreviousCard),
+      findsNothing,
+    );
 
     await _advance(tester);
 
-    expect(find.text(FlashcardsCopy.previousCard), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().flashcardsPreviousCard),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Right steps forward and Left steps back, point-at-target', (
@@ -314,16 +326,16 @@ void main() {
     await _pump(tester);
 
     await _advance(tester);
-    await tester.tap(find.text(FlashcardsCopy.finish));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsFinish));
     await _settle(tester);
 
     expect(find.byType(DrillResultsView), findsOneWidget);
     expect(find.text('2'), findsOneWidget);
     expect(
-      find.text(FlashcardsCopy.reviewedNote(2).toUpperCase()),
+      find.text(AppLocalizationsEn().flashcardsReviewedNote(2).toUpperCase()),
       findsOneWidget,
     );
-    expect(find.text(FlashcardsCopy.goAgain), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().flashcardsGoAgain), findsOneWidget);
     expect(
       find.text('02 / 02'),
       findsOneWidget,
@@ -337,7 +349,7 @@ void main() {
     await _seed([_arabica]);
     final container = await _pump(tester);
 
-    await tester.tap(find.text(FlashcardsCopy.finish));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsFinish));
     await _settle(tester);
     await _settleWrite(tester);
 
@@ -369,13 +381,13 @@ void main() {
     await _seed([_arabica]);
     final container = await _pump(tester);
 
-    await tester.tap(find.text(FlashcardsCopy.finish));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsFinish));
     await _settle(tester);
     await _settleWrite(tester);
 
-    await tester.tap(find.text(FlashcardsCopy.goAgain));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsGoAgain));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(FlashcardsCopy.finish));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsFinish));
     await _settle(tester);
     await _settleWrite(tester);
 
@@ -398,12 +410,12 @@ void main() {
 
     final container = await _pump(tester, hasCourse: false);
 
-    await tester.tap(find.text(FlashcardsCopy.finish));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsFinish));
     await _settle(tester);
     await _settleWrite(tester);
     expect(_reviews(await _activityToday(container)), 1);
 
-    await tester.tap(find.text(FlashcardsCopy.goAgain));
+    await tester.tap(find.text(AppLocalizationsEn().flashcardsGoAgain));
     // Bounded, and with real time let through: the refusal reads the database
     // before it raises the sheet, and the results screen behind it animates
     // indefinitely so nothing here can settle.
@@ -422,7 +434,7 @@ void main() {
     await _pump(tester);
 
     expect(
-      find.byTooltip(FlashcardsCopy.shuffle),
+      find.byTooltip(AppLocalizationsEn().flashcardsShuffle),
       findsNothing,
       reason: 'a one-card deck has only one order to be in',
     );
@@ -432,7 +444,10 @@ void main() {
     await _seed([_arabica, _robusta]);
     await _pump(tester);
 
-    expect(find.byTooltip(FlashcardsCopy.shuffle), findsOneWidget);
+    expect(
+      find.byTooltip(AppLocalizationsEn().flashcardsShuffle),
+      findsOneWidget,
+    );
   });
 
   testWidgets('the deck line counts what will actually be dealt', (
@@ -441,6 +456,9 @@ void main() {
     await _seed([_arabica, _robusta]);
     await _pump(tester);
 
-    expect(find.text(FlashcardsCopy.deckLine(2).toUpperCase()), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().flashcardsDeckLine(2).toUpperCase()),
+      findsOneWidget,
+    );
   });
 }

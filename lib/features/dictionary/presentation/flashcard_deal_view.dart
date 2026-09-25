@@ -9,7 +9,7 @@ import 'package:brew_path/features/dictionary/presentation/dictionary_category_m
 import 'package:brew_path/features/dictionary/presentation/flashcard_deck_controls.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_face.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcard_view.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +96,7 @@ class FlashcardDealView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SmallcapsLabel(FlashcardsCopy.deckLine(deckSize)),
+            SmallcapsLabel(context.strings.flashcardsDeckLine(deckSize)),
             const SizedBox(height: AppSpacing.md),
             Expanded(child: _deck(hint)),
             SwipeHintCaption(show: hint.showing, label: _hintLabel),
@@ -204,7 +204,7 @@ class _EntryLink extends StatelessWidget {
     final link = Center(
       child: TextButton(
         onPressed: onOpen,
-        child: const Text(FlashcardsCopy.viewEntry),
+        child: Text(context.strings.flashcardsViewEntry),
       ),
     );
 

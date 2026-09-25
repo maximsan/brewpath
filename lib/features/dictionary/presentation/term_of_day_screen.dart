@@ -15,11 +15,11 @@ import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/speak_button.dart';
-import 'package:brew_path/features/dictionary/presentation/term_of_day_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -156,12 +156,15 @@ class _TermOfDay extends StatelessWidget {
           child: Column(
             children: [
               PrimaryButton(
-                label: TermOfDayCopy.readFullEntry,
+                label: context.strings.termOfDayReadFull,
                 onPressed: () => unawaited(_readFullEntry(context)),
               ),
               const SizedBox(height: _footerGap),
               // A dismiss under a primary is a ghost, never a bare link.
-              GhostButton(label: TermOfDayCopy.back, onPressed: context.pop),
+              GhostButton(
+                label: context.strings.termOfDayBack,
+                onPressed: context.pop,
+              ),
             ],
           ),
         ),

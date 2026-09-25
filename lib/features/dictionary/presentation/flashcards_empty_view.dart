@@ -2,29 +2,19 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// What the drill shows when the deck is empty.
+/// What the drill shows when the deck is empty — one state for all four ways
+/// in, and the screen still opens, because tapping Flashcards with nothing
+/// saved asks *what is this?*.
 ///
-/// **The screen still opens.** A learner who taps Flashcards with nothing
-/// bookmarked has asked a question — *what is this?* — and an entry point that
-/// refused to open, or a snackbar in its place, would leave it unanswered.
-/// This is the answer: what a deck is made of, and one way to go and make one.
-///
-/// The same state for all four ways in, which is why it is a view rather than
-/// something the dictionary's own screen draws.
-///
-/// **It answers two questions, not one.** The design's copy is written for
-/// *nothing saved*. A free learner who bookmarked a term their tier cannot
-/// reach (ADR-0014) lands here too, and for them "bookmark terms and they
-/// become a deck" is untrue — they did, and it did not. The design never had
-/// that state, because its dictionary is gated where the app's is open (#20).
-/// So the body is chosen, and everything around it is the same.
+/// The body is chosen: a free learner who saved a term out of reach
+/// (ADR-0014) lands here too, and the design never had that state (#20).
 class FlashcardsEmptyView extends StatelessWidget {
   /// Creates a [FlashcardsEmptyView].
   const FlashcardsEmptyView({required this.isOutOfReach, super.key});
@@ -35,9 +25,9 @@ class FlashcardsEmptyView extends StatelessWidget {
   final bool isOutOfReach;
 
   /// The body this state actually owes the learner.
-  String get _body => isOutOfReach
-      ? FlashcardsCopy.emptyOutOfReachBody
-      : FlashcardsCopy.emptyBody;
+  String _body(BuildContext context) => isOutOfReach
+      ? context.strings.flashcardsEmptyOutOfReachBody
+      : context.strings.flashcardsEmptyBody;
 
   /// The design's `size={44}` bookmark, at half opacity.
   static const double _markSize = 44;
@@ -54,7 +44,7 @@ class FlashcardsEmptyView extends StatelessWidget {
     return Semantics(
       // One announcement: the mark carries no meaning a reader can use, and
       // the heading, the copy and the button are one thought.
-      label: '${FlashcardsCopy.title}. $_body',
+      label: '${context.strings.flashcardsTitle}. ${_body(context)}',
       // Excluded, or the heading and the copy are read once as this label and
       // again as its children.
       excludeSemantics: true,
@@ -63,7 +53,10 @@ class FlashcardsEmptyView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(FlashcardsCopy.title, style: AppText.display(mood: mood)),
+            Text(
+              context.strings.flashcardsTitle,
+              style: AppText.display(mood: mood),
+            ),
             const SizedBox(height: AppSpacing.xxl),
             Center(
               child: Column(
@@ -82,7 +75,7 @@ class FlashcardsEmptyView extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          _body,
+                          _body(context),
                           textAlign: TextAlign.center,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: mood.inkMute,
@@ -90,7 +83,7 @@ class FlashcardsEmptyView extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         PrimaryButton(
-                          label: FlashcardsCopy.browse,
+                          label: context.strings.flashcardsBrowse,
                           // `go`, not `push`: the learner asked to browse, and
                           // stacking the dictionary on top of a drill they
                           // cannot run would put an empty screen behind their

@@ -1,6 +1,6 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_category_mark.dart';
-import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -150,8 +150,8 @@ class FlashcardFront extends StatelessWidget {
 
     return FlashcardFace(
       category: category,
-      label: FlashcardsCopy.front,
-      foot: FlashcardsCopy.tapToReveal,
+      label: context.strings.flashcardsFront,
+      foot: context.strings.flashcardsTapToReveal,
       isFront: true,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -203,8 +203,8 @@ class FlashcardBack extends StatelessWidget {
 
     return FlashcardFace(
       category: category,
-      label: FlashcardsCopy.back,
-      foot: FlashcardsCopy.tapToSeeTerm,
+      label: context.strings.flashcardsBack,
+      foot: context.strings.flashcardsTapToSeeTerm,
       isFront: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

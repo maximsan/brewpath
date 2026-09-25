@@ -4,10 +4,8 @@ import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
 import 'package:brew_path/features/dictionary/presentation/category_index.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_search_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_search_results.dart';
 import 'package:brew_path/features/dictionary/presentation/term_detail_screen.dart';
-import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_full_entry_gate.dart';
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
@@ -15,6 +13,7 @@ import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -246,7 +245,7 @@ void main() {
       expect(find.byType(DictionarySearchCount), findsNothing);
       expect(find.byType(SegmentedButton<DictionaryFilter>), findsNothing);
       expect(
-        find.text(DictionarySearchCopy.noMatches('zzzz').line),
+        find.text(AppLocalizationsEn().searchNoMatchesForLine('zzzz')),
         findsOneWidget,
       );
       expect(find.textContaining('zzzz'), findsWidgets);
@@ -259,7 +258,10 @@ void main() {
       await tester.enterText(find.byType(TextField), 'arab');
       await tester.pumpAndSettle();
 
-      expect(find.text(DictionarySearchCopy.count(1)), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().searchResultCount(1)),
+        findsOneWidget,
+      );
       expect(find.byType(DictionaryNoMatches), findsNothing);
     });
 
@@ -283,7 +285,9 @@ void main() {
       // edge, left of the count and the rows under it.
       expect(
         tester.getTopLeft(find.text('BEANS AND BOTANY')).dx,
-        tester.getTopLeft(find.text(DictionarySearchCopy.count(1))).dx,
+        tester
+            .getTopLeft(find.text(AppLocalizationsEn().searchResultCount(1)))
+            .dx,
       );
     });
 
@@ -345,7 +349,7 @@ void main() {
       expect(find.text('LEARNED'), findsOneWidget);
       expect(find.byType(DictionarySearchCount), findsNothing);
       expect(
-        find.text(DictionarySearchCopy.noMatches('arab').line),
+        find.text(AppLocalizationsEn().searchNoMatchesForLine('arab')),
         findsOneWidget,
       );
     });
@@ -366,7 +370,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(DictionarySearchCount), findsNothing);
       expect(
-        find.text(DictionarySearchCopy.noMatches('arab').line),
+        find.text(AppLocalizationsEn().searchNoMatchesForLine('arab')),
         findsOneWidget,
       );
       expect(find.text('TO LEARN'), findsOneWidget);
@@ -604,7 +608,7 @@ void main() {
 
       expect(find.text('TDS'), findsNothing);
       expect(
-        find.text(DictionarySearchCopy.noMatches('tds').line),
+        find.text(AppLocalizationsEn().searchNoMatchesForLine('tds')),
         findsOneWidget,
       );
     });
@@ -631,7 +635,7 @@ void main() {
       );
       expect(find.byType(TermFullEntryGate), findsOneWidget);
       expect(
-        find.text(TermEntryCopy.fullExplanation.toUpperCase()),
+        find.text(AppLocalizationsEn().termEntryFullExplanation.toUpperCase()),
         findsOneWidget,
       );
       // None of the course's content is built, so none of it can be found.
@@ -671,7 +675,7 @@ void main() {
 
       expect(find.text(brief.shortExplanation), findsOneWidget);
       expect(find.byType(TermFullEntryGate), findsNothing);
-      expect(find.text(TermEntryCopy.readFullEntry), findsNothing);
+      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsNothing);
     });
 
     testWidgets('a related reference term is not offered', (tester) async {
@@ -694,7 +698,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(TermEntryCopy.readFullEntry));
+      await tester.tap(find.text(AppLocalizationsEn().termOfDayReadFull));
       await tester.pumpAndSettle();
 
       expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
@@ -715,7 +719,13 @@ void main() {
       await tester.pumpAndSettle();
 
       final semantics = tester.getSemantics(find.byType(TermFullEntryGate));
-      expect(semantics.label, TermEntryCopy.gateSemantics);
+      expect(
+        semantics.label,
+        AppLocalizationsEn().termEntryGateSemantics(
+          AppLocalizationsEn().termOfDayReadFull,
+          AppLocalizationsEn().termEntryComesWithCourse,
+        ),
+      );
       expect(semantics.flagsCollection.isButton, isTrue);
     });
 
@@ -743,8 +753,11 @@ void main() {
       // The gated row carries the *full entry* promise; the way through to
       // the page says what it is.
       expect(find.byType(TermFullEntryGate), findsOneWidget);
-      expect(find.text(TermEntryCopy.openEntry), findsOneWidget);
-      expect(find.text(TermEntryCopy.readFullEntry), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().termOfDayOpenEntry),
+        findsOneWidget,
+      );
+      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsOneWidget);
       expect(find.text('Roughly 60% of world coffee.'), findsNothing);
     });
   });
@@ -758,7 +771,7 @@ void main() {
       expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
       expect(find.text('SOURCES'), findsOneWidget);
       expect(find.byType(TermFullEntryGate), findsNothing);
-      expect(find.text(TermEntryCopy.readFullEntry), findsNothing);
+      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsNothing);
     });
   });
 }

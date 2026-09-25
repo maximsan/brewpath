@@ -8,11 +8,11 @@ import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/features/dictionary/domain/term_of_day.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.dart';
-import 'package:brew_path/features/dictionary/presentation/term_of_day_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_screen.dart';
 import 'package:brew_path/features/monetization/domain/course_entitlement.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/dictionary_repository.dart';
 import 'package:flutter/material.dart';
@@ -168,7 +168,10 @@ void main() {
       await _pumpScreen(tester, hasCourse: false);
 
       // No kicker: the screen is the term, and the bar's close is its exit.
-      expect(find.text(TermOfDayCopy.title.toUpperCase()), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().termOfDayTitle.toUpperCase()),
+        findsNothing,
+      );
       expect(find.text(longDate(_pinnedDay).toUpperCase()), findsOneWidget);
       expect(find.text(term.term), findsOneWidget);
       expect(find.text(term.shortExplanation), findsOneWidget);
@@ -249,7 +252,7 @@ void main() {
       final term = await _expectedTerm(tester, hasCourse: true);
       await _pumpScreen(tester, hasCourse: true);
 
-      await tester.tap(find.text(TermOfDayCopy.readFullEntry));
+      await tester.tap(find.text(AppLocalizationsEn().termOfDayReadFull));
       await _settle(tester);
 
       expect(find.text('entry:${term.id}'), findsOneWidget);
@@ -264,7 +267,7 @@ void main() {
       final term = await _expectedTerm(tester, hasCourse: false);
       await _pumpScreen(tester, hasCourse: false);
 
-      await tester.tap(find.text(TermOfDayCopy.readFullEntry));
+      await tester.tap(find.text(AppLocalizationsEn().termOfDayReadFull));
       await _settle(tester);
 
       expect(
@@ -282,7 +285,10 @@ void main() {
       await _openDictionary(tester);
 
       expect(find.byType(TermOfDayBanner), findsOneWidget);
-      expect(find.text(TermOfDayCopy.openEntry.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().termOfDayOpenEntry.toUpperCase()),
+        findsOneWidget,
+      );
     });
 
     testWidgets('opens the screen, on the same word it was showing', (
@@ -305,11 +311,13 @@ void main() {
         reason: 'the banner names the term the pick chose for today',
       );
 
-      await tester.tap(find.text(TermOfDayCopy.openEntry.toUpperCase()));
+      await tester.tap(
+        find.text(AppLocalizationsEn().termOfDayOpenEntry.toUpperCase()),
+      );
       await _settle(tester);
 
       expect(find.byType(TermOfDayScreen), findsOneWidget);
-      expect(find.text(TermOfDayCopy.readFullEntry), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsOneWidget);
       expect(
         find.descendant(
           of: find.byType(TermOfDayScreen),

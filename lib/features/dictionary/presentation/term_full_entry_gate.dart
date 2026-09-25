@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/features/dictionary/presentation/term_entry_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -35,7 +35,10 @@ class TermFullEntryGate extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: TermEntryCopy.gateSemantics,
+      label: context.strings.termEntryGateSemantics(
+        context.strings.termOfDayReadFull,
+        context.strings.termEntryComesWithCourse,
+      ),
       onTap: openGate,
       excludeSemantics: true,
       child: InkWell(
@@ -58,12 +61,12 @@ class TermFullEntryGate extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      TermEntryCopy.readFullEntry,
+                      context.strings.termOfDayReadFull,
                       style: AppText.body(mood: mood, face: AppFace.control),
                     ),
                     const SizedBox(height: AppSpacing.xxs),
                     Text(
-                      TermEntryCopy.comesWithCourse,
+                      context.strings.termEntryComesWithCourse,
                       style: AppText.support(mood: mood, color: mood.inkMute),
                     ),
                   ],
