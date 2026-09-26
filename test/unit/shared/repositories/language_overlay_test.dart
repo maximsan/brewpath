@@ -5,7 +5,12 @@ import 'package:brew_path/shared/repositories/language_overlay.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<Map<String, dynamic>> _master() => [
-  {'id': 'arabica', 'term': 'Arabica', 'short': 'The sweeter species.'},
+  {
+    'id': 'arabica',
+    'term': 'Arabica',
+    'short': 'The sweeter species.',
+    'pron': 'uh-RAB-ih-kuh',
+  },
   {'id': 'robusta', 'term': 'Robusta', 'short': 'The hardier species.'},
 ];
 
@@ -42,6 +47,56 @@ void main() {
       ]);
 
       expect(records.last['term'], 'Robusta');
+    });
+  });
+
+  group('a respelling belongs to the language that wrote it', () {
+    test('a folder that omits it leaves the entry with none', () {
+      final records = _overlaid([
+        {'id': 'arabica', 'term': 'Arabika'},
+      ]);
+
+      expect(
+        records.first['pron'],
+        isNull,
+        reason:
+            'an English respelling tells an English speaker how to say an '
+            'English word, so it is no use to a reader of another language',
+      );
+    });
+
+    test('a folder that writes its own keeps it', () {
+      final records = _overlaid([
+        {'id': 'arabica', 'term': 'Arabika', 'pron': 'a-RA-bi-ka'},
+      ]);
+
+      expect(records.first['pron'], 'a-RA-bi-ka');
+    });
+
+    test('a folder that writes it as nothing still leaves none', () {
+      final records = _overlaid([
+        {'id': 'arabica', 'term': 'Arabika', 'pron': null},
+      ]);
+
+      expect(records.first['pron'], isNull);
+    });
+
+    test('an entry the folder never reached keeps the English one', () {
+      final records = _overlaid([
+        {'id': 'robusta', 'term': 'Rabusta'},
+      ]);
+
+      expect(
+        records.first['pron'],
+        'uh-RAB-ih-kuh',
+        reason:
+            'the whole entry is still in English there, so the respelling '
+            'still says how to say the word the reader is being shown',
+      );
+    });
+
+    test('the English bank keeps every respelling it carries', () {
+      expect(_overlaid([]).first['pron'], 'uh-RAB-ih-kuh');
     });
   });
 
@@ -199,6 +254,30 @@ void main() {
         'kawie',
         'kawę',
       ]);
+    });
+
+    test('a folder that writes none leaves the term with none', () {
+      final records = overlayTranslations(
+        master: [
+          {
+            'id': 'coffee',
+            'term': 'Coffee',
+            'aliases': ['coffee', 'beans'],
+          },
+        ],
+        translated: [
+          {'id': 'coffee', 'term': 'Kawa'},
+        ],
+        assetPath: 'assets/content/l10n/pl/dictionary_terms.json',
+      );
+
+      expect(
+        records.first['aliases'],
+        isNull,
+        reason:
+            'English forms are the wrong keys in a Polish bank: they would '
+            'decide which terms a lesson mentions, and so the free pool',
+      );
     });
 
     test('a term with fewer aliases than English keeps only its own', () {
