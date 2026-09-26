@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,7 +58,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test('groups come back in the fixed order, not catalog order', () {
-    final groups = groupCatalogByKind([
+    final groups = groupCatalogByKind(AppLocalizationsEn(), [
       _game('g-sequence', 'sequence'),
       _game('g-match', 'match'),
       _game('g-quiz', 'quiz'),
@@ -70,7 +71,7 @@ void main() {
   });
 
   test('games keep catalog order inside their group', () {
-    final groups = groupCatalogByKind([
+    final groups = groupCatalogByKind(AppLocalizationsEn(), [
       _game('g-match', 'match'),
       _game('g-quiz', 'quiz'),
       _game('g-match-washed-natural', 'match'),
@@ -84,18 +85,20 @@ void main() {
   });
 
   test('a kind with no games leaves no heading behind', () {
-    final groups = groupCatalogByKind([_game('g-quiz', 'quiz')]);
+    final groups = groupCatalogByKind(AppLocalizationsEn(), [
+      _game('g-quiz', 'quiz'),
+    ]);
 
     expect(groups, hasLength(1));
     expect(groups.single.label, 'True or false');
   });
 
   test('an empty catalog groups into nothing', () {
-    expect(groupCatalogByKind(const []), isEmpty);
+    expect(groupCatalogByKind(AppLocalizationsEn(), const []), isEmpty);
   });
 
   test('a game of an unlisted kind is kept, never dropped', () {
-    final groups = groupCatalogByKind([
+    final groups = groupCatalogByKind(AppLocalizationsEn(), [
       _game('g-quiz', 'quiz'),
       _game('g-mystery', 'mystery'),
     ]);
@@ -107,7 +110,7 @@ void main() {
   test('grouping never loses or duplicates a game', () async {
     final catalog = await ContentRepository().getMiniGameFormats();
     final grouped = [
-      for (final group in groupCatalogByKind(catalog))
+      for (final group in groupCatalogByKind(AppLocalizationsEn(), catalog))
         for (final game in group.games) game.id,
     ];
 
@@ -133,6 +136,7 @@ void main() {
 
   test('the shipped catalog groups into the seven kinds, in order', () async {
     final groups = groupCatalogByKind(
+      AppLocalizationsEn(),
       await ContentRepository().getMiniGameFormats(),
     );
 

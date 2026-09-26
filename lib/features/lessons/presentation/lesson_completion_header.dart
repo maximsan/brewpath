@@ -1,5 +1,6 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -62,19 +63,17 @@ class _ScoreLine extends StatelessWidget {
 
   final MasteryResult mastery;
 
-  /// The design writes the line out in words — `3 / 5 correct` — rather than
-  /// leaving a bare ratio to be read as anything.
-  static String read(MasteryResult mastery) =>
-      '${mastery.correct} / ${mastery.total} correct';
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
     return Semantics(
-      label: 'Scored ${mastery.correct} out of ${mastery.total}',
+      label: context.strings.completionScored(mastery.correct, mastery.total),
       excludeSemantics: true,
       child: Text(
-        read(mastery),
+        context.strings.completionScoreLine(
+          mastery.correct,
+          mastery.total,
+        ),
         style: AppText.body(
           mood: mood,
           color: mood.ink,

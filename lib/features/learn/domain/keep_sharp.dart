@@ -11,6 +11,7 @@ import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 
 /// The four practice types Keep Sharp rotates over, in canonical order.
@@ -76,24 +77,25 @@ typedef KeepSharpCopy = ({String title, String rule});
 
 /// The copy table, authored once against the product rulings (§5/§6) so the
 /// rule text cannot drift between surfaces.
-KeepSharpCopy keepSharpCopyFor(PracticeType type) => switch (type) {
-  PracticeType.miniGames => (
-    title: 'Mini-games',
-    rule: 'Play two different games today.',
-  ),
-  PracticeType.vocabGame => (
-    title: 'Vocab game',
-    rule: 'Finish one vocab round.',
-  ),
-  PracticeType.flashcards => (
-    title: 'Flashcards',
-    rule: 'Review your saved terms.',
-  ),
-  PracticeType.lessonReplay => (
-    title: 'Replay a lesson',
-    rule: "Finish a replay of any lesson you've completed.",
-  ),
-};
+KeepSharpCopy keepSharpCopyFor(AppLocalizations strings, PracticeType type) =>
+    switch (type) {
+      PracticeType.miniGames => (
+        title: strings.keepSharpMiniGamesTitle,
+        rule: strings.keepSharpMiniGamesRule,
+      ),
+      PracticeType.vocabGame => (
+        title: strings.keepSharpVocabTitle,
+        rule: strings.keepSharpVocabRule,
+      ),
+      PracticeType.flashcards => (
+        title: strings.keepSharpFlashcardsTitle,
+        rule: strings.keepSharpFlashcardsRule,
+      ),
+      PracticeType.lessonReplay => (
+        title: strings.keepSharpReplayTitle,
+        rule: strings.keepSharpReplayRule,
+      ),
+    };
 
 /// The day's resolution: which practice type, and the one screen its CTA opens.
 typedef KeepSharpResolution = ({
@@ -104,10 +106,8 @@ typedef KeepSharpResolution = ({
 /// Everything the rotation is asked of — one value, not one parameter per
 /// practice type.
 ///
-/// It travels as a clump because it is one: every field is material some
-/// type's eligibility rule reads, they are gathered from one place and passed
-/// to one function, and the fifth type added here was the one that made the
-/// argument list longer than the rule it feeds.
+/// Every field is material some type's eligibility rule reads, gathered from
+/// one place and passed to one function.
 typedef PracticeMaterial = ({
   /// The mini-game formats this build can actually run.
   List<String> playableFormatIds,
@@ -128,10 +128,8 @@ typedef PracticeMaterial = ({
 /// The whole recommendation, as a function of the day and the learner's
 /// material. No clock, no storage, no widgets — the caller supplies the day.
 ///
-/// **Eligibility is the type's own rule, asked of the material.** Mini-games
-/// need [miniGamesPerQualifyingDay] playable formats, because that is what the
-/// card's rule demands; a card must never ask for something the learner's
-/// material makes impossible.
+/// Eligibility is the type's own rule asked of the material, so a card never
+/// asks for something the learner's material makes impossible.
 KeepSharpResolution? keepSharpResolutionFor({
   required int dayNumber,
   required PracticeMaterial material,
@@ -185,13 +183,9 @@ KeepSharpResolution? keepSharpResolutionFor({
 
 /// The day's game, skipping any already played today.
 ///
-/// Skipping is what makes the card honest. The rule is "two different games",
-/// so a pick that stayed fixed all day would send the learner back into the
-/// game they just finished, and pressing Start twice could never satisfy the
-/// card — this ticket's own defect, one layer down.
-///
-/// Once every playable format has been played the rule is already met and the
-/// card stops offering a CTA; the fall back to the full list exists because
+/// The rule is "two different games", so a fixed pick would send the learner
+/// back into the one just finished and Start could never satisfy it. Once all
+/// are played no CTA is offered; the fall back to the full list exists because
 /// [keepSharpDailyChoice] indexes modulo length and an empty list would throw.
 String _nextUnplayed(
   int dayNumber,

@@ -7,6 +7,7 @@ import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/lessons/domain/replay_confirm.dart';
 import 'package:brew_path/features/lessons/domain/replay_confirm_providers.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -63,14 +64,14 @@ extension ReviewBeforeReplay on BuildContext {
 
     return showConfirmSheet(
       context: this,
-      title: view.title,
-      actions: const ConfirmActions(
-        confirm: ReplayConfirmCopy.confirm,
-        cancel: ReplayConfirmCopy.cancel,
+      title: strings.replayConfirmTitle(view.lessonTitle),
+      actions: ConfirmActions(
+        confirm: strings.replayConfirmConfirm,
+        cancel: strings.replayConfirmCancel,
       ),
       stakes: ConfirmStakes(
         lines: [
-          for (final line in view.lines)
+          for (final line in replayConfirmLines(strings, view))
             ConfirmLine(label: line.label, value: line.value),
         ],
       ),

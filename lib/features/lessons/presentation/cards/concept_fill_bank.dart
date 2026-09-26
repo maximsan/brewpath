@@ -2,6 +2,8 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_option_tile.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_state.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -147,7 +149,7 @@ class _Option extends StatelessWidget {
     };
 
     final tile = CardOptionTile(
-      semanticsLabel: _spoken,
+      semanticsLabel: _spoken(context.strings),
       onTap: onTap,
       borderColor: tone,
       fillColor: tone?.withValues(alpha: wash),
@@ -167,10 +169,10 @@ class _Option extends StatelessWidget {
 
   /// What the row says aloud — the word, and what became of it. A colour is
   /// the only thing distinguishing a marked option on screen.
-  String get _spoken => switch (mark) {
+  String _spoken(AppLocalizations strings) => switch (mark) {
     ConceptOptionMark.none => option,
-    ConceptOptionMark.picked => '$option, chosen',
-    ConceptOptionMark.right => '$option, the answer',
-    ConceptOptionMark.wrong => '$option, not the answer',
+    ConceptOptionMark.picked => strings.fillOptionChosen(option),
+    ConceptOptionMark.right => strings.fillOptionAnswer(option),
+    ConceptOptionMark.wrong => strings.fillOptionNotAnswer(option),
   };
 }

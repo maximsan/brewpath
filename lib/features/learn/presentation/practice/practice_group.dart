@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/disclosure.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -57,7 +58,10 @@ class _PracticeGroupState extends State<PracticeGroup> {
     return Disclosure(
       isOpen: _open,
       onToggle: _toggle,
-      semanticsLabel: '${widget.label}, ${widget.count}',
+      semanticsLabel: context.strings.practiceGroupSpoken(
+        widget.label,
+        widget.count,
+      ),
       divider: !widget.isLast,
       headerPadding: _headerPadding,
       panelPadding: EdgeInsets.only(bottom: OffTokens.practiceGroupFoot.value),

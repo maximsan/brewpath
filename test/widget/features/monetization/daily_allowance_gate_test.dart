@@ -10,6 +10,7 @@ import 'package:brew_path/features/monetization/domain/daily_allowance.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
 import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter/material.dart';
@@ -98,6 +99,7 @@ void main() {
           // which lays the gate sheet out below the viewport.
           data: MediaQueryData.fromView(tester.view),
           child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             routerConfig: router,
           ),

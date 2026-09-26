@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/scrolled_progress.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,6 +9,7 @@ Widget _harness({
   required bool isScrolled,
   required bool disableAnimations,
 }) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   home: MediaQuery(
     data: MediaQueryData(disableAnimations: disableAnimations),
     child: ScrolledProgress(

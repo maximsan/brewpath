@@ -3,6 +3,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/repositories/visual_guide_repository.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
@@ -10,13 +11,6 @@ import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// What the save control says here, where the design gives it words rather
-/// than the bare mark every other host draws.
-const ({String saved, String unsaved}) _saveCaption = (
-  unsaved: 'Save this guide',
-  saved: 'Saved — review anytime in Saved',
-);
 
 /// The visual guide, inside the lesson that teaches it. Informational, so it
 /// latches on arrival: there is nothing to answer, and it is the one rendered
@@ -77,7 +71,10 @@ class VisualCardView extends ConsumerWidget {
             // writes, so saving here and saving there are one act.
             savedKey: formatSavedKey(SavedKind.guide, card.subject),
             label: guide.asData?.value?.title ?? card.title,
-            caption: _saveCaption,
+            caption: (
+              unsaved: context.strings.visualSaveGuide,
+              saved: context.strings.visualGuideSaved,
+            ),
           ),
         ),
         if (!(card.captionTop ?? false)) ...[

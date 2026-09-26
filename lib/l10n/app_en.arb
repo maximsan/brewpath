@@ -19,5 +19,1337 @@
   "nameSkip": "Skip for now",
   "@nameSkip": {
     "description": "Button that moves on without a name. Says the question can come back, which Settings makes true."
+  },
+
+  "replayConfirmConfirm": "Review lesson",
+  "@replayConfirmConfirm": {
+    "description": "Button that starts a replay of a lesson already finished."
+  },
+
+  "replayConfirmCancel": "Not now",
+  "@replayConfirmCancel": {
+    "description": "Button that closes the replay sheet without starting anything."
+  },
+
+  "replayConfirmTitle": "{lessonTitle}?",
+  "@replayConfirmTitle": {
+    "description": "Title of the replay sheet: the lesson's name, asked as a question.",
+    "placeholders": {
+      "lessonTitle": { "type": "String" }
+    }
+  },
+
+  "replayConfirmPointsLabel": "Points",
+  "@replayConfirmPointsLabel": {
+    "description": "Label of the replay sheet line about points."
+  },
+
+  "replayConfirmPointsValue": "No change",
+  "@replayConfirmPointsValue": {
+    "description": "Value of the points line: a replay pays nothing."
+  },
+
+  "replayConfirmStreakLabel": "Streak",
+  "@replayConfirmStreakLabel": {
+    "description": "Label of the replay sheet line about the daily streak."
+  },
+
+  "replayConfirmStreakCounts": "Counts for today",
+  "@replayConfirmStreakCounts": {
+    "description": "Streak line on a day the replay would still protect."
+  },
+
+  "replayConfirmStreakEarned": "Already earned today",
+  "@replayConfirmStreakEarned": {
+    "description": "Streak line on a day already covered by something else."
+  },
+
+  "replayConfirmLengthLabel": "Length",
+  "@replayConfirmLengthLabel": {
+    "description": "Label of the replay sheet line about how long the lesson runs."
+  },
+
+  "replayConfirmLastCompletedLabel": "Last completed",
+  "@replayConfirmLastCompletedLabel": {
+    "description": "Label of the replay sheet line about when the lesson was last finished."
+  },
+
+  "replayConfirmLength": "~{minutes} min \u00b7 {cards, plural, =1{{cards} card} other{{cards} cards}}",
+  "@replayConfirmLength": {
+    "description": "How long a replay runs and how many cards it holds.",
+    "placeholders": {
+      "minutes": { "type": "int" },
+      "cards": { "type": "int" }
+    }
+  },
+
+  "replayConfirmDatedYear": "{date}, {year}",
+  "@replayConfirmDatedYear": {
+    "description": "A past run's date once it is not this year, so an old run cannot pass as this year's.",
+    "placeholders": {
+      "date": { "type": "String" },
+      "year": { "type": "int" }
+    }
+  },
+
+  "cardCueMcq": "Multiple choice · pick one",
+  "@cardCueMcq": {
+    "description": "Eyebrow on a multiple-choice card, naming the format."
+  },
+
+  "cardCueMulti": "Select all that apply",
+  "@cardCueMulti": {
+    "description": "Eyebrow on a card that takes several answers at once."
+  },
+
+  "cardCueMatch": "Match · drag to pair",
+  "@cardCueMatch": {
+    "description": "Eyebrow on a card where traits are dragged onto what they belong to."
+  },
+
+  "cardCueSlider": "Calibrate · dial to the target",
+  "@cardCueSlider": {
+    "description": "Eyebrow on a card answered by dialling a slider."
+  },
+
+  "cardCueSequence": "Put in order · tap in sequence",
+  "@cardCueSequence": {
+    "description": "Eyebrow on a card answered by tapping items into order."
+  },
+
+  "cardCueQuiz": "True or false",
+  "@cardCueQuiz": {
+    "description": "Eyebrow on a card that asks whether a statement holds."
+  },
+
+  "cardCueFlavor": "Tasting · name the note",
+  "@cardCueFlavor": {
+    "description": "Eyebrow on a card that asks for the note behind a tasting clue."
+  },
+
+  "cardCueTastefix": "Taste Fix",
+  "@cardCueTastefix": {
+    "description": "Eyebrow on a card that asks for the fix for a cup that came out wrong."
+  },
+
+  "cardCueBagpick": "Blind bag · read the beans",
+  "@cardCueBagpick": {
+    "description": "Eyebrow on a card that asks for the process behind an unlabelled bag."
+  },
+
+  "cardCueFill": "Complete the sentence",
+  "@cardCueFill": {
+    "description": "Eyebrow on a card answered by filling the blanks in a sentence."
+  },
+
+  "bagpickCalledIt": "Called it",
+  "@bagpickCalledIt": {
+    "description": "Verdict line when the learner named the bag's process correctly."
+  },
+
+  "bagpickProcessWashed": "Washed",
+  "@bagpickProcessWashed": {
+    "description": "Name of the washed coffee process, as a bag-picking option."
+  },
+
+  "bagpickProcessHoney": "Honey",
+  "@bagpickProcessHoney": {
+    "description": "Name of the honey coffee process, as a bag-picking option."
+  },
+
+  "bagpickProcessNatural": "Natural",
+  "@bagpickProcessNatural": {
+    "description": "Name of the natural coffee process, as a bag-picking option."
+  },
+
+  "bagpickActually": "{process}, actually",
+  "@bagpickActually": {
+    "description": "Verdict line naming the real process after a wrong call.",
+    "placeholders": {
+      "process": {
+        "type": "String"
+      }
+    }
+  },
+
+  "bagpickSample": "A sample of {sampleSize} green beans from this bag.",
+  "@bagpickSample": {
+    "description": "Caption over the beans drawn from an unlabelled bag.",
+    "placeholders": {
+      "sampleSize": {
+        "type": "int"
+      }
+    }
+  },
+
+  "bagpickProcessHidden": "Process hidden",
+  "@bagpickProcessHidden": {
+    "description": "Says the bag's process is not printed on it."
+  },
+
+  "bagpickTapToInspect": "Tap to inspect",
+  "@bagpickTapToInspect": {
+    "description": "Prompt on a clue the learner has not opened yet."
+  },
+
+  "bagpickCueTell": "{label}. {body}. This was the tell.",
+  "@bagpickCueTell": {
+    "description": "What a screen reader is told about the clue that gave the process away.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+
+  "bagpickCueRead": "{label}. {body}",
+  "@bagpickCueRead": {
+    "description": "What a screen reader is told about an opened clue.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "body": {
+        "type": "String"
+      }
+    }
+  },
+
+  "sequenceSubmit": "Submit",
+  "@sequenceSubmit": {
+    "description": "Button that commits the order the learner tapped."
+  },
+
+  "sequenceReset": "Reset",
+  "@sequenceReset": {
+    "description": "Button that clears the order tapped so far."
+  },
+
+  "sequenceInOrder": "In order",
+  "@sequenceInOrder": {
+    "description": "Verdict line when the sequence was right."
+  },
+
+  "sequenceNailedIt": "Nailed the sequence.",
+  "@sequenceNailedIt": {
+    "description": "Explanation under a correct sequence verdict."
+  },
+
+  "sequenceWrongOrder": "Not the right order this time.",
+  "@sequenceWrongOrder": {
+    "description": "Explanation under a wrong sequence verdict."
+  },
+
+  "sequenceCorrectOrder": "CORRECT ORDER",
+  "@sequenceCorrectOrder": {
+    "description": "Kicker over the reveal of the right order. Set upper case by the design."
+  },
+
+  "sequencePosition": "position {position}",
+  "@sequencePosition": {
+    "description": "What a screen reader is told about a step's place in the run.",
+    "placeholders": {
+      "position": {
+        "type": "int"
+      }
+    }
+  },
+
+  "sequenceBelongsAt": "belongs at {order}",
+  "@sequenceBelongsAt": {
+    "description": "What a screen reader is told about a step that sits in the wrong place.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+
+  "sequenceGoesAt": "GOES #{order}",
+  "@sequenceGoesAt": {
+    "description": "Hint on a misplaced step, naming where it belongs.",
+    "placeholders": {
+      "order": {
+        "type": "int"
+      }
+    }
+  },
+
+  "sliderCheck": "Check answer",
+  "@sliderCheck": {
+    "description": "Button that commits the slider setting."
+  },
+
+  "sliderDialedIn": "Dialed in",
+  "@sliderDialedIn": {
+    "description": "Verdict line when the slider landed inside the target band."
+  },
+
+  "sliderYourSetting": "Your setting",
+  "@sliderYourSetting": {
+    "description": "Label over the value the learner dialled."
+  },
+
+  "sliderTarget": "Target",
+  "@sliderTarget": {
+    "description": "Label over the value the card was asking for."
+  },
+
+  "cardHowToPlay": "How to play",
+  "@cardHowToPlay": {
+    "description": "Opens the drawer explaining the card's format."
+  },
+
+  "cardHelpGotIt": "Got it",
+  "@cardHelpGotIt": {
+    "description": "Closes the drawer explaining the card's format."
+  },
+
+  "practicalHandsOn": "HANDS ON",
+  "@practicalHandsOn": {
+    "description": "Eyebrow on a practical card. Set upper case by the design."
+  },
+
+  "practicalTakeaway": "Worth knowing",
+  "@practicalTakeaway": {
+    "description": "Kicker over the rule a practical card leaves the learner with."
+  },
+
+  "visualSaveGuide": "Save this guide",
+  "@visualSaveGuide": {
+    "description": "Button that bookmarks a visual guide."
+  },
+
+  "visualGuideSaved": "Saved — review anytime in Saved",
+  "@visualGuideSaved": {
+    "description": "Confirms a visual guide was bookmarked, and says where to find it."
+  },
+
+  "cardAllCorrect": "All correct",
+  "@cardAllCorrect": {
+    "description": "Verdict line when every answer on the card was right."
+  },
+
+  "cardCorrect": "Correct",
+  "@cardCorrect": {
+    "description": "Verdict line when the answer was right."
+  },
+
+  "predictFirstGuess": "First guess",
+  "@predictFirstGuess": {
+    "description": "Eyebrow over the question a predict card holds a guess for."
+  },
+
+  "predictYourGuess": "Your guess · {option}",
+  "@predictYourGuess": {
+    "description": "Verdict line repeating the learner's held guess back to them.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "optionChosen": "chosen",
+  "@optionChosen": {
+    "description": "Spoken suffix on the option a learner picked."
+  },
+
+  "optionCorrectAnswer": "correct answer",
+  "@optionCorrectAnswer": {
+    "description": "Spoken suffix on the option that was right."
+  },
+
+  "optionYourAnswerIncorrect": "your answer, incorrect",
+  "@optionYourAnswerIncorrect": {
+    "description": "Spoken suffix on a wrong option the learner picked."
+  },
+
+  "optionMissedAnswer": "missed — this was an answer",
+  "@optionMissedAnswer": {
+    "description": "Spoken suffix on a right option the learner did not pick."
+  },
+
+  "fillOptionChosen": "{option}, chosen",
+  "@fillOptionChosen": {
+    "description": "What a screen reader is told about a word the learner put in a blank.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "fillOptionAnswer": "{option}, the answer",
+  "@fillOptionAnswer": {
+    "description": "What a screen reader is told about the word that belonged in a blank.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "fillOptionNotAnswer": "{option}, not the answer",
+  "@fillOptionNotAnswer": {
+    "description": "What a screen reader is told about a word that did not belong in a blank.",
+    "placeholders": {
+      "option": {
+        "type": "String"
+      }
+    }
+  },
+
+  "takeawaySemantics": "{label}. {text}",
+  "@takeawaySemantics": {
+    "description": "What a screen reader is told about a card's closing note.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+
+  "matchCleanBoard": "Clean board",
+  "@matchCleanBoard": {
+    "description": "Verdict when every pair landed on the first try."
+  },
+
+  "matchWrongDrops": "{wrongDrops, plural, =1{1 wrong drop} other{{wrongDrops} wrong drops}}",
+  "@matchWrongDrops": {
+    "description": "Verdict counting the misplaced drops on a match board.",
+    "placeholders": {
+      "wrongDrops": {
+        "type": "int"
+      }
+    }
+  },
+
+  "matchClearedClean": "Every pair first time. That is the one that counts.",
+  "@matchClearedClean": {
+    "description": "Explanation under a clean match board."
+  },
+
+  "matchClearedNotClean": "Cleared it, but not first time — the board only scores when every pair lands on the first try.",
+  "@matchClearedNotClean": {
+    "description": "Explanation under a match board cleared with misses."
+  },
+
+  "matchWrongDrop": "Not that one — try it somewhere else.",
+  "@matchWrongDrop": {
+    "description": "Announced when a dragged fact lands on the wrong target."
+  },
+
+  "matchPairedWith": "{left}, paired with {right}",
+  "@matchPairedWith": {
+    "description": "What a screen reader is told about a completed pair.",
+    "placeholders": {
+      "left": {
+        "type": "String"
+      },
+      "right": {
+        "type": "String"
+      }
+    }
+  },
+
+  "matchPlaceUnder": "Place under {target}",
+  "@matchPlaceUnder": {
+    "description": "What a screen reader is told a drop target would do.",
+    "placeholders": {
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+
+
+  "tastefixStartingPoint": "STARTING POINT",
+  "@tastefixStartingPoint": {
+    "description": "Kicker over the cup as it was brewed. Set upper case by the design."
+  },
+
+  "tastefixFixed": "FIXED",
+  "@tastefixFixed": {
+    "description": "Kicker over the cup after the fix. Set upper case by the design."
+  },
+
+  "tastefixTastes": "TASTES",
+  "@tastefixTastes": {
+    "description": "Kicker over what the cup tastes of. Set upper case by the design."
+  },
+
+  "tastefixResult": "RESULT",
+  "@tastefixResult": {
+    "description": "Kicker over what the fix came to. Set upper case by the design."
+  },
+
+  "tastefixBalanced": "Balanced",
+  "@tastefixBalanced": {
+    "description": "Name for a cup with nothing left to fix."
+  },
+
+  "tastefixResultSemantics": "Result: {result}",
+  "@tastefixResultSemantics": {
+    "description": "What a screen reader is told the fix came to.",
+    "placeholders": {
+      "result": {
+        "type": "String"
+      }
+    }
+  },
+
+  "tastefixTastesSemantics": "Tastes: {tags}",
+  "@tastefixTastesSemantics": {
+    "description": "What a screen reader is told the cup tastes of.",
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+
+  "sliderVeryEnd": "Very {label}",
+  "@sliderVeryEnd": {
+    "description": "End label on a calibrate track. Used for both ends: {label} is the round's own word for that end, so it reads 'Very Fine' at one and 'Very Coarse' at the other.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "sliderMiddle": "Middle",
+  "@sliderMiddle": {
+    "description": "Label for the centre of a calibrate track."
+  },
+
+  "optionCorrect": "correct",
+  "@optionCorrect": {
+    "description": "Spoken suffix on an option the learner picked that was an answer."
+  },
+
+  "optionIncorrect": "incorrect",
+  "@optionIncorrect": {
+    "description": "Spoken suffix on an option the learner picked that was not an answer."
+  },
+
+  "payoffOpeningGuess": "Your opening guess",
+  "@payoffOpeningGuess": {
+    "description": "Verdict line over the reply to the guess the lesson opened with."
+  },
+
+  "payoffOpener": "Before the lesson you guessed",
+  "@payoffOpener": {
+    "description": "Start of the payoff sentence, before the learner's guess."
+  },
+
+  "payoffAndRight": "— and you were right.",
+  "@payoffAndRight": {
+    "description": "End of the payoff sentence when the guess landed."
+  },
+
+  "payoffButActually": ". It's",
+  "@payoffButActually": {
+    "description": "Turn in the payoff sentence when the guess missed, before the real answer."
+  },
+
+  "payoffNowYouKnow": "— now you know why.",
+  "@payoffNowYouKnow": {
+    "description": "End of the payoff sentence when the guess missed."
+  },
+
+  "payoffSpokenRight": "Before the lesson you guessed {pick} — and you were right.",
+  "@payoffSpokenRight": {
+    "description": "The payoff read as one sentence for a screen reader, when the guess landed. The visible version sets {pick} as a chip, which announces nothing on its own.",
+    "placeholders": {
+      "pick": {
+        "type": "String"
+      }
+    }
+  },
+
+  "payoffSpokenWrong": "Before the lesson you guessed {pick}. It's {answer} — now you know why.",
+  "@payoffSpokenWrong": {
+    "description": "The payoff read as one sentence for a screen reader, when the guess missed. The visible version sets both words as chips, which announce nothing on their own.",
+    "placeholders": {
+      "pick": {
+        "type": "String"
+      },
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+
+  "lessonCardOfCount": "Card {index} of {total}",
+  "@lessonCardOfCount": {
+    "description": "What a screen reader is told about the learner's place in the lesson.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "lessonLoading": "Loading the lesson",
+  "@lessonLoading": {
+    "description": "Announced while a lesson is still being read."
+  },
+
+  "lessonNotFound": "Lesson not found",
+  "@lessonNotFound": {
+    "description": "Shown when the course no longer carries the lesson that was opened."
+  },
+
+  "lessonNoCards": "This lesson has no cards.",
+  "@lessonNoCards": {
+    "description": "Shown when a lesson carries nothing to play."
+  },
+
+  "completionEyebrowComplete": "Lesson complete",
+  "@completionEyebrowComplete": {
+    "description": "Kicker over the screen that closes a first run of a lesson."
+  },
+
+  "completionEyebrowReview": "Review complete",
+  "@completionEyebrowReview": {
+    "description": "Kicker over the screen that closes a replay, which pays nothing."
+  },
+
+  "completionBeatPerfect": "Perfect run!",
+  "@completionBeatPerfect": {
+    "description": "Headline closing a lesson answered without a miss."
+  },
+
+  "completionBeatMastered": "Mastered it.",
+  "@completionBeatMastered": {
+    "description": "Headline closing a lesson answered well."
+  },
+
+  "completionBeatNeedsPractice": "Good start.",
+  "@completionBeatNeedsPractice": {
+    "description": "Headline closing a weak run. Congratulates rather than corrects."
+  },
+
+  "completionBeatNeutral": "Nice work.",
+  "@completionBeatNeutral": {
+    "description": "Headline closing a run with no stored score."
+  },
+
+  "completionScored": "Scored {correct} out of {total}",
+  "@completionScored": {
+    "description": "What a screen reader is told the run came to.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardFreezeLabel": "Freeze earned",
+  "@rewardFreezeLabel": {
+    "description": "Label on the reward row for a streak freeze."
+  },
+
+  "rewardFreezeDetail": "One missed day is covered.",
+  "@rewardFreezeDetail": {
+    "description": "Line under the streak-freeze reward, saying what it covers."
+  },
+
+  "rewardCardLabel": "New card",
+  "@rewardCardLabel": {
+    "description": "Label on the reward row for a collectible card."
+  },
+
+  "treeGrewToStage": "Your coffee tree grew to stage {stage}",
+  "@treeGrewToStage": {
+    "description": "What a screen reader is told when the tree advanced.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+
+  "treeAtStage": "Your coffee tree, stage {stage}",
+  "@treeAtStage": {
+    "description": "What a screen reader is told about the tree when it did not advance.",
+    "placeholders": {
+      "stage": {
+        "type": "int"
+      }
+    }
+  },
+
+  "courseStartKeepSharp": "Start Keep Sharp",
+  "@courseStartKeepSharp": {
+    "description": "Button that opens the daily practice after the course is finished."
+  },
+
+  "courseFinishedFoundations": "You finished Foundations",
+  "@courseFinishedFoundations": {
+    "description": "Headline on the screen that closes the whole course. Foundations is the course's name."
+  },
+
+  "courseStatsSpoken": "What you did: {lessons} lessons completed, {rewards} Module Rewards earned, a longest streak of {streak} days.",
+  "@courseStatsSpoken": {
+    "description": "What a screen reader is told the finished course came to.",
+    "placeholders": {
+      "lessons": {
+        "type": "int"
+      },
+      "rewards": {
+        "type": "int"
+      },
+      "streak": {
+        "type": "int"
+      }
+    }
+  },
+
+  "courseStatLessons": "Lessons completed",
+  "@courseStatLessons": {
+    "description": "Label on the finished-course figure counting lessons."
+  },
+
+  "courseStatRewards": "Module Rewards",
+  "@courseStatRewards": {
+    "description": "Label on the finished-course figure counting module rewards."
+  },
+
+  "courseStatStreak": "Longest streak",
+  "@courseStatStreak": {
+    "description": "Label on the finished-course figure for the longest run of days."
+  },
+
+  "keepSharpDoneFallback": "Done for today.",
+  "@keepSharpDoneFallback": {
+    "description": "Line under a finished Keep Sharp card when the day has no phrase of its own."
+  },
+
+  "keepSharpKicker": "KEEP SHARP",
+  "@keepSharpKicker": {
+    "description": "Kicker over the daily practice card. Set upper case by the design."
+  },
+
+  "keepSharpCompleteSpoken": "Keep Sharp complete for today. {phrase}",
+  "@keepSharpCompleteSpoken": {
+    "description": "What a screen reader is told about a finished Keep Sharp card.",
+    "placeholders": {
+      "phrase": {
+        "type": "String"
+      }
+    }
+  },
+
+  "keepSharpStart": "Start",
+  "@keepSharpStart": {
+    "description": "Button that begins the day's recommended practice."
+  },
+
+  "keepSharpStartSpoken": "Start: {title}",
+  "@keepSharpStartSpoken": {
+    "description": "What a screen reader is told the start button opens.",
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "keepSharpNoneSpoken": "Keep Sharp: no recommendation today. Practice anything below to keep your streak alive.",
+  "@keepSharpNoneSpoken": {
+    "description": "What a screen reader is told when no practice can be recommended."
+  },
+
+  "keepSharpNone": "Practice anything below to keep your streak alive.",
+  "@keepSharpNone": {
+    "description": "Line shown when no practice can be recommended today."
+  },
+
+  "keepSharpMiniGamesTitle": "Mini-games",
+  "@keepSharpMiniGamesTitle": {
+    "description": "Name of the mini-games practice on the Keep Sharp card."
+  },
+
+  "keepSharpMiniGamesRule": "Play two different games today.",
+  "@keepSharpMiniGamesRule": {
+    "description": "What finishing the mini-games practice takes."
+  },
+
+  "keepSharpVocabTitle": "Vocab game",
+  "@keepSharpVocabTitle": {
+    "description": "Name of the vocab practice on the Keep Sharp card."
+  },
+
+  "keepSharpVocabRule": "Finish one vocab round.",
+  "@keepSharpVocabRule": {
+    "description": "What finishing the vocab practice takes."
+  },
+
+  "keepSharpFlashcardsTitle": "Flashcards",
+  "@keepSharpFlashcardsTitle": {
+    "description": "Name of the flashcard practice on the Keep Sharp card."
+  },
+
+  "keepSharpFlashcardsRule": "Review your saved terms.",
+  "@keepSharpFlashcardsRule": {
+    "description": "What finishing the flashcard practice takes."
+  },
+
+  "keepSharpReplayTitle": "Replay a lesson",
+  "@keepSharpReplayTitle": {
+    "description": "Name of the lesson-replay practice on the Keep Sharp card."
+  },
+
+  "keepSharpReplayRule": "Finish a replay of any lesson you've completed.",
+  "@keepSharpReplayRule": {
+    "description": "What finishing the lesson-replay practice takes."
+  },
+
+  "lessonPositionShort": "LESSON {number}/{total} · ~{minutes} MIN",
+  "@lessonPositionShort": {
+    "description": "Eyebrow naming a lesson's place in its module and how long it runs. Set upper case by the design.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "lessonPositionSpoken": "Lesson {number} of {total}, about {minutes} minutes",
+  "@lessonPositionSpoken": {
+    "description": "What a screen reader is told about a lesson's place and length.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "moduleFreezeEarned": "Freeze earned · One missed day covered",
+  "@moduleFreezeEarned": {
+    "description": "Mark on a finished module that paid a streak freeze."
+  },
+
+  "miniGameKindMatch": "Match",
+  "@miniGameKindMatch": {
+    "description": "Name of the match mini-game in the catalog."
+  },
+
+  "miniGameKindQuiz": "True or false",
+  "@miniGameKindQuiz": {
+    "description": "Name of the true-or-false mini-game in the catalog."
+  },
+
+  "miniGameKindFlavor": "Name the note",
+  "@miniGameKindFlavor": {
+    "description": "Name of the tasting mini-game in the catalog."
+  },
+
+  "miniGameKindBagpick": "Blind bag",
+  "@miniGameKindBagpick": {
+    "description": "Name of the blind-bag mini-game in the catalog."
+  },
+
+  "miniGameKindTastefix": "Taste fix",
+  "@miniGameKindTastefix": {
+    "description": "Name of the taste-fix mini-game in the catalog."
+  },
+
+  "miniGameKindSlider": "Calibrate",
+  "@miniGameKindSlider": {
+    "description": "Name of the calibrate mini-game in the catalog."
+  },
+
+  "miniGameKindSequence": "Sequence",
+  "@miniGameKindSequence": {
+    "description": "Name of the put-in-order mini-game in the catalog."
+  },
+
+  "drillNothingToPlay": "Nothing to play here yet.",
+  "@drillNothingToPlay": {
+    "description": "Closing line when a run had no rounds."
+  },
+
+  "drillCleanSweep": "A clean sweep. Every one of them.",
+  "@drillCleanSweep": {
+    "description": "Closing line when every round was right."
+  },
+
+  "drillSharpWork": "Sharp work — that is the mark.",
+  "@drillSharpWork": {
+    "description": "Closing line for a strong run."
+  },
+
+  "drillAllMissed": "Every one of these is worth another look.",
+  "@drillAllMissed": {
+    "description": "Closing line when no round was right."
+  },
+
+  "drillWorthAnotherRun": "Worth another run — the explanations stick.",
+  "@drillWorthAnotherRun": {
+    "description": "Closing line for a middling run."
+  },
+
+  "miniGameKicker": "Mini-game",
+  "@miniGameKicker": {
+    "description": "Kicker over a mini-game's opening screen."
+  },
+
+  "miniGameLoading": "Loading the mini-game",
+  "@miniGameLoading": {
+    "description": "Announced while a mini-game is being read."
+  },
+
+  "miniGameLoadFailed": "That mini-game could not be loaded.",
+  "@miniGameLoadFailed": {
+    "description": "Shown when a mini-game cannot be read."
+  },
+
+  "miniGameNotInCatalog": "That mini-game is not in the catalog.",
+  "@miniGameNotInCatalog": {
+    "description": "Shown when the catalog no longer carries the game that was opened."
+  },
+
+  "miniGameHowToPlay": "HOW TO PLAY",
+  "@miniGameHowToPlay": {
+    "description": "Kicker over a mini-game's rules. Set upper case by the design."
+  },
+
+  "miniGamePlay": "Play",
+  "@miniGamePlay": {
+    "description": "Button that starts a mini-game."
+  },
+
+  "miniGameNotPlayable": "Not playable yet",
+  "@miniGameNotPlayable": {
+    "description": "Button state for a mini-game the learner cannot start."
+  },
+
+  "miniGameRoundOf": "Round {index} of {total}",
+  "@miniGameRoundOf": {
+    "description": "What a screen reader is told about the learner's place in a run.",
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "miniGameRoundsLoading": "Loading the rounds",
+  "@miniGameRoundsLoading": {
+    "description": "Announced while a mini-game's rounds are being read."
+  },
+
+  "miniGameRoundsFailed": "These rounds could not be loaded.",
+  "@miniGameRoundsFailed": {
+    "description": "Shown when a mini-game's rounds cannot be read."
+  },
+
+  "miniGameNoRounds": "This mini-game has no rounds yet.",
+  "@miniGameNoRounds": {
+    "description": "Shown when a mini-game carries nothing to play."
+  },
+
+  "miniGamePlayAgain": "Play again",
+  "@miniGamePlayAgain": {
+    "description": "Button that runs the same mini-game again."
+  },
+
+  "miniGameDone": "Done",
+  "@miniGameDone": {
+    "description": "Button that leaves a finished mini-game."
+  },
+
+  "miniGameGateNotNow": "Not now",
+  "@miniGameGateNotNow": {
+    "description": "Button that closes the sheet in front of a locked mini-game."
+  },
+
+  "miniGameTaughtIn": "TAUGHT IN MODULE {number} · {label}",
+  "@miniGameTaughtIn": {
+    "description": "Says which module teaches a locked mini-game. Set upper case by the design.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "miniGameFullCourse": "This game comes with the full course.",
+  "@miniGameFullCourse": {
+    "description": "Says a locked mini-game opens with the purchase."
+  },
+
+  "miniGameFree": "Free",
+  "@miniGameFree": {
+    "description": "Marks a mini-game the learner can play without the course."
+  },
+
+  "miniGameLockedHint": "Shows the module that teaches it",
+  "@miniGameLockedHint": {
+    "description": "Hint on a locked mini-game row, saying what tapping it does."
+  },
+
+  "miniGamesEmpty": "No mini-games available yet.",
+  "@miniGamesEmpty": {
+    "description": "Shown when the catalog has nothing to offer."
+  },
+
+  "collectiblesLoading": "Loading your collection",
+  "@collectiblesLoading": {
+    "description": "Announced while the card collection is being read."
+  },
+
+  "collectiblesLoadFailed": "Your collection could not be loaded.",
+  "@collectiblesLoadFailed": {
+    "description": "Shown when the card collection cannot be read."
+  },
+
+  "collectiblesInvitation": "Finish lessons to reveal new cards.",
+  "@collectiblesInvitation": {
+    "description": "Line under the collection, saying how new cards arrive."
+  },
+
+  "collectibleChallengeTried": "Challenge tried",
+  "@collectibleChallengeTried": {
+    "description": "Marks a card whose brew challenge the learner has attempted."
+  },
+
+  "collectibleChallengeToEarn": "Challenge to earn",
+  "@collectibleChallengeToEarn": {
+    "description": "Marks a card whose brew challenge is still to attempt."
+  },
+
+  "collectibleNumber": "CARD {number}",
+  "@collectibleNumber": {
+    "description": "Number over a card in the collection. Set upper case by the design.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+
+  "collectibleGoToCourse": "Go to the course",
+  "@collectibleGoToCourse": {
+    "description": "Button on a locked card that opens the lesson which awards it."
+  },
+
+  "collectibleFactLabel": "Fact",
+  "@collectibleFactLabel": {
+    "description": "Kicker over the fact on a card's sheet."
+  },
+
+  "collectibleMemorableLabel": "Memorable",
+  "@collectibleMemorableLabel": {
+    "description": "Kicker over the keepsake line on a reward card."
+  },
+
+  "collectibleEarnByModule": "Earn this by finishing {moduleTag}",
+  "@collectibleEarnByModule": {
+    "description": "Says a card is earned by finishing a module.",
+    "placeholders": {
+      "moduleTag": {
+        "type": "String"
+      }
+    }
+  },
+
+  "collectibleEarnByLesson": "Earn this by completing {lessonTitle}",
+  "@collectibleEarnByLesson": {
+    "description": "Says a card is earned by finishing one lesson.",
+    "placeholders": {
+      "lessonTitle": {
+        "type": "String"
+      }
+    }
+  },
+
+  "drillRunComplete": "Run complete. You scored {score} out of {total}. {encouragement}",
+  "@drillRunComplete": {
+    "description": "What a screen reader is told a finished run came to.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "encouragement": {
+        "type": "String"
+      }
+    }
+  },
+
+  "verdictNotQuite": "Not quite",
+  "@verdictNotQuite": {
+    "description": "The line every graded surface closes on when the answer was not right."
+  },
+
+  "quizTrue": "True",
+  "@quizTrue": {
+    "description": "The affirmative option on a true-or-false card."
+  },
+
+  "quizFalse": "False",
+  "@quizFalse": {
+    "description": "The negative option on a true-or-false card."
+  },
+
+  "decisionGoodCall": "Good call",
+  "@decisionGoodCall": {
+    "description": "Verdict when a decision card's call pays off."
+  },
+
+  "decisionBackfire": "That would backfire",
+  "@decisionBackfire": {
+    "description": "Verdict when a decision card's call would go wrong."
+  },
+
+  "tastefixGoodFix": "Good fix",
+  "@tastefixGoodFix": {
+    "description": "Verdict when a taste-fix card's fix worked."
+  },
+
+  "completionNextLesson": "Next lesson",
+  "@completionNextLesson": {
+    "description": "Button that opens the lesson queued behind the one just finished."
+  },
+
+  "completionBackToPath": "Back to Path",
+  "@completionBackToPath": {
+    "description": "Button that leaves a finished lesson when nothing is queued."
+  },
+
+  "completionPracticeAgain": "Practice this lesson again",
+  "@completionPracticeAgain": {
+    "description": "Invitation a weak run gets, in the action colour rather than a failure red."
+  },
+
+  "completionScoreLine": "{correct} / {total} correct",
+  "@completionScoreLine": {
+    "description": "How a finished run's score is drawn.",
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "treeLessonsToNextStage": "{lessons, plural, =1{{lessons} lesson} other{{lessons} lessons}} to the next stage",
+  "@treeLessonsToNextStage": {
+    "description": "How many lessons are left before the tree grows again.",
+    "placeholders": {
+      "lessons": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardPointsSpoken": "{points} points earned",
+  "@rewardPointsSpoken": {
+    "description": "What a screen reader is told a run paid.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+
+  "rewardPointsLine": "+{points} PTS",
+  "@rewardPointsLine": {
+    "description": "How points paid are drawn. Set upper case by the design.",
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+
+  "drillScoreLine": "{score} / {total}",
+  "@drillScoreLine": {
+    "description": "How a finished drill's score is drawn.",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "drillSpokenPlain": "{value} {note}. {line}",
+  "@drillSpokenPlain": {
+    "description": "What a screen reader is told about an unscored drill result.",
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "note": {
+        "type": "String"
+      },
+      "line": {
+        "type": "String"
+      }
+    }
+  },
+
+  "collectiblePlaceInSet": "{place} / {total}",
+  "@collectiblePlaceInSet": {
+    "description": "A card's place in the whole collection.",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "collectiblesRemaining": "{remaining} more to collect",
+  "@collectiblesRemaining": {
+    "description": "Names the cards the grid does not draw.",
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+
+  "collectiblesEarnedOfTotal": "{earned} of {total}",
+  "@collectiblesEarnedOfTotal": {
+    "description": "How far the collection has got.",
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+
+  "collectiblesCollectedSpoken": "{count} cards collected",
+  "@collectiblesCollectedSpoken": {
+    "description": "What a screen reader is told the collection holds, after the earned-of-total count.",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+
+  "practiceGroupSpoken": "{label}, {count}",
+  "@practiceGroupSpoken": {
+    "description": "What a screen reader is told about a practice group and its size.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "practiceReplaySpoken": "{lines}. Replay.",
+  "@practiceReplaySpoken": {
+    "description": "What a screen reader is told about a replayable lesson row.",
+    "placeholders": {
+      "lines": {
+        "type": "String"
+      }
+    }
+  },
+
+  "practiceMinutes": "~{minutes} min",
+  "@practiceMinutes": {
+    "description": "About how long a practice run takes.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "practiceFree": "Free",
+  "@practiceFree": {
+    "description": "Marks a practice the learner can run without the course."
+  },
+
+  "practiceTwoMinutes": "~2 min",
+  "@practiceTwoMinutes": {
+    "description": "About how long a vocab drill takes."
+  },
+
+  "todayBeginSpoken": "{label}: {title}",
+  "@todayBeginSpoken": {
+    "description": "What a screen reader is told the Begin button opens.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+
+  "optionMissedTag": "MISSED",
+  "@optionMissedTag": {
+    "description": "Tag on an answer the learner did not pick. Set upper case by the design."
+  },
+
+  "optionSelected": "selected",
+  "@optionSelected": {
+    "description": "Spoken suffix on an option the learner has ticked."
+  },
+
+  "optionCorrectMark": "correct",
+  "@optionCorrectMark": {
+    "description": "Spoken suffix on a sequence step that sits in the right place."
+  },
+
+  "grinderClicksUnit": "CLICKS",
+  "@grinderClicksUnit": {
+    "description": "Unit under the number on the grinder dial. Set upper case by the design."
   }
 }

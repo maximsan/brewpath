@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/swipe/horizontal_swipe.dart';
 import 'package:brew_path/core/swipe/swipe_geometry.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,6 +10,7 @@ const double _cardHeight = 200;
 const Key _cardKey = Key('card');
 
 Widget _app(Widget child, {bool reduceMotion = false}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.darkRoast,
   home: MediaQuery(
     data: MediaQueryData(disableAnimations: reduceMotion),

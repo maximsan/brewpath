@@ -6,6 +6,7 @@ import 'package:brew_path/features/dictionary/presentation/term_linked_text.dart
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_card_view.dart';
 import 'package:brew_path/features/lessons/presentation/cards/predict_card_view.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
@@ -76,6 +77,7 @@ Widget _host(Widget child, {DictionaryView? view}) => ProviderScope(
     dictionaryViewProvider.overrideWith((ref) async => view ?? _view()),
   ],
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: Scaffold(body: SingleChildScrollView(child: child)),
   ),

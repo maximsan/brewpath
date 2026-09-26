@@ -3,6 +3,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/overlay_barrier.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/overlay_colors.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ void main() {
   }) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(

@@ -8,6 +8,7 @@ import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -15,26 +16,12 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The mini-game catalog under Learn → Practice → Games.
+/// The mini-game catalog, grouped by kind in [miniGameKinds]' fixed order so
+/// adding a game never reshuffles the shelf.
 ///
-/// Games are grouped by **kind**, in the fixed order [miniGameKinds] declares,
-/// each group keeping catalog order internally. A learner arrives wanting a
-/// mechanic rather than a topic, and a flat list of thirteen made them read all
-/// thirteen to find the two that match. The order does not derive from the
-/// catalog, so adding a game never reshuffles the shelf.
-///
-/// The kind's glyph and name are on the group's heading and never on a row;
-/// the row leads with the game's own name and carries the topic it drills as
-/// the eyebrow. Rows sit indented under their heading (`paddingLeft: 30`), so
-/// the shelf reads as kinds with games inside rather than as one long
-/// alternation of headings and rows.
-///
-/// **Every row opens its intro.** Whether a game can actually be played is a
-/// fact about which renderers this build carries, and it is disclosed on the
-/// intro's own action rather than here — the design puts the row's tap on tier
-/// alone. A row that dimmed itself for a missing renderer looked exactly like
-/// a row behind a paywall, so the catalog said "unfinished" where it meant
-/// "unbuilt" and would later mean "unbought".
+/// The kind's glyph and name sit on the heading, never a row, and rows indent
+/// under it (`paddingLeft: 30`). A build that cannot play a game says so on
+/// the intro's action, never by dimming a row into looking paywalled.
 class MiniGamesCatalogWidget extends StatelessWidget {
   /// Creates a [MiniGamesCatalogWidget].
   const MiniGamesCatalogWidget({
@@ -56,7 +43,7 @@ class MiniGamesCatalogWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (formats.isEmpty) return const _EmptyCatalog();
 
-    final groups = groupCatalogByKind(formats);
+    final groups = groupCatalogByKind(context.strings, formats);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,18 +69,14 @@ class MiniGamesCatalogWidget extends StatelessWidget {
 /// One game as a replay row: its name, its topic, and either what it costs or
 /// how long it takes.
 ///
-/// The meta line is the design's: nothing on a locked row, `FREE` on an open
-/// row while the course is not owned, and the game's time once it is. A lock
-/// is an offer, not a dead end — the tap that cannot start a run opens the
-/// pitch for the module that teaches this game's topic.
+/// Nothing on a locked row, `FREE` on an open one while the course is not
+/// owned, the game's time once it is. A lock is an offer: the tap that cannot
+/// start a run opens the pitch for the module that teaches it.
 class _FormatRow extends StatelessWidget {
   const _FormatRow({required this.format, required this.hasCourse});
 
   final MiniGameFormat format;
   final bool hasCourse;
-
-  static const String _freeMeta = 'Free';
-  static const String _lockedHint = 'Shows the module that teaches it';
 
   @override
   Widget build(BuildContext context) {
@@ -106,12 +89,12 @@ class _FormatRow extends StatelessWidget {
           ? null
           : hasCourse
           ? format.duration
-          : _freeMeta,
+          : context.strings.miniGameFree,
       locked: !isOpen,
       // A lock a screen reader cannot act on is the dead end this catalog set
       // out to remove: sighted learners tap a lock speculatively, but being
       // told only that a row is locked gives no reason to try.
-      hint: isOpen ? null : _lockedHint,
+      hint: isOpen ? null : context.strings.miniGameLockedHint,
       onTap: isOpen
           ? () => unawaited(context.goToActivity(miniGameRun(format.id)))
           : () => showMiniGameGateSheet(context: context, format: format),
@@ -174,18 +157,19 @@ class _KindHeading extends StatelessWidget {
 class _EmptyCatalog extends StatelessWidget {
   const _EmptyCatalog();
 
-  static const String _copy = 'No mini-games available yet.';
-
   @override
   Widget build(BuildContext context) => Semantics(
-    label: _copy,
+    label: context.strings.miniGamesEmpty,
     excludeSemantics: true,
     child: Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.xs,
         vertical: AppSpacing.sm,
       ),
-      child: Text(_copy, style: AppText.support(mood: context.mood)),
+      child: Text(
+        context.strings.miniGamesEmpty,
+        style: AppText.support(mood: context.mood),
+      ),
     ),
   );
 }

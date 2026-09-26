@@ -1,4 +1,5 @@
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -112,14 +113,14 @@ void main() {
   group('copy table', () {
     test('every practice type carries a title and its completion rule', () {
       for (final type in PracticeType.values) {
-        expect(keepSharpCopyFor(type).title, isNotEmpty);
-        expect(keepSharpCopyFor(type).rule, isNotEmpty);
+        expect(keepSharpCopyFor(AppLocalizationsEn(), type).title, isNotEmpty);
+        expect(keepSharpCopyFor(AppLocalizationsEn(), type).rule, isNotEmpty);
       }
     });
 
     test('the mini-games rule states two different games', () {
       expect(
-        keepSharpCopyFor(PracticeType.miniGames).rule,
+        keepSharpCopyFor(AppLocalizationsEn(), PracticeType.miniGames).rule,
         contains('two different'),
       );
     });

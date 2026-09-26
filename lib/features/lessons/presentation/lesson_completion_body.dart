@@ -18,6 +18,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_tree.d
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -111,6 +112,7 @@ class _LessonCompletionBodyState extends State<LessonCompletionBody>
                 children: [
                   LessonCompletionHeader(
                     eyebrow: completionEyebrow(
+                      context.strings,
                       isReplay: reward.result.isReplay,
                     ),
                     title: widget.lessonTitle,
@@ -205,15 +207,6 @@ class RewardBeats extends ConsumerStatefulWidget {
   /// Turns the screen over to that card.
   final VoidCallback onOpenCard;
 
-  /// What the freeze row says it covers.
-  static const String freezeLabel = 'Freeze earned';
-
-  /// And the line under it.
-  static const String freezeDetail = 'One missed day is covered.';
-
-  /// The card row's own label — the collectible's title is its detail.
-  static const String cardLabel = 'New card';
-
   @override
   ConsumerState<RewardBeats> createState() => _RewardBeatsState();
 }
@@ -238,13 +231,13 @@ class _RewardBeatsState extends ConsumerState<RewardBeats> {
 
     final rows = <Widget>[
       if (widget.freezeEarned)
-        const RewardRow(
-          label: RewardBeats.freezeLabel,
-          detail: RewardBeats.freezeDetail,
+        RewardRow(
+          label: context.strings.rewardFreezeLabel,
+          detail: context.strings.rewardFreezeDetail,
         ),
       if (card != null)
         RewardRow(
-          label: RewardBeats.cardLabel,
+          label: context.strings.rewardCardLabel,
           detail: card.title,
           onPress: widget.onOpenCard,
         ),

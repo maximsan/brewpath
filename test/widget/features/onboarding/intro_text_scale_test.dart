@@ -1,5 +1,6 @@
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +29,7 @@ Future<List<String>> _overflowsAt(
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         routerConfig: introRouter(initialLocation: location),
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(context).copyWith(

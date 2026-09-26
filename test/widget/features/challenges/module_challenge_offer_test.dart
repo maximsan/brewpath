@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_offer_row.dart';
 import 'package:brew_path/features/challenges/presentation/module_challenge_offer.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
@@ -19,6 +20,7 @@ void main() {
   setUp(useInMemoryDatabase);
 
   Widget app({Widget? child}) => MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.darkRoast,
     home: Scaffold(
       body: child ?? const ModuleChallengeOffer(moduleId: 'm1'),

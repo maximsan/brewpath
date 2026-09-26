@@ -3,6 +3,7 @@
 // not the same state, and the design draws them differently.
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/pick_card.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -18,6 +19,7 @@ Future<void> _pump(
 }) async {
   await tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: theme ?? AppTheme.cupping,
       home: Scaffold(
         body: PickCard(
@@ -212,6 +214,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: const Scaffold(
           body: PickCard.centred(

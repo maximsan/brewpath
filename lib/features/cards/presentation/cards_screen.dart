@@ -6,6 +6,7 @@ import 'package:brew_path/features/cards/domain/cards_grid.dart';
 import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
 import 'package:brew_path/features/cards/presentation/cards_footer.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -19,15 +20,10 @@ const double _tileGap = AppSpacing.sm;
 
 /// Cards tab: the collection, as far as the learner has got.
 ///
-/// **One flat grid, not a grouped one.** The design does not section the deck
-/// by module, and it does not lay out the whole locked set: it shows what has
-/// been earned, one locked card as a teaser, and a footer naming the rest
-/// (#396). What is drawn and what is counted are decided in `cards_grid.dart`.
-///
-/// The **tile** is untouched and still diverges — a locked one draws `???`
-/// where the design draws the card's place in the set. That is #434's, and it
-/// matters more now than it did: there is exactly one locked tile on screen,
-/// and it is the next card the learner will earn.
+/// One flat grid: what has been earned, one locked card as a teaser, and a
+/// footer naming the rest (#396); `cards_grid.dart` decides what is drawn. A
+/// locked tile still draws `???` where the design draws the card's place in
+/// the set, which is #434's.
 class CardsScreen extends ConsumerWidget {
   /// Creates a [CardsScreen].
   const CardsScreen({super.key});
@@ -39,7 +35,7 @@ class CardsScreen extends ConsumerWidget {
     return Scaffold(
       body: cards.when(
         loading: () => Semantics(
-          label: 'Loading your collection',
+          label: context.strings.collectiblesLoading,
           child: const LoadingIndicator(),
         ),
         // Excluded rather than merged, as the mini-game player's error branch
@@ -48,7 +44,7 @@ class CardsScreen extends ConsumerWidget {
         // offered — `ErrorView` grows a Retry button when handed `onRetry`,
         // and this would silence it.
         error: (error, _) => Semantics(
-          label: 'Your collection could not be loaded.',
+          label: context.strings.collectiblesLoadFailed,
           excludeSemantics: true,
           child: ErrorView(message: '$error'),
         ),
@@ -129,17 +125,10 @@ class _CardsBody extends StatelessWidget {
 
 /// How far the collection has got, in the one line the design gives it.
 ///
-/// A bare `{earned} of {total}` in mono at the label step — no prose, and no
-/// progress bar: the grid itself is the progress, and a second reading of it
-/// above the grid says nothing the tiles do not.
-///
-/// It carries no title of its own: the tab's `TabLargeTitle` above it is the
-/// design's large `Collection`, and this is the count line under it. The pair
-/// is the design's, and the screen still says the word once — the shared
-/// header stays wordless until the grid has scrolled under it (#441).
-///
-/// Its tracking is the design's own rather than the rung's — see
-/// [AppTracking.meta] for why a figure does not want the smallcaps value.
+/// A bare count in mono at the label step: the grid itself is the progress. No
+/// title of its own — the tab's `TabLargeTitle` says the word once (#441). Its
+/// tracking is the design's rather than the rung's; [AppTracking.meta] says
+/// why a figure does not want the smallcaps value.
 class _CollectionCount extends StatelessWidget {
   const _CollectionCount({required this.earned, required this.total});
 
@@ -151,7 +140,7 @@ class _CollectionCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final count = '$earned of $total';
+    final count = context.strings.collectiblesEarnedOfTotal(earned, total);
     final style = AppText.label(
       mood: context.mood,
       face: AppFace.mono,
@@ -164,7 +153,7 @@ class _CollectionCount extends StatelessWidget {
       // also why the spoken label below keeps its own.
       count.toUpperCase(),
       style: style,
-      semanticsLabel: '$count cards collected',
+      semanticsLabel: context.strings.collectiblesCollectedSpoken(count),
     );
   }
 }

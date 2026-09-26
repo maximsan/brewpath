@@ -2,6 +2,8 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -80,7 +82,7 @@ class ReplayRow extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: _announcement,
+      label: _announcement(context.strings),
       hint: hint,
       onTap: onTap,
       excludeSemantics: true,
@@ -156,10 +158,10 @@ class ReplayRow extends StatelessWidget {
 
   /// The design's `aria-label`: the three lines as one sentence, then what
   /// the tap does.
-  String get _announcement {
+  String _announcement(AppLocalizations strings) {
     final lines = [title, sub, ?meta].join('. ');
     return locked
         ? '$lines. ${LockedRowCopy.partOfFoundations}.'
-        : '$lines. Replay.';
+        : strings.practiceReplaySpoken(lines);
   }
 }

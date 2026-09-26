@@ -9,6 +9,7 @@ import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart'
 import 'package:brew_path/features/path/domain/visual_guide_providers.dart';
 import 'package:brew_path/features/path/domain/visual_guide_shelf.dart';
 import 'package:brew_path/features/path/presentation/reference_section.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +56,7 @@ Widget _harness(
     plusPitchProvider.overrideWith((ref) async => _pitch),
   ],
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: MediaQuery(
       data: MediaQueryData(disableAnimations: disableAnimations),

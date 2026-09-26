@@ -1,5 +1,6 @@
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/help_drawer.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -30,15 +31,16 @@ class CardCueRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final phrase = cue.phrase(context.strings);
 
     return Row(
       children: [
         Flexible(
           child: Semantics(
-            label: cue.phrase,
+            label: phrase,
             excludeSemantics: true,
             child: Text(
-              cue.phrase.toUpperCase(),
+              phrase.toUpperCase(),
               // `lineHeight: 1` — the cue is one line of chrome over the
               // card, not a paragraph, and the rung's 1.4 would pad it.
               style: AppText.support(
@@ -72,7 +74,7 @@ class _HelpButton extends ConsumerWidget {
 
     return Semantics(
       button: true,
-      label: howToPlayLabel,
+      label: context.strings.cardHowToPlay,
       onTap: openHelp,
       excludeSemantics: true,
       child: InkResponse(

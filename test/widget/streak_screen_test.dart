@@ -14,6 +14,7 @@ import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/streak_ring.dart';
 import 'package:brew_path/features/progress/presentation/streak_screen.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/services/share/share_presenter.dart';
 import 'package:brew_path/services/share/share_provider.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
@@ -98,6 +99,7 @@ Future<void> _pump(
       child: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
         ),

@@ -6,6 +6,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import '../../../support/widget_harness.dart';
 const _key = 't:arabica';
 
 Widget _wrap({bool ringed = false}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.cupping,
   home: Scaffold(
     body: SavedBookmarkButton(savedKey: _key, label: 'Arabica', ringed: ringed),

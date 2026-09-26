@@ -1,5 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/cards/presentation/reward_card.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +16,7 @@ final CoffeeCardModel _card = testCoffeeCard().copyWith(
 );
 
 Widget _host(Widget child, {bool reducedMotion = true}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.cupping,
   home: Scaffold(body: Center(child: child)),
   builder: (context, inner) => MediaQuery(
@@ -36,7 +39,7 @@ void main() {
       // The keepsake line the app assembled and rendered nowhere.
       expect(find.text(_card.fact), findsOneWidget);
       expect(
-        find.text(RewardCard.memorableLabel.toUpperCase()),
+        find.text(AppLocalizationsEn().collectibleMemorableLabel.toUpperCase()),
         findsOneWidget,
       );
     });

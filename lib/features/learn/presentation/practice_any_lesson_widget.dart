@@ -4,6 +4,7 @@ import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/lessons/presentation/replay_confirm_sheet.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class PracticeAnyLessonWidget extends StatelessWidget {
             ),
             title: entry.lesson.title,
             sub: entry.lesson.moduleLabel,
-            meta: '~${entry.lesson.time} min',
+            meta: context.strings.practiceMinutes(entry.lesson.time),
             // A replay, not a throwaway run: reaching the final card records
             // the day (§3), exactly as replaying from the course path does.
             // Where the learner started it has never been what decides

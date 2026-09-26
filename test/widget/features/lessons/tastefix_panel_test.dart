@@ -2,6 +2,8 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_panel.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +19,7 @@ void main() {
     bool reduceMotion = false,
   }) => tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: theme ?? AppTheme.darkRoast,
       home: MediaQuery(
         data: MediaQueryData(disableAnimations: reduceMotion),
@@ -97,7 +100,10 @@ void main() {
       await pump(tester, TastefixReaction.relieved);
       await tester.pumpAndSettle();
 
-      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().tastefixBalanced.toUpperCase()),
+        findsOneWidget,
+      );
       for (final tag in _tags) {
         expect(find.text(tag), findsNothing, reason: '$tag outlived the fix');
       }
@@ -196,7 +202,11 @@ void main() {
       await pump(tester, TastefixReaction.relieved);
       await tester.pumpAndSettle();
       expect(
-        find.bySemanticsLabel('Result: $tastefixBalancedLabel'),
+        find.bySemanticsLabel(
+          AppLocalizationsEn().tastefixResultSemantics(
+            AppLocalizationsEn().tastefixBalanced,
+          ),
+        ),
         findsOneWidget,
       );
 

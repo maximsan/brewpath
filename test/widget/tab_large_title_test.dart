@@ -2,6 +2,7 @@ import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/app/header_tier.dart';
 import 'package:brew_path/app/tab_large_title.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -24,6 +25,7 @@ Widget _harness(
   return ProviderScope(
     overrides: [currentDayProvider.overrideWithValue(_today)],
     child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: ThemeData(extensions: const [MoodColors.darkRoast]),
       home: MediaQuery(
         data: MediaQueryData(padding: padding),

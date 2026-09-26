@@ -9,18 +9,18 @@ import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The Keep Sharp state of the Today card: one recommended practice type for
-/// the day, the type's own completion rule, Roasty resting beside them, and a
-/// CTA to its surface. Once the recommendation's rule is met, the card
-/// acknowledges with an animated Roasty and a short phrase — the whole reward
-/// (§6): no repeat points, no tree growth. With no recommendation (empty
-/// pool) it degrades to a quiet caught-up note — never a dead end promising
-/// future modules.
+/// The Keep Sharp state of the Today card: one recommended practice type, its
+/// completion rule, Roasty beside them, and a CTA to its surface.
+///
+/// Meeting the rule acknowledges with a phrase and nothing else (§6): no
+/// repeat points, no tree growth. An empty pool degrades to a quiet caught-up
+/// note rather than a dead end promising future modules.
 class KeepSharpCardBody extends StatelessWidget {
   /// Creates a [KeepSharpCardBody].
   const KeepSharpCardBody({
@@ -47,9 +47,6 @@ class KeepSharpCardBody extends StatelessWidget {
   /// The design seats him at `size={84}` beside the title and rule.
   static const double _restingRoastySize = 84;
 
-  /// Shown until the authored lines load; never persisted.
-  static const String _fallbackPhrase = 'Done for today.';
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -71,7 +68,7 @@ class KeepSharpCardBody extends StatelessWidget {
                 IconMark(AppIcon.bolt, size: _iconSm, color: mood.accentInk),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
-                  'KEEP SHARP',
+                  context.strings.keepSharpKicker,
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: mood.accentInk,
                   ),
@@ -81,10 +78,10 @@ class KeepSharpCardBody extends StatelessWidget {
           ),
           if (recommended == null) ...[
             const SizedBox(height: AppSpacing.sm),
-            _quietState(theme, mood),
+            _quietState(context, theme, mood),
           ] else if (acknowledged) ...[
             const SizedBox(height: AppSpacing.sm),
-            _acknowledgedBody(theme, mood),
+            _acknowledgedBody(context, theme, mood),
           ] else ...[
             const SizedBox(height: AppSpacing.base),
             _recommendationBody(context, theme, mood, recommended),
@@ -94,16 +91,20 @@ class KeepSharpCardBody extends StatelessWidget {
     );
   }
 
-  Widget _acknowledgedBody(ThemeData theme, MoodColors mood) {
+  Widget _acknowledgedBody(
+    BuildContext context,
+    ThemeData theme,
+    MoodColors mood,
+  ) {
     return CompanionCelebration(
       reaction: CompanionReaction.keepSharpComplete,
       size: _ackRoastySize,
       // Beside the phrase rather than in a bubble: this one sits inside the
       // Today card, where a bubble would fight the card's own frame.
       builder: (context, companion, line) {
-        final phrase = line ?? _fallbackPhrase;
+        final phrase = line ?? context.strings.keepSharpDoneFallback;
         return Semantics(
-          label: 'Keep Sharp complete for today. $phrase',
+          label: context.strings.keepSharpCompleteSpoken(phrase),
           excludeSemantics: true,
           child: Row(
             children: [
@@ -131,7 +132,7 @@ class KeepSharpCardBody extends StatelessWidget {
     MoodColors mood,
     KeepSharpRecommendation recommended,
   ) {
-    final copy = keepSharpCopyFor(recommended.type);
+    final copy = keepSharpCopyFor(context.strings, recommended.type);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -167,7 +168,10 @@ class KeepSharpCardBody extends StatelessWidget {
         FilledButton(
           onPressed: () =>
               unawaited(context.goToActivity(recommended.destination)),
-          child: Text('Start', semanticsLabel: 'Start: ${copy.title}'),
+          child: Text(
+            context.strings.keepSharpStart,
+            semanticsLabel: context.strings.keepSharpStartSpoken(copy.title),
+          ),
         ),
       ],
     );
@@ -194,14 +198,12 @@ class KeepSharpCardBody extends StatelessWidget {
     );
   }
 
-  Widget _quietState(ThemeData theme, MoodColors mood) {
+  Widget _quietState(BuildContext context, ThemeData theme, MoodColors mood) {
     return Semantics(
-      label:
-          'Keep Sharp: no recommendation today. '
-          'Practice anything below to keep your streak alive.',
+      label: context.strings.keepSharpNoneSpoken,
       excludeSemantics: true,
       child: Text(
-        'Practice anything below to keep your streak alive.',
+        context.strings.keepSharpNone,
         style: theme.textTheme.bodyMedium?.copyWith(
           color: mood.accentInk.withValues(alpha: _quietAlpha),
         ),

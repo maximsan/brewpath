@@ -2,7 +2,6 @@ import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/roast_meter.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
-import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/presentation/cards/match_tile.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/lessons/presentation/reward_points_line.dart';
@@ -10,6 +9,7 @@ import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
 import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/main.dart' as app;
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:flutter/material.dart';
@@ -451,7 +451,7 @@ void main() {
     // the action here because m1l1 does not close its module.
     await pumpUntil(
       tester,
-      liveButton(nextLessonLabel),
+      liveButton(AppLocalizationsEn().completionNextLesson),
       describe: 'the completion screen offering the next lesson',
       budget: _completionBudget,
     );

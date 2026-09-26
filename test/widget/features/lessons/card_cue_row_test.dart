@@ -6,6 +6,8 @@ import 'package:brew_path/core/widgets/primary_button.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
 import 'package:brew_path/features/lessons/presentation/cards/help_drawer.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/card_kind_help.dart';
 import 'package:brew_path/shared/repositories/card_kind_help_repository.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -50,6 +52,7 @@ void main() {
           ),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: theme ?? AppTheme.darkRoast,
           home: const Scaffold(body: CardCueRow(cue: CardCue.match)),
         ),
@@ -93,9 +96,14 @@ void main() {
       final handle = tester.ensureSemantics();
       await pump(tester);
 
-      expect(find.bySemanticsLabel(howToPlayLabel), findsOneWidget);
       expect(
-        tester.getSize(find.bySemanticsLabel(howToPlayLabel)),
+        find.bySemanticsLabel(AppLocalizationsEn().cardHowToPlay),
+        findsOneWidget,
+      );
+      expect(
+        tester.getSize(
+          find.bySemanticsLabel(AppLocalizationsEn().cardHowToPlay),
+        ),
         const Size(44, 44),
       );
 
@@ -108,7 +116,10 @@ void main() {
       await tester.tap(find.text('?'));
       await tester.pumpAndSettle();
 
-      expect(find.text(howToPlayLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().cardHowToPlay.toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text('Match pairs'), findsOneWidget);
       expect(find.text(_matchHelp.blurb), findsOneWidget);
       for (final step in _matchHelp.steps) {
@@ -210,7 +221,9 @@ void main() {
 
       final wellRight = tester.getTopRight(find.byType(HelpWell)).dx;
       final eyebrowLeft = tester
-          .getTopLeft(find.text(howToPlayLabel.toUpperCase()))
+          .getTopLeft(
+            find.text(AppLocalizationsEn().cardHowToPlay.toUpperCase()),
+          )
           .dx;
 
       expect(eyebrowLeft - wellRight, 14);

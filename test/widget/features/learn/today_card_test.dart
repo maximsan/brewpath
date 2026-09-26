@@ -10,6 +10,7 @@ import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +67,7 @@ Future<void> _pump(
     // A counted pitch, so tapping the card does not wait on the banks.
     overrides: [plusPitchProvider.overrideWith((ref) async => _pitch)],
     child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(
         body: TodayCardWidget(

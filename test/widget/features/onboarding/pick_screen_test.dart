@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/onboarding/presentation/brewer/brewer_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/goal/goal_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/onboarding_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +21,11 @@ void main() {
   Widget wrap(GoRouter router) => ProviderScope(
     // ignore: scoped_providers_should_specify_dependencies — test-only root override
     overrides: [onboardingRepositoryProvider.overrideWithValue(fake)],
-    child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+    child: MaterialApp.router(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      theme: AppTheme.cupping,
+      routerConfig: router,
+    ),
   );
 
   testWidgets('Goal: Continue is disabled until a card is picked', (

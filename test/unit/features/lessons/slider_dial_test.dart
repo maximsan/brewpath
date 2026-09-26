@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/presentation/cards/slider_dial.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The five-band scale every shipped grind round is authored against.
@@ -15,6 +16,7 @@ void main() {
     test('a round reads back in the words it authored', () {
       expect(
         sliderBands(
+          strings: AppLocalizationsEn(),
           scale: _grindScale,
           leftLabel: 'FINER',
           rightLabel: 'COARSER',
@@ -29,6 +31,7 @@ void main() {
     // authored without one is exactly where that would quietly stop.
     test('a round with none falls back to its own ends, never a number', () {
       final bands = sliderBands(
+        strings: AppLocalizationsEn(),
         scale: const [],
         leftLabel: 'COOLER',
         rightLabel: 'HOTTER',

@@ -3,6 +3,8 @@ import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -10,14 +12,17 @@ import 'package:flutter/material.dart';
 
 /// A line the card writes once it knows how the answer went. Both of
 /// [PickerCopy]'s outcome-aware slots have this shape.
-typedef PickerLine = String Function({required bool wasCorrect});
+typedef PickerLine =
+    String Function(AppLocalizations strings, {required bool wasCorrect});
 
 /// The verdict five of the six picking kinds close on.
 ///
 /// `decision` and `tastefix` answer in their own words instead — see
 /// [PickerCopy.verdict].
-String _defaultVerdict({required bool wasCorrect}) =>
-    wasCorrect ? 'Correct' : notQuiteVerdict;
+String _defaultVerdict(
+  AppLocalizations strings, {
+  required bool wasCorrect,
+}) => wasCorrect ? strings.cardCorrect : strings.verdictNotQuite;
 
 /// The copy slots the three graded picking kinds fill differently.
 ///
@@ -192,9 +197,9 @@ class _GradedPickerState extends State<GradedPicker> {
         ),
         if (_latched) ...[
           AnswerFeedback(
-            verdict: copy.verdict(wasCorrect: _wasCorrect),
+            verdict: copy.verdict(context.strings, wasCorrect: _wasCorrect),
             outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
-            explanation: copy.explain(wasCorrect: _wasCorrect),
+            explanation: copy.explain(context.strings, wasCorrect: _wasCorrect),
             placement: copy.placement,
           ),
           ?widget.payoff,

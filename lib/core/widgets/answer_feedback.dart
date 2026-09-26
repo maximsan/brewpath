@@ -10,14 +10,6 @@ import 'package:flutter/material.dart';
 
 export 'package:brew_path/core/widgets/verdict_placement.dart';
 
-/// What a graded surface says when the answer was not right.
-///
-/// Shared because it was not: four surfaces each declared their own private
-/// `_notQuite` and two more wrote the literal, for the one line the design
-/// repeats more than any other. Six copies of a string is how the wording
-/// drifts, which is the same failure one verdict block exists to prevent.
-const String notQuiteVerdict = 'Not quite';
-
 /// How the surface stands, and everything that follows from it. One enum
 /// rather than a bool, a colour and a mascot state passed separately: those
 /// move together, and passing them loose is what let five copies drift — one
@@ -50,11 +42,12 @@ enum Verdict {
   };
 }
 
-/// The block that closes every graded surface — and holds the one guess that is
-/// never graded: a mascot, a mono verdict line, the explanation under it. One
-/// component, because nine hand-rolled copies drifted apart in the design. The
-/// verdict is a **live region**: it arrives on commit with no focus change, so
-/// without it a screen reader hears every mark and never the outcome.
+/// The block that closes every graded surface — and holds the one guess that
+/// is never graded: a mascot, a mono verdict line, the explanation under it.
+///
+/// One component, because nine hand-rolled copies drifted apart in the design,
+/// and its wrong line is the shared `verdictNotQuite` for the same reason. The
+/// verdict is a live region, or a reader hears every mark and never the run.
 class AnswerFeedback extends StatelessWidget {
   /// Creates an [AnswerFeedback].
   const AnswerFeedback({

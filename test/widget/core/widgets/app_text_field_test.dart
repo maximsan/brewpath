@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/app_text_field.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,6 +31,7 @@ void main() {
     bool disableAnimations = false,
   }) => tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: theme ?? AppTheme.darkRoast,
       home: MediaQuery(
         data: MediaQueryData(disableAnimations: disableAnimations),
@@ -134,6 +136,7 @@ void main() {
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Scaffold(
           body: AppTextField(
@@ -159,6 +162,7 @@ void main() {
     // on it rather than empty — otherwise a one-letter fix means retyping.
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Scaffold(
           body: AppTextField(initialValue: 'Maya', onChanged: (_) {}),

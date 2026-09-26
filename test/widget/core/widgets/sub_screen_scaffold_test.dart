@@ -5,6 +5,7 @@ import 'package:brew_path/core/widgets/page_large_title.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,6 +24,7 @@ Widget _page({
   ScrollController? controller,
 }) {
   return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: ThemeData(extensions: const [MoodColors.darkRoast]),
     home: MediaQuery(
       data: const MediaQueryData(disableAnimations: true),

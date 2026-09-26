@@ -11,6 +11,7 @@ import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart'
 import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/services/payments/payments_provider.dart';
 import 'package:brew_path/services/payments/payments_service.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
@@ -91,6 +92,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
         ),

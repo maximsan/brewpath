@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/app_sheet.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/features/mini_games/domain/teaching_module.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -52,7 +53,7 @@ class _GateBody extends ConsumerWidget {
         // *"a ghost, never a bare link"*; a link is reserved for tertiary
         // actions inline in running content.
         GhostButton(
-          label: 'Not now',
+          label: context.strings.miniGameGateNotNow,
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],
@@ -76,7 +77,7 @@ class _Pitch extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'TAUGHT IN MODULE ${module.n} · ${module.label}',
+          context.strings.miniGameTaughtIn(module.n, module.label),
           // A meta line rather than a kicker — it names where the game is
           // taught and carries a figure — so it takes the design's 0.08em
           // instead of the rung's smallcaps 0.14em.
@@ -103,7 +104,7 @@ class _FallbackPitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    'This game comes with the full course.',
+    context.strings.miniGameFullCourse,
     style: Theme.of(
       context,
     ).textTheme.bodyMedium?.copyWith(color: context.mood.inkMute),

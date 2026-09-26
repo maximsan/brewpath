@@ -6,13 +6,11 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_choice_list.dart';
 import 'package:brew_path/features/lessons/presentation/cards/multi_scoring.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// Verdicts, which name the all-or-nothing rule rather than a score.
-const String _allCorrect = 'All correct';
 
 /// The select-all-that-apply card: pick freely, then commit the whole set.
 /// Choices **toggle** until that commit, and it scores all-or-nothing — the
@@ -90,7 +88,9 @@ class _MultiCardViewState extends State<MultiCardView> {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final verdict = _wasCorrect ? _allCorrect : notQuiteVerdict;
+    final verdict = _wasCorrect
+        ? context.strings.cardAllCorrect
+        : context.strings.verdictNotQuite;
 
     return CardShell(
       latched: _submitted,

@@ -1,6 +1,7 @@
 import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -56,10 +57,10 @@ void main() {
   group('runEncouragement', () {
     test('every band has words, and the bands differ', () {
       final lines = {
-        runEncouragement(score: 6, total: 6),
-        runEncouragement(score: 5, total: 6),
-        runEncouragement(score: 3, total: 6),
-        runEncouragement(score: 0, total: 6),
+        runEncouragement(AppLocalizationsEn(), score: 6, total: 6),
+        runEncouragement(AppLocalizationsEn(), score: 5, total: 6),
+        runEncouragement(AppLocalizationsEn(), score: 3, total: 6),
+        runEncouragement(AppLocalizationsEn(), score: 0, total: 6),
       };
 
       expect(lines, hasLength(4));

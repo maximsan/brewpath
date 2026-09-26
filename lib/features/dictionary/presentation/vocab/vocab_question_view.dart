@@ -9,6 +9,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_round.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/lessons/presentation/cards/choice_list.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -116,7 +117,11 @@ class _Verdict extends StatelessWidget {
     final isCorrect = round.isCorrect(picked);
 
     return AnswerFeedback(
-      verdict: VocabCopy.verdict(round.answer.term, isCorrect: isCorrect),
+      verdict: VocabCopy.verdict(
+        context.strings,
+        round.answer.term,
+        isCorrect: isCorrect,
+      ),
       outcome: isCorrect ? Verdict.right : Verdict.wrong,
       placement: VerdictPlacement.vocabRound,
       extra: LinkButton(
