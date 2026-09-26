@@ -91,7 +91,7 @@ app this axis is `AppTracking` (`lib/shared/theme/app_text.dart`).
 | 0.06 | `count` | A count standing on its own as the subject of its line: the points a run paid, Profile's lessons-and-points line, `N / N DONE`, the dictionary's category counts. |
 | 0.08 | `meta` | A meta line or figure that must read as one run — at 0.14em a count's numerals drift apart: `.lesson-row .meta`, `.challenge-pill`, `.bag-opt-s`. |
 | 0.10 | `tag` | A word set as a pill naming a state: the tastefix card's symptom chips and its Balanced state, `.cheer-points`. |
-| 0.12 | `hint` | The sequence card's out-of-place hint `.seq-hint`, and the practice shelf's meta line and count. |
+| 0.12 | `hint` | The sequence card's out-of-place hint `.seq-hint`, and the practice shelf's group count. |
 | 0.14 | `smallcaps` | The smallcaps rule itself, named for a rung that does not default to it — the card kind cue, set at the support step. |
 | 0.16 | `marker` | A mono micro line marking what a thing *is*, wider than the smallcaps rule so a two-word label reads as discrete: the dictionary's status chip, `.collect-card .cc-sub`. |
 | 0.18 | `chrome` | The app's own frame, a step wider than the pages it frames: the tab bar's label, and the sticky header's compact-title eyebrow. |

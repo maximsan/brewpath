@@ -6,8 +6,10 @@ import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/scroll_flag_scope.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_cue_row.dart';
+import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_intro_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_player_screen.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_games_catalog_widget.dart';
@@ -232,6 +234,7 @@ Future<void> _pump(
   WidgetTester tester, {
   bool disableAnimations = false,
   bool hasCourse = true,
+  bool openKinds = true,
   Size viewport = const Size(500, 1400),
 }) async {
   tester.view.physicalSize = viewport;
@@ -296,6 +299,20 @@ Future<void> _pump(
     ),
   );
   await tester.pumpAndSettle();
+  if (openKinds) {
+    for (final kind in miniGameKinds) {
+      await _openKind(
+        tester,
+        miniGameKindLabel(AppLocalizationsEn(), kind.kind),
+      );
+    }
+  }
+}
+
+/// Opens one kind's sub-group, which arrives shut like every other.
+Future<void> _openKind(WidgetTester tester, String label) async {
+  await tester.tap(find.text(label.toUpperCase()));
+  await tester.pumpAndSettle();
 }
 
 /// Bounded pumps rather than `pumpAndSettle`: the results screen's companion
@@ -353,7 +370,23 @@ void main() {
       expect(find.text(format.title), findsOneWidget);
     }
     expect(find.text('COFFEE BASICS'), findsOneWidget);
-    expect(find.text('~1 MIN'), findsNWidgets(_formats.length));
+    expect(find.text('~1 MIN'), findsNothing, reason: 'no row carries a meta');
+  });
+
+  testWidgets('every kind arrives shut, and opens on its header', (
+    tester,
+  ) async {
+    await _pump(tester, openKinds: false);
+
+    for (final format in _formats) {
+      expect(find.text(format.title), findsNothing);
+    }
+    expect(find.text('MATCH'), findsOneWidget);
+
+    await _openKind(tester, 'Match');
+
+    expect(find.text('Match the facts'), findsOneWidget);
+    expect(find.text('True or false'), findsNothing);
   });
 
   testWidgets('the shelf groups by kind, in the fixed order', (tester) async {
@@ -386,24 +419,27 @@ void main() {
     ]);
   });
 
-  testWidgets('each group heading is announced as a heading', (tester) async {
-    final handle = tester.ensureSemantics();
-    await _pump(tester);
+  testWidgets(
+    'each kind is announced with its count, as a button that expands',
+    (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, openKinds: false);
 
-    // Lettered `MATCH`, announced `Match`: uppercase is the smallcaps rule,
-    // not what the group is called, and a heading read as written is not
-    // spelled out letter by letter.
-    expect(find.text('MATCH'), findsOneWidget);
-    expect(
-      tester.getSemantics(find.bySemanticsLabel('Match')),
-      isSemantics(label: 'Match', isHeader: true),
-      reason:
-          'a sighted learner reads the grouping from layout; a screen '
-          'reader needs the heading flag to navigate by it',
-    );
+      // Lettered `MATCH`, announced `Match`: uppercase is the smallcaps rule,
+      // not what the group is called, and a name read as written is not
+      // spelled out letter by letter.
+      expect(find.text('MATCH'), findsOneWidget);
+      expect(
+        tester.getSemantics(find.bySemanticsLabel('Match. 1 item.')),
+        isSemantics(isButton: true, hasExpandedState: true, isExpanded: false),
+      );
+      expect(find.bySemanticsLabel('Sequence. 2 items.'), findsOneWidget);
 
-    handle.dispose();
-  });
+      handle.dispose();
+    },
+  );
 
   group("the intro's bar", () {
     /// Short enough that the how-to-play runs past the foot, so there is a
@@ -416,7 +452,8 @@ void main() {
     testWidgets('takes its chrome as soon as the page moves under it', (
       tester,
     ) async {
-      await _pump(tester, viewport: shortViewport);
+      await _pump(tester, viewport: shortViewport, openKinds: false);
+      await _openKind(tester, 'True or false');
       await tester.tap(find.text('True or false'));
       await tester.pumpAndSettle();
 
@@ -462,19 +499,40 @@ void main() {
         if (find.text(format.title).evaluate().isNotEmpty) format.title,
     ];
 
+    /// The kinds with no free game in them — every kind but the two the free
+    /// titles belong to.
+    const lockedKinds = 5;
+
     testWidgets('a free learner sees locks on what they do not own', (
       tester,
     ) async {
       await _pump(tester, hasCourse: false);
 
       expect(
-        findMark(AppIcon.lock),
+        find.descendant(
+          of: find.byType(ReplayRow),
+          matching: findMark(AppIcon.lock),
+        ),
         findsNWidgets(_formats.length - freeTitles.length),
       );
+      expect(findMark(AppIcon.chevron), findsNWidgets(freeTitles.length));
+      expect(find.byType(ReplayMark), findsNothing);
+    });
+
+    testWidgets('a kind with nothing open is locked on its header', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await _pump(tester, hasCourse: false, openKinds: false);
+
+      expect(findMark(AppIcon.lock), findsNWidgets(lockedKinds));
+      // A kind with a free game in it is not locked, whatever else it holds.
+      expect(find.bySemanticsLabel('Match. 1 item.'), findsOneWidget);
       expect(
-        find.byType(ReplayMark),
-        findsNWidgets(freeTitles.length),
+        find.bySemanticsLabel('Name the note. 1 item. Part of Foundations.'),
+        findsOneWidget,
       );
+      handle.dispose();
     });
 
     testWidgets('a locked row announces itself as locked', (tester) async {
@@ -610,10 +668,7 @@ void main() {
       await _pump(tester);
 
       expect(findMark(AppIcon.lock), findsNothing);
-      expect(
-        find.byType(ReplayMark),
-        findsNWidgets(_formats.length),
-      );
+      expect(findMark(AppIcon.chevron), findsNWidgets(_formats.length));
     });
 
     testWidgets('the shelf is in the same order either way', (tester) async {

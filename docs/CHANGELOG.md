@@ -136,6 +136,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **The practice list folds a second level in.** Under *Lessons*, finished
+  lessons sit in one collapsible sub-group per module, headed by the module's
+  glyph and eyebrow, so a row is its title alone; under *Games*, the two
+  dictionary drills lead as plain rows reading *Dictionary*, then one
+  sub-group per kind, its header locked when nothing in it opens without the
+  course. No row carries a duration or *Free* any more, a row that starts
+  something ends in a chevron and reads *Play*, and Keep Sharp's *Start* now
+  opens the Games or Lessons group instead of launching one item — so a
+  replay reached from the card is asked about first, like every other
+  ([#582](https://github.com/maximsan/brewpath/issues/582)).
 - **A lock hands off to the paywall only when there is a plan to choose.** On
   an arm selling one plan the gate sheet still sells where it stands. On the
   subscription and hybrid arms its action now closes the sheet and opens the

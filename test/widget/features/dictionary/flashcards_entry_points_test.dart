@@ -12,6 +12,7 @@ import 'package:brew_path/features/learn/presentation/practice_drills_widget.dar
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -211,9 +212,10 @@ void main() {
       await _openApp(tester);
 
       expect(_practiceRow(), findsOneWidget);
+      // Both drills read DICTIONARY: the row is told apart by its title.
       expect(
-        find.text(FlashcardsCopy.practiceRowEyebrow.toUpperCase()),
-        findsOneWidget,
+        find.text(AppLocalizationsEn().practiceDrillEyebrow.toUpperCase()),
+        findsNWidgets(PracticeDrillsWidget.rowCount),
       );
     });
 

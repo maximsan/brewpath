@@ -580,7 +580,7 @@ abstract class AppLocalizations {
   /// **'Tastes: {tags}'**
   String tastefixTastesSemantics(String tags);
 
-  /// End label on a calibrate track, naming its far end.
+  /// End label on a calibrate track. Used for both ends: {label} is the round's own word for that end, so it reads 'Very Fine' at one and 'Very Coarse' at the other.
   ///
   /// In en, this message translates to:
   /// **'Very {label}'**
@@ -1054,12 +1054,6 @@ abstract class AppLocalizations {
   /// **'This game comes with the full course.'**
   String get miniGameFullCourse;
 
-  /// Marks a mini-game the learner can play without the course.
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get miniGameFree;
-
   /// Hint on a locked mini-game row, saying what tapping it does.
   ///
   /// In en, this message translates to:
@@ -1270,23 +1264,23 @@ abstract class AppLocalizations {
   /// **'{lines}. Replay.'**
   String practiceReplaySpoken(String lines);
 
-  /// About how long a practice run takes.
+  /// What a screen reader is told about a practice row that starts a game or a drill.
   ///
   /// In en, this message translates to:
-  /// **'~{minutes} min'**
-  String practiceMinutes(int minutes);
+  /// **'{lines}. Play.'**
+  String practicePlaySpoken(String lines);
 
-  /// Marks a practice the learner can run without the course.
+  /// What a screen reader is told about a module's or a kind's sub-group in the practice list and its size.
   ///
   /// In en, this message translates to:
-  /// **'Free'**
-  String get practiceFree;
+  /// **'{label}. {count, plural, =1{1 item} other{{count} items}}.'**
+  String practiceSubGroupSpoken(String label, int count);
 
-  /// About how long a vocab drill takes.
+  /// Eyebrow over both dictionary drills in the practice list: where the drill draws from. Set upper case by the design.
   ///
   /// In en, this message translates to:
-  /// **'~2 min'**
-  String get practiceTwoMinutes;
+  /// **'Dictionary'**
+  String get practiceDrillEyebrow;
 
   /// What a screen reader is told the Begin button opens.
   ///

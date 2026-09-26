@@ -9,34 +9,26 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
 import 'package:brew_path/l10n/app_strings.dart';
-import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
-/// The dictionary drills, leading the Learn tab's Games group (ADR-0004).
+/// The dictionary drills, leading the Today tab's **Games** group as plain
+/// rows ahead of the kind sub-groups (ADR-0004).
 ///
-/// Free, unlocked and always visible: the drills are content-scoped, never
-/// feature-gated, so the meta line reads `FREE` until the course is owned and
-/// the drill's time after. Flashcards leads and is here whether or not the
-/// deck has cards, because this row is how a learner finds out they exist.
+/// **Free, with no lock treatment, always visible.** The drills are content-
+/// scoped, never feature-gated: a free learner plays them over the terms their
+/// lessons reached, which is a smaller pool rather than a locked door.
 class PracticeDrillsWidget extends StatelessWidget {
   /// Creates a [PracticeDrillsWidget].
-  const PracticeDrillsWidget({required this.hasCourse, super.key});
-
-  /// Whether the learner owns the course, which is what the meta line reads.
-  final bool hasCourse;
+  const PracticeDrillsWidget({super.key});
 
   /// How many rows this draws — the Games group counts them in with the
   /// catalog's, and a second copy of the number is a second thing to keep in
   /// step.
   static const int rowCount = 2;
 
-  /// The marks' drawn size, matching the kind glyphs they sit above.
+  /// The design's `<ReplayIcon kind={it.kind}/>` at its default `size = 20`.
   static const double _markSize = 20;
-
-  /// What the rows say about cost, and about time once cost is settled.
-  String _meta(AppLocalizations strings) =>
-      hasCourse ? strings.practiceTwoMinutes : strings.practiceFree;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +44,8 @@ class PracticeDrillsWidget extends StatelessWidget {
             accent: mood.accent,
           ),
           title: FlashcardsCopy.title,
-          sub: FlashcardsCopy.practiceRowEyebrow,
-          meta: _meta(context.strings),
+          sub: context.strings.practiceDrillEyebrow,
+          starts: true,
           onTap: () => unawaited(context.pushActivity(flashcardReview)),
         ),
         ReplayRow(
@@ -63,8 +55,8 @@ class PracticeDrillsWidget extends StatelessWidget {
             accent: mood.accent,
           ),
           title: VocabCopy.title,
-          sub: VocabCopy.rowSubtitle,
-          meta: _meta(context.strings),
+          sub: context.strings.practiceDrillEyebrow,
+          starts: true,
           onTap: () => unawaited(context.pushActivity(vocabGame)),
         ),
       ],
