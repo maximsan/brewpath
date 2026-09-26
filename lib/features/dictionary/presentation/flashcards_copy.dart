@@ -84,7 +84,4 @@ abstract final class FlashcardsCopy {
   /// The shelf's row into the drill.
   static String studyRow(int cards) =>
       'Study $cards ${cards == 1 ? 'term' : 'terms'} as flashcards';
-
-  /// The eyebrow on the Learn tab's practice row.
-  static const practiceRowEyebrow = 'Flip and recall';
 }

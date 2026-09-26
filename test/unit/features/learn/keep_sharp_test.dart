@@ -73,24 +73,6 @@ void main() {
     });
   });
 
-  group('keepSharpDailyChoice', () {
-    test('is the day-indexed entry, wrapping over the options', () {
-      const options = ['a', 'b', 'c'];
-
-      expect(keepSharpDailyChoice(0, options), 'a');
-      expect(keepSharpDailyChoice(4, options), 'b');
-    });
-
-    test('consecutive days walk the options', () {
-      const options = ['a', 'b'];
-
-      expect(
-        keepSharpDailyChoice(7, options),
-        isNot(keepSharpDailyChoice(8, options)),
-      );
-    });
-  });
-
   group('keepSharpDayNumber', () {
     test('is stable across one local calendar day', () {
       final morning = DateTime(2026, 8, 17, 0, 1);

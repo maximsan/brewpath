@@ -1,5 +1,5 @@
 // The whole recommendation as a function of the day and the learner's
-// material: which practice type, and the one screen its CTA opens.
+// material: which practice type, and what its CTA does.
 //
 // The provider used to read the clock itself, so none of this was assertable
 // without pumping. Every case below injects the day.
@@ -7,8 +7,7 @@ import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart'
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
+import 'package:brew_path/features/learn/domain/practice_group.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The two formats a free learner can actually play.
@@ -17,7 +16,6 @@ const _playable = ['g-quiz', 'g-match'];
 KeepSharpResolution? resolve({
   required int day,
   List<String> playable = _playable,
-  Set<String> playedToday = const {},
   List<String> completed = const ['m1l1'],
   int drillable = 0,
   int deck = 0,
@@ -25,7 +23,6 @@ KeepSharpResolution? resolve({
   dayNumber: day,
   material: (
     playableFormatIds: playable,
-    formatsPlayedToday: playedToday,
     completedLessonIds: completed,
     drillableTermCount: drillable,
     flashcardDeckSize: deck,
@@ -130,8 +127,8 @@ void main() {
       );
 
       expect(
-        resolve(day: day, drillable: vocabMinimumPool)?.destination,
-        vocabGame,
+        resolve(day: day, drillable: vocabMinimumPool)?.start,
+        OpenSurface(vocabGame),
       );
     });
 
@@ -157,82 +154,30 @@ void main() {
     test('its CTA opens the drill, which needs nothing naming', () {
       final day = dayLandingOn(PracticeType.flashcards, deck: 1);
 
-      expect(resolve(day: day, deck: 1)!.destination, flashcardReview);
+      expect(resolve(day: day, deck: 1)!.start, OpenSurface(flashcardReview));
     });
   });
 
-  group('the mini-games CTA opens a game, and never the same one twice', () {
-    late int day;
-    setUp(() => day = dayLandingOn(PracticeType.miniGames));
-
-    test('it opens a playable game', () {
-      final destination = resolve(day: day)!.destination;
-
-      expect(
-        _playable.map(miniGameRun),
-        contains(destination),
-        reason: 'the card says "play two different games" — so it opens one',
-      );
-    });
-
-    test('a game already played today is skipped', () {
-      final first = resolve(day: day)!.destination;
-      final playedFirst = _playable.firstWhere(
-        (id) => miniGameRun(id) == first,
-      );
-
-      final second = resolve(day: day, playedToday: {playedFirst})!.destination;
+  group('the two types listed on the Today tab open their group', () {
+    test('the mini-games CTA opens Games, never one game', () {
+      // The rule is "play two different games": the list is where the
+      // learner picks them, and a card naming one would name the wrong work.
+      final day = dayLandingOn(PracticeType.miniGames);
 
       expect(
-        second,
-        isNot(first),
-        reason:
-            'pressing Start twice must reach two different games, or '
-            'following the card could never satisfy the card',
+        resolve(day: day)!.start,
+        const OpenPracticeGroup(PracticeGroupKind.games),
       );
     });
 
-    test('two presses of Start reach both playable games', () {
-      final first = resolve(day: day)!.destination;
-      final firstId = _playable.firstWhere((id) => miniGameRun(id) == first);
-      final second = resolve(day: day, playedToday: {firstId})!.destination;
-
-      expect({first, second}, _playable.map(miniGameRun).toSet());
-    });
-
-    test('every game played, and it still resolves rather than throwing', () {
-      // The rule is already met and the card stops offering a CTA — but the
-      // resolution must not blow up on an empty candidate list.
-      final destination = resolve(
-        day: day,
-        playedToday: _playable.toSet(),
-      )!.destination;
-
-      expect(_playable.map(miniGameRun), contains(destination));
-    });
-  });
-
-  group('the replay CTA', () {
-    test("opens one of the learner's finished lessons", () {
-      final day = dayLandingOn(PracticeType.lessonReplay);
-
-      final destination = resolve(
-        day: day,
-        completed: const ['m1l1', 'm1l2'],
-      )!.destination;
-
-      expect(
-        const ['m1l1', 'm1l2'].map(lessonRun),
-        contains(destination),
-      );
-    });
-
-    test('is stable across the day', () {
+    test('the replay CTA opens Lessons, never one lesson', () {
+      // Every row in Lessons asks first (#573); a Start that launched a
+      // lesson was the one route that skipped the sheet.
       final day = dayLandingOn(PracticeType.lessonReplay);
 
       expect(
-        resolve(day: day, completed: const ['m1l1', 'm1l2'])!.destination,
-        resolve(day: day, completed: const ['m1l1', 'm1l2'])!.destination,
+        resolve(day: day, completed: const ['m1l1', 'm1l2'])!.start,
+        const OpenPracticeGroup(PracticeGroupKind.lessons),
       );
     });
   });

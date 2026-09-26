@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/core/widgets/section_header.dart';
+import 'package:brew_path/features/learn/presentation/practice/practice_sub_group.dart';
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
@@ -13,15 +13,14 @@ import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// The mini-game catalog, grouped by kind in [miniGameKinds]' fixed order so
-/// adding a game never reshuffles the shelf.
+/// The mini-game catalog under Today → Practice → Games: one collapsible
+/// sub-group per kind, in the fixed order [miniGameKinds] declares.
 ///
-/// The kind's glyph and name sit on the heading, never a row, and rows indent
-/// under it (`paddingLeft: 30`). A build that cannot play a game says so on
-/// the intro's action, never by dimming a row into looking paywalled.
+/// **Every row opens its intro.** Whether a game can actually be played is
+/// disclosed on the intro's own action, never here: a row dimmed for a missing
+/// renderer looks exactly like one behind the paywall.
 class MiniGamesCatalogWidget extends StatelessWidget {
   /// Creates a [MiniGamesCatalogWidget].
   const MiniGamesCatalogWidget({
@@ -36,42 +35,47 @@ class MiniGamesCatalogWidget extends StatelessWidget {
   /// Whether the learner owns the course. Everything opens when they do.
   final bool hasCourse;
 
-  /// The design's `paddingLeft: 30` under a kind heading.
-  static const double _kindIndent = 30;
-
   @override
   Widget build(BuildContext context) {
     if (formats.isEmpty) return const _EmptyCatalog();
 
-    final groups = groupCatalogByKind(context.strings, formats);
+    final mood = context.mood;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final group in groups) ...[
-          _KindHeading(group: group),
-          Padding(
-            padding: const EdgeInsets.only(left: _kindIndent),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (final format in group.games)
-                  _FormatRow(format: format, hasCourse: hasCourse),
-              ],
+        for (final group in groupCatalogByKind(context.strings, formats))
+          PracticeSubGroup(
+            label: group.label,
+            count: group.games.length,
+            // A sub-group is locked when every game in it fails the app's own
+            // open test — the tier rule, never "its module is m1" (ADR-0007).
+            locked: group.games.every(
+              (format) => !isMiniGameOpen(format, hasCourse: hasCourse),
             ),
+            mark: switch (group.mark) {
+              null => null,
+              final mark => IconMark(
+                mark,
+                size: PracticeSubGroup.markSize,
+                color: mood.inkMute,
+              ),
+            },
+            children: [
+              for (final format in group.games)
+                _FormatRow(format: format, hasCourse: hasCourse),
+            ],
           ),
-        ],
       ],
     );
   }
 }
 
-/// One game as a replay row: its name, its topic, and either what it costs or
-/// how long it takes.
+/// One game as a row that starts something: its name over the topic it
+/// drills, ending in a chevron — or a lock.
 ///
-/// Nothing on a locked row, `FREE` on an open one while the course is not
-/// owned, the game's time once it is. A lock is an offer: the tap that cannot
-/// start a run opens the pitch for the module that teaches it.
+/// A lock is an offer, not a dead end: the tap that cannot start a run opens
+/// the pitch for the module that teaches this game's topic.
 class _FormatRow extends StatelessWidget {
   const _FormatRow({required this.format, required this.hasCourse});
 
@@ -85,12 +89,8 @@ class _FormatRow extends StatelessWidget {
     return ReplayRow(
       title: format.title,
       sub: format.topic,
-      meta: !isOpen
-          ? null
-          : hasCourse
-          ? format.duration
-          : context.strings.miniGameFree,
       locked: !isOpen,
+      starts: true,
       // A lock a screen reader cannot act on is the dead end this catalog set
       // out to remove: sighted learners tap a lock speculatively, but being
       // told only that a row is locked gives no reason to try.
@@ -98,57 +98,6 @@ class _FormatRow extends StatelessWidget {
       onTap: isOpen
           ? () => unawaited(context.goToActivity(miniGameRun(format.id)))
           : () => showMiniGameGateSheet(context: context, format: format),
-    );
-  }
-}
-
-/// A kind's heading: its glyph, then its name.
-///
-/// The glyph is what lets a learner find a mechanic by shape rather than by
-/// reading seven headings. A group with no mark — a game whose kind is not in
-/// `miniGameKinds` — heads with the name alone rather than a gap where a mark
-/// should be.
-class _KindHeading extends StatelessWidget {
-  const _KindHeading({required this.group});
-
-  final MiniGameGroup group;
-
-  /// The design draws the glyph at 18 inside a 20-wide column.
-  static const double _markSize = 18;
-  static const double _markColumn = 20;
-
-  /// The design's `padding: 16px 0 2px`, at the shelf's row bleed.
-  static const EdgeInsets _padding = EdgeInsets.fromLTRB(
-    AppSpacing.xs,
-    AppSpacing.md,
-    AppSpacing.xs,
-    2,
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    final mark = group.mark;
-
-    return Padding(
-      padding: _padding,
-      child: Row(
-        children: [
-          if (mark != null) ...[
-            SizedBox(
-              width: _markColumn,
-              child: Center(
-                child: IconMark(
-                  mark,
-                  size: _markSize,
-                  color: context.mood.inkMute,
-                ),
-              ),
-            ),
-            SizedBox(width: OffTokens.practiceInlineGap.value),
-          ],
-          SectionHeader(group.label),
-        ],
-      ),
     );
   }
 }

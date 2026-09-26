@@ -9,8 +9,8 @@ part of 'keep_sharp_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Derives the day's recommendation: the learner's material feeds the pure
-/// rotation, which returns the type and the one screen its CTA opens. Null
-/// when no registered type has material.
+/// rotation, which returns the type and what its CTA does. Null when no
+/// registered type has material.
 ///
 /// The reads are the material the rule is asked of; every decision made from
 /// them lives in [keepSharpResolutionFor].
@@ -19,8 +19,8 @@ part of 'keep_sharp_providers.dart';
 final keepSharpRecommendationProvider = KeepSharpRecommendationProvider._();
 
 /// Derives the day's recommendation: the learner's material feeds the pure
-/// rotation, which returns the type and the one screen its CTA opens. Null
-/// when no registered type has material.
+/// rotation, which returns the type and what its CTA does. Null when no
+/// registered type has material.
 ///
 /// The reads are the material the rule is asked of; every decision made from
 /// them lives in [keepSharpResolutionFor].
@@ -36,8 +36,8 @@ final class KeepSharpRecommendationProvider
         $FutureModifier<KeepSharpRecommendation?>,
         $FutureProvider<KeepSharpRecommendation?> {
   /// Derives the day's recommendation: the learner's material feeds the pure
-  /// rotation, which returns the type and the one screen its CTA opens. Null
-  /// when no registered type has material.
+  /// rotation, which returns the type and what its CTA does. Null when no
+  /// registered type has material.
   ///
   /// The reads are the material the rule is asked of; every decision made from
   /// them lives in [keepSharpResolutionFor].
@@ -68,7 +68,7 @@ final class KeepSharpRecommendationProvider
 }
 
 String _$keepSharpRecommendationHash() =>
-    r'ada04f3b97045cbef632e87469fd9ce802d4ca40';
+    r'540c936ec2e52d42dff1e6febad697a4b770ae4c';
 
 /// Whether today's recommendation has met its own completion rule — derived
 /// per-day from what the activity layer already records, stored nowhere.

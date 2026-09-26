@@ -1,6 +1,6 @@
 # BrewPath — Testing
 
-> **Status:** The persistence layer uses **Drift 2.33.x** (migrated from Isar in
+> **Status:** The persistence layer uses **Drift 2.33.x**, held there on purpose (the pin and its reason are in `pubspec.yaml`; migrated from Isar in
 > Phase 3); test setups use `AppDatabase(NativeDatabase.memory())`.
 
 ---

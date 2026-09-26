@@ -3,7 +3,6 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_providers.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_completion.dart';
-import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/features/progress/domain/progress_providers.dart';
@@ -14,26 +13,22 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'keep_sharp_providers.g.dart';
 
 /// The day's Keep Sharp recommendation for the Today card's caught-up state:
-/// the picked practice type plus the named-route destination its CTA opens.
+/// the picked practice type plus what its CTA does.
 /// Not persisted — a read-side view value, like `ModuleWithProgress`.
 class KeepSharpRecommendation {
   /// Creates a [KeepSharpRecommendation].
-  const KeepSharpRecommendation({
-    required this.type,
-    required this.destination,
-  });
+  const KeepSharpRecommendation({required this.type, required this.start});
 
   /// The recommended practice type.
   final PracticeType type;
 
-  /// The one screen the CTA opens — a concrete entry point; the recommendation
-  /// itself stays type-level.
-  final RouteDestination destination;
+  /// What the CTA does — a group opened on this tab, or a drill's own screen.
+  final KeepSharpStart start;
 }
 
 /// Derives the day's recommendation: the learner's material feeds the pure
-/// rotation, which returns the type and the one screen its CTA opens. Null
-/// when no registered type has material.
+/// rotation, which returns the type and what its CTA does. Null when no
+/// registered type has material.
 ///
 /// The reads are the material the rule is asked of; every decision made from
 /// them lives in [keepSharpResolutionFor].
@@ -45,11 +40,9 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
   final formatsFuture = ref.watch(miniGameFormatsProvider.future);
   final completedFuture = ref.watch(completedLessonsProvider.future);
   final poolsFuture = ref.watch(vocabPoolsProvider.future);
-  final snapshotFuture = ref.watch(progressSnapshotStateProvider.future);
   final formats = await formatsFuture;
   final completed = await completedFuture;
   final pools = await poolsFuture;
-  final snapshot = await snapshotFuture;
 
   final resolution = keepSharpResolutionFor(
     dayNumber: day,
@@ -58,9 +51,6 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
         for (final format in formats)
           if (playableMiniGameIds.contains(format.id)) format.id,
       ],
-      formatsPlayedToday: distinctMiniGameIds(
-        snapshot.clearedByReset.dailyActivity[day] ?? const {},
-      ),
       completedLessonIds: completed.ids.toList(),
       drillableTermCount: pools.accessible.length,
       // The same pools value: the deck a flashcard review deals is the saved
@@ -72,10 +62,7 @@ Future<KeepSharpRecommendation?> keepSharpRecommendation(Ref ref) async {
 
   return resolution == null
       ? null
-      : KeepSharpRecommendation(
-          type: resolution.type,
-          destination: resolution.destination,
-        );
+      : KeepSharpRecommendation(type: resolution.type, start: resolution.start);
 }
 
 /// Whether today's recommendation has met its own completion rule — derived

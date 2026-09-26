@@ -10,8 +10,9 @@ import '../../../support/find_mark.dart';
 
 Future<int> _pump(
   WidgetTester tester, {
-  String? meta = '~2 min',
+  String? sub = 'Arabica vs Robusta',
   bool locked = false,
+  bool starts = false,
   Widget? icon,
 }) async {
   var taps = 0;
@@ -23,9 +24,9 @@ Future<int> _pump(
         body: ReplayRow(
           icon: icon,
           title: 'Match the facts',
-          sub: 'Arabica vs Robusta',
-          meta: meta,
+          sub: sub,
           locked: locked,
+          starts: starts,
           onTap: () => taps++,
         ),
       ),
@@ -36,32 +37,46 @@ Future<int> _pump(
 }
 
 void main() {
-  testWidgets('letters the eyebrow and the meta line as smallcaps', (
+  testWidgets('letters the eyebrow as smallcaps over the name', (
     tester,
   ) async {
     await _pump(tester);
 
     expect(find.text('ARABICA VS ROBUSTA'), findsOneWidget);
     expect(find.text('Match the facts'), findsOneWidget);
-    expect(find.text('~2 MIN'), findsOneWidget);
+  });
+
+  testWidgets('a row without an eyebrow is its name alone', (tester) async {
+    await _pump(tester, sub: null);
+
+    expect(find.byType(Text), findsOneWidget);
+    expect(find.text('Match the facts'), findsOneWidget);
   });
 
   testWidgets('ends in the replay mark, and taps', (tester) async {
     final taps = await _pump(tester);
 
     expect(find.byType(ReplayMark), findsOneWidget);
+    expect(findMark(AppIcon.chevron), findsNothing);
     expect(findMark(AppIcon.lock), findsNothing);
     expect(taps, 1);
   });
 
-  testWidgets('a locked row ends in a lock and says nothing else', (
+  testWidgets('a row that starts something ends in a chevron', (
     tester,
   ) async {
-    await _pump(tester, meta: null, locked: true);
+    await _pump(tester, starts: true);
+
+    expect(findMark(AppIcon.chevron), findsOneWidget);
+    expect(find.byType(ReplayMark), findsNothing);
+  });
+
+  testWidgets('a locked row ends in a lock and nothing else', (tester) async {
+    await _pump(tester, locked: true, starts: true);
 
     expect(findMark(AppIcon.lock), findsOneWidget);
+    expect(findMark(AppIcon.chevron), findsNothing);
     expect(find.byType(ReplayMark), findsNothing);
-    expect(find.textContaining('MIN'), findsNothing);
   });
 
   testWidgets('draws the kind glyph only when given one', (tester) async {
@@ -79,13 +94,20 @@ void main() {
 
     await _pump(tester);
     expect(
-      find.bySemanticsLabel(
-        'Match the facts. Arabica vs Robusta. ~2 min. Replay.',
-      ),
+      find.bySemanticsLabel('Match the facts. Arabica vs Robusta. Replay.'),
       findsOneWidget,
     );
 
-    await _pump(tester, meta: null, locked: true);
+    await _pump(tester, starts: true);
+    expect(
+      find.bySemanticsLabel('Match the facts. Arabica vs Robusta. Play.'),
+      findsOneWidget,
+    );
+
+    await _pump(tester, sub: null);
+    expect(find.bySemanticsLabel('Match the facts. Replay.'), findsOneWidget);
+
+    await _pump(tester, locked: true, starts: true);
     expect(
       find.bySemanticsLabel(
         'Match the facts. Arabica vs Robusta. Part of Foundations.',
