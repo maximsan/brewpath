@@ -70,7 +70,7 @@ deserializes every card the script emits in `test/unit/tool/extract_content_test
 
 ## `tool/extract_icons.js` — the icon family
 
-Writes the design's 43 marks as SVG into `assets/icons/`, plus the
+Writes the design's marks as SVG into `assets/icons/`, plus the
 `index.json` that describes the family, and gives five of them a second file
 for the state the design draws when active. The marks carry arcs, transforms,
 per-element opacity and nine stroke widths, which is why they are rendered

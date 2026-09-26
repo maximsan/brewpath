@@ -7,7 +7,7 @@ and the code must share. Terms link the ruling that defined them —
 ## Course
 
 **Foundations**:
-The finite beginner course — five modules, thirty-two lessons, fixed order
+The finite beginner course — its modules and lessons in a fixed order
 (`docs/decisions.md` §1). Completing it has a proper ending, then Today
 switches to Keep Sharp.
 _Avoid_: the course (when another course could ever be meant)
@@ -25,21 +25,19 @@ or the daily allowance (§4).
 _Avoid_: Brew Challenge (renamed)
 
 **Collectible card**:
-One of thirty-seven cards unlocked automatically by first-time completions —
-one per lesson, one per module. No rarity, no duplicates.
+A card unlocked automatically by a first-time completion — one per lesson,
+one per module. No rarity, no duplicates.
 
 **Module Reward**:
-One of the five collectible cards awarded for completing a whole module
-(Beans · Processing · Roasting · Grind · Brew). Part of the thirty-seven, and
-shown in the Cards grid.
+The collectible card awarded for completing a whole module — one per module,
+shown in the Cards grid with the rest.
 _Avoid_: Field Guide **as the name for the category** (renamed; the code
 already said `MODULE_REWARDS`). The five cards keep their authored titles —
 *Beans Field Guide* and its siblings — the way a book keeps its name: those
 are what the cards are *called*, not what they *are*.
 
 **Visual guide**:
-One of the eight illustrated references the course teaches — roast, grind,
-extraction, ratio, anatomy, variety, caffeine, distribution. Unlocks on first
+An illustrated reference the course teaches. Unlocks on first
 completion of the earliest lesson that teaches it, is saveable under a `g:`
 key, and is listed in the Reference row on Path. Never shown beside a
 collectible ([#106](https://github.com/maximsan/brewpath/issues/106)).
@@ -120,7 +118,7 @@ _Avoid_: XP, score
 **Mastery**:
 Best-ever per-lesson knowledge, a `{correct, total}` pair. Improvable by
 replay, never decreases ([#16](https://github.com/maximsan/brewpath/issues/16)).
-_Avoid_: bestScore (replaced at schema v5)
+_Avoid_: bestScore (the old name)
 
 **Coffee Tree**:
 The ten-stage plant that is the single picture of course progress. Grows only
@@ -179,7 +177,7 @@ are four.
 ## Onboarding
 
 **Tour**:
-The skippable walkthrough of the Learn tab — four stops in the design's own
+The skippable walkthrough of the Learn tab — its stops in the design's own
 words ([#536](https://github.com/maximsan/brewpath/issues/536)). Runs unasked
 when Learn first shows with `tourSeen` unset
 ([#537](https://github.com/maximsan/brewpath/issues/537)); every ending —
@@ -189,12 +187,11 @@ _Avoid_: walking tour, walkthrough, coach marks
 
 **Micro-tip**:
 A small card at the foot of the screen explaining one feature the first time it
-matters — seven of them, each shown once ever and dismissable
+matters — each shown once ever and dismissable
 ([#342](https://github.com/maximsan/brewpath/issues/342)). One at a time, never
 inside a lesson and never under the Tour or a sheet. The seen list follows
 `tourSeen` rather than the design's progress scope: it sits on the device-local
-settings row, survives Reset progress and goes with Delete account. Stored at
-schema v12.
+settings row, survives Reset progress and goes with Delete account.
 _Avoid_: coach card, tooltip, hint
 
 ## Content pipeline
@@ -218,17 +215,16 @@ _Avoid_: "ignored", "unused" — neither says whether anyone decided.
 
 **Progress snapshot**:
 The envelope of a device's progress that two devices converge under a pure
-merge ([#14](https://github.com/maximsan/brewpath/issues/14)). Stored at
-schema v6.
+merge ([#14](https://github.com/maximsan/brewpath/issues/14)).
 
 **Install stamp**:
 The one recorded instant saying when this account began — written when the
-database is created, restamped by Delete Account, untouched by Reset. Stored at
-schema v11 and device-local: never in the progress snapshot, because it dates
-this copy of the app rather than the learner
+database is created, restamped by Delete Account, untouched by Reset.
+Device-local: never in the progress snapshot, because it dates this copy of
+the app rather than the learner
 ([ADR-0013](docs/adr/0013-the-joined-line-dates-the-install-and-old-devices-are-not-back-dated.md)).
-Absent on every database created before v11, and Profile's `Joined` line falls
-back to the earliest active day for those.
+Absent on a database created before the stamp existed, and Profile's `Joined`
+line falls back to the earliest active day for those.
 _Avoid_: join date (the line's word, not the stored fact — the two differ
 exactly on the devices using the fallback)
 
