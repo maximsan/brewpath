@@ -1,5 +1,6 @@
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/tour_card_controls.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -61,10 +62,13 @@ class TourCard extends StatelessWidget {
             children: [
               _Counter(step: step, mood: mood),
               lineGap,
-              Text(step.title, style: AppText.heading(mood: mood)),
+              Text(
+                step.title(context.strings),
+                style: AppText.heading(mood: mood),
+              ),
               lineGap,
               Text(
-                step.body,
+                step.body(context.strings),
                 style: AppText.support(
                   mood: mood,
                 ).copyWith(height: OffTokens.tourCardBodyLeading.value),
@@ -96,7 +100,7 @@ class _Counter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final counted = '${step.position} of ${TourStep.count}';
+    final counted = context.strings.tourStepOf(step.position, TourStep.count);
     return Semantics(
       label: counted,
       excludeSemantics: true,

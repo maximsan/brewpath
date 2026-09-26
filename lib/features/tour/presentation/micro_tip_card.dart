@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/tour/domain/micro_tip.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -48,7 +49,7 @@ class MicroTipCard extends StatelessWidget {
     return Semantics(
       container: true,
       liveRegion: true,
-      label: tip.announcement,
+      label: tip.announcement(context.strings),
       // The card draws above the navigator, so it brings its own `Material`:
       // the ink under the X and the default text style the copy is set against
       // both come from one otherwise.
@@ -91,15 +92,12 @@ class MicroTipCard extends StatelessWidget {
 class _DismissButton extends StatelessWidget {
   const _DismissButton({required this.onPressed});
 
-  /// The label the design gives the control, and the only name it has.
-  static const String label = 'Dismiss';
-
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) => MergeSemantics(
     child: Semantics(
-      label: label,
+      label: context.strings.microTipDismiss,
       child: IconButton(
         icon: const IconMark(AppIcon.close),
         iconSize: AppSpacing.md,
@@ -123,17 +121,17 @@ class _Copy extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SmallcapsLabel(tip.eyebrow, color: mood.accentText),
+        SmallcapsLabel(tip.eyebrow(context.strings), color: mood.accentText),
         SizedBox(height: OffTokens.microTipEyebrowGap.value),
         Text(
-          tip.title,
+          tip.title(context.strings),
           style: AppText.support(color: mood.ink, face: AppFace.control),
         ),
         SizedBox(height: OffTokens.microTipTitleGap.value),
         // Prose set at the label step, so it takes neither that step's
         // smallcaps tracking nor its heading leading.
         Text(
-          tip.body,
+          tip.body(context.strings),
           style: AppText.label(mood: mood).copyWith(
             letterSpacing: OffTokens.microTipBodyTracking.value,
             height: OffTokens.microTipBodyLeading.value,

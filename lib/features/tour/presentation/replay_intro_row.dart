@@ -1,8 +1,8 @@
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,8 +29,8 @@ class ReplayIntroRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) => ListTile(
     leading: const IconMark(AppIcon.rematch),
-    title: const Text(TourCopy.replayTitle),
-    subtitle: const Text(TourCopy.replayBody),
+    title: Text(context.strings.tourReplayTitle),
+    subtitle: Text(context.strings.tourReplayBody),
     trailing: const IconMark(AppIcon.chevron),
     onTap: () => _replay(context, ref),
   );

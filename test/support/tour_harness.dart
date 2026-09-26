@@ -1,6 +1,6 @@
 import 'package:brew_path/app/app.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,7 +66,7 @@ Future<void> awaitTourSeenWritten(WidgetTester tester) async {
 /// twenty, and a Skip tapped before the card is up misses in silence.
 Future<void> awaitTheFirstStop(WidgetTester tester) async {
   const attempts = 200;
-  final card = find.text(TourCopy.todayTitle).hitTestable();
+  final card = find.text(AppLocalizationsEn().tourTodayTitle).hitTestable();
   for (var attempt = 0; attempt < attempts; attempt++) {
     if (card.evaluate().isNotEmpty) return;
     await tester.runAsync(
@@ -95,7 +95,7 @@ Future<ProviderContainer> bootIntoTheTour(
 /// Next, until the last stop's card is up.
 Future<void> walkToTheLastStop(WidgetTester tester) async {
   for (var stop = 0; stop < TourStep.count - 1; stop++) {
-    await tester.tap(find.text(TourCopy.stopNext));
+    await tester.tap(find.text(AppLocalizationsEn().tourNext));
     await letTheTourRun(tester);
   }
 }

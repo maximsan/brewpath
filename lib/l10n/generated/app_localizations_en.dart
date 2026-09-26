@@ -1141,4 +1141,198 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get savedUpgradeLine =>
       'Your shelf is full. Unlock Plus to save without a limit.';
+
+  @override
+  String get tourTodayTitle => 'Today starts here';
+
+  @override
+  String get tourTodayBody => 'Your next lesson always waits in this card.';
+
+  @override
+  String get tourPracticeTitle => 'Practice again, any time';
+
+  @override
+  String get tourPracticeBody =>
+      'Lessons you finish collect here, with quick practice formats beside them.';
+
+  @override
+  String get tourHeaderTitle => 'Saved and Dictionary';
+
+  @override
+  String get tourHeaderBody =>
+      'Anything you bookmark lands behind the ribbon; every coffee term you meet joins the book beside it.';
+
+  @override
+  String get tourTabsTitle => 'Find your way';
+
+  @override
+  String get tourTabsBody =>
+      'Path holds the whole course, Collection your earned cards, Profile your streak and coffee tree.';
+
+  @override
+  String get tourSkip => 'Skip';
+
+  @override
+  String get tourSkipSemantics => 'Skip the introduction';
+
+  @override
+  String get tourNext => 'Next';
+
+  @override
+  String get tourDone => 'Done';
+
+  @override
+  String get tourLayerSemantics => 'Introduction to Today';
+
+  @override
+  String get tourReplayTitle => 'Replay Today introduction';
+
+  @override
+  String get tourReplayBody => 'Runs the short first-open tour again';
+
+  @override
+  String tourStepOf(int position, int total) {
+    return '$position of $total';
+  }
+
+  @override
+  String get microTipDismiss => 'Dismiss';
+
+  @override
+  String get appGuideTitle => 'App Guide';
+
+  @override
+  String get appGuideSettingsRowBody =>
+      'What each part does, plus the Today intro';
+
+  @override
+  String get appGuideLead =>
+      'What each part of BrewPath does, in a line or two.';
+
+  @override
+  String get appGuideIntroSection => 'Introduction';
+
+  @override
+  String get appGuideTodayTitle => 'Today';
+
+  @override
+  String get appGuideTodayBody =>
+      'Your daily start: the next lesson, any active Coffee Challenge, and practice worth revisiting.';
+
+  @override
+  String get appGuidePathTitle => 'Learning Path';
+
+  @override
+  String get appGuidePathBody =>
+      'The whole course in order. Each finished lesson unlocks the next; diamonds along the line are Coffee Challenges.';
+
+  @override
+  String get appGuidePracticeTitle => 'Practice';
+
+  @override
+  String get appGuidePracticeBody =>
+      'Replay finished lessons or drill the practice formats from Today. Reviews sharpen you but never change your points.';
+
+  @override
+  String get appGuideChallengesTitle => 'Brew Challenges';
+
+  @override
+  String get appGuideChallengesBody =>
+      'Real-world brewing tasks. Start one, make it within 48 hours, then log the result on Today to earn its stamp.';
+
+  @override
+  String get appGuideDictionaryTitle => 'Dictionary & Saved';
+
+  @override
+  String get appGuideDictionaryBody =>
+      'Terms join the Dictionary as lessons introduce them. Anything you bookmark waits in Saved, at the top of Today.';
+
+  @override
+  String get appGuideTreeTitle => 'Coffee Tree';
+
+  @override
+  String get appGuideTreeBody =>
+      'Grows a stage as you complete core lessons, from seed to harvest. Only lessons grow it — it lives on your Profile.';
+
+  @override
+  String get appGuideStreakTitle => 'Streak';
+
+  @override
+  String get appGuideStreakBody =>
+      'One finished activity a day keeps it alive — a lesson, a replay, or practice. Every 7 days in a row earns a streak freeze (you hold one at a time); it covers a missed day automatically.';
+
+  @override
+  String get microTipPathEyebrow => 'YOUR PATH';
+
+  @override
+  String get microTipPathTitle => 'The whole course, in order';
+
+  @override
+  String get microTipPathBody =>
+      'Each finished lesson unlocks the next, top to bottom. The diamonds branching off the line are hands-on Coffee Challenges.';
+
+  @override
+  String get microTipBrewEyebrow => 'COFFEE CHALLENGE';
+
+  @override
+  String get microTipBrewTitle => 'A real brew, not a quiz';
+
+  @override
+  String get microTipBrewBody =>
+      'Make it at your own pace within 48 hours, then log the result here on Today. Logging it earns the challenge’s stamp.';
+
+  @override
+  String get microTipTreeEyebrow => 'COFFEE TREE';
+
+  @override
+  String get microTipTreeTitle => 'Your tree just grew';
+
+  @override
+  String get microTipTreeBody =>
+      'Completing that lesson pushed it toward harvest. Only core lessons grow it — see it any time from your Profile.';
+
+  @override
+  String get microTipSavedEyebrow => 'SAVED';
+
+  @override
+  String get microTipSavedTitle => 'Kept for later';
+
+  @override
+  String get microTipSavedBody =>
+      'Everything you save waits behind the ribbon at the top of Today — lessons, terms and guides on one shelf.';
+
+  @override
+  String get microTipDictionaryEyebrow => 'DICTIONARY';
+
+  @override
+  String get microTipDictionaryTitle => 'Every term you’ve met';
+
+  @override
+  String get microTipDictionaryBody =>
+      'Terms join your Dictionary as lessons introduce them. Search them here, or drill them with flashcards.';
+
+  @override
+  String get microTipFreezeEyebrow => 'STREAK FREEZE';
+
+  @override
+  String get microTipFreezeTitle => 'A safety net you’ve earned';
+
+  @override
+  String get microTipFreezeBody =>
+      'Every 7 streak days in a row earns a freeze; you hold one at a time. Miss a day and it’s spent for you — your streak survives.';
+
+  @override
+  String get microTipStudioEyebrow => 'STUDIO';
+
+  @override
+  String get microTipStudioTitle => 'Make it yours';
+
+  @override
+  String get microTipStudioBody =>
+      'Dress Roasty and choose your tree’s variety and light. The look you set here applies everywhere in the app.';
+
+  @override
+  String microTipAnnouncement(String eyebrow, String title, String body) {
+    return '$eyebrow. $title. $body';
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/storage/id_set.dart';
 
 /// The seven micro-tips, with the copy each one carries.
@@ -10,79 +11,39 @@ enum MicroTip {
   /// The Path tab: what the line and the diamonds on it mean.
   path(
     id: 'path',
-    eyebrow: 'YOUR PATH',
-    title: 'The whole course, in order',
-    body:
-        'Each finished lesson unlocks the next, top to bottom. The diamonds '
-        'branching off the line are hands-on Coffee Challenges.',
   ),
 
   /// A Coffee Challenge in play: that it is made for real, and logged here.
   brew(
     id: 'brew',
-    eyebrow: 'COFFEE CHALLENGE',
-    title: 'A real brew, not a quiz',
-    body:
-        'Make it at your own pace within 48 hours, then log the result here on '
-        'Today. Logging it earns the challenge’s stamp.',
   ),
 
   /// The coffee tree, just after a lesson pushed it along.
   tree(
     id: 'tree',
-    eyebrow: 'COFFEE TREE',
-    title: 'Your tree just grew',
-    body:
-        'Completing that lesson pushed it toward harvest. Only core lessons '
-        'grow it — see it any time from your Profile.',
   ),
 
   /// The Saved shelf, just after the learner's first save.
   saved(
     id: 'saved',
-    eyebrow: 'SAVED',
-    title: 'Kept for later',
-    body:
-        'Everything you save waits behind the ribbon at the top of Today — '
-        'lessons, terms and guides on one shelf.',
   ),
 
   /// The Coffee Dictionary: where its terms come from, and what to do there.
   dictionary(
     id: 'dictionary',
-    eyebrow: 'DICTIONARY',
-    title: 'Every term you’ve met',
-    body:
-        'Terms join your Dictionary as lessons introduce them. Search them '
-        'here, or drill them with flashcards.',
   ),
 
   /// The streak freeze: how one is earned, and how it is spent.
   freeze(
     id: 'freeze',
-    eyebrow: 'STREAK FREEZE',
-    title: 'A safety net you’ve earned',
-    body:
-        'Every 7 streak days in a row earns a freeze; you hold one at a time. '
-        'Miss a day and it’s spent for you — your streak survives.',
   ),
 
   /// The Studio, once it is unlocked: that the look it sets is app-wide.
   studio(
     id: 'studio',
-    eyebrow: 'STUDIO',
-    title: 'Make it yours',
-    body:
-        'Dress Roasty and choose your tree’s variety and light. The look '
-        'you set here applies everywhere in the app.',
   );
 
-  const MicroTip({
-    required this.id,
-    required this.eyebrow,
-    required this.title,
-    required this.body,
-  });
+  const MicroTip({required this.id});
 
   /// The stored id — the string the seen list holds.
   ///
@@ -91,16 +52,44 @@ enum MicroTip {
   final String id;
 
   /// The smallcaps line above the title.
-  final String eyebrow;
+  String eyebrow(AppLocalizations strings) => switch (this) {
+    MicroTip.path => strings.microTipPathEyebrow,
+    MicroTip.brew => strings.microTipBrewEyebrow,
+    MicroTip.tree => strings.microTipTreeEyebrow,
+    MicroTip.saved => strings.microTipSavedEyebrow,
+    MicroTip.dictionary => strings.microTipDictionaryEyebrow,
+    MicroTip.freeze => strings.microTipFreezeEyebrow,
+    MicroTip.studio => strings.microTipStudioEyebrow,
+  };
 
   /// The tip's one-line claim.
-  final String title;
+  String title(AppLocalizations strings) => switch (this) {
+    MicroTip.path => strings.microTipPathTitle,
+    MicroTip.brew => strings.microTipBrewTitle,
+    MicroTip.tree => strings.microTipTreeTitle,
+    MicroTip.saved => strings.microTipSavedTitle,
+    MicroTip.dictionary => strings.microTipDictionaryTitle,
+    MicroTip.freeze => strings.microTipFreezeTitle,
+    MicroTip.studio => strings.microTipStudioTitle,
+  };
 
   /// The rule the tip exists to state.
-  final String body;
+  String body(AppLocalizations strings) => switch (this) {
+    MicroTip.path => strings.microTipPathBody,
+    MicroTip.brew => strings.microTipBrewBody,
+    MicroTip.tree => strings.microTipTreeBody,
+    MicroTip.saved => strings.microTipSavedBody,
+    MicroTip.dictionary => strings.microTipDictionaryBody,
+    MicroTip.freeze => strings.microTipFreezeBody,
+    MicroTip.studio => strings.microTipStudioBody,
+  };
 
   /// What assistive technology is read when the card appears.
-  String get announcement => '$eyebrow. $title. $body';
+  String announcement(AppLocalizations strings) => strings.microTipAnnouncement(
+    eyebrow(strings),
+    title(strings),
+    body(strings),
+  );
 }
 
 /// The seen list as it is stored: ids separated by commas.

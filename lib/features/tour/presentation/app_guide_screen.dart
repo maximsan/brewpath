@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/core/widgets/sub_screen_scaffold.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/features/tour/presentation/replay_intro_row.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -29,26 +30,29 @@ class AppGuideScreen extends StatelessWidget {
     final mood = context.mood;
 
     return SubScreenScaffold(
-      title: AppGuideCopy.title,
+      title: context.strings.appGuideTitle,
       body: (context, scrollPadding) => ListView(
         padding: _pagePadding + scrollPadding,
         children: [
-          const Padding(
+          Padding(
             padding: _gutter,
-            child: PageLargeTitle(AppGuideCopy.title),
+            child: PageLargeTitle(context.strings.appGuideTitle),
           ),
           const SizedBox(height: AppSpacing.sm),
           Padding(
             padding: _gutter,
-            child: Text(AppGuideCopy.lead, style: AppText.support(mood: mood)),
+            child: Text(
+              context.strings.appGuideLead,
+              style: AppText.support(mood: mood),
+            ),
           ),
           const SizedBox(height: AppSpacing.xs),
-          for (final section in AppGuideCopy.sections)
+          for (final section in appGuideSections(context.strings))
             _GuideSection(section: section),
           const SizedBox(height: _blockGap),
-          const Padding(
+          Padding(
             padding: _gutter,
-            child: SmallcapsLabel(AppGuideCopy.introSectionLabel),
+            child: SmallcapsLabel(context.strings.appGuideIntroSection),
           ),
           const ReplayIntroRow(),
         ],

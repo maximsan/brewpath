@@ -8,7 +8,6 @@ import 'package:brew_path/features/lessons/presentation/reward_points_line.dart'
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/onboarding/presentation/loading/loading_screen.dart';
 import 'package:brew_path/features/profile/presentation/widgets/profile_progress_line.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/main.dart' as app;
 import 'package:brew_path/shared/storage/app_database.dart';
@@ -336,7 +335,7 @@ void main() {
     // the Tour covers it and the test fails. Skip it, then look for Learn.
     await tapWhenReady(
       tester,
-      liveButton(TourCopy.stopSkip),
+      liveButton(AppLocalizationsEn().tourSkip),
       describe: 'the Tour on the first launch that reaches Learn',
     );
     await pumpUntil(
@@ -369,7 +368,7 @@ void main() {
     // the Tour again would mean the write did not survive the process.
     await pumpUntil(
       tester,
-      find.text(TourCopy.todayTitle),
+      find.text(AppLocalizationsEn().tourTodayTitle),
       describe: 'no second Tour on a returning launch',
       present: false,
     );

@@ -1,5 +1,5 @@
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -41,9 +41,9 @@ class TourCardControls extends StatelessWidget {
             child: step.isLast
                 ? const SizedBox.shrink()
                 : Semantics(
-                    label: TourCopy.stopSkipSemanticLabel,
+                    label: context.strings.tourSkipSemantics,
                     child: _TourPill(
-                      label: TourCopy.stopSkip,
+                      label: context.strings.tourSkip,
                       fill: mood.surface2,
                       ink: mood.ink,
                       padding: OffTokens.tourSkipPadding.value,
@@ -60,7 +60,9 @@ class TourCardControls extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerRight,
             child: _TourPill(
-              label: step.isLast ? TourCopy.stopDone : TourCopy.stopNext,
+              label: step.isLast
+                  ? context.strings.tourDone
+                  : context.strings.tourNext,
               fill: mood.accent,
               ink: mood.accentInk,
               padding: OffTokens.tourAdvancePadding.value,

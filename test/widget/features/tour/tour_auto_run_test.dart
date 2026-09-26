@@ -1,9 +1,9 @@
 import 'package:brew_path/app/app.dart';
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -25,8 +25,8 @@ void main() {
     // Straight to the first stop: the design draws the Tour as soon as Today
     // does, with nothing to answer first (#537).
     expect(find.byType(TodayTour), findsOneWidget);
-    expect(find.text(TourCopy.todayTitle), findsOneWidget);
-    expect(find.text(TourCopy.todayBody), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTodayBody), findsOneWidget);
   });
 
   testWidgets('does not run the Tour once the flag is set', (tester) async {
@@ -37,7 +37,7 @@ void main() {
     await letTheTourRun(tester);
 
     expect(find.byType(TodayTour), findsNothing);
-    expect(find.text(TourCopy.todayTitle), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsNothing);
   });
 
   testWidgets('a run on screen has not spent the flag yet', (tester) async {
@@ -50,7 +50,7 @@ void main() {
   testWidgets('Skip ends the run and writes the flag', (tester) async {
     await bootIntoTheTour(tester);
 
-    await tester.tap(find.text(TourCopy.stopSkip));
+    await tester.tap(find.text(AppLocalizationsEn().tourSkip));
     await letTheTourRun(tester);
 
     expect(find.byType(TodayTour), findsNothing);
@@ -61,7 +61,7 @@ void main() {
     await bootIntoTheTour(tester);
 
     await walkToTheLastStop(tester);
-    await tester.tap(find.text(TourCopy.stopDone));
+    await tester.tap(find.text(AppLocalizationsEn().tourDone));
     await letTheTourRun(tester);
 
     expect(find.byType(TodayTour), findsNothing);

@@ -3,8 +3,8 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/learn/presentation/learn_list_view.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/presentation/replay_intro_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,7 +43,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text(SettingsCopy.helpRow));
     await tester.pumpAndSettle();
-    await tester.tap(find.text(AppGuideCopy.title));
+    await tester.tap(find.text(AppLocalizationsEn().appGuideTitle));
     await tester.pumpAndSettle();
   }
 
@@ -60,13 +60,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text(SettingsCopy.helpRow), findsOneWidget);
-    expect(find.text(AppGuideCopy.title), findsNothing);
+    expect(find.text(AppLocalizationsEn().appGuideTitle), findsNothing);
 
     await tester.tap(find.text(SettingsCopy.helpRow));
     await tester.pumpAndSettle();
 
-    expect(find.text(AppGuideCopy.title), findsWidgets);
-    expect(find.text(AppGuideCopy.settingsRowBody), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().appGuideTitle), findsWidgets);
+    expect(
+      find.text(AppLocalizationsEn().appGuideSettingsRowBody),
+      findsOneWidget,
+    );
   });
 
   testWidgets('the App Guide explains each part and offers a replay', (
@@ -77,15 +80,15 @@ void main() {
     await pumpWithProviders(tester, const BrewPathApp());
     await openAppGuide(tester);
 
-    for (final section in AppGuideCopy.sections) {
+    for (final section in appGuideSections(AppLocalizationsEn())) {
       expect(
         find.text(section.body),
         findsOneWidget,
         reason: 'the guide must say what ${section.title} does',
       );
     }
-    expect(find.text(TourCopy.replayTitle), findsOneWidget);
-    expect(find.text(TourCopy.replayBody), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourReplayTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourReplayBody), findsOneWidget);
   });
 
   testWidgets('Profile no longer carries the replay row', (tester) async {
@@ -108,8 +111,8 @@ void main() {
     await tester.tap(find.byType(ReplayIntroRow));
     await letTheTourRun(tester);
 
-    expect(find.text(TourCopy.todayTitle), findsOneWidget);
-    expect(find.text(TourCopy.todayBody), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTodayBody), findsOneWidget);
   });
 
   testWidgets('replay lands the learner on the Learn tab', (tester) async {
@@ -142,7 +145,7 @@ void main() {
     // End the first run the cleared flag starts, so what follows is the
     // replay path and not the first-run path — then clear what ending wrote.
     await awaitTheFirstStop(tester);
-    await tester.tap(find.text(TourCopy.stopSkip));
+    await tester.tap(find.text(AppLocalizationsEn().tourSkip));
     await awaitTourSeenWritten(tester);
 
     final before = await repo.getSettings();

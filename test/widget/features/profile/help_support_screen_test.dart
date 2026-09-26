@@ -9,8 +9,8 @@ import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart'
 import 'package:brew_path/features/profile/presentation/settings/help_faq_row.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
-import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/services/links/link_opener.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
@@ -103,7 +103,7 @@ void main() {
   ) async {
     await pump(tester);
 
-    expect(find.text(AppGuideCopy.title), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().appGuideTitle), findsOneWidget);
     expect(_section(SettingsCopy.learnTheAppSection), findsOneWidget);
   });
 

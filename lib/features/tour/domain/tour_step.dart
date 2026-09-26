@@ -1,4 +1,4 @@
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 
 /// The Tour's four stops, in the order it plays them.
 ///
@@ -8,37 +8,35 @@ import 'package:brew_path/features/tour/domain/tour_copy.dart';
 /// chrome do, so the header and tab bar read in their natural context.
 enum TourStep {
   /// The Today card: the daily loop and the streak.
-  today(title: TourCopy.todayTitle, body: TourCopy.todayBody),
+  today,
 
   /// The practice area: the replay list and the mini-games, together, because
   /// they are one idea ("practice, your way") rather than two.
-  practice(title: TourCopy.practiceTitle, body: TourCopy.practiceBody),
+  practice,
 
   /// The header's Saved and Dictionary entries.
-  header(
-    title: TourCopy.headerTitle,
-    body: TourCopy.headerBody,
-    returnsFeedToTop: true,
-  ),
+  header(returnsFeedToTop: true),
 
   /// The bottom tab bar: the three tabs the Tour never visits.
-  tabs(
-    title: TourCopy.tabsTitle,
-    body: TourCopy.tabsBody,
-    returnsFeedToTop: true,
-  );
+  tabs(returnsFeedToTop: true);
 
-  const TourStep({
-    required this.title,
-    required this.body,
-    this.returnsFeedToTop = false,
-  });
+  const TourStep({this.returnsFeedToTop = false});
 
-  /// The stop's heading — locked copy from [TourCopy].
-  final String title;
+  /// The stop's heading, which is the design's own script (#536).
+  String title(AppLocalizations strings) => switch (this) {
+    TourStep.today => strings.tourTodayTitle,
+    TourStep.practice => strings.tourPracticeTitle,
+    TourStep.header => strings.tourHeaderTitle,
+    TourStep.tabs => strings.tourTabsTitle,
+  };
 
-  /// The stop's body — locked copy from [TourCopy].
-  final String body;
+  /// The stop's body, likewise.
+  String body(AppLocalizations strings) => switch (this) {
+    TourStep.today => strings.tourTodayBody,
+    TourStep.practice => strings.tourPracticeBody,
+    TourStep.header => strings.tourHeaderBody,
+    TourStep.tabs => strings.tourTabsBody,
+  };
 
   /// Whether arriving here scrolls the feed back to the top.
   ///

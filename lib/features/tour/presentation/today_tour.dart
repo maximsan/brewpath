@@ -1,12 +1,12 @@
 import 'dart:math' as math;
 
 import 'package:brew_path/core/widgets/fade_up.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_geometry.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_card.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
@@ -169,7 +169,7 @@ class _TodayTourState extends State<TodayTour> {
       return Semantics(
         container: true,
         explicitChildNodes: true,
-        label: TourCopy.layerSemanticLabel,
+        label: context.strings.tourLayerSemantics,
         child: Stack(
           fit: StackFit.expand,
           children: [

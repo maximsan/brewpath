@@ -1,9 +1,9 @@
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_geometry.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -64,7 +64,7 @@ void main() {
   );
 
   Future<void> advance(WidgetTester tester) async {
-    await tester.tap(find.text(TourCopy.stopNext));
+    await tester.tap(find.text(AppLocalizationsEn().tourNext));
     await letTheTourRun(tester);
   }
 
@@ -110,7 +110,7 @@ void main() {
     // Stop three is the header. It does not move with the feed, so there is
     // nothing to scroll *to* — what the scroll is for is putting the page back
     // where the learner will find it.
-    expect(find.text(TourCopy.headerTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourHeaderTitle), findsOneWidget);
     expect(feedOffset(tester), 0);
   });
 

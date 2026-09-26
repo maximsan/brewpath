@@ -1,9 +1,9 @@
 import 'package:brew_path/app/app_router.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_providers.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_card_controls.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,10 +38,10 @@ void main() {
   testWidgets('a card on the way carries Skip and Next', (tester) async {
     await bootIntoTheTour(tester);
 
-    expect(find.text(TourCopy.stopSkip), findsOneWidget);
-    expect(find.text(TourCopy.stopNext), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourSkip), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourNext), findsOneWidget);
     // Not yet: Done belongs to the stop the Tour ends on.
-    expect(find.text(TourCopy.stopDone), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourDone), findsNothing);
   });
 
   testWidgets('the last card drops Skip, leaving Done the only way out', (
@@ -50,8 +50,8 @@ void main() {
     await bootIntoTheTour(tester);
     await walkToTheLastStop(tester);
 
-    expect(find.text(TourCopy.stopSkip), findsNothing);
-    expect(find.text(TourCopy.stopDone), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourSkip), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourDone), findsOneWidget);
   });
 
   testWidgets('the dots keep their place when Skip goes', (tester) async {
@@ -71,7 +71,7 @@ void main() {
     const mood = MoodColors.darkRoast;
 
     final skip = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, TourCopy.stopSkip),
+      find.widgetWithText(FilledButton, AppLocalizationsEn().tourSkip),
     );
     final style = skip.style!;
     const pressed = <WidgetState>{};
@@ -80,7 +80,10 @@ void main() {
     expect(style.side!.resolve(pressed)!.color, mood.rule);
     expect(style.shape!.resolve(pressed), isA<StadiumBorder>());
     expect(
-      tester.widget<Text>(find.text(TourCopy.stopSkip)).style!.color,
+      tester
+          .widget<Text>(find.text(AppLocalizationsEn().tourSkip))
+          .style!
+          .color,
       mood.ink,
     );
   });
@@ -88,11 +91,11 @@ void main() {
   testWidgets('Skip closes the Tour on the first card', (tester) async {
     final container = await bootIntoTheTour(tester);
 
-    await tester.tap(find.text(TourCopy.stopSkip));
+    await tester.tap(find.text(AppLocalizationsEn().tourSkip));
     await letTheTourRun(tester);
 
     expect(tourIsRunning(tester, container), isFalse);
-    expect(find.text(TourCopy.todayTitle), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsNothing);
   });
 
   testWidgets('Next walks the stops and the last one says Done', (
@@ -100,36 +103,39 @@ void main() {
   ) async {
     await bootIntoTheTour(tester);
 
-    expect(find.text(TourCopy.todayTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsOneWidget);
 
     // Three taps from the first stop to the fourth, which is the tab bar.
-    for (final title in [TourCopy.practiceTitle, TourCopy.headerTitle]) {
-      await tester.tap(find.text(TourCopy.stopNext));
+    for (final title in [
+      AppLocalizationsEn().tourPracticeTitle,
+      AppLocalizationsEn().tourHeaderTitle,
+    ]) {
+      await tester.tap(find.text(AppLocalizationsEn().tourNext));
       await letTheTourRun(tester);
       expect(find.text(title), findsOneWidget);
     }
-    await tester.tap(find.text(TourCopy.stopNext));
+    await tester.tap(find.text(AppLocalizationsEn().tourNext));
     await letTheTourRun(tester);
 
-    expect(find.text(TourCopy.tabsTitle), findsOneWidget);
-    expect(find.text(TourCopy.stopDone), findsOneWidget);
-    expect(find.text(TourCopy.stopNext), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourTabsTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourDone), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourNext), findsNothing);
   });
 
   testWidgets('Done closes the Tour on the last card', (tester) async {
     final container = await bootIntoTheTour(tester);
 
     await walkToTheLastStop(tester);
-    await tester.tap(find.text(TourCopy.stopDone));
+    await tester.tap(find.text(AppLocalizationsEn().tourDone));
     await letTheTourRun(tester);
 
     expect(tourIsRunning(tester, container), isFalse);
-    expect(find.text(TourCopy.tabsTitle), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourTabsTitle), findsNothing);
   });
 
   testWidgets('switching tabs mid-Tour ends it', (tester) async {
     final container = await bootIntoTheTour(tester);
-    expect(find.text(TourCopy.todayTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsOneWidget);
 
     // Driven through the router rather than by tapping the tab bar: the Tour's
     // own barrier swallows every tap while a card is up, so navigation is the
@@ -140,7 +146,7 @@ void main() {
     await letTheTourRun(tester);
 
     expect(tourIsRunning(tester, container), isFalse);
-    expect(find.text(TourCopy.todayTitle), findsNothing);
-    expect(find.text(TourCopy.stopNext), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourTodayTitle), findsNothing);
+    expect(find.text(AppLocalizationsEn().tourNext), findsNothing);
   });
 }

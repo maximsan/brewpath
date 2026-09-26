@@ -11,11 +11,14 @@ import 'package:brew_path/l10n/generated/app_localizations.dart';
 /// Which lines the drill picks per deck, length and score.
 abstract final class VocabCopy {
   /// The name of an offered round length, or empty for one not offered.
+  ///
+  /// Indexed off [vocabLengths] rather than matched on the numbers, so the
+  /// three names stay tied to the three lengths the setup screen offers.
   static String lengthName(AppLocalizations strings, int length) =>
-      switch (length) {
-        5 => strings.vocabLengthQuick,
-        8 => strings.vocabLengthStandard,
-        12 => strings.vocabLengthDeep,
+      switch (vocabLengths.indexOf(length)) {
+        0 => strings.vocabLengthQuick,
+        1 => strings.vocabLengthStandard,
+        2 => strings.vocabLengthDeep,
         _ => '',
       };
 

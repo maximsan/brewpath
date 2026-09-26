@@ -1905,6 +1905,348 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your shelf is full. Unlock Plus to save without a limit.'**
   String get savedUpgradeLine;
+
+  /// Tour stop 1, on the Today card. The design's own script (#536).
+  ///
+  /// In en, this message translates to:
+  /// **'Today starts here'**
+  String get tourTodayTitle;
+
+  /// Body of tour stop 1.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next lesson always waits in this card.'**
+  String get tourTodayBody;
+
+  /// Tour stop 2, on the practice area.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice again, any time'**
+  String get tourPracticeTitle;
+
+  /// Body of tour stop 2.
+  ///
+  /// In en, this message translates to:
+  /// **'Lessons you finish collect here, with quick practice formats beside them.'**
+  String get tourPracticeBody;
+
+  /// Tour stop 3, on the header's Saved and Dictionary entries.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved and Dictionary'**
+  String get tourHeaderTitle;
+
+  /// Body of tour stop 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything you bookmark lands behind the ribbon; every coffee term you meet joins the book beside it.'**
+  String get tourHeaderBody;
+
+  /// Tour stop 4, on the bottom tab bar.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your way'**
+  String get tourTabsTitle;
+
+  /// Body of tour stop 4.
+  ///
+  /// In en, this message translates to:
+  /// **'Path holds the whole course, Collection your earned cards, Profile your streak and coffee tree.'**
+  String get tourTabsBody;
+
+  /// The tour card's left-hand button, on every stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get tourSkip;
+
+  /// What Skip is announced as, so one word does not stand alone in a screen reader's list of controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip the introduction'**
+  String get tourSkipSemantics;
+
+  /// The tour card's right-hand button on stops 1–3.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get tourNext;
+
+  /// The same button on the last stop, where advancing is finishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get tourDone;
+
+  /// What assistive technology calls the running tour.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction to Today'**
+  String get tourLayerSemantics;
+
+  /// The App Guide row that replays the tour.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay Today introduction'**
+  String get tourReplayTitle;
+
+  /// Supporting line under the replay row.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs the short first-open tour again'**
+  String get tourReplayBody;
+
+  /// Which tour stop the learner is on.
+  ///
+  /// In en, this message translates to:
+  /// **'{position} of {total}'**
+  String tourStepOf(int position, int total);
+
+  /// Closes a micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get microTipDismiss;
+
+  /// Title of the App Guide screen, and the Settings row that opens it.
+  ///
+  /// In en, this message translates to:
+  /// **'App Guide'**
+  String get appGuideTitle;
+
+  /// Supporting line on the Settings row into the App Guide.
+  ///
+  /// In en, this message translates to:
+  /// **'What each part does, plus the Today intro'**
+  String get appGuideSettingsRowBody;
+
+  /// Sentence under the App Guide's title.
+  ///
+  /// In en, this message translates to:
+  /// **'What each part of BrewPath does, in a line or two.'**
+  String get appGuideLead;
+
+  /// The App Guide section the replay row sits in, at its foot.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction'**
+  String get appGuideIntroSection;
+
+  /// App Guide entry for the Today tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get appGuideTodayTitle;
+
+  /// What the App Guide says the Today tab does.
+  ///
+  /// In en, this message translates to:
+  /// **'Your daily start: the next lesson, any active Coffee Challenge, and practice worth revisiting.'**
+  String get appGuideTodayBody;
+
+  /// App Guide entry for the Path tab.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Path'**
+  String get appGuidePathTitle;
+
+  /// What the App Guide says the Path tab does.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole course in order. Each finished lesson unlocks the next; diamonds along the line are Coffee Challenges.'**
+  String get appGuidePathBody;
+
+  /// App Guide entry for practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice'**
+  String get appGuidePracticeTitle;
+
+  /// What the App Guide says practice does.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay finished lessons or drill the practice formats from Today. Reviews sharpen you but never change your points.'**
+  String get appGuidePracticeBody;
+
+  /// App Guide entry for the brew challenges.
+  ///
+  /// In en, this message translates to:
+  /// **'Brew Challenges'**
+  String get appGuideChallengesTitle;
+
+  /// What the App Guide says the challenges do.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-world brewing tasks. Start one, make it within 48 hours, then log the result on Today to earn its stamp.'**
+  String get appGuideChallengesBody;
+
+  /// App Guide entry for the dictionary and the saved shelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary & Saved'**
+  String get appGuideDictionaryTitle;
+
+  /// What the App Guide says the dictionary and shelf do.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms join the Dictionary as lessons introduce them. Anything you bookmark waits in Saved, at the top of Today.'**
+  String get appGuideDictionaryBody;
+
+  /// App Guide entry for the coffee tree.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Tree'**
+  String get appGuideTreeTitle;
+
+  /// What the App Guide says the tree does.
+  ///
+  /// In en, this message translates to:
+  /// **'Grows a stage as you complete core lessons, from seed to harvest. Only lessons grow it — it lives on your Profile.'**
+  String get appGuideTreeBody;
+
+  /// App Guide entry for the streak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get appGuideStreakTitle;
+
+  /// What the App Guide says the streak does. Rewritten from the design under a product-owner ruling (#338), because its first sentence named one of six qualifying activities and read as the only one.
+  ///
+  /// In en, this message translates to:
+  /// **'One finished activity a day keeps it alive — a lesson, a replay, or practice. Every 7 days in a row earns a streak freeze (you hold one at a time); it covers a missed day automatically.'**
+  String get appGuideStreakBody;
+
+  /// Kicker on the path micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR PATH'**
+  String get microTipPathEyebrow;
+
+  /// One-line claim on the path micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole course, in order'**
+  String get microTipPathTitle;
+
+  /// The rule the path micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Each finished lesson unlocks the next, top to bottom. The diamonds branching off the line are hands-on Coffee Challenges.'**
+  String get microTipPathBody;
+
+  /// Kicker on the brew micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'COFFEE CHALLENGE'**
+  String get microTipBrewEyebrow;
+
+  /// One-line claim on the brew micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'A real brew, not a quiz'**
+  String get microTipBrewTitle;
+
+  /// The rule the brew micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Make it at your own pace within 48 hours, then log the result here on Today. Logging it earns the challenge’s stamp.'**
+  String get microTipBrewBody;
+
+  /// Kicker on the tree micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'COFFEE TREE'**
+  String get microTipTreeEyebrow;
+
+  /// One-line claim on the tree micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tree just grew'**
+  String get microTipTreeTitle;
+
+  /// The rule the tree micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Completing that lesson pushed it toward harvest. Only core lessons grow it — see it any time from your Profile.'**
+  String get microTipTreeBody;
+
+  /// Kicker on the saved micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVED'**
+  String get microTipSavedEyebrow;
+
+  /// One-line claim on the saved micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept for later'**
+  String get microTipSavedTitle;
+
+  /// The rule the saved micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything you save waits behind the ribbon at the top of Today — lessons, terms and guides on one shelf.'**
+  String get microTipSavedBody;
+
+  /// Kicker on the dictionary micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'DICTIONARY'**
+  String get microTipDictionaryEyebrow;
+
+  /// One-line claim on the dictionary micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Every term you’ve met'**
+  String get microTipDictionaryTitle;
+
+  /// The rule the dictionary micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms join your Dictionary as lessons introduce them. Search them here, or drill them with flashcards.'**
+  String get microTipDictionaryBody;
+
+  /// Kicker on the freeze micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'STREAK FREEZE'**
+  String get microTipFreezeEyebrow;
+
+  /// One-line claim on the freeze micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'A safety net you’ve earned'**
+  String get microTipFreezeTitle;
+
+  /// The rule the freeze micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Every 7 streak days in a row earns a freeze; you hold one at a time. Miss a day and it’s spent for you — your streak survives.'**
+  String get microTipFreezeBody;
+
+  /// Kicker on the studio micro-tip. Set upper case by the design.
+  ///
+  /// In en, this message translates to:
+  /// **'STUDIO'**
+  String get microTipStudioEyebrow;
+
+  /// One-line claim on the studio micro-tip.
+  ///
+  /// In en, this message translates to:
+  /// **'Make it yours'**
+  String get microTipStudioTitle;
+
+  /// The rule the studio micro-tip exists to state.
+  ///
+  /// In en, this message translates to:
+  /// **'Dress Roasty and choose your tree’s variety and light. The look you set here applies everywhere in the app.'**
+  String get microTipStudioBody;
+
+  /// What assistive technology is read when a micro-tip appears.
+  ///
+  /// In en, this message translates to:
+  /// **'{eyebrow}. {title}. {body}'**
+  String microTipAnnouncement(String eyebrow, String title, String body);
 }
 
 class _AppLocalizationsDelegate

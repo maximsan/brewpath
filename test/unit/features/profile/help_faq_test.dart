@@ -3,6 +3,7 @@ import 'package:brew_path/features/monetization/domain/free_tier.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/profile/domain/help_faq.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _pitch = PlusPitch(
@@ -87,7 +88,7 @@ void main() {
     test('the App Guide it must not disagree with still says so', () {
       // If the guide is reworded, this fails and the FAQ is rewritten with it
       // rather than drifting apart in silence.
-      final streak = AppGuideCopy.sections.firstWhere(
+      final streak = appGuideSections(AppLocalizationsEn()).firstWhere(
         (section) => section.title == 'Streak',
       );
 

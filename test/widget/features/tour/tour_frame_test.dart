@@ -1,11 +1,11 @@
 import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
-import 'package:brew_path/features/tour/domain/tour_copy.dart';
 import 'package:brew_path/features/tour/domain/tour_geometry.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/today_tour.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
 import 'package:brew_path/features/tour/presentation/tour_frame.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,7 @@ void main() {
     await bootIntoTheTour(tester);
     final first = paintedFrame(tester);
 
-    await tester.tap(find.text(TourCopy.stopNext));
+    await tester.tap(find.text(AppLocalizationsEn().tourNext));
     await letTheTourRun(tester);
 
     expect(paintedFrame(tester), isNot(first));
@@ -81,7 +81,7 @@ void main() {
     await bootIntoTheTour(tester);
     await walkToTheLastStop(tester);
 
-    expect(find.text(TourCopy.tabsTitle), findsOneWidget);
+    expect(find.text(AppLocalizationsEn().tourTabsTitle), findsOneWidget);
     expect(
       paintedFrame(tester),
       anchorRect(tester, TourStep.tabs).inflate(OffTokens.tourFrameInset.value),
@@ -93,7 +93,9 @@ void main() {
     final layerHeight = tester.getSize(find.byType(TodayTour)).height;
 
     // Stop one sits near the top of a tall feed, so the card goes under it.
-    final firstCard = tester.getRect(find.text(TourCopy.todayTitle));
+    final firstCard = tester.getRect(
+      find.text(AppLocalizationsEn().tourTodayTitle),
+    );
     expect(firstCard.top, greaterThan(paintedFrame(tester)!.bottom));
 
     await walkToTheLastStop(tester);
@@ -107,7 +109,7 @@ void main() {
       reason: 'the tab bar is exactly the case the headroom rule is for',
     );
     expect(
-      tester.getRect(find.text(TourCopy.tabsTitle)).bottom,
+      tester.getRect(find.text(AppLocalizationsEn().tourTabsTitle)).bottom,
       lessThan(lastFrame.top),
     );
   });
@@ -124,7 +126,7 @@ void main() {
     // off both screen edges.
     for (final step in [TourStep.today, TourStep.practice]) {
       if (step != TourStep.today) {
-        await tester.tap(find.text(TourCopy.stopNext));
+        await tester.tap(find.text(AppLocalizationsEn().tourNext));
         await letTheTourRun(tester);
       }
       final frame = paintedFrame(tester)!;
@@ -200,7 +202,7 @@ void main() {
     await letTheTourRun(tester);
 
     expect(
-      find.text(TourCopy.todayTitle),
+      find.text(AppLocalizationsEn().tourTodayTitle),
       findsOneWidget,
       reason: 'the tap must not have opened the lesson under the frame',
     );

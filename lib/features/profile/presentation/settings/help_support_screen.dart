@@ -7,7 +7,7 @@ import 'package:brew_path/features/profile/domain/support_links.dart';
 import 'package:brew_path/features/profile/presentation/settings/help_faq_row.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_sub_screen.dart';
-import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,8 +43,8 @@ class _HelpSupportScreenState extends ConsumerState<HelpSupportScreen> {
           label: SettingsCopy.learnTheAppSection,
           children: [
             SettingsNavRow(
-              label: AppGuideCopy.title,
-              sub: AppGuideCopy.settingsRowBody,
+              label: context.strings.appGuideTitle,
+              sub: context.strings.appGuideSettingsRowBody,
               onTap: () => context.pushNamed(AppRoutes.appGuide.name),
             ),
           ],

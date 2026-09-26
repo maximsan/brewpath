@@ -11,6 +11,7 @@ import 'package:brew_path/features/progress/domain/progress_providers.dart';
 import 'package:brew_path/features/progress/domain/streak_status.dart';
 import 'package:brew_path/features/tour/domain/micro_tip.dart';
 import 'package:brew_path/features/tour/presentation/micro_tip_card.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,7 @@ void main() {
   }
 
   Finder tipTitled(MicroTip tip) =>
-      find.widgetWithText(MicroTipCard, tip.title);
+      find.widgetWithText(MicroTipCard, tip.title(AppLocalizationsEn()));
 
   /// The card's X. Found by its place in the card rather than by a tooltip:
   /// the layer draws above the navigator's `Overlay`, so it has none.
@@ -90,8 +91,11 @@ void main() {
     await letTipsSettle(tester);
 
     expect(tipTitled(MicroTip.path), findsOneWidget);
-    expect(find.text(MicroTip.path.eyebrow), findsOneWidget);
-    expect(find.text(MicroTip.path.body), findsOneWidget);
+    expect(
+      find.text(MicroTip.path.eyebrow(AppLocalizationsEn())),
+      findsOneWidget,
+    );
+    expect(find.text(MicroTip.path.body(AppLocalizationsEn())), findsOneWidget);
     expect(
       await tipsSeenOnDisk(),
       contains(MicroTip.path.id),
