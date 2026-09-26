@@ -125,7 +125,7 @@ class _Banner extends StatelessWidget {
   /// What a tap does, said in the design's own words.
   Widget _footer(BuildContext context, Color accent) => Row(
     children: [
-      SmallcapsLabel(context.strings.termOfDayOpenEntry, color: accent),
+      SmallcapsLabel(context.strings.termOpenEntry, color: accent),
       const SizedBox(width: AppSpacing.xs),
       IconMark(AppIcon.arrow, size: _arrowSize, color: accent),
     ],

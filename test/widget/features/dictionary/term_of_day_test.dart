@@ -252,7 +252,7 @@ void main() {
       final term = await _expectedTerm(tester, hasCourse: true);
       await _pumpScreen(tester, hasCourse: true);
 
-      await tester.tap(find.text(AppLocalizationsEn().termOfDayReadFull));
+      await tester.tap(find.text(AppLocalizationsEn().termReadFullEntry));
       await _settle(tester);
 
       expect(find.text('entry:${term.id}'), findsOneWidget);
@@ -267,7 +267,7 @@ void main() {
       final term = await _expectedTerm(tester, hasCourse: false);
       await _pumpScreen(tester, hasCourse: false);
 
-      await tester.tap(find.text(AppLocalizationsEn().termOfDayReadFull));
+      await tester.tap(find.text(AppLocalizationsEn().termReadFullEntry));
       await _settle(tester);
 
       expect(
@@ -286,7 +286,7 @@ void main() {
 
       expect(find.byType(TermOfDayBanner), findsOneWidget);
       expect(
-        find.text(AppLocalizationsEn().termOfDayOpenEntry.toUpperCase()),
+        find.text(AppLocalizationsEn().termOpenEntry.toUpperCase()),
         findsOneWidget,
       );
     });
@@ -312,12 +312,12 @@ void main() {
       );
 
       await tester.tap(
-        find.text(AppLocalizationsEn().termOfDayOpenEntry.toUpperCase()),
+        find.text(AppLocalizationsEn().termOpenEntry.toUpperCase()),
       );
       await _settle(tester);
 
       expect(find.byType(TermOfDayScreen), findsOneWidget);
-      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().termReadFullEntry), findsOneWidget);
       expect(
         find.descendant(
           of: find.byType(TermOfDayScreen),

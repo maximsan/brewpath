@@ -1,6 +1,7 @@
 import 'package:brew_path/core/icons/outward_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -45,7 +46,7 @@ class _TermSourcesSectionState extends ConsumerState<TermSourcesSection> {
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          const SmallcapsLabel('Sources'),
+          SmallcapsLabel(context.strings.termSources),
           const SizedBox(width: AppSpacing.xs),
           Text(
             '$count',
@@ -57,7 +58,7 @@ class _TermSourcesSectionState extends ConsumerState<TermSourcesSection> {
           ),
         ],
       ),
-      semanticsLabel: 'Sources, $count',
+      semanticsLabel: context.strings.termSourcesSpoken(count),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -107,7 +108,9 @@ class _SourceRow extends StatelessWidget {
 
     return Semantics(
       link: opens,
-      label: opens ? '${source.label}, opens in the browser' : source.label,
+      label: opens
+          ? context.strings.termSourceOpens(source.label)
+          : source.label,
       excludeSemantics: true,
       child: InkWell(
         onTap: onOpen,

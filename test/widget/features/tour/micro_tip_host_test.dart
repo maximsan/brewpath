@@ -71,7 +71,7 @@ void main() {
   }
 
   Finder tipTitled(MicroTip tip) =>
-      find.widgetWithText(MicroTipCard, tip.title(AppLocalizationsEn()));
+      find.widgetWithText(MicroTipCard, tip.copy(AppLocalizationsEn()).title);
 
   /// The card's X. Found by its place in the card rather than by a tooltip:
   /// the layer draws above the navigator's `Overlay`, so it has none.
@@ -92,10 +92,13 @@ void main() {
 
     expect(tipTitled(MicroTip.path), findsOneWidget);
     expect(
-      find.text(MicroTip.path.eyebrow(AppLocalizationsEn())),
+      find.text(MicroTip.path.copy(AppLocalizationsEn()).eyebrow),
       findsOneWidget,
     );
-    expect(find.text(MicroTip.path.body(AppLocalizationsEn())), findsOneWidget);
+    expect(
+      find.text(MicroTip.path.copy(AppLocalizationsEn()).body),
+      findsOneWidget,
+    );
     expect(
       await tipsSeenOnDisk(),
       contains(MicroTip.path.id),

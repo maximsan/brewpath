@@ -15,70 +15,79 @@ void main() {
   });
 
   test('every tip carries the copy the ruling fixed', () {
-    expect(MicroTip.path.eyebrow(AppLocalizationsEn()), 'YOUR PATH');
+    expect(MicroTip.path.copy(AppLocalizationsEn()).eyebrow, 'YOUR PATH');
     expect(
-      MicroTip.path.title(AppLocalizationsEn()),
+      MicroTip.path.copy(AppLocalizationsEn()).title,
       'The whole course, in order',
     );
     expect(
-      MicroTip.path.body(AppLocalizationsEn()),
+      MicroTip.path.copy(AppLocalizationsEn()).body,
       'Each finished lesson unlocks the next, top to bottom. The diamonds '
       'branching off the line are hands-on Coffee Challenges.',
     );
 
-    expect(MicroTip.brew.eyebrow(AppLocalizationsEn()), 'COFFEE CHALLENGE');
     expect(
-      MicroTip.brew.title(AppLocalizationsEn()),
+      MicroTip.brew.copy(AppLocalizationsEn()).eyebrow,
+      'COFFEE CHALLENGE',
+    );
+    expect(
+      MicroTip.brew.copy(AppLocalizationsEn()).title,
       'A real brew, not a quiz',
     );
     expect(
-      MicroTip.brew.body(AppLocalizationsEn()),
+      MicroTip.brew.copy(AppLocalizationsEn()).body,
       'Make it at your own pace within 48 hours, then log the result here on '
       'Today. Logging it earns the challenge’s stamp.',
     );
 
-    expect(MicroTip.tree.eyebrow(AppLocalizationsEn()), 'COFFEE TREE');
-    expect(MicroTip.tree.title(AppLocalizationsEn()), 'Your tree just grew');
+    expect(MicroTip.tree.copy(AppLocalizationsEn()).eyebrow, 'COFFEE TREE');
     expect(
-      MicroTip.tree.body(AppLocalizationsEn()),
+      MicroTip.tree.copy(AppLocalizationsEn()).title,
+      'Your tree just grew',
+    );
+    expect(
+      MicroTip.tree.copy(AppLocalizationsEn()).body,
       'Completing that lesson pushed it toward harvest. Only core lessons '
       'grow it — see it any time from your Profile.',
     );
 
-    expect(MicroTip.saved.eyebrow(AppLocalizationsEn()), 'SAVED');
-    expect(MicroTip.saved.title(AppLocalizationsEn()), 'Kept for later');
+    expect(MicroTip.saved.copy(AppLocalizationsEn()).eyebrow, 'SAVED');
+    expect(MicroTip.saved.copy(AppLocalizationsEn()).title, 'Kept for later');
     expect(
-      MicroTip.saved.body(AppLocalizationsEn()),
+      MicroTip.saved.copy(AppLocalizationsEn()).body,
       'Everything you save waits behind the ribbon at the top of Today — '
       'lessons, terms and guides on one shelf.',
     );
 
-    expect(MicroTip.dictionary.eyebrow(AppLocalizationsEn()), 'DICTIONARY');
     expect(
-      MicroTip.dictionary.title(AppLocalizationsEn()),
+      MicroTip.dictionary.copy(AppLocalizationsEn()).eyebrow,
+      'DICTIONARY',
+    );
+    expect(
+      MicroTip.dictionary.copy(AppLocalizationsEn()).title,
       'Every term you’ve met',
     );
     expect(
-      MicroTip.dictionary.body(AppLocalizationsEn()),
+      MicroTip.dictionary.copy(AppLocalizationsEn()).body,
       'Terms join your Dictionary as lessons introduce them. Search them '
       'here, or drill them with flashcards.',
     );
 
-    expect(MicroTip.freeze.eyebrow(AppLocalizationsEn()), 'STREAK FREEZE');
+    expect(MicroTip.freeze.copy(AppLocalizationsEn()).eyebrow, 'STREAK FREEZE');
     expect(
-      MicroTip.freeze.title(AppLocalizationsEn()),
+      MicroTip.freeze.copy(AppLocalizationsEn()).title,
       'A safety net you’ve earned',
     );
     expect(
-      MicroTip.freeze.body(AppLocalizationsEn()),
+      MicroTip.freeze.copy(AppLocalizationsEn()).body,
       'Every 7 streak days in a row earns a freeze; you hold one at a time. '
       'Miss a day and it’s spent for you — your streak survives.',
     );
 
-    expect(MicroTip.studio.eyebrow(AppLocalizationsEn()), 'STUDIO');
-    expect(MicroTip.studio.title(AppLocalizationsEn()), 'Make it yours');
+    expect(MicroTip.studio.copy(AppLocalizationsEn()).eyebrow, 'STUDIO');
+    expect(MicroTip.studio.copy(AppLocalizationsEn()).title, 'Make it yours');
     expect(
-      MicroTip.studio.body(AppLocalizationsEn()),
+      MicroTip.studio.copy(AppLocalizationsEn()).body,
       'Dress Roasty and choose your tree’s variety and light. The look '
       'you set here applies everywhere in the app.',
     );
@@ -88,10 +97,9 @@ void main() {
     final strings = AppLocalizationsEn();
     const tip = MicroTip.saved;
 
-    expect(
-      tip.announcement(strings),
-      '${tip.eyebrow(strings)}. ${tip.title(strings)}. ${tip.body(strings)}',
-    );
+    final (:eyebrow, :title, :body) = tip.copy(strings);
+
+    expect(tip.announcement(strings), '$eyebrow. $title. $body');
   });
 
   group('the stored seen list', () {

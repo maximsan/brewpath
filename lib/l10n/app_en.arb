@@ -469,7 +469,6 @@
     }
   },
 
-
   "tastefixStartingPoint": "STARTING POINT",
   "@tastefixStartingPoint": {
     "description": "Kicker over the cup as it was brewed. Set upper case by the design."
@@ -1358,14 +1357,14 @@
     "description": "Name of the daily term drill, on its banner and its screen."
   },
 
-  "termOfDayOpenEntry": "Open entry",
-  "@termOfDayOpenEntry": {
-    "description": "Footer on the Term of the Day banner, saying what tapping it does."
+  "termOpenEntry": "Open entry",
+  "@termOpenEntry": {
+    "description": "Says what opening a term does, where there is no full entry to promise. On the Term of the Day banner, and on the peek sheet for a learner without the course."
   },
 
-  "termOfDayReadFull": "Read the full entry",
-  "@termOfDayReadFull": {
-    "description": "Action on the Term of the Day screen. It promises the whole entry, so it raises the gate for a learner without the course."
+  "termReadFullEntry": "Read the full entry",
+  "@termReadFullEntry": {
+    "description": "Promises the whole entry, so it raises the gate for a learner without the course. Read on three surfaces — the Term of the Day screen, a gated term entry, and the peek sheet — which say the same words because they promise the same thing."
   },
 
   "termOfDayBack": "Back",
@@ -1381,19 +1380,6 @@
   "termEntryComesWithCourse": "Comes with the full course.",
   "@termEntryComesWithCourse": {
     "description": "Says what would open a gated term entry."
-  },
-
-  "termEntryGateSemantics": "{action}. {offer}",
-  "@termEntryGateSemantics": {
-    "description": "What a screen reader is told the gated row does and what opens it.",
-    "placeholders": {
-      "action": {
-        "type": "String"
-      },
-      "offer": {
-        "type": "String"
-      }
-    }
   },
 
   "searchResultCount": "{found, plural, =1{{found} RESULT} other{{found} RESULTS}}",
@@ -1456,14 +1442,14 @@
     "description": "The empty state's one action."
   },
 
-  "flashcardsFront": "Term",
-  "@flashcardsFront": {
-    "description": "Label over a flashcard's front face."
+  "flashcardsFrontFace": "Term",
+  "@flashcardsFrontFace": {
+    "description": "Label over a flashcard's front face, which shows the term."
   },
 
-  "flashcardsBack": "Definition",
-  "@flashcardsBack": {
-    "description": "Label over a flashcard's back face."
+  "flashcardsBackFace": "Definition",
+  "@flashcardsBackFace": {
+    "description": "Label over a flashcard's back face, which shows the definition."
   },
 
   "flashcardsTapToReveal": "Tap to reveal",
@@ -1759,13 +1745,10 @@
     }
   },
 
-  "vocabVerdictWrong": "{notQuite} — it's {answer}",
+  "vocabVerdictWrong": "Not quite — it's {answer}",
   "@vocabVerdictWrong": {
-    "description": "Verdict over a missed question. Names the term, which is the whole teaching moment.",
+    "description": "Verdict over a missed question. Names the term, which is the whole teaching moment. Opens on the same words as every other wrong answer, spelled out here so a translator has the whole sentence.",
     "placeholders": {
-      "notQuite": {
-        "type": "String"
-      },
       "answer": {
         "type": "String"
       }
@@ -1933,12 +1916,12 @@
 
   "savedEntryTitle": "Saved",
   "@savedEntryTitle": {
-    "description": "Title of the Saved entry card."
+    "description": "Kicker over the Saved entry card on Profile — the small line above its heading."
   },
 
   "savedEntrySubtitle": "Your favorites",
   "@savedEntrySubtitle": {
-    "description": "Subtitle of the Saved entry card."
+    "description": "Heading on the Saved entry card on Profile, under its kicker."
   },
 
   "savedEntryCount": "{count} saved to revisit",
@@ -2091,7 +2074,6 @@
   "@appGuideLead": {
     "description": "Sentence under the App Guide's title."
   },
-
 
   "appGuideIntroSection": "Introduction",
   "@appGuideIntroSection": {
@@ -2273,18 +2255,277 @@
     "description": "The rule the studio micro-tip exists to state."
   },
 
-  "microTipAnnouncement": "{eyebrow}. {title}. {body}",
-  "@microTipAnnouncement": {
-    "description": "What assistive technology is read when a micro-tip appears.",
+  "dictionaryTitle": "Coffee Dictionary",
+  "@dictionaryTitle": {
+    "description": "Title of the dictionary index."
+  },
+
+  "dictionaryAllCategories": "All categories",
+  "@dictionaryAllCategories": {
+    "description": "Heading over the whole dictionary index, before a category is chosen."
+  },
+
+  "dictionaryLoading": "Loading the dictionary",
+  "@dictionaryLoading": {
+    "description": "Announced while the dictionary resolves."
+  },
+
+  "dictionaryLoadFailed": "The dictionary could not be loaded",
+  "@dictionaryLoadFailed": {
+    "description": "Shown when the dictionary cannot be read."
+  },
+
+  "dictionarySearchHint": "Search terms, e.g. crema, bloom…",
+  "@dictionarySearchHint": {
+    "description": "Placeholder in the dictionary's search field."
+  },
+
+  "dictionarySwipeToSave": "Swipe a term right to save it",
+  "@dictionarySwipeToSave": {
+    "description": "First-run hint on the dictionary list."
+  },
+
+  "dictionaryCategorySpoken": "{label}, {count} terms. {summary}",
+  "@dictionaryCategorySpoken": {
+    "description": "What a screen reader is told about a dictionary category.",
     "placeholders": {
-      "eyebrow": {
+      "label": {
         "type": "String"
       },
+      "count": {
+        "type": "int"
+      },
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+
+  "statusLearned": "Learned",
+  "@statusLearned": {
+    "description": "A term the learner's lessons have taught."
+  },
+
+  "statusToLearn": "To learn",
+  "@statusToLearn": {
+    "description": "A term a lesson ahead of the learner will teach."
+  },
+
+  "statusReference": "Reference",
+  "@statusReference": {
+    "description": "A term no lesson teaches, kept for looking up."
+  },
+
+  "statusPathLearned": "Where you learned it",
+  "@statusPathLearned": {
+    "description": "Heading over the lesson that taught a term."
+  },
+
+  "statusPathToLearn": "Where you'll learn it",
+  "@statusPathToLearn": {
+    "description": "Heading over the lesson that will teach a term."
+  },
+
+  "statusPathReference": "Not on the path",
+  "@statusPathReference": {
+    "description": "Heading on a term no lesson teaches."
+  },
+
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Dictionary filter showing every term."
+  },
+
+  "termDetailNotInDictionary": "Not in the dictionary",
+  "@termDetailNotInDictionary": {
+    "description": "Title when the term that was opened no longer exists."
+  },
+
+  "termDetailLoading": "Loading the term",
+  "@termDetailLoading": {
+    "description": "Announced while a term's entry resolves."
+  },
+
+  "termDetailLoadFailed": "The term could not be loaded",
+  "@termDetailLoadFailed": {
+    "description": "Shown when a term's entry cannot be read."
+  },
+
+  "termDetailMissing": "That term is not in the dictionary.",
+  "@termDetailMissing": {
+    "description": "Body when the term that was opened no longer exists."
+  },
+
+  "termOfDayLoading": "Loading today's term",
+  "@termOfDayLoading": {
+    "description": "Announced while Term of the Day resolves."
+  },
+
+  "termOfDayLoadFailed": "Today's term could not be loaded",
+  "@termOfDayLoadFailed": {
+    "description": "Shown when Term of the Day cannot be read."
+  },
+
+  "termOfDayNone": "There is no term for today.",
+  "@termOfDayNone": {
+    "description": "Shown when the pool has no term to offer today."
+  },
+
+  "termReferenceNote": "No lesson covers this one — it's here for when you meet it on a bag or a menu.",
+  "@termReferenceNote": {
+    "description": "What a reference-only term says instead of naming a lesson. The dash means not on the path at all; promising a lesson here would promise one the course does not have."
+  },
+
+  "termRelated": "Related terms",
+  "@termRelated": {
+    "description": "Heading over the terms an entry points at."
+  },
+
+  "termKnowledgeCheck": "Knowledge check",
+  "@termKnowledgeCheck": {
+    "description": "Heading over an entry's self-check."
+  },
+
+  "termLessonOpens": "{title}, opens the lesson",
+  "@termLessonOpens": {
+    "description": "What a screen reader is told about a reachable lesson row on an entry.",
+    "placeholders": {
       "title": {
         "type": "String"
-      },
-      "body": {
+      }
+    }
+  },
+
+  "termLessonLocked": "{title}, locked",
+  "@termLessonLocked": {
+    "description": "What a screen reader is told about a lesson row the learner cannot open.",
+    "placeholders": {
+      "title": {
         "type": "String"
+      }
+    }
+  },
+
+  "termSpoken": "{term}, {status}",
+  "@termSpoken": {
+    "description": "What a screen reader is told about a term row and its status.",
+    "placeholders": {
+      "term": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+
+  "termSave": "Save",
+  "@termSave": {
+    "description": "Saves a term from its entry."
+  },
+
+  "termAlreadySaved": "Already saved",
+  "@termAlreadySaved": {
+    "description": "Says a term is already on the saved shelf."
+  },
+
+  "termSelfCheckCorrect": "Correct",
+  "@termSelfCheckCorrect": {
+    "description": "Verdict when a term's self-check was answered right."
+  },
+
+  "termSelfCheckChoiceCorrect": "{text}, correct",
+  "@termSelfCheckChoiceCorrect": {
+    "description": "What a screen reader is told about the right choice on a term's self-check.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+
+  "termSelfCheckChoiceIncorrect": "{text}, incorrect",
+  "@termSelfCheckChoiceIncorrect": {
+    "description": "What a screen reader is told about a wrong choice on a term's self-check.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+
+  "termSources": "Sources",
+  "@termSources": {
+    "description": "Heading over where an entry's facts came from."
+  },
+
+  "termSourcesSpoken": "Sources, {count}",
+  "@termSourcesSpoken": {
+    "description": "What a screen reader is told the sources block holds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "termSourceOpens": "{label}, opens in the browser",
+  "@termSourceOpens": {
+    "description": "What a screen reader is told a source link does.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "termPronounce": "Pronounce {word}",
+  "@termPronounce": {
+    "description": "What a screen reader is told the pronounce control would say.",
+    "placeholders": {
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+
+  "flashcardsSwipeHint": "Swipe the card left for the next term",
+  "@flashcardsSwipeHint": {
+    "description": "First-run hint on the flashcard deck."
+  },
+
+  "flashcardsFaceSpoken": "{term}. {explanation}",
+  "@flashcardsFaceSpoken": {
+    "description": "What a screen reader is told a revealed flashcard says.",
+    "placeholders": {
+      "term": {
+        "type": "String"
+      },
+      "explanation": {
+        "type": "String"
+      }
+    }
+  },
+
+  "flashcardsDeckLoading": "Loading your deck",
+  "@flashcardsDeckLoading": {
+    "description": "Announced while the flashcard deck resolves."
+  },
+
+  "flashcardsDeckLoadFailed": "Your deck could not be loaded",
+  "@flashcardsDeckLoadFailed": {
+    "description": "Shown when the flashcard deck cannot be read."
+  },
+
+  "flashcardsCardOf": "Card {card} of {total}",
+  "@flashcardsCardOf": {
+    "description": "What a screen reader is told about the learner's place in the deck.",
+    "placeholders": {
+      "card": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
       }
     }
   }

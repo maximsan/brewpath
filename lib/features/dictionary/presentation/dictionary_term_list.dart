@@ -11,6 +11,7 @@ import 'package:brew_path/features/dictionary/domain/save_swipe_nudge.dart';
 import 'package:brew_path/features/dictionary/presentation/term_row.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -37,9 +38,6 @@ class DictionaryTermList extends ConsumerWidget {
 
   /// How far the hint nudges a row, rightwards — `nudge: 40`.
   static const double _nudge = 40;
-
-  /// The hint's words.
-  static const String hintLabel = 'Swipe a term right to save it';
 
   /// The whole view, for each term's status.
   final DictionaryView view;
@@ -100,7 +98,7 @@ class DictionaryTermList extends ConsumerWidget {
           SwipeHintCaption(
             show: hint.showing,
             aim: SwipeAim.back,
-            label: hintLabel,
+            label: context.strings.dictionarySwipeToSave,
           ),
         for (final entry in groups.entries) ...[
           if (grouped) ...[

@@ -1,6 +1,9 @@
 import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/storage/id_set.dart';
 
+/// The three lines one micro-tip draws.
+typedef MicroTipCopy = ({String eyebrow, String title, String body});
+
 /// The seven micro-tips, with the copy each one carries.
 ///
 /// One small card explaining one feature the first time it matters, shown once
@@ -51,45 +54,57 @@ enum MicroTip {
   /// silently re-arm a tip on every device that has already seen it.
   final String id;
 
-  /// The smallcaps line above the title.
-  String eyebrow(AppLocalizations strings) => switch (this) {
-    MicroTip.path => strings.microTipPathEyebrow,
-    MicroTip.brew => strings.microTipBrewEyebrow,
-    MicroTip.tree => strings.microTipTreeEyebrow,
-    MicroTip.saved => strings.microTipSavedEyebrow,
-    MicroTip.dictionary => strings.microTipDictionaryEyebrow,
-    MicroTip.freeze => strings.microTipFreezeEyebrow,
-    MicroTip.studio => strings.microTipStudioEyebrow,
-  };
-
-  /// The tip's one-line claim.
-  String title(AppLocalizations strings) => switch (this) {
-    MicroTip.path => strings.microTipPathTitle,
-    MicroTip.brew => strings.microTipBrewTitle,
-    MicroTip.tree => strings.microTipTreeTitle,
-    MicroTip.saved => strings.microTipSavedTitle,
-    MicroTip.dictionary => strings.microTipDictionaryTitle,
-    MicroTip.freeze => strings.microTipFreezeTitle,
-    MicroTip.studio => strings.microTipStudioTitle,
-  };
-
-  /// The rule the tip exists to state.
-  String body(AppLocalizations strings) => switch (this) {
-    MicroTip.path => strings.microTipPathBody,
-    MicroTip.brew => strings.microTipBrewBody,
-    MicroTip.tree => strings.microTipTreeBody,
-    MicroTip.saved => strings.microTipSavedBody,
-    MicroTip.dictionary => strings.microTipDictionaryBody,
-    MicroTip.freeze => strings.microTipFreezeBody,
-    MicroTip.studio => strings.microTipStudioBody,
+  /// The three lines this tip draws.
+  ///
+  /// One lookup rather than a switch per line, so an eighth tip is a case here
+  /// and nowhere else.
+  MicroTipCopy copy(AppLocalizations strings) => switch (this) {
+    MicroTip.path => (
+      eyebrow: strings.microTipPathEyebrow,
+      title: strings.microTipPathTitle,
+      body: strings.microTipPathBody,
+    ),
+    MicroTip.brew => (
+      eyebrow: strings.microTipBrewEyebrow,
+      title: strings.microTipBrewTitle,
+      body: strings.microTipBrewBody,
+    ),
+    MicroTip.tree => (
+      eyebrow: strings.microTipTreeEyebrow,
+      title: strings.microTipTreeTitle,
+      body: strings.microTipTreeBody,
+    ),
+    MicroTip.saved => (
+      eyebrow: strings.microTipSavedEyebrow,
+      title: strings.microTipSavedTitle,
+      body: strings.microTipSavedBody,
+    ),
+    MicroTip.dictionary => (
+      eyebrow: strings.microTipDictionaryEyebrow,
+      title: strings.microTipDictionaryTitle,
+      body: strings.microTipDictionaryBody,
+    ),
+    MicroTip.freeze => (
+      eyebrow: strings.microTipFreezeEyebrow,
+      title: strings.microTipFreezeTitle,
+      body: strings.microTipFreezeBody,
+    ),
+    MicroTip.studio => (
+      eyebrow: strings.microTipStudioEyebrow,
+      title: strings.microTipStudioTitle,
+      body: strings.microTipStudioBody,
+    ),
   };
 
   /// What assistive technology is read when the card appears.
-  String announcement(AppLocalizations strings) => strings.microTipAnnouncement(
-    eyebrow(strings),
-    title(strings),
-    body(strings),
-  );
+  ///
+  /// Joined here rather than in the `.arb`: the three lines are separately
+  /// translated, and a key holding only the full stops between them would
+  /// give a translator nothing to translate.
+  String announcement(AppLocalizations strings) {
+    final (:eyebrow, :title, :body) = copy(strings);
+    return '$eyebrow. $title. $body';
+  }
 }
 
 /// The seen list as it is stored: ids separated by commas.

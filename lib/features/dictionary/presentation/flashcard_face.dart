@@ -150,7 +150,7 @@ class FlashcardFront extends StatelessWidget {
 
     return FlashcardFace(
       category: category,
-      label: context.strings.flashcardsFront,
+      label: context.strings.flashcardsFrontFace,
       foot: context.strings.flashcardsTapToReveal,
       isFront: true,
       child: Column(
@@ -203,7 +203,7 @@ class FlashcardBack extends StatelessWidget {
 
     return FlashcardFace(
       category: category,
-      label: context.strings.flashcardsBack,
+      label: context.strings.flashcardsBackFace,
       foot: context.strings.flashcardsTapToSeeTerm,
       isFront: false,
       child: Column(

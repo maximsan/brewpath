@@ -117,21 +117,23 @@ class _Copy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final copy = tip.copy(context.strings);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        SmallcapsLabel(tip.eyebrow(context.strings), color: mood.accentText),
+        SmallcapsLabel(copy.eyebrow, color: mood.accentText),
         SizedBox(height: OffTokens.microTipEyebrowGap.value),
         Text(
-          tip.title(context.strings),
+          copy.title,
           style: AppText.support(color: mood.ink, face: AppFace.control),
         ),
         SizedBox(height: OffTokens.microTipTitleGap.value),
         // Prose set at the label step, so it takes neither that step's
         // smallcaps tracking nor its heading leading.
         Text(
-          tip.body(context.strings),
+          copy.body,
           style: AppText.label(mood: mood).copyWith(
             letterSpacing: OffTokens.microTipBodyTracking.value,
             height: OffTokens.microTipBodyLeading.value,

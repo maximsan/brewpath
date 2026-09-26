@@ -22,14 +22,6 @@ import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// What a reference-only term says instead of naming a lesson.
-///
-/// The dash means *not on the path at all* — offering "you'll learn it in…"
-/// here would promise a lesson the course does not have.
-const _referenceNote =
-    "No lesson covers this one — it's here for when you meet it on a bag or a "
-    'menu.';
-
 /// A term's entry, shared by the full screen and the peek sheet.
 ///
 /// What it renders depends on the tier (`docs/decisions.md` §12): without the
@@ -105,7 +97,7 @@ class TermEntryBody extends ConsumerWidget {
         if (onRelatedTap != null && related.isNotEmpty) ...[
           const SizedBox(height: AppSpacing.lg),
           _Block(
-            label: 'Related terms',
+            label: context.strings.termRelated,
             child: _RelatedChips(related: related, onTap: onRelatedTap!),
           ),
         ],
@@ -113,7 +105,7 @@ class TermEntryBody extends ConsumerWidget {
           const SizedBox(height: AppSpacing.lg),
           _Card(
             child: _Block(
-              label: 'Knowledge check',
+              label: context.strings.termKnowledgeCheck,
               child: TermSelfCheck(check: term.check!),
             ),
           ),
@@ -230,8 +222,11 @@ class _PathBlock extends ConsumerWidget {
 
     if (status == DictionaryStatus.reference) {
       return _Block(
-        label: status.pathLabel,
-        child: Text(_referenceNote, style: body?.copyWith(color: mood.inkMute)),
+        label: status.pathLabel(context.strings),
+        child: Text(
+          context.strings.termReferenceNote,
+          style: body?.copyWith(color: mood.inkMute),
+        ),
       );
     }
 
@@ -246,13 +241,15 @@ class _PathBlock extends ConsumerWidget {
         : () => unawaited(context.pushLessonAskingReview(id));
 
     return _Block(
-      label: status.pathLabel,
+      label: status.pathLabel(context.strings),
       child: Semantics(
         // Only a button once there is an id to open: before the place
         // resolves there is nothing to press, and saying otherwise is the
         // announcement this row is being fixed for (#487).
         button: open != null,
-        label: '$title, ${accessible ? 'opens the lesson' : 'locked'}',
+        label: accessible
+            ? context.strings.termLessonOpens(title)
+            : context.strings.termLessonLocked(title),
         onTap: open,
         excludeSemantics: true,
         child: InkWell(

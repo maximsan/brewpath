@@ -675,7 +675,7 @@ void main() {
 
       expect(find.text(brief.shortExplanation), findsOneWidget);
       expect(find.byType(TermFullEntryGate), findsNothing);
-      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsNothing);
+      expect(find.text(AppLocalizationsEn().termReadFullEntry), findsNothing);
     });
 
     testWidgets('a related reference term is not offered', (tester) async {
@@ -698,7 +698,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text(AppLocalizationsEn().termOfDayReadFull));
+      await tester.tap(find.text(AppLocalizationsEn().termReadFullEntry));
       await tester.pumpAndSettle();
 
       expect(find.text(PaywallCopy.gateTitle), findsOneWidget);
@@ -721,10 +721,8 @@ void main() {
       final semantics = tester.getSemantics(find.byType(TermFullEntryGate));
       expect(
         semantics.label,
-        AppLocalizationsEn().termEntryGateSemantics(
-          AppLocalizationsEn().termOfDayReadFull,
-          AppLocalizationsEn().termEntryComesWithCourse,
-        ),
+        '${AppLocalizationsEn().termReadFullEntry}. '
+        '${AppLocalizationsEn().termEntryComesWithCourse}',
       );
       expect(semantics.flagsCollection.isButton, isTrue);
     });
@@ -754,10 +752,10 @@ void main() {
       // the page says what it is.
       expect(find.byType(TermFullEntryGate), findsOneWidget);
       expect(
-        find.text(AppLocalizationsEn().termOfDayOpenEntry),
+        find.text(AppLocalizationsEn().termOpenEntry),
         findsOneWidget,
       );
-      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().termReadFullEntry), findsOneWidget);
       expect(find.text('Roughly 60% of world coffee.'), findsNothing);
     });
   });
@@ -771,7 +769,7 @@ void main() {
       expect(find.text('KNOWLEDGE CHECK'), findsOneWidget);
       expect(find.text('SOURCES'), findsOneWidget);
       expect(find.byType(TermFullEntryGate), findsNothing);
-      expect(find.text(AppLocalizationsEn().termOfDayReadFull), findsNothing);
+      expect(find.text(AppLocalizationsEn().termReadFullEntry), findsNothing);
     });
   });
 }

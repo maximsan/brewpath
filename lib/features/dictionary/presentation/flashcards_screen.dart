@@ -143,11 +143,11 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
         padding: FloatTopbar.barRoom(context),
         child: deck.when(
           loading: () => Semantics(
-            label: 'Loading your deck',
+            label: context.strings.flashcardsDeckLoading,
             child: const LoadingIndicator(),
           ),
           error: (error, _) => Semantics(
-            label: 'Your deck could not be loaded',
+            label: context.strings.flashcardsDeckLoadFailed,
             child: ErrorView(message: '$error'),
           ),
           data: (cards) => _body(cards, round, pools.asData?.value),
@@ -164,7 +164,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     return RoastMeter(
       position: card,
       total: round.length,
-      semanticsLabel: 'Card $card of ${round.length}',
+      semanticsLabel: context.strings.flashcardsCardOf(card, round.length),
     );
   }
 

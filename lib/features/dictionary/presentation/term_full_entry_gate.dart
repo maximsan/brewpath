@@ -35,10 +35,9 @@ class TermFullEntryGate extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: context.strings.termEntryGateSemantics(
-        context.strings.termOfDayReadFull,
-        context.strings.termEntryComesWithCourse,
-      ),
+      label:
+          '${context.strings.termReadFullEntry}. '
+          '${context.strings.termEntryComesWithCourse}',
       onTap: openGate,
       excludeSemantics: true,
       child: InkWell(
@@ -61,7 +60,7 @@ class TermFullEntryGate extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      context.strings.termOfDayReadFull,
+                      context.strings.termReadFullEntry,
                       style: AppText.body(mood: mood, face: AppFace.control),
                     ),
                     const SizedBox(height: AppSpacing.xxs),

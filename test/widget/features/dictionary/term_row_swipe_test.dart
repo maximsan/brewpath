@@ -12,6 +12,7 @@ import 'package:brew_path/features/dictionary/presentation/term_save_track.dart'
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
@@ -105,8 +106,8 @@ void main() {
 
   String label(WidgetTester tester) =>
       tester.widgetList<TermSaveTrack>(find.byType(TermSaveTrack)).first.isSaved
-      ? TermSaveTrack.alreadySaved
-      : TermSaveTrack.save;
+      ? AppLocalizationsEn().termAlreadySaved
+      : AppLocalizationsEn().termSave;
 
   group('swiping a row right', () {
     testWidgets('saves an unsaved term', (tester) async {
@@ -262,7 +263,7 @@ void main() {
     testWidgets('says already saved rather than save', (tester) async {
       await pump(tester, [_term('crema')], saved: const {'crema'});
 
-      expect(label(tester), TermSaveTrack.alreadySaved);
+      expect(label(tester), AppLocalizationsEn().termAlreadySaved);
       expect(find.text('ALREADY SAVED'), findsOneWidget);
     });
 
@@ -306,7 +307,7 @@ void main() {
     testWidgets('an unsaved row says save', (tester) async {
       await pump(tester, [_term('crema')]);
 
-      expect(label(tester), TermSaveTrack.save);
+      expect(label(tester), AppLocalizationsEn().termSave);
       expect(find.text('SAVE'), findsOneWidget);
     });
 
@@ -409,7 +410,7 @@ void main() {
 
       expect(find.byType(SwipeHintCaption), findsOneWidget);
       expect(
-        find.text(DictionaryTermList.hintLabel.toUpperCase()),
+        find.text(AppLocalizationsEn().dictionarySwipeToSave.toUpperCase()),
         findsOneWidget,
       );
       await tester.pumpAndSettle();

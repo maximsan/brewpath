@@ -74,7 +74,7 @@ abstract final class VocabCopy {
     required bool isCorrect,
   }) => isCorrect
       ? strings.vocabCorrectVerdict
-      : strings.vocabVerdictWrong(strings.verdictNotQuite, answer);
+      : strings.vocabVerdictWrong(answer);
 
   /// What the score adds about the review deck, for a drill drawn from
   /// [fromReviewDeck] that missed [count] terms.

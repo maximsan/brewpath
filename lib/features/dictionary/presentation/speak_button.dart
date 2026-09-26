@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:brew_path/features/dictionary/presentation/speaker_mark.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/services/speech/speech_providers.dart';
 import 'package:brew_path/services/speech/speech_service.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
@@ -95,7 +96,7 @@ class _SpeakChipState extends ConsumerState<_SpeakChip> {
 
     return Semantics(
       button: true,
-      label: 'Pronounce ${widget.word}',
+      label: context.strings.termPronounce(widget.word),
       onTap: _speak,
       excludeSemantics: true,
       child: InkWell(

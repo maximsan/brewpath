@@ -1,4 +1,6 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -31,11 +33,12 @@ class DictionaryFilterControl extends StatelessWidget {
   /// Called with the filter the learner picked.
   final ValueChanged<DictionaryFilter> onSelected;
 
-  static String _labelFor(DictionaryFilter filter) => switch (filter) {
-    DictionaryFilter.all => 'All',
-    DictionaryFilter.learned => 'Learned',
-    DictionaryFilter.toLearn => 'To learn',
-  };
+  static String _labelFor(AppLocalizations strings, DictionaryFilter filter) =>
+      switch (filter) {
+        DictionaryFilter.all => strings.filterAll,
+        DictionaryFilter.learned => strings.statusLearned,
+        DictionaryFilter.toLearn => strings.statusToLearn,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +71,11 @@ class DictionaryFilterControl extends StatelessWidget {
               value: filter,
               // Uppercase is the type rule, not the name: announced as written.
               label: Semantics(
-                label: _labelFor(filter),
+                label: _labelFor(context.strings, filter),
                 excludeSemantics: true,
-                child: Text(_labelFor(filter).toUpperCase()),
+                child: Text(
+                  _labelFor(context.strings, filter).toUpperCase(),
+                ),
               ),
             ),
         ],

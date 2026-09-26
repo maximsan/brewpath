@@ -14,6 +14,7 @@ import 'package:brew_path/features/dictionary/presentation/dictionary_search_fie
 import 'package:brew_path/features/dictionary/presentation/dictionary_search_results.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_term_list.dart';
 import 'package:brew_path/features/dictionary/presentation/term_of_day_banner.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -26,15 +27,6 @@ class DictionaryHomeScreen extends ConsumerWidget {
   /// Creates a [DictionaryHomeScreen].
   const DictionaryHomeScreen({super.key});
 
-  /// The screen's name, and the header action that reaches it.
-  ///
-  /// `Coffee Dictionary`, not `Dictionary`: the course is about one subject
-  /// and the shelf says so.
-  static const title = 'Coffee Dictionary';
-
-  /// The heading over the index's category rows.
-  static const allCategories = 'All categories';
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final view = ref.watch(dictionaryViewProvider);
@@ -44,13 +36,13 @@ class DictionaryHomeScreen extends ConsumerWidget {
     return view.when(
       loading: () => _StatusUnderBar(
         child: Semantics(
-          label: 'Loading the dictionary',
+          label: context.strings.dictionaryLoading,
           child: const LoadingIndicator(),
         ),
       ),
       error: (error, _) => _StatusUnderBar(
         child: Semantics(
-          label: 'The dictionary could not be loaded',
+          label: context.strings.dictionaryLoadFailed,
           child: ErrorView(message: '$error'),
         ),
       ),
@@ -69,7 +61,7 @@ class _StatusUnderBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SubScreenScaffold(
-      title: DictionaryHomeScreen.title,
+      title: context.strings.dictionaryTitle,
       body: (context, scrollPadding) =>
           Padding(padding: scrollPadding, child: child),
     );
@@ -145,7 +137,7 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
     // The bar's title follows the learner into a category, as the design's
     // compact title does. The page heading following it too is the masthead's
     // own divergence (#398): the design keeps `Coffee Dictionary` at the top.
-    final name = _category?.label ?? DictionaryHomeScreen.title;
+    final name = _category?.label ?? context.strings.dictionaryTitle;
 
     return SubScreenScaffold(
       title: name,
@@ -224,8 +216,8 @@ class _DictionaryBodyState extends State<_DictionaryBody> {
         const SizedBox(height: AppSpacing.md),
         const DictionaryQuickChips(),
         const SizedBox(height: AppSpacing.lg),
-        const SmallcapsLabel(
-          DictionaryHomeScreen.allCategories,
+        SmallcapsLabel(
+          context.strings.dictionaryAllCategories,
           isHeader: true,
         ),
         const SizedBox(height: AppSpacing.sm),

@@ -1,4 +1,5 @@
 import 'package:brew_path/features/dictionary/presentation/search_mark.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,7 @@ class DictionarySearchField extends StatelessWidget {
       child: TextField(
         onChanged: onChanged,
         decoration: InputDecoration(
-          hintText: 'Search terms, e.g. crema, bloom…',
+          hintText: context.strings.dictionarySearchHint,
           prefixIcon: Padding(
             padding: const EdgeInsets.all(AppSpacing.sm),
             child: SearchMark(size: _searchMarkSize, color: mood.inkMute),

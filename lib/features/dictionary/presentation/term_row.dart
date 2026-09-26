@@ -12,6 +12,7 @@ import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
 import 'package:brew_path/features/saved/presentation/saved_toggle.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -133,7 +134,10 @@ class TermRow extends ConsumerWidget {
             child: Semantics(
               button: true,
               // The mark is a shape; the label is what carries the state.
-              label: '${term.term}, ${status.label}',
+              label: context.strings.termSpoken(
+                term.term,
+                status.label(context.strings),
+              ),
               excludeSemantics: true,
               onTap: onTap,
               child: InkWell(onTap: onTap),

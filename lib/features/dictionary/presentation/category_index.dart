@@ -1,6 +1,7 @@
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -80,7 +81,11 @@ class _CategoryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: '${category.label}, $count terms. ${category.summary}',
+      label: context.strings.dictionaryCategorySpoken(
+        category.label,
+        count,
+        category.summary,
+      ),
       onTap: onOpen,
       excludeSemantics: true,
       child: InkWell(

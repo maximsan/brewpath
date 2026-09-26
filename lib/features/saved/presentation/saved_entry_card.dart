@@ -27,9 +27,10 @@ class SavedEntryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Counted off the shelf rather than the stored keys, as the header's
     // badge is: the card must not promise a row the shelf would skip.
-    // Unresolved says nothing rather than zero, because "0 saved to revisit"
-    // under a full shelf is a wrong count rather than an absent one; the row
-    // holds its height, so nothing jumps when the number arrives.
+    // Unresolved — and a shelf that failed to load — says nothing rather than
+    // zero, because "0 saved to revisit" under a full shelf is a wrong count
+    // rather than an absent one. The screen this card opens reports the
+    // failure; the row holds its height, so nothing jumps.
     final shelf = ref.watch(savedShelfProvider).asData?.value;
 
     return ProfileEntryCard(

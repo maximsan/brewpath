@@ -1,5 +1,5 @@
 import 'package:brew_path/core/widgets/page_large_title.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,9 @@ class DictionaryMasthead extends StatelessWidget {
       // Browsing a category, the category is the heading — one heading, always
       // naming where the learner actually is. The bar's chevron is the way
       // back, so nothing beside the heading offers a second one.
-      child: PageLargeTitle(category?.label ?? DictionaryHomeScreen.title),
+      child: PageLargeTitle(
+        category?.label ?? context.strings.dictionaryTitle,
+      ),
     );
   }
 }

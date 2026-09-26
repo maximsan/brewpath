@@ -6,7 +6,6 @@ import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/header_chrome.dart';
 import 'package:brew_path/core/widgets/header_compact_title.dart';
-import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
@@ -126,7 +125,7 @@ class _ActionButton extends StatelessWidget {
       HeaderAction.saved => const _SavedButton(),
       HeaderAction.dictionary => _RouteButton(
         glyph: OpenBookMark(color: context.mood.accent),
-        tooltip: DictionaryHomeScreen.title,
+        tooltip: context.strings.dictionaryTitle,
         routeName: AppRoutes.dictionary.name,
       ),
       HeaderAction.settings => _RouteButton(

@@ -99,7 +99,10 @@ class _FlashcardViewState extends State<FlashcardView>
       // the other way round, a screen reader announces "tap to reveal" over
       // and over and never reads the card.
       label: widget.isRevealed
-          ? '${term.term}. ${term.shortExplanation}'
+          ? context.strings.flashcardsFaceSpoken(
+              term.term,
+              term.shortExplanation,
+            )
           : term.term,
       hint: widget.isRevealed
           ? context.strings.flashcardsTapToSeeTerm

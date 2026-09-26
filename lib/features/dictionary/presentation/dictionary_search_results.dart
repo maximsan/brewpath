@@ -1,4 +1,5 @@
 import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -44,19 +45,25 @@ class DictionaryNoMatches extends StatelessWidget {
   /// What was typed, quoted back so the line is about this search.
   final String query;
 
+  /// The line and its announcement, from one branch so the two cannot drift.
+  ///
+  /// An empty [query] is the category filter having emptied the list rather
+  /// than a search: the design draws no state there, so that case keeps the
+  /// words the app already had.
+  ({String line, String label}) _copy(AppLocalizations strings) => query.isEmpty
+      ? (
+          line: strings.searchNoMatchesLine,
+          label: strings.searchNoMatchesLabel,
+        )
+      : (
+          line: strings.searchNoMatchesForLine(query),
+          label: strings.searchNoMatchesForLabel(query),
+        );
+
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final strings = context.strings;
-    final copy = query.isEmpty
-        ? (
-            line: strings.searchNoMatchesLine,
-            label: strings.searchNoMatchesLabel,
-          )
-        : (
-            line: strings.searchNoMatchesForLine(query),
-            label: strings.searchNoMatchesForLabel(query),
-          );
+    final copy = _copy(context.strings);
 
     return Semantics(
       label: copy.label,

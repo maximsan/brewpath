@@ -49,6 +49,10 @@ class SavedItem {
   final String subtitle;
 
   /// Which module a saved lesson sits in, and null for every other kind.
+  ///
+  /// A lesson always has one — the shelf reads it off the module it was
+  /// gathered from — so [savedRowSubtitle] asserts rather than inventing a
+  /// number to render.
   final int? moduleNumber;
 
   /// The category glyph a term row draws; null for a lesson or a guide.
@@ -145,7 +149,7 @@ String savedRowSubtitle(AppLocalizations strings, SavedItem item) =>
       SavedKind.term =>
         item.subtitle.isEmpty ? strings.savedTermSubtitle : item.subtitle,
       SavedKind.lesson => strings.savedLessonSubtitle(
-        item.moduleNumber ?? 0,
+        item.moduleNumber!,
         item.subtitle,
       ),
       SavedKind.guide => strings.savedGuideSubtitle(item.subtitle),

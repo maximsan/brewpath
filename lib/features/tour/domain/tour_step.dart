@@ -1,11 +1,14 @@
 import 'package:brew_path/l10n/generated/app_localizations.dart';
 
+/// What one tour stop says.
+typedef TourStepCopy = ({String title, String body});
+
 /// The Tour's four stops, in the order it plays them.
 ///
 /// The order of the enum *is* the Tour, so the sequence lives here rather than
-/// in the four places that anchor it. Each stop names the copy it carries and
-/// says whether reaching it returns the feed to the top — the two that frame
-/// chrome do, so the header and tab bar read in their natural context.
+/// in the four places that anchor it. Each stop says whether reaching it
+/// returns the feed to the top — the two that frame chrome do, so the header
+/// and tab bar read in their natural context.
 enum TourStep {
   /// The Today card: the daily loop and the streak.
   today,
@@ -22,20 +25,28 @@ enum TourStep {
 
   const TourStep({this.returnsFeedToTop = false});
 
-  /// The stop's heading, which is the design's own script (#536).
-  String title(AppLocalizations strings) => switch (this) {
-    TourStep.today => strings.tourTodayTitle,
-    TourStep.practice => strings.tourPracticeTitle,
-    TourStep.header => strings.tourHeaderTitle,
-    TourStep.tabs => strings.tourTabsTitle,
-  };
-
-  /// The stop's body, likewise.
-  String body(AppLocalizations strings) => switch (this) {
-    TourStep.today => strings.tourTodayBody,
-    TourStep.practice => strings.tourPracticeBody,
-    TourStep.header => strings.tourHeaderBody,
-    TourStep.tabs => strings.tourTabsBody,
+  /// What this stop says. The four stops are the design's own `TOUR_STEPS`
+  /// word for word, so an edit belongs in a ticket that reopens #536.
+  ///
+  /// One lookup rather than a switch per line, so a fifth stop is a case here
+  /// and nowhere else.
+  TourStepCopy copy(AppLocalizations strings) => switch (this) {
+    TourStep.today => (
+      title: strings.tourTodayTitle,
+      body: strings.tourTodayBody,
+    ),
+    TourStep.practice => (
+      title: strings.tourPracticeTitle,
+      body: strings.tourPracticeBody,
+    ),
+    TourStep.header => (
+      title: strings.tourHeaderTitle,
+      body: strings.tourHeaderBody,
+    ),
+    TourStep.tabs => (
+      title: strings.tourTabsTitle,
+      body: strings.tourTabsBody,
+    ),
   };
 
   /// Whether arriving here scrolls the feed back to the top.

@@ -83,18 +83,18 @@ class TermOfDayScreen extends ConsumerWidget {
         ),
         child: view.when(
           loading: () => Semantics(
-            label: "Loading today's term",
+            label: context.strings.termOfDayLoading,
             child: const LoadingIndicator(),
           ),
           error: (error, _) => Semantics(
-            label: "Today's term could not be loaded",
+            label: context.strings.termOfDayLoadFailed,
             child: ErrorView(message: '$error'),
           ),
           // Nothing to offer: the pool is empty, which the banner that leads
           // here would already have hidden itself for. Reachable only by a
           // deep link, so it says so rather than showing an empty page.
           data: (resolved) => resolved == null
-              ? const ErrorView(message: 'There is no term for today.')
+              ? ErrorView(message: context.strings.termOfDayNone)
               : _TermOfDay(view: resolved),
         ),
       ),
@@ -156,7 +156,7 @@ class _TermOfDay extends StatelessWidget {
           child: Column(
             children: [
               PrimaryButton(
-                label: context.strings.termOfDayReadFull,
+                label: context.strings.termReadFullEntry,
                 onPressed: () => unawaited(_readFullEntry(context)),
               ),
               const SizedBox(height: _footerGap),

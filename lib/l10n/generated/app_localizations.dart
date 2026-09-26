@@ -1324,17 +1324,17 @@ abstract class AppLocalizations {
   /// **'Term of the Day'**
   String get termOfDayTitle;
 
-  /// Footer on the Term of the Day banner, saying what tapping it does.
+  /// Says what opening a term does, where there is no full entry to promise. On the Term of the Day banner, and on the peek sheet for a learner without the course.
   ///
   /// In en, this message translates to:
   /// **'Open entry'**
-  String get termOfDayOpenEntry;
+  String get termOpenEntry;
 
-  /// Action on the Term of the Day screen. It promises the whole entry, so it raises the gate for a learner without the course.
+  /// Promises the whole entry, so it raises the gate for a learner without the course. Read on three surfaces — the Term of the Day screen, a gated term entry, and the peek sheet — which say the same words because they promise the same thing.
   ///
   /// In en, this message translates to:
   /// **'Read the full entry'**
-  String get termOfDayReadFull;
+  String get termReadFullEntry;
 
   /// The way out of the Term of the Day screen, under its action.
   ///
@@ -1353,12 +1353,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Comes with the full course.'**
   String get termEntryComesWithCourse;
-
-  /// What a screen reader is told the gated row does and what opens it.
-  ///
-  /// In en, this message translates to:
-  /// **'{action}. {offer}'**
-  String termEntryGateSemantics(String action, String offer);
 
   /// Count over a search that found something. Set upper case by the design.
   ///
@@ -1414,17 +1408,17 @@ abstract class AppLocalizations {
   /// **'Browse the dictionary'**
   String get flashcardsBrowse;
 
-  /// Label over a flashcard's front face.
+  /// Label over a flashcard's front face, which shows the term.
   ///
   /// In en, this message translates to:
   /// **'Term'**
-  String get flashcardsFront;
+  String get flashcardsFrontFace;
 
-  /// Label over a flashcard's back face.
+  /// Label over a flashcard's back face, which shows the definition.
   ///
   /// In en, this message translates to:
   /// **'Definition'**
-  String get flashcardsBack;
+  String get flashcardsBackFace;
 
   /// Foot of a flashcard's front face, saying what a tap does.
   ///
@@ -1726,11 +1720,11 @@ abstract class AppLocalizations {
   /// **'{term}, incorrect'**
   String vocabAnsweredChoiceIncorrect(String term);
 
-  /// Verdict over a missed question. Names the term, which is the whole teaching moment.
+  /// Verdict over a missed question. Names the term, which is the whole teaching moment. Opens on the same words as every other wrong answer, spelled out here so a translator has the whole sentence.
   ///
   /// In en, this message translates to:
-  /// **'{notQuite} — it\'s {answer}'**
-  String vocabVerdictWrong(String notQuite, String answer);
+  /// **'Not quite — it\'s {answer}'**
+  String vocabVerdictWrong(String answer);
 
   /// Verdict over an answered question the learner got right.
   ///
@@ -1858,13 +1852,13 @@ abstract class AppLocalizations {
   /// **'Nothing saved yet. Tap the bookmark on any lesson, term or visual guide and it lands here for quick review.'**
   String get savedEmptyBody;
 
-  /// Title of the Saved entry card.
+  /// Kicker over the Saved entry card on Profile — the small line above its heading.
   ///
   /// In en, this message translates to:
   /// **'Saved'**
   String get savedEntryTitle;
 
-  /// Subtitle of the Saved entry card.
+  /// Heading on the Saved entry card on Profile, under its kicker.
   ///
   /// In en, this message translates to:
   /// **'Your favorites'**
@@ -2242,11 +2236,251 @@ abstract class AppLocalizations {
   /// **'Dress Roasty and choose your tree’s variety and light. The look you set here applies everywhere in the app.'**
   String get microTipStudioBody;
 
-  /// What assistive technology is read when a micro-tip appears.
+  /// Title of the dictionary index.
   ///
   /// In en, this message translates to:
-  /// **'{eyebrow}. {title}. {body}'**
-  String microTipAnnouncement(String eyebrow, String title, String body);
+  /// **'Coffee Dictionary'**
+  String get dictionaryTitle;
+
+  /// Heading over the whole dictionary index, before a category is chosen.
+  ///
+  /// In en, this message translates to:
+  /// **'All categories'**
+  String get dictionaryAllCategories;
+
+  /// Announced while the dictionary resolves.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the dictionary'**
+  String get dictionaryLoading;
+
+  /// Shown when the dictionary cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'The dictionary could not be loaded'**
+  String get dictionaryLoadFailed;
+
+  /// Placeholder in the dictionary's search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search terms, e.g. crema, bloom…'**
+  String get dictionarySearchHint;
+
+  /// First-run hint on the dictionary list.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe a term right to save it'**
+  String get dictionarySwipeToSave;
+
+  /// What a screen reader is told about a dictionary category.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, {count} terms. {summary}'**
+  String dictionaryCategorySpoken(String label, int count, String summary);
+
+  /// A term the learner's lessons have taught.
+  ///
+  /// In en, this message translates to:
+  /// **'Learned'**
+  String get statusLearned;
+
+  /// A term a lesson ahead of the learner will teach.
+  ///
+  /// In en, this message translates to:
+  /// **'To learn'**
+  String get statusToLearn;
+
+  /// A term no lesson teaches, kept for looking up.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get statusReference;
+
+  /// Heading over the lesson that taught a term.
+  ///
+  /// In en, this message translates to:
+  /// **'Where you learned it'**
+  String get statusPathLearned;
+
+  /// Heading over the lesson that will teach a term.
+  ///
+  /// In en, this message translates to:
+  /// **'Where you\'ll learn it'**
+  String get statusPathToLearn;
+
+  /// Heading on a term no lesson teaches.
+  ///
+  /// In en, this message translates to:
+  /// **'Not on the path'**
+  String get statusPathReference;
+
+  /// Dictionary filter showing every term.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// Title when the term that was opened no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in the dictionary'**
+  String get termDetailNotInDictionary;
+
+  /// Announced while a term's entry resolves.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the term'**
+  String get termDetailLoading;
+
+  /// Shown when a term's entry cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'The term could not be loaded'**
+  String get termDetailLoadFailed;
+
+  /// Body when the term that was opened no longer exists.
+  ///
+  /// In en, this message translates to:
+  /// **'That term is not in the dictionary.'**
+  String get termDetailMissing;
+
+  /// Announced while Term of the Day resolves.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading today\'s term'**
+  String get termOfDayLoading;
+
+  /// Shown when Term of the Day cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s term could not be loaded'**
+  String get termOfDayLoadFailed;
+
+  /// Shown when the pool has no term to offer today.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no term for today.'**
+  String get termOfDayNone;
+
+  /// What a reference-only term says instead of naming a lesson. The dash means not on the path at all; promising a lesson here would promise one the course does not have.
+  ///
+  /// In en, this message translates to:
+  /// **'No lesson covers this one — it\'s here for when you meet it on a bag or a menu.'**
+  String get termReferenceNote;
+
+  /// Heading over the terms an entry points at.
+  ///
+  /// In en, this message translates to:
+  /// **'Related terms'**
+  String get termRelated;
+
+  /// Heading over an entry's self-check.
+  ///
+  /// In en, this message translates to:
+  /// **'Knowledge check'**
+  String get termKnowledgeCheck;
+
+  /// What a screen reader is told about a reachable lesson row on an entry.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, opens the lesson'**
+  String termLessonOpens(String title);
+
+  /// What a screen reader is told about a lesson row the learner cannot open.
+  ///
+  /// In en, this message translates to:
+  /// **'{title}, locked'**
+  String termLessonLocked(String title);
+
+  /// What a screen reader is told about a term row and its status.
+  ///
+  /// In en, this message translates to:
+  /// **'{term}, {status}'**
+  String termSpoken(String term, String status);
+
+  /// Saves a term from its entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get termSave;
+
+  /// Says a term is already on the saved shelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Already saved'**
+  String get termAlreadySaved;
+
+  /// Verdict when a term's self-check was answered right.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct'**
+  String get termSelfCheckCorrect;
+
+  /// What a screen reader is told about the right choice on a term's self-check.
+  ///
+  /// In en, this message translates to:
+  /// **'{text}, correct'**
+  String termSelfCheckChoiceCorrect(String text);
+
+  /// What a screen reader is told about a wrong choice on a term's self-check.
+  ///
+  /// In en, this message translates to:
+  /// **'{text}, incorrect'**
+  String termSelfCheckChoiceIncorrect(String text);
+
+  /// Heading over where an entry's facts came from.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources'**
+  String get termSources;
+
+  /// What a screen reader is told the sources block holds.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources, {count}'**
+  String termSourcesSpoken(int count);
+
+  /// What a screen reader is told a source link does.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, opens in the browser'**
+  String termSourceOpens(String label);
+
+  /// What a screen reader is told the pronounce control would say.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronounce {word}'**
+  String termPronounce(String word);
+
+  /// First-run hint on the flashcard deck.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe the card left for the next term'**
+  String get flashcardsSwipeHint;
+
+  /// What a screen reader is told a revealed flashcard says.
+  ///
+  /// In en, this message translates to:
+  /// **'{term}. {explanation}'**
+  String flashcardsFaceSpoken(String term, String explanation);
+
+  /// Announced while the flashcard deck resolves.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your deck'**
+  String get flashcardsDeckLoading;
+
+  /// Shown when the flashcard deck cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Your deck could not be loaded'**
+  String get flashcardsDeckLoadFailed;
+
+  /// What a screen reader is told about the learner's place in the deck.
+  ///
+  /// In en, this message translates to:
+  /// **'Card {card} of {total}'**
+  String flashcardsCardOf(int card, int total);
 }
 
 class _AppLocalizationsDelegate

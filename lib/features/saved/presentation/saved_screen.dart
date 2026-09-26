@@ -47,8 +47,6 @@ class SavedScreen extends ConsumerWidget {
   /// Creates a [SavedScreen].
   const SavedScreen({super.key});
 
-  /// The page's title, and what the header button that opens it announces.
-
   Future<void> _open(
     BuildContext context,
     WidgetRef ref,

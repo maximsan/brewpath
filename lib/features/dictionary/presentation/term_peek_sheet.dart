@@ -69,8 +69,8 @@ class TermPeekSheet extends ConsumerWidget {
               // course the page is not the full entry, so this does not say so.
               child: Text(
                 view.hasCourse
-                    ? context.strings.termOfDayReadFull
-                    : context.strings.termOfDayOpenEntry,
+                    ? context.strings.termReadFullEntry
+                    : context.strings.termOpenEntry,
               ),
             ),
           ],

@@ -9,9 +9,6 @@ import 'package:flutter/material.dart';
 /// How long the explanation takes to appear once an answer is chosen.
 const _revealDuration = Duration(milliseconds: 200);
 
-/// The verdict on a self-check, in the design's own words.
-const String _correct = 'Correct';
-
 /// A term's self-check: one question, a few choices, and an explanation that
 /// appears once the learner answers.
 ///
@@ -129,7 +126,11 @@ class _ChoiceRow extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       selected: isChosen,
-      label: answered ? '$text, ${isCorrect! ? 'correct' : 'incorrect'}' : text,
+      label: switch ((answered, isCorrect)) {
+        (false, _) => text,
+        (true, true) => context.strings.termSelfCheckChoiceCorrect(text),
+        (true, _) => context.strings.termSelfCheckChoiceIncorrect(text),
+      },
       child: ExcludeSemantics(
         child: InkWell(
           onTap: onTap,
@@ -184,7 +185,9 @@ class _Explanation extends StatelessWidget {
   Widget build(BuildContext context) {
     if (chosen == null) return const SizedBox.shrink();
     return AnswerFeedback(
-      verdict: wasCorrect ? _correct : context.strings.verdictNotQuite,
+      verdict: wasCorrect
+          ? context.strings.termSelfCheckCorrect
+          : context.strings.verdictNotQuite,
       outcome: wasCorrect ? Verdict.right : Verdict.wrong,
       explanation: text,
       placement: VerdictPlacement.reference,

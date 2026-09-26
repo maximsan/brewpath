@@ -44,6 +44,7 @@ class TourCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
+    final copy = step.copy(context.strings);
     final lineGap = SizedBox(height: OffTokens.tourCardLineGap.value);
     return Material(
       type: MaterialType.transparency,
@@ -62,13 +63,10 @@ class TourCard extends StatelessWidget {
             children: [
               _Counter(step: step, mood: mood),
               lineGap,
-              Text(
-                step.title(context.strings),
-                style: AppText.heading(mood: mood),
-              ),
+              Text(copy.title, style: AppText.heading(mood: mood)),
               lineGap,
               Text(
-                step.body(context.strings),
+                copy.body,
                 style: AppText.support(
                   mood: mood,
                 ).copyWith(height: OffTokens.tourCardBodyLeading.value),

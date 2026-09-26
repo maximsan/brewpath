@@ -2,6 +2,8 @@
 // give the setup screen and the start action the same answers, or Start runs a
 // deck the screen greyed.
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
+import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -78,6 +80,23 @@ void main() {
           );
         }
       }
+    });
+  });
+
+  group('the names on the offered lengths', () {
+    test('each offered length is named, and none of them alike', () {
+      final strings = AppLocalizationsEn();
+      final names = [
+        for (final length in vocabLengths)
+          VocabCopy.lengthName(strings, length),
+      ];
+
+      expect(names, everyElement(isNotEmpty));
+      expect(names.toSet(), hasLength(vocabLengths.length));
+    });
+
+    test('a length the setup screen does not offer is left unnamed', () {
+      expect(VocabCopy.lengthName(AppLocalizationsEn(), 7), isEmpty);
     });
   });
 }

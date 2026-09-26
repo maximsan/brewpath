@@ -1,8 +1,9 @@
 /// Which parts of the app the App Guide walks, and in what order.
 ///
 /// The words are in `app_en.arb`; the order is the design's own
-/// `APP_GUIDE_SECTIONS` and is neither alphabetical nor arbitrary — it walks
-/// the app the way a learner meets it, from the daily start outwards.
+/// `APP_GUIDE_SECTIONS`, which walks the app the way a learner meets it. The
+/// streak entry is rewritten from the design under #338 — its own sentence
+/// named one of six qualifying activities; the rule is `05-mechanics.md` §5.
 library;
 
 import 'package:brew_path/l10n/generated/app_localizations.dart';

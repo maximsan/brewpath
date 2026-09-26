@@ -7,16 +7,11 @@ import 'package:brew_path/features/dictionary/presentation/term_entry_body.dart'
 import 'package:brew_path/features/dictionary/presentation/term_peek_sheet.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-/// What the page is called when the id names no term the learner may see.
-///
-/// A saved link to a reference term lands here for a free learner, so it is a
-/// real page rather than an error box: it is titled, and it can be left.
-const String _notFoundTitle = 'Not in the dictionary';
 
 /// The full entry for one dictionary term.
 class TermDetailScreen extends ConsumerWidget {
@@ -33,13 +28,13 @@ class TermDetailScreen extends ConsumerWidget {
     return view.when(
       loading: () => Scaffold(
         body: Semantics(
-          label: 'Loading the term',
+          label: context.strings.termDetailLoading,
           child: const LoadingIndicator(),
         ),
       ),
       error: (error, _) => Scaffold(
         body: Semantics(
-          label: 'The term could not be loaded',
+          label: context.strings.termDetailLoadFailed,
           child: ErrorView(message: '$error'),
         ),
       ),
@@ -47,13 +42,13 @@ class TermDetailScreen extends ConsumerWidget {
         final term = data.termById(termId);
         if (term == null) {
           return SubScreenScaffold(
-            title: _notFoundTitle,
+            title: context.strings.termDetailNotInDictionary,
             body: (context, scrollPadding) => ListView(
               padding: const EdgeInsets.all(AppSpacing.gutter) + scrollPadding,
-              children: const [
-                PageLargeTitle(_notFoundTitle),
-                SizedBox(height: AppSpacing.lg),
-                ErrorView(message: 'That term is not in the dictionary.'),
+              children: [
+                PageLargeTitle(context.strings.termDetailNotInDictionary),
+                const SizedBox(height: AppSpacing.lg),
+                ErrorView(message: context.strings.termDetailMissing),
               ],
             ),
           );

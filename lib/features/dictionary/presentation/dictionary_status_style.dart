@@ -1,4 +1,5 @@
 import 'package:brew_path/features/dictionary/domain/dictionary_derivations.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -9,17 +10,17 @@ import 'package:flutter/material.dart';
 /// also announces this text.
 extension DictionaryStatusStyle on DictionaryStatus {
   /// The word a learner reads, and a screen reader announces.
-  String get label => switch (this) {
-    DictionaryStatus.learned => 'Learned',
-    DictionaryStatus.toLearn => 'To learn',
-    DictionaryStatus.reference => 'Reference',
+  String label(AppLocalizations strings) => switch (this) {
+    DictionaryStatus.learned => strings.statusLearned,
+    DictionaryStatus.toLearn => strings.statusToLearn,
+    DictionaryStatus.reference => strings.statusReference,
   };
 
   /// How the entry heads the block naming where a term sits on the path.
-  String get pathLabel => switch (this) {
-    DictionaryStatus.learned => 'Where you learned it',
-    DictionaryStatus.toLearn => "Where you'll learn it",
-    DictionaryStatus.reference => 'Not on the path',
+  String pathLabel(AppLocalizations strings) => switch (this) {
+    DictionaryStatus.learned => strings.statusPathLearned,
+    DictionaryStatus.toLearn => strings.statusPathToLearn,
+    DictionaryStatus.reference => strings.statusPathReference,
   };
 
   /// The mark's colour. Reference is deliberately the muted one — it is not a

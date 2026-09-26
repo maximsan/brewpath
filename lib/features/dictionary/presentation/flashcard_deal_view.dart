@@ -48,9 +48,6 @@ class FlashcardDealView extends StatelessWidget {
   static const int _exitMillis = 260;
   static const double _tiltPer100px = 7;
 
-  /// The first-run hint's words.
-  static const String _hintLabel = 'Swipe the card left for the next term';
-
   /// The card showing.
   final DictionaryTerm term;
 
@@ -99,7 +96,10 @@ class FlashcardDealView extends StatelessWidget {
             SmallcapsLabel(context.strings.flashcardsDeckLine(deckSize)),
             const SizedBox(height: AppSpacing.md),
             Expanded(child: _deck(hint)),
-            SwipeHintCaption(show: hint.showing, label: _hintLabel),
+            SwipeHintCaption(
+              show: hint.showing,
+              label: context.strings.flashcardsSwipeHint,
+            ),
             _EntryLink(
               isShowing: round.isRevealed,
               onOpen: onOpenEntry,

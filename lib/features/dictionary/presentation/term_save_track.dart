@@ -4,6 +4,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/swipe/swipe_geometry.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +21,6 @@ class TermSaveTrack extends StatelessWidget {
     required this.isSaved,
     super.key,
   });
-
-  /// What an unsaved row's track says the gesture does.
-  static const String save = 'Save';
-
-  /// What a saved row's says instead, so the resistance explains itself.
-  static const String alreadySaved = 'Already saved';
 
   /// The mark a saved row leads with, sized to the strip the damping gives.
   static const double _markSize = 16;
@@ -56,22 +51,24 @@ class TermSaveTrack extends StatelessWidget {
             padding: EdgeInsets.only(
               left: isSaved ? _markInset : AppSpacing.sm,
             ),
-            child: isSaved ? _savedMark(mood) : _saveLabel(mood),
+            child: isSaved
+                ? _savedMark(context, mood)
+                : _saveLabel(context, mood),
           ),
         ),
       ),
     );
   }
 
-  Widget _saveLabel(MoodColors mood) =>
-      SmallcapsLabel(save, color: mood.accentText);
+  Widget _saveLabel(BuildContext context, MoodColors mood) =>
+      SmallcapsLabel(context.strings.termSave, color: mood.accentText);
 
   /// The mark first, then the words.
   ///
   /// A damped row uncovers a strip the words cannot fit in at any natural
   /// drag, so the thing that has to read early is the mark the row already
   /// carries. The words follow it for a drag that goes far enough.
-  Widget _savedMark(MoodColors mood) => Row(
+  Widget _savedMark(BuildContext context, MoodColors mood) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
       IconMark(
@@ -81,7 +78,7 @@ class TermSaveTrack extends StatelessWidget {
         color: mood.inkMute,
       ),
       const SizedBox(width: AppSpacing.xs),
-      SmallcapsLabel(alreadySaved, color: mood.inkMute),
+      SmallcapsLabel(context.strings.termAlreadySaved, color: mood.inkMute),
     ],
   );
 }

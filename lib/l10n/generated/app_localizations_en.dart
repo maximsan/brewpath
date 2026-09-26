@@ -752,10 +752,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get termOfDayTitle => 'Term of the Day';
 
   @override
-  String get termOfDayOpenEntry => 'Open entry';
+  String get termOpenEntry => 'Open entry';
 
   @override
-  String get termOfDayReadFull => 'Read the full entry';
+  String get termReadFullEntry => 'Read the full entry';
 
   @override
   String get termOfDayBack => 'Back';
@@ -765,11 +765,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get termEntryComesWithCourse => 'Comes with the full course.';
-
-  @override
-  String termEntryGateSemantics(String action, String offer) {
-    return '$action. $offer';
-  }
 
   @override
   String searchResultCount(int found) {
@@ -813,10 +808,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flashcardsBrowse => 'Browse the dictionary';
 
   @override
-  String get flashcardsFront => 'Term';
+  String get flashcardsFrontFace => 'Term';
 
   @override
-  String get flashcardsBack => 'Definition';
+  String get flashcardsBackFace => 'Definition';
 
   @override
   String get flashcardsTapToReveal => 'Tap to reveal';
@@ -1007,8 +1002,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String vocabVerdictWrong(String notQuite, String answer) {
-    return '$notQuite — it\'s $answer';
+  String vocabVerdictWrong(String answer) {
+    return 'Not quite — it\'s $answer';
   }
 
   @override
@@ -1332,7 +1327,148 @@ class AppLocalizationsEn extends AppLocalizations {
       'Dress Roasty and choose your tree’s variety and light. The look you set here applies everywhere in the app.';
 
   @override
-  String microTipAnnouncement(String eyebrow, String title, String body) {
-    return '$eyebrow. $title. $body';
+  String get dictionaryTitle => 'Coffee Dictionary';
+
+  @override
+  String get dictionaryAllCategories => 'All categories';
+
+  @override
+  String get dictionaryLoading => 'Loading the dictionary';
+
+  @override
+  String get dictionaryLoadFailed => 'The dictionary could not be loaded';
+
+  @override
+  String get dictionarySearchHint => 'Search terms, e.g. crema, bloom…';
+
+  @override
+  String get dictionarySwipeToSave => 'Swipe a term right to save it';
+
+  @override
+  String dictionaryCategorySpoken(String label, int count, String summary) {
+    return '$label, $count terms. $summary';
+  }
+
+  @override
+  String get statusLearned => 'Learned';
+
+  @override
+  String get statusToLearn => 'To learn';
+
+  @override
+  String get statusReference => 'Reference';
+
+  @override
+  String get statusPathLearned => 'Where you learned it';
+
+  @override
+  String get statusPathToLearn => 'Where you\'ll learn it';
+
+  @override
+  String get statusPathReference => 'Not on the path';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get termDetailNotInDictionary => 'Not in the dictionary';
+
+  @override
+  String get termDetailLoading => 'Loading the term';
+
+  @override
+  String get termDetailLoadFailed => 'The term could not be loaded';
+
+  @override
+  String get termDetailMissing => 'That term is not in the dictionary.';
+
+  @override
+  String get termOfDayLoading => 'Loading today\'s term';
+
+  @override
+  String get termOfDayLoadFailed => 'Today\'s term could not be loaded';
+
+  @override
+  String get termOfDayNone => 'There is no term for today.';
+
+  @override
+  String get termReferenceNote =>
+      'No lesson covers this one — it\'s here for when you meet it on a bag or a menu.';
+
+  @override
+  String get termRelated => 'Related terms';
+
+  @override
+  String get termKnowledgeCheck => 'Knowledge check';
+
+  @override
+  String termLessonOpens(String title) {
+    return '$title, opens the lesson';
+  }
+
+  @override
+  String termLessonLocked(String title) {
+    return '$title, locked';
+  }
+
+  @override
+  String termSpoken(String term, String status) {
+    return '$term, $status';
+  }
+
+  @override
+  String get termSave => 'Save';
+
+  @override
+  String get termAlreadySaved => 'Already saved';
+
+  @override
+  String get termSelfCheckCorrect => 'Correct';
+
+  @override
+  String termSelfCheckChoiceCorrect(String text) {
+    return '$text, correct';
+  }
+
+  @override
+  String termSelfCheckChoiceIncorrect(String text) {
+    return '$text, incorrect';
+  }
+
+  @override
+  String get termSources => 'Sources';
+
+  @override
+  String termSourcesSpoken(int count) {
+    return 'Sources, $count';
+  }
+
+  @override
+  String termSourceOpens(String label) {
+    return '$label, opens in the browser';
+  }
+
+  @override
+  String termPronounce(String word) {
+    return 'Pronounce $word';
+  }
+
+  @override
+  String get flashcardsSwipeHint => 'Swipe the card left for the next term';
+
+  @override
+  String flashcardsFaceSpoken(String term, String explanation) {
+    return '$term. $explanation';
+  }
+
+  @override
+  String get flashcardsDeckLoading => 'Loading your deck';
+
+  @override
+  String get flashcardsDeckLoadFailed => 'Your deck could not be loaded';
+
+  @override
+  String flashcardsCardOf(int card, int total) {
+    return 'Card $card of $total';
   }
 }
