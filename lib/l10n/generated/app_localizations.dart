@@ -1054,12 +1054,6 @@ abstract class AppLocalizations {
   /// **'This game comes with the full course.'**
   String get miniGameFullCourse;
 
-  /// Marks a mini-game the learner can play without the course.
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get miniGameFree;
-
   /// Hint on a locked mini-game row, saying what tapping it does.
   ///
   /// In en, this message translates to:
@@ -1270,23 +1264,23 @@ abstract class AppLocalizations {
   /// **'{lines}. Replay.'**
   String practiceReplaySpoken(String lines);
 
-  /// About how long a practice run takes.
+  /// What a screen reader is told about a practice row that starts a game or a drill.
   ///
   /// In en, this message translates to:
-  /// **'~{minutes} min'**
-  String practiceMinutes(int minutes);
+  /// **'{lines}. Play.'**
+  String practicePlaySpoken(String lines);
 
-  /// Marks a practice the learner can run without the course.
+  /// What a screen reader is told about a module's or a kind's sub-group in the practice list and its size.
   ///
   /// In en, this message translates to:
-  /// **'Free'**
-  String get practiceFree;
+  /// **'{label}. {count, plural, =1{1 item} other{{count} items}}.'**
+  String practiceSubGroupSpoken(String label, int count);
 
-  /// About how long a vocab drill takes.
+  /// Eyebrow over both dictionary drills in the practice list: where the drill draws from. Set upper case by the design.
   ///
   /// In en, this message translates to:
-  /// **'~2 min'**
-  String get practiceTwoMinutes;
+  /// **'Dictionary'**
+  String get practiceDrillEyebrow;
 
   /// What a screen reader is told the Begin button opens.
   ///
@@ -1498,19 +1492,13 @@ abstract class AppLocalizations {
   /// **'{cards, plural, =1{Study {cards} term as flashcards} other{Study {cards} terms as flashcards}}'**
   String flashcardsStudyRow(int cards);
 
-  /// Eyebrow on the Learn tab's flashcards practice row.
-  ///
-  /// In en, this message translates to:
-  /// **'Flip and recall'**
-  String get flashcardsPracticeRowEyebrow;
-
   /// Name of the vocab drill, on every surface that opens it.
   ///
   /// In en, this message translates to:
   /// **'Guess the term'**
   String get vocabTitle;
 
-  /// Eyebrow on a practice row, saying what the drill asks.
+  /// The dictionary quick chip's hint, saying what the drill asks.
   ///
   /// In en, this message translates to:
   /// **'From the definition'**

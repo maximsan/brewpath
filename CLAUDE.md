@@ -1,39 +1,12 @@
 # BrewPath — CLAUDE.md
 
-## Project Layout
-
-The Flutter app is **at the git root** — there is no nested app directory.
-
-```
-brewpath/               ← git root, CLAUDE.md lives here
-├── lib/                ← Flutter app source (package: brew_path)
-├── test/               ← unit + widget tests
-├── integration_test/   ← integration tests
-├── assets/             ← bundled content, fonts, images
-├── ios/                ← iOS runner (SPM-only; no Podfile)
-├── tool/               ← release + maintenance scripts
-├── prototype/          ← design source (React prototype, not built)
-├── docs/               ← architecture, design reference and task-plan docs
-├── learning/           ← hands-on Flutter course for this app
-└── .claude/            ← Claude Code project settings
-```
-
-## Learning track
-
-A hands-on, learn-by-doing Flutter course for this app lives in
-[`learning/`](learning/). When the user asks to "continue the lesson" /
-"continue the Flutter onboarding", read
-[`learning/README.md`](learning/README.md) (teaching contract) and
-[`learning/curriculum.md`](learning/curriculum.md) (current step, marked 👉)
-first, then resume.
-
 ## Architecture
 
 | Concern           | Package                                   | Notes                                                                                                                                                                              |
 | ----------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| State             | flutter_riverpod 3.x + riverpod_generator | `@riverpod` annotation; ref type is `Ref`                                                                                                                                          |
-| Navigation        | go_router 17.x                            | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
-| Persistence       | Drift (SQLite) 2.33.x                     | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`. (Replaced abandoned Isar 3.x.) |
+| State             | flutter_riverpod + riverpod_generator     | Riverpod 3: `@riverpod` annotation; ref type is `Ref`                                                                                                                              |
+| Navigation        | go_router                                 | `StatefulShellRoute` with 4 branches: `/learn`, `/path`, `/cards`, `/profile`                                                                                                      |
+| Persistence       | Drift (SQLite)                            | Offline-first; tables + `AppDatabase` in `shared/storage/app_database.dart`. Repos map Drift rows ↔ mutable DTOs in `shared/storage/*_record.dart`.                                |
 | Content models    | Freezed + json_serializable               | Loaded from `assets/content/generated/*.json` at startup                                                                                                                           |
 | Localization      | `flutter_localizations` + gen_l10n         | English only. How it works and how a language is made: [`docs/localization.md`](docs/localization.md). |
 | Payments          | RevenueCat behind `PaymentsService`       | A build with no `REVENUECAT_KEY` runs the no-op store, so the app is free by construction: [`docs/payments.md`](docs/payments.md)                                                  |
@@ -102,7 +75,6 @@ explanations — plus test and iOS/SPM build notes — lives in
 
 ## Code Conventions
 
-- **Imports:** always `package:brew_path/…` within `lib/`; never relative `../` imports
 - **Colours:** read the mood tokens via `context.mood` (`MoodColors`, a `ThemeExtension` with a Cupping and a Dark Roast instance); never `Theme.of(context).colorScheme` — it is populated for stock Material widgets only. Everything that must **not** flip with the mood is `static const` on an `abstract final class` with no `of(context)` accessor — `ArtColors` (illustration palette), `RoastyColors` (the mascot's palette), `OverlayColors` (scrim, scrim ink, modal dim), `AppSpacing`, `AppRadii` — so mood-dependence is unrepresentable, and painters can read them with no `BuildContext`. An **overlay** is an `AppOverlay`, not a colour: it carries the design's blur radius and saturation beside its tint, and the two things that render one — a modal barrier through `OverlayBarrier`, and a top bar through `ScrolledProgress` + `AppOverlay.at` — take the whole token, so the parts cannot be split at a call site. A value that is deliberately off-token goes in the `OffTokens` register with its reason, never as a bare literal.
 - **Comments:** a doc comment, in TSDoc form (`///`), says what the member is
   in one sentence, plus at most one line of what is not obvious; nothing on
@@ -127,7 +99,6 @@ explanations — plus test and iOS/SPM build notes — lives in
   porting; they come out before the PR lands.
 - **Models:** Freezed for all content DTOs; Drift `Table` classes for persisted records
 - **Providers:** function-style `@riverpod` only; class-based `@riverpod` only when state is mutable
-- **Tests:** unit tests in `test/unit/`; widget tests in `test/widget/`; integration tests in `integration_test/`
 - **No print statements** — use `debugPrint` only in development guards; never in production paths
 - **Lints:** see `analysis_options.yaml` (the config is the truth) and the README _Toolchain_ paragraph
 - **Screens:** read [`docs/design/03-design-system.md`](docs/design/03-design-system.md)

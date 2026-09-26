@@ -131,6 +131,15 @@ void main() {
       expect(redirect(AppRoutes.onboardingPaywall.path), AppRoutes.learn.path);
     });
 
+    test('the offer a lock hands off to is open once the intro is done', () {
+      expect(redirect(AppRoutes.paywall.path), isNull);
+      expect(redirect(AppRoutes.paywall.path, entitled: false), isNull);
+      expect(
+        redirect(AppRoutes.paywall.path, onboarded: false),
+        AppRoutes.welcome.path,
+      );
+    });
+
     test('an owner reaches the celebration on either side of the flag', () {
       expect(
         redirect(AppRoutes.purchaseWelcome.path, onboarded: false),

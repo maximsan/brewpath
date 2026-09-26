@@ -146,7 +146,7 @@ Node script (no dependencies). How a language is made, from the first
 ### `tool/extract_icons.js` — regenerate the icon family
 
 Node script (no dependencies). Run after a drop changes the design's icons.
-Writes the 43 marks as SVG into `assets/icons/`, or refuses and writes nothing
+Writes every mark as SVG into `assets/icons/`, or refuses and writes nothing
 ([docs/content-pipeline.md](docs/content-pipeline.md)).
 
 ```bash
@@ -157,7 +157,7 @@ node tool/extract_icons.js --source DIR --out DIR   # used by the tests
 ### `tool/extract_card_art.js` — regenerate the collectible artwork
 
 Node script (no dependencies). Run after a drop changes the card art. Writes
-the 37 illustrations as SVG into `assets/card_art/`, or refuses and writes
+the illustrations as SVG into `assets/card_art/`, or refuses and writes
 nothing ([docs/content-pipeline.md](docs/content-pipeline.md)).
 
 ```bash

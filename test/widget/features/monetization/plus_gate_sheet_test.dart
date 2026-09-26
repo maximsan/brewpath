@@ -8,7 +8,11 @@ import 'package:brew_path/features/monetization/domain/paywall_view.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
-import 'package:brew_path/features/monetization/domain/purchase_welcome_return.dart';
+import 'package:brew_path/features/monetization/domain/purchased_term.dart';
+import 'package:brew_path/features/monetization/domain/return_location.dart';
+import 'package:brew_path/features/monetization/presentation/paywall_route.dart';
+import 'package:brew_path/features/monetization/presentation/paywall_screen.dart';
+import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
 import 'package:brew_path/features/monetization/presentation/plus_gate_sheet.dart';
 import 'package:brew_path/features/monetization/presentation/purchase_welcome_route.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
@@ -40,9 +44,10 @@ void main() {
   );
 
   late GoRouter router;
+  late ProviderContainer container;
 
-  /// Raises the sheet on the Path tab, over a router carrying the celebration
-  /// a sale lands on — the sheet navigates, so a stub `home:` cannot host it.
+  /// Raises the sheet on the Path tab, over a router carrying the paywall and
+  /// the celebration — the sheet navigates, so a stub `home:` cannot host it.
   Future<void> openWith(
     WidgetTester tester,
     PlusGateTrigger trigger, {
@@ -55,7 +60,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final container = ProviderContainer(
+    container = ProviderContainer(
       overrides: [
         plusPitchProvider.overrideWith((ref) async => pitch),
         if (store != null) paymentsServiceProvider.overrideWith((ref) => store),
@@ -82,7 +87,13 @@ void main() {
           path: AppRoutes.purchaseWelcome.path,
           name: AppRoutes.purchaseWelcome.name,
           builder: (_, state) =>
-              PurchaseWelcomeRoute(returnTo: welcomeReturnIn(state.uri)),
+              PurchaseWelcomeRoute(returnTo: returnLocationIn(state.uri)),
+        ),
+        GoRoute(
+          path: AppRoutes.paywall.path,
+          name: AppRoutes.paywall.name,
+          builder: (_, state) =>
+              PaywallRoute(returnTo: returnLocationIn(state.uri)),
         ),
       ],
     );
@@ -181,10 +192,101 @@ void main() {
   testWidgets('Restore, Terms and Privacy are present', (tester) async {
     await openWith(tester, const SavedShelfFull(cap: 5));
 
-    // The App Store requires all three of a non-consumable.
+    // The App Store requires all three of a non-consumable, and the purchase
+    // facts sit under the action on the arm where the action is the purchase.
     expect(find.text(PaywallCopy.restore), findsOneWidget);
     expect(find.text(PaywallCopy.terms), findsOneWidget);
     expect(find.text(PaywallCopy.privacy), findsOneWidget);
+    expect(
+      find.text(paywallModels[MonetizationModel.oneTime]!.gateFooter),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('with a plan to choose, the sheet takes no money', (
+    tester,
+  ) async {
+    await openWith(
+      tester,
+      const SavedShelfFull(cap: 5),
+      store: SellingPaymentsService(model: MonetizationModel.subscription),
+    );
+
+    // The action keeps the design's *from* figure — the honest reason to send
+    // the learner somewhere to pick — and nothing else on the sheet names a
+    // purchase fact or a store obligation (ADR-0032).
+    expect(
+      tester.widget<PrimaryButton>(find.byType(PrimaryButton)).label,
+      startsWith('Unlock Foundations — from '),
+    );
+    expect(
+      find.text(paywallModels[MonetizationModel.subscription]!.gateFooter),
+      findsNothing,
+    );
+    expect(find.text(PaywallCopy.restore), findsNothing);
+    expect(find.text(PaywallCopy.terms), findsNothing);
+    expect(find.text(PaywallCopy.privacy), findsNothing);
+  });
+
+  testWidgets('with a plan to choose, the action opens the paywall and buys '
+      'the plan picked there', (tester) async {
+    await openWith(
+      tester,
+      const SavedShelfFull(cap: 5),
+      store: SellingPaymentsService(model: MonetizationModel.subscription),
+    );
+
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pumpAndSettle();
+
+    // The sheet is gone and the paywall stands in its place, still knowing
+    // which screen the lock was on.
+    expect(find.text(PaywallCopy.gateTitle), findsNothing);
+    expect(find.byType(PaywallScreen), findsOneWidget);
+    expect(find.byType(PlanPicker), findsOneWidget);
+    expect(router.state.uri.path, AppRoutes.paywall.path);
+    expect(returnLocationIn(router.state.uri), AppRoutes.path.path);
+
+    // Not the arm's default: the plan the learner picked is the one bought.
+    await tester.tap(find.text(paywallPlans[PlusTerm.monthly]!.name));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byType(PrimaryButton));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(PrimaryButton));
+    await pumpWithoutSettling(tester);
+
+    expect(container.read(purchasedTermProvider), PlusTerm.monthly);
+    expect(find.text(paywallPlans[PlusTerm.monthly]!.welcome), findsOneWidget);
+
+    await tester.tap(find.text(PaywallCopy.welcomeBackToLearning));
+    await pumpWithoutSettling(tester);
+
+    expect(router.state.uri.toString(), AppRoutes.path.path);
+    expect(find.text('open'), findsOneWidget);
+  });
+
+  testWidgets('declining the paywall returns to the lock with nothing bought', (
+    tester,
+  ) async {
+    await openWith(
+      tester,
+      const SavedShelfFull(cap: 5),
+      store: SellingPaymentsService(model: MonetizationModel.subscription),
+    );
+
+    await tester.tap(find.byType(PrimaryButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(PaywallScreen), findsOneWidget);
+
+    await tester.ensureVisible(find.text(PaywallCopy.maybeLater));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(PaywallCopy.maybeLater));
+    await tester.pumpAndSettle();
+
+    expect(router.state.uri.toString(), AppRoutes.path.path);
+    expect(find.text('open'), findsOneWidget);
+    expect(find.text(PaywallCopy.welcomeTitle), findsNothing);
+    expect(container.read(purchasedTermProvider), isNull);
   });
 
   testWidgets('declining is a button, not a swipe to discover', (tester) async {
@@ -228,7 +330,9 @@ void main() {
     await tester.tap(find.byType(PrimaryButton));
     await pumpWithoutSettling(tester);
 
+    // One plan on the arm, so the sheet sells: no second screen on the way.
     expect(find.text(PaywallCopy.gateTitle), findsNothing);
+    expect(find.byType(PaywallScreen), findsNothing);
     expect(find.text(PaywallCopy.welcomeTitle), findsOneWidget);
 
     // And it comes back to the screen the lock was on, not to Learn.

@@ -1012,11 +1012,6 @@
     "description": "Says a locked mini-game opens with the purchase."
   },
 
-  "miniGameFree": "Free",
-  "@miniGameFree": {
-    "description": "Marks a mini-game the learner can play without the course."
-  },
-
   "miniGameLockedHint": "Shows the module that teaches it",
   "@miniGameLockedHint": {
     "description": "Hint on a locked mini-game row, saying what tapping it does."
@@ -1299,24 +1294,32 @@
     }
   },
 
-  "practiceMinutes": "~{minutes} min",
-  "@practiceMinutes": {
-    "description": "About how long a practice run takes.",
+  "practicePlaySpoken": "{lines}. Play.",
+  "@practicePlaySpoken": {
+    "description": "What a screen reader is told about a practice row that starts a game or a drill.",
     "placeholders": {
-      "minutes": {
+      "lines": {
+        "type": "String"
+      }
+    }
+  },
+
+  "practiceSubGroupSpoken": "{label}. {count, plural, =1{1 item} other{{count} items}}.",
+  "@practiceSubGroupSpoken": {
+    "description": "What a screen reader is told about a module's or a kind's sub-group in the practice list and its size.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
         "type": "int"
       }
     }
   },
 
-  "practiceFree": "Free",
-  "@practiceFree": {
-    "description": "Marks a practice the learner can run without the course."
-  },
-
-  "practiceTwoMinutes": "~2 min",
-  "@practiceTwoMinutes": {
-    "description": "About how long a vocab drill takes."
+  "practiceDrillEyebrow": "Dictionary",
+  "@practiceDrillEyebrow": {
+    "description": "Eyebrow over both dictionary drills in the practice list: where the drill draws from. Set upper case by the design."
   },
 
   "todayBeginSpoken": "{label}: {title}",
@@ -1532,11 +1535,6 @@
     }
   },
 
-  "flashcardsPracticeRowEyebrow": "Flip and recall",
-  "@flashcardsPracticeRowEyebrow": {
-    "description": "Eyebrow on the Learn tab's flashcards practice row."
-  },
-
   "vocabTitle": "Guess the term",
   "@vocabTitle": {
     "description": "Name of the vocab drill, on every surface that opens it."
@@ -1544,7 +1542,7 @@
 
   "vocabRowSubtitle": "From the definition",
   "@vocabRowSubtitle": {
-    "description": "Eyebrow on a practice row, saying what the drill asks."
+    "description": "The dictionary quick chip's hint, saying what the drill asks."
   },
 
   "vocabSetupBlurb": "Read a definition, pick the term. Choose your deck and how long a round you want.",

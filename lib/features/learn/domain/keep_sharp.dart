@@ -9,10 +9,11 @@ import 'package:brew_path/core/utils/date_utils.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
+import 'package:brew_path/features/learn/domain/practice_group.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
-import 'package:brew_path/features/mini_games/domain/mini_game_destination.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
+import 'package:flutter/foundation.dart';
 
 /// The four practice types Keep Sharp rotates over, in canonical order.
 ///
@@ -63,13 +64,6 @@ PracticeType? keepSharpPick({
 /// rotation and the snapshot's day-valued fields agree on what "a day" is.
 int keepSharpDayNumber(DateTime date) => epochDay(date);
 
-/// The day's pick from a list of concrete entry points (a game type to open,
-/// a lesson to replay). Same day number as the rotation, so the CTA's target
-/// is stable all day and stores nothing — while the recommendation itself
-/// stays type-level.
-T keepSharpDailyChoice<T>(int dayNumber, List<T> options) =>
-    options[dayNumber % options.length];
-
 /// Card copy for one practice type: what it is called, and the type's own
 /// completion rule — stated on the card so doing what Today asks always
 /// protects the streak (the reason item-level recommendation was rejected).
@@ -97,11 +91,51 @@ KeepSharpCopy keepSharpCopyFor(AppLocalizations strings, PracticeType type) =>
       ),
     };
 
-/// The day's resolution: which practice type, and the one screen its CTA opens.
-typedef KeepSharpResolution = ({
-  PracticeType type,
-  RouteDestination destination,
-});
+/// What Keep Sharp's Start does for the day's type.
+///
+/// Never a specific item: the rule, not the card, names the work. A type
+/// whose material is listed on the Today tab has its group opened; a drill
+/// with a surface of its own is opened there.
+sealed class KeepSharpStart {
+  const KeepSharpStart();
+}
+
+/// Opens one of the practice list's groups, leaving the item to the learner.
+@immutable
+final class OpenPracticeGroup extends KeepSharpStart {
+  /// Creates a start that opens [group].
+  const OpenPracticeGroup(this.group);
+
+  /// The group the day's type lives in.
+  final PracticeGroupKind group;
+
+  @override
+  bool operator ==(Object other) =>
+      other is OpenPracticeGroup && other.group == group;
+
+  @override
+  int get hashCode => group.hashCode;
+}
+
+/// Opens a drill's own surface.
+@immutable
+final class OpenSurface extends KeepSharpStart {
+  /// Creates a start that goes to [destination].
+  const OpenSurface(this.destination);
+
+  /// The screen the CTA opens.
+  final RouteDestination destination;
+
+  @override
+  bool operator ==(Object other) =>
+      other is OpenSurface && other.destination == destination;
+
+  @override
+  int get hashCode => destination.hashCode;
+}
+
+/// The day's resolution: which practice type, and what its CTA does.
+typedef KeepSharpResolution = ({PracticeType type, KeepSharpStart start});
 
 /// Everything the rotation is asked of — one value, not one parameter per
 /// practice type.
@@ -111,9 +145,6 @@ typedef KeepSharpResolution = ({
 typedef PracticeMaterial = ({
   /// The mini-game formats this build can actually run.
   List<String> playableFormatIds,
-
-  /// Which of them the learner already played today.
-  Set<String> formatsPlayedToday,
 
   /// The lessons they have finished, which a replay picks from.
   List<String> completedLessonIds,
@@ -136,7 +167,6 @@ KeepSharpResolution? keepSharpResolutionFor({
 }) {
   final (
     :playableFormatIds,
-    :formatsPlayedToday,
     :completedLessonIds,
     :drillableTermCount,
     :flashcardDeckSize,
@@ -160,44 +190,25 @@ KeepSharpResolution? keepSharpResolutionFor({
   final pick = keepSharpPick(dayNumber: dayNumber, eligible: eligible);
   return switch (pick) {
     null => null,
+    // The two types whose work is listed on the Today tab open their group
+    // and stop there: which game, or which lesson, is the learner's to pick,
+    // and a lesson chosen from the list is asked about first (#573).
     PracticeType.miniGames => (
       type: pick,
-      destination: miniGameRun(
-        _nextUnplayed(dayNumber, playableFormatIds, formatsPlayedToday),
-      ),
+      start: const OpenPracticeGroup(PracticeGroupKind.games),
     ),
     PracticeType.lessonReplay => (
       type: pick,
-      destination: lessonRun(
-        keepSharpDailyChoice(dayNumber, completedLessonIds),
-      ),
+      start: const OpenPracticeGroup(PracticeGroupKind.lessons),
     ),
     // The drill's setup, not a round: the deck and the length are the
     // learner's to choose, and dealing straight into a round takes that away.
-    PracticeType.vocabGame => (type: pick, destination: vocabGame),
+    PracticeType.vocabGame => (type: pick, start: OpenSurface(vocabGame)),
     // No setup to choose and nothing to parameterise: the deck is whatever
     // the learner has bookmarked.
-    PracticeType.flashcards => (type: pick, destination: flashcardReview),
+    PracticeType.flashcards => (
+      type: pick,
+      start: OpenSurface(flashcardReview),
+    ),
   };
-}
-
-/// The day's game, skipping any already played today.
-///
-/// The rule is "two different games", so a fixed pick would send the learner
-/// back into the one just finished and Start could never satisfy it. Once all
-/// are played no CTA is offered; the fall back to the full list exists because
-/// [keepSharpDailyChoice] indexes modulo length and an empty list would throw.
-String _nextUnplayed(
-  int dayNumber,
-  List<String> playable,
-  Set<String> playedToday,
-) {
-  final remaining = [
-    for (final id in playable)
-      if (!playedToday.contains(id)) id,
-  ];
-  return keepSharpDailyChoice(
-    dayNumber,
-    remaining.isEmpty ? playable : remaining,
-  );
 }

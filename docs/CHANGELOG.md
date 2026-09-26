@@ -118,6 +118,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Fixed
 
+- **What belongs to a language no longer falls back to English.** A respelling
+  is written to tell an English speaker how to say an English word, so a
+  language that supplies none now shows none: the chip and the speak button are
+  absent rather than reading *uh-RAB-ih-kuh* under a translated term. A term's
+  aliases go the same way — English inflections standing in would have decided
+  which terms a lesson mentions, and so the size of the free practice pool. The
+  two are exactly what the drafting tool declines to treat as prose, and a test
+  holds the overlay to that, so registering a third means deciding it here too.
+  English is untouched ([#666](https://github.com/maximsan/brewpath/issues/666)).
+
 - **The paywall no longer spins for the best part of a minute before admitting
   it has no offer to show.** A provider that fails keeps Riverpod's loading
   flag while it retries, so the screen's unreachable state — which is what
@@ -125,6 +135,26 @@ You can always edit this file by hand instead — the helpers just save effort.
   ([#532](https://github.com/maximsan/brewpath/issues/532)).
 
 ### Changed
+
+- **The practice list folds a second level in.** Under *Lessons*, finished
+  lessons sit in one collapsible sub-group per module, headed by the module's
+  glyph and eyebrow, so a row is its title alone; under *Games*, the two
+  dictionary drills lead as plain rows reading *Dictionary*, then one
+  sub-group per kind, its header locked when nothing in it opens without the
+  course. No row carries a duration or *Free* any more, a row that starts
+  something ends in a chevron and reads *Play*, and Keep Sharp's *Start* now
+  opens the Games or Lessons group instead of launching one item — so a
+  replay reached from the card is asked about first, like every other
+  ([#582](https://github.com/maximsan/brewpath/issues/582)).
+- **A lock hands off to the paywall only when there is a plan to choose.** On
+  an arm selling one plan the gate sheet still sells where it stands. On the
+  subscription and hybrid arms its action now closes the sheet and opens the
+  paywall, where the learner picks a plan and buys the one they picked; buying
+  there lands on the welcome and *Back to learning* returns to the screen the
+  lock was on, and declining returns there directly. The sheet drops its
+  purchase-facts line, Restore and the legal links on those arms, because it
+  no longer takes money ([#600](https://github.com/maximsan/brewpath/issues/600),
+  [ADR-0032](adr/0032-a-lock-hands-off-to-the-paywall-only-when-there-is-a-plan-to-choose.md)).
 
 - **Lessons still ahead on the Path are locked.** Each finished lesson unlocks
   the next, as the App Guide already promised: a lesson past the current one

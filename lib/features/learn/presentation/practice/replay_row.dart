@@ -8,24 +8,23 @@ import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
-import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
 
-/// One row of the practice shelf: what it drills, its name, what it costs or
-/// takes, and the replay mark — or a lock.
+/// One row of the practice list: its name, an eyebrow where the row has one,
+/// and the mark that says what a tap does — replay arrow, chevron, or lock.
 ///
 /// Flat on the page, not a card: its press highlight bleeds a stop past the
-/// text (`margin: 0 -8px; padding: 12px 8px`), so the shelf sits that stop
+/// text (`margin: 0 -8px; padding: 12px 8px`), so the list sits that stop
 /// inside the page gutter and every row pads it back.
 class ReplayRow extends StatelessWidget {
   /// Creates a [ReplayRow].
   const ReplayRow({
     required this.title,
-    required this.sub,
     required this.onTap,
+    this.sub,
     this.icon,
-    this.meta,
     this.locked = false,
+    this.starts = false,
     this.hint,
     super.key,
   });
@@ -38,15 +37,17 @@ class ReplayRow extends StatelessWidget {
   /// The row's name — a lesson's title, a game's name.
   final String title;
 
-  /// The eyebrow over the name: which module, or what the game drills.
-  final String sub;
+  /// The eyebrow over the name — what a game drills, where a drill draws
+  /// from. A lesson row has none: its sub-group's header carries the module.
+  final String? sub;
 
-  /// The right-hand line: a duration, `Free`, or nothing for a locked row.
-  final String? meta;
-
-  /// Whether the row is behind the purchase, which swaps the replay mark for a
-  /// lock and says so to a screen reader.
+  /// Whether the row is behind the purchase, which swaps the mark for a lock
+  /// and says so to a screen reader.
   final bool locked;
+
+  /// Whether the tap starts something rather than replaying it, which ends
+  /// the row in a chevron and reads *Play* instead of *Replay*.
+  final bool starts;
 
   /// What the row does. A locked row still taps — into the offer.
   final VoidCallback onTap;
@@ -57,8 +58,8 @@ class ReplayRow extends StatelessWidget {
   /// The design's `minHeight: 44` — a comfortable tap target.
   static const double _minHeight = 44;
 
-  /// The design's first grid column, `24px`, for the kind glyph.
-  static const double _iconColumn = 24;
+  /// The design's first grid column, `20px`, for the kind glyph.
+  static const double _iconColumn = 20;
 
   /// The design's replay mark, `width="18"`.
   static const double _markSize = 18;
@@ -67,7 +68,7 @@ class ReplayRow extends StatelessWidget {
   static const double _lockSize = 13;
 
   /// The design's `color-mix(in oklab, var(--ink-mute) 76%, var(--ink))` on
-  /// the eyebrow and the meta line.
+  /// the eyebrow.
   static const double _inkShare = 0.76;
 
   /// The design's `marginTop: 2` between the eyebrow and the name.
@@ -76,8 +77,6 @@ class ReplayRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
-    final metaInk = mood.inkMix(_inkShare);
-    final meta = this.meta;
     final icon = this.icon;
 
     return Semantics(
@@ -105,49 +104,9 @@ class ReplayRow extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.base),
                 ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        sub.toUpperCase(),
-                        style: AppText.label(
-                          mood: mood,
-                          face: AppFace.mono,
-                          color: metaInk,
-                        ),
-                      ),
-                      const SizedBox(height: _titleGap),
-                      Text(
-                        title,
-                        style: AppText.support(
-                          mood: mood,
-                          face: AppFace.control,
-                          color: mood.ink,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                Expanded(child: _lines(mood)),
                 const SizedBox(width: AppSpacing.base),
-                if (meta != null) ...[
-                  Text(
-                    meta.toUpperCase(),
-                    textAlign: TextAlign.right,
-                    style: AppText.label(
-                      mood: mood,
-                      face: AppFace.mono,
-                      color: metaInk,
-                      tracking: AppTracking.hint,
-                    ),
-                  ),
-                  SizedBox(width: OffTokens.practiceInlineGap.value),
-                ],
-                if (locked)
-                  IconMark(AppIcon.lock, size: _lockSize, color: mood.inkMute)
-                else
-                  ReplayMark(size: _markSize, color: mood.inkMute),
+                _mark(mood),
               ],
             ),
           ),
@@ -156,12 +115,52 @@ class ReplayRow extends StatelessWidget {
     );
   }
 
-  /// The design's `aria-label`: the three lines as one sentence, then what
-  /// the tap does.
+  /// The eyebrow, where there is one, over the name.
+  Widget _lines(MoodColors mood) {
+    final sub = this.sub;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (sub != null) ...[
+          Text(
+            sub.toUpperCase(),
+            style: AppText.label(
+              mood: mood,
+              face: AppFace.mono,
+              color: mood.inkMix(_inkShare),
+            ),
+          ),
+          const SizedBox(height: _titleGap),
+        ],
+        Text(
+          title,
+          style: AppText.support(
+            mood: mood,
+            face: AppFace.control,
+            color: mood.ink,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// The trailing mark: a lock, a chevron, or the replay arrow.
+  Widget _mark(MoodColors mood) {
+    if (locked) {
+      return IconMark(AppIcon.lock, size: _lockSize, color: mood.inkMute);
+    }
+    if (starts) return IconMark(AppIcon.chevron, color: mood.inkMute);
+    return ReplayMark(size: _markSize, color: mood.inkMute);
+  }
+
+  /// The design's `aria-label`: the lines as one sentence, then what the tap
+  /// does.
   String _announcement(AppLocalizations strings) {
-    final lines = [title, sub, ?meta].join('. ');
-    return locked
-        ? '$lines. ${LockedRowCopy.partOfFoundations}.'
+    final lines = [title, ?sub].join('. ');
+    if (locked) return '$lines. ${LockedRowCopy.partOfFoundations}.';
+    return starts
+        ? strings.practicePlaySpoken(lines)
         : strings.practiceReplaySpoken(lines);
   }
 }

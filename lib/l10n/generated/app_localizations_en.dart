@@ -575,9 +575,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get miniGameFullCourse => 'This game comes with the full course.';
 
   @override
-  String get miniGameFree => 'Free';
-
-  @override
   String get miniGameLockedHint => 'Shows the module that teaches it';
 
   @override
@@ -721,15 +718,23 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String practiceMinutes(int minutes) {
-    return '~$minutes min';
+  String practicePlaySpoken(String lines) {
+    return '$lines. Play.';
   }
 
   @override
-  String get practiceFree => 'Free';
+  String practiceSubGroupSpoken(String label, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$label. $_temp0.';
+  }
 
   @override
-  String get practiceTwoMinutes => '~2 min';
+  String get practiceDrillEyebrow => 'Dictionary';
 
   @override
   String todayBeginSpoken(String label, String title) {
@@ -876,9 +881,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get flashcardsPracticeRowEyebrow => 'Flip and recall';
 
   @override
   String get vocabTitle => 'Guess the term';
