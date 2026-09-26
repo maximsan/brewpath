@@ -10,6 +10,7 @@ import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/practice_group.dart';
 import 'package:brew_path/features/learn/domain/practice_group_providers.dart';
 import 'package:brew_path/features/learn/presentation/today_card_widget.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,7 +87,11 @@ Future<void> _pump(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [companionLinesProvider.overrideWith((ref) async => _lines)],
-      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+      child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        routerConfig: router,
+      ),
     ),
   );
   // Fixed pumps rather than pumpAndSettle: the acknowledged state's Roasty
@@ -167,6 +172,7 @@ void main() {
       MediaQuery(
         data: const MediaQueryData(disableAnimations: true),
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const Scaffold(
             body: TodayCardWidget(today: null, keepSharp: _miniGames),
@@ -233,6 +239,7 @@ void main() {
         child: MediaQuery(
           data: const MediaQueryData(disableAnimations: true),
           child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             home: const Scaffold(
               body: TodayCardWidget(
@@ -312,6 +319,7 @@ void main() {
           textScaler: TextScaler.linear(_largeTextScale),
         ),
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const Scaffold(
             // Scrolls like the Learn screen does, so only a sideways

@@ -1,5 +1,6 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/bean_gauge.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,6 +9,7 @@ const _muted = Color(0xFFB59E84);
 const _ink = Color(0xFFF3E7D2);
 
 Widget _app(Widget child) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.darkRoast,
   home: Scaffold(body: Center(child: child)),
 );

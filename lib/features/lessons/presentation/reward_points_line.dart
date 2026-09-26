@@ -1,5 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -35,7 +36,7 @@ class RewardPointsLine extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: gapAbove),
       child: Semantics(
-        label: '$points points earned',
+        label: context.strings.rewardPointsSpoken(points),
         excludeSemantics: true,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -43,7 +44,7 @@ class RewardPointsLine extends StatelessWidget {
             IconMark(AppIcon.bean, size: beanSize, color: mood.accent),
             const SizedBox(width: AppSpacing.xs),
             Text(
-              '+$points PTS',
+              context.strings.rewardPointsLine(points),
               style: AppText.support(
                 mood: mood,
                 color: mood.ink,

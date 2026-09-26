@@ -1,3 +1,4 @@
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_kind_help.dart';
 import 'package:brew_path/shared/repositories/card_kind_help_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -12,40 +13,49 @@ part 'card_cue.g.dart';
 /// open on their own authored eyebrow and take no cue at all.
 enum CardCue {
   /// Pick one of four.
-  mcq('Multiple choice · pick one'),
+  mcq,
 
   /// Pick every answer that belongs, then check them together.
-  multi('Select all that apply'),
+  multi,
 
   /// Drag each trait onto what it belongs to.
-  match('Match · drag to pair'),
+  match,
 
   /// Dial a slider to where the answer lands.
-  slider('Calibrate · dial to the target'),
+  slider,
 
   /// Tap the items into their right order.
-  sequence('Put in order · tap in sequence'),
+  sequence,
 
   /// Decide whether a statement holds.
-  quiz('True or false'),
+  quiz,
 
   /// Name the note behind a tasting clue.
-  flavor('Tasting · name the note'),
+  flavor,
 
   /// Choose the fix for a cup that came out wrong.
-  tastefix('Taste Fix'),
+  tastefix,
 
   /// Call the process from an unlabelled bag's beans.
-  bagpick('Blind bag · read the beans'),
+  bagpick,
 
   /// Fill the blanks in a sentence.
-  fill('Complete the sentence');
-
-  const CardCue(this.phrase);
+  fill;
 
   /// What the cue reads, as the design writes it. Set upper case by the type
   /// rule rather than here, so assistive technology is given it as written.
-  final String phrase;
+  String phrase(AppLocalizations strings) => switch (this) {
+    CardCue.mcq => strings.cardCueMcq,
+    CardCue.multi => strings.cardCueMulti,
+    CardCue.match => strings.cardCueMatch,
+    CardCue.slider => strings.cardCueSlider,
+    CardCue.sequence => strings.cardCueSequence,
+    CardCue.quiz => strings.cardCueQuiz,
+    CardCue.flavor => strings.cardCueFlavor,
+    CardCue.tastefix => strings.cardCueTastefix,
+    CardCue.bagpick => strings.cardCueBagpick,
+    CardCue.fill => strings.cardCueFill,
+  };
 
   /// The `kind` this cue's entry carries in the bundled help bank, which is
   /// the enum's own name for all ten.

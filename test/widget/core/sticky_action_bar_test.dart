@@ -2,6 +2,7 @@ import 'dart:ui' show Tristate;
 
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/sticky_action_bar.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,7 @@ Widget _host(
   // defaulting the callback would quietly make that case untestable.
   bool enabled = true,
 }) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: darkRoast ? AppTheme.darkRoast : AppTheme.cupping,
   home: Scaffold(
     body: StickyActionBar(

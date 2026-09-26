@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/progress/domain/streak_week.dart';
 import 'package:brew_path/features/progress/presentation/freeze_mark.dart';
 import 'package:brew_path/features/progress/presentation/week_strip.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,6 +28,7 @@ Future<void> _pump(
     MediaQuery(
       data: MediaQueryData(disableAnimations: disableAnimations),
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: Scaffold(
           body: Center(

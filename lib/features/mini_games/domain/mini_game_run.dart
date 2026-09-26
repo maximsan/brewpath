@@ -7,33 +7,14 @@ library;
 
 import 'package:brew_path/core/utils/drill_bands.dart';
 import 'package:brew_path/features/lessons/domain/card_seed.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 
 /// The games whose kind renderers exist in this build.
 ///
-/// The catalog lists every game and every row opens its intro; this decides
-/// only whether that intro can start a run, and games joined the set as their
-/// sibling slices landed. Keeping it a registry rather than a card-kind lookup
-/// means a game is playable only when someone says so, not incidentally
-/// because its kind happens to render.
-///
-/// **It now holds the whole catalog** — every one of the 13 games plays, as of
-/// `slider` and `sequence` (#124). That is the state it was built to reach, not
-/// a reason to delete it: the next game authored lands here unruled, and the
-/// guard test says so.
-///
-/// Read by the intro's action and by Keep Sharp, which must never recommend a
-/// game that cannot run. Deliberately *not* read by the catalog row — a row
-/// greyed for a missing renderer is indistinguishable from one behind a
-/// paywall.
-///
-/// **An allowlist has one failure mode, and it has already happened.** A game
-/// added to the catalog does not join this set, and nothing notices: the two
-/// topic-slugged siblings below rendered from the day they were authored and
-/// sat here unplayable for want of a line, because they entered the catalog
-/// three days after this set was last written (#311). The guard test pairs
-/// this set with [deliberatelyNotPlayable] so the next catalog addition fails
-/// the suite until someone rules on it — which is the "someone said so"
-/// property this list exists for, restated as something a build can check.
+/// A registry, so a game is playable only when someone says so; read by the
+/// intro's action and Keep Sharp, never by a row that would look paywalled.
+/// Holds the whole catalog as of #124; two games once sat unplayable for want
+/// of a line (#311), so the guard test pairs it with [deliberatelyNotPlayable].
 const Set<String> playableMiniGameIds = {
   'g-quiz',
   'g-match',
@@ -63,10 +44,8 @@ const Set<String> playableMiniGameIds = {
 /// Games that have rounds to play, kept out of [playableMiniGameIds] on
 /// purpose.
 ///
-/// Empty, and that is the point: an exclusion here is a *decision with a
-/// reason attached*, where an absence from the set above is indistinguishable
-/// from an oversight. Anything with rounds that is in neither place fails the
-/// guard test.
+/// Empty, and that is the point: an exclusion here carries a reason, where an
+/// absence from the set above is indistinguishable from an oversight.
 const Map<String, String> deliberatelyNotPlayable = <String, String>{};
 
 /// Mints the nonce for one run. One draw per run, held for its duration and
@@ -83,12 +62,16 @@ List<T> roundsForRun<T>(List<T> rounds, int nonce) =>
     shuffledBySeed(rounds, nonce);
 
 /// The supporting line under the score.
-String runEncouragement({required int score, required int total}) {
-  if (total == 0) return 'Nothing to play here yet.';
-  if (score == total) return 'A clean sweep. Every one of them.';
+String runEncouragement(
+  AppLocalizations strings, {
+  required int score,
+  required int total,
+}) {
+  if (total == 0) return strings.drillNothingToPlay;
+  if (score == total) return strings.drillCleanSweep;
   if (isCelebratoryScore(score: score, total: total)) {
-    return 'Sharp work — that is the mark.';
+    return strings.drillSharpWork;
   }
-  if (score == 0) return 'Every one of these is worth another look.';
-  return 'Worth another run — the explanations stick.';
+  if (score == 0) return strings.drillAllMissed;
+  return strings.drillWorthAnotherRun;
 }

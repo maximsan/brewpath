@@ -13,6 +13,7 @@ import 'package:brew_path/features/lessons/presentation/cards/card_scroll.dart';
 import 'package:brew_path/features/lessons/presentation/cards/content_card_view.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/services/analytics/analytics_provider.dart';
 import 'package:brew_path/shared/models/content/content_card_grading.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
@@ -148,14 +149,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
     return RoastMeter(
       position: _index + 1,
       total: cards.length,
-      semanticsLabel: 'Card ${_index + 1} of ${cards.length}',
+      semanticsLabel: context.strings.lessonCardOfCount(
+        _index + 1,
+        cards.length,
+      ),
     );
   }
 
   Widget _buildBody(BuildContext context, AsyncSnapshot<LessonModel?> snap) {
     if (snap.connectionState != ConnectionState.done) {
       return Semantics(
-        label: 'Loading the lesson',
+        label: context.strings.lessonLoading,
         child: const LoadingIndicator(),
       );
     }
@@ -163,14 +167,14 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
 
     final lesson = snap.data;
     if (lesson == null) {
-      return const ErrorView(message: 'Lesson not found');
+      return ErrorView(message: context.strings.lessonNotFound);
     }
 
     if (lesson.cards.isEmpty) {
       return Semantics(
-        label: 'This lesson has no cards.',
+        label: context.strings.lessonNoCards,
         excludeSemantics: true,
-        child: const ErrorView(message: 'This lesson has no cards.'),
+        child: ErrorView(message: context.strings.lessonNoCards),
       );
     }
 
@@ -181,14 +185,17 @@ class _LessonScreenState extends ConsumerState<LessonScreen> {
   Widget _lessonContent(LessonModel lesson) {
     final card = contentCardView(
       lesson.cards[_index],
+      strings: context.strings,
       seed: cardSeed(nonce: _nonce, cardIndex: _index),
-      onSolved: _onSolved,
-      onContinue: () => _onContinue(lesson),
-      guess: GuessLoop(
-        held: _prediction,
-        // No `setState`: the card that took the guess is already showing it,
-        // and nothing else on screen reads it until the recall card mounts.
-        onGuess: (guess) => _prediction = guess,
+      host: (
+        onSolved: _onSolved,
+        onContinue: () => _onContinue(lesson),
+        guess: GuessLoop(
+          held: _prediction,
+          // No `setState`: the card that took the guess is already showing it,
+          // and nothing else on screen reads it until the recall card mounts.
+          onGuess: (guess) => _prediction = guess,
+        ),
       ),
     );
 

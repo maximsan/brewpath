@@ -1,5 +1,6 @@
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // The guess is compared by string, because that is what the predict card takes
@@ -31,14 +32,20 @@ void main() {
   group('the spoken payoff', () {
     test('names the guess once when it landed', () {
       expect(
-        spokenPayoff(const HeldGuess(pick: 'Seed', answer: 'Seed')),
+        spokenPayoff(
+          AppLocalizationsEn(),
+          const HeldGuess(pick: 'Seed', answer: 'Seed'),
+        ),
         'Before the lesson you guessed Seed — and you were right.',
       );
     });
 
     test('names the guess and then the answer when it missed', () {
       expect(
-        spokenPayoff(const HeldGuess(pick: 'Skin', answer: 'Seed')),
+        spokenPayoff(
+          AppLocalizationsEn(),
+          const HeldGuess(pick: 'Skin', answer: 'Seed'),
+        ),
         "Before the lesson you guessed Skin. It's Seed — now you know why.",
       );
     });
@@ -47,6 +54,7 @@ void main() {
       // The flat reading is what a screen reader gets, so both words have to
       // be in it: a `WidgetSpan` announces nothing at all.
       final spoken = spokenPayoff(
+        AppLocalizationsEn(),
         const HeldGuess(pick: 'Skin', answer: 'Seed'),
       );
 

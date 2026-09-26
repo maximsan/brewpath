@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/dictionary/presentation/term_self_check.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ const _check = DictionaryCheck(
 );
 
 Widget _harness({required bool disableAnimations}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.cupping,
   home: MediaQuery(
     data: MediaQueryData(disableAnimations: disableAnimations),

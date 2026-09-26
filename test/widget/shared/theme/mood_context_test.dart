@@ -2,6 +2,7 @@
 // app's two themes carry them, and anything else fails at once rather than
 // painting one mood's tokens on the other mood's page.
 import 'package:brew_path/app/app_theme.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +23,11 @@ class _MoodProbe extends StatelessWidget {
 Future<MoodColors?> _readMood(WidgetTester tester, {ThemeData? theme}) async {
   MoodColors? read;
   await tester.pumpWidget(
-    MaterialApp(theme: theme, home: _MoodProbe((mood) => read = mood)),
+    MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      theme: theme,
+      home: _MoodProbe((mood) => read = mood),
+    ),
   );
   // A theme change crossfades, and the mood mid-fade is a blend of both.
   await tester.pumpAndSettle();
@@ -69,7 +74,11 @@ void main() {
       (AppTheme.darkRoast, MoodColors.darkRoast),
     ]) {
       await tester.pumpWidget(
-        MaterialApp(theme: theme, home: const Scaffold()),
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          theme: theme,
+          home: const Scaffold(),
+        ),
       );
       await tester.pumpAndSettle();
 

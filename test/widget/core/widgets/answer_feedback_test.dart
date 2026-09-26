@@ -3,6 +3,7 @@ import 'package:brew_path/core/widgets/answer_feedback.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/dictionary/domain/dictionary_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -23,6 +24,7 @@ Widget _host(Widget child, {bool reduceMotion = false}) => ProviderScope(
     dictionaryViewProvider.overrideWith((ref) async => _emptyDictionary),
   ],
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: MediaQuery(
       data: MediaQueryData(disableAnimations: reduceMotion),

@@ -11,6 +11,7 @@ import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_setup.dart';
 import 'package:brew_path/features/learn/domain/practice_group.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
 import 'package:flutter/foundation.dart';
 
@@ -70,24 +71,25 @@ typedef KeepSharpCopy = ({String title, String rule});
 
 /// The copy table, authored once against the product rulings (§5/§6) so the
 /// rule text cannot drift between surfaces.
-KeepSharpCopy keepSharpCopyFor(PracticeType type) => switch (type) {
-  PracticeType.miniGames => (
-    title: 'Mini-games',
-    rule: 'Play two different games today.',
-  ),
-  PracticeType.vocabGame => (
-    title: 'Vocab game',
-    rule: 'Finish one vocab round.',
-  ),
-  PracticeType.flashcards => (
-    title: 'Flashcards',
-    rule: 'Review your saved terms.',
-  ),
-  PracticeType.lessonReplay => (
-    title: 'Replay a lesson',
-    rule: "Finish a replay of any lesson you've completed.",
-  ),
-};
+KeepSharpCopy keepSharpCopyFor(AppLocalizations strings, PracticeType type) =>
+    switch (type) {
+      PracticeType.miniGames => (
+        title: strings.keepSharpMiniGamesTitle,
+        rule: strings.keepSharpMiniGamesRule,
+      ),
+      PracticeType.vocabGame => (
+        title: strings.keepSharpVocabTitle,
+        rule: strings.keepSharpVocabRule,
+      ),
+      PracticeType.flashcards => (
+        title: strings.keepSharpFlashcardsTitle,
+        rule: strings.keepSharpFlashcardsRule,
+      ),
+      PracticeType.lessonReplay => (
+        title: strings.keepSharpReplayTitle,
+        rule: strings.keepSharpReplayRule,
+      ),
+    };
 
 /// What Keep Sharp's Start does for the day's type.
 ///
@@ -138,9 +140,8 @@ typedef KeepSharpResolution = ({PracticeType type, KeepSharpStart start});
 /// Everything the rotation is asked of — one value, not one parameter per
 /// practice type.
 ///
-/// It travels as a clump because it is one: every field is material some
-/// type's eligibility rule reads, gathered from one place and passed to one
-/// function.
+/// Every field is material some type's eligibility rule reads, gathered from
+/// one place and passed to one function.
 typedef PracticeMaterial = ({
   /// The mini-game formats this build can actually run.
   List<String> playableFormatIds,
@@ -158,9 +159,8 @@ typedef PracticeMaterial = ({
 /// The whole recommendation, as a function of the day and the learner's
 /// material. No clock, no storage, no widgets — the caller supplies the day.
 ///
-/// **Eligibility is the type's own rule, asked of the material.** Mini-games
-/// need [miniGamesPerQualifyingDay] playable formats, because that is what the
-/// card's rule demands and a card must never ask for the impossible.
+/// Eligibility is the type's own rule asked of the material, so a card never
+/// asks for something the learner's material makes impossible.
 KeepSharpResolution? keepSharpResolutionFor({
   required int dayNumber,
   required PracticeMaterial material,

@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/profile/presentation/widgets/lesson_progress_rollup.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/progress/domain/mastery_rollup.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,6 +20,7 @@ void main() {
   }) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Scaffold(
           body: LessonProgressRollup(

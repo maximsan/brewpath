@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/ghost_button.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -44,6 +45,7 @@ void main() {
     VoidCallback? onPressed,
   }) => tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: theme,
       home: Scaffold(
         body: Center(
@@ -114,6 +116,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Scaffold(
           body: Column(
@@ -139,6 +142,7 @@ void main() {
     // its own shape it would render there as Material's pill.
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: Scaffold(
           body: GhostButton(label: 'Skip', onPressed: () {}),

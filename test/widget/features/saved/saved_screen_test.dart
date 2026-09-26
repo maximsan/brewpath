@@ -10,6 +10,7 @@ import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
 import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -29,7 +30,11 @@ const _guides = 'VISUAL GUIDES';
 /// The shelf against the **real** content banks, so a row's title and subtitle
 /// are the ones a learner would actually see rather than a fixture's.
 Widget _wrap() => ProviderScope(
-  child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    theme: AppTheme.cupping,
+    home: const SavedScreen(),
+  ),
 );
 
 /// Pumps the shelf for a learner who owns Plus.
@@ -41,7 +46,11 @@ Future<void> _pumpAsPlus(WidgetTester tester) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        home: const SavedScreen(),
+      ),
     ),
   );
   await settleLoaders(tester);
@@ -68,7 +77,11 @@ Future<void> _pumpWithGuides(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        home: const SavedScreen(),
+      ),
     ),
   );
   await settleLoaders(tester);

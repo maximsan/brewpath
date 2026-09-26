@@ -8,6 +8,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/cards/presentation/card_art_mark.dart';
 import 'package:brew_path/features/cards/presentation/card_art_well.dart';
 import 'package:brew_path/features/cards/presentation/card_tint.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/art_colors.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ const MoodColors _mood = MoodColors.darkRoast;
 
 Future<void> _pump(WidgetTester tester, Widget child) => tester.pumpWidget(
   MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.darkRoast,
     home: Scaffold(
       body: Center(child: SizedBox(width: 150, child: child)),
@@ -203,6 +205,7 @@ void main() {
         final boundary = GlobalKey();
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             home: Scaffold(
               body: Center(

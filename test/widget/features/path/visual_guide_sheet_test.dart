@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/path/presentation/visual_guide_sheet.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,7 @@ Future<void> _open(WidgetTester tester, VisualGuide guide) async {
   await pumpWithProviders(
     tester,
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(body: VisualGuideSheetBody(guide: guide)),
     ),

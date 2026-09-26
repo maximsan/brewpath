@@ -1,4 +1,5 @@
 import 'package:brew_path/features/lessons/presentation/cards/grinder_dial.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,10 @@ const double _maxWidth = 300;
 
 /// The grinder's adjustment collar, reading back the setting in clicks.
 ///
-/// An illustration, not a control: it takes the value the track below it holds
-/// and shows what that setting looks like on the part itself. It is kept out of
-/// the semantics tree for the same reason — the slider is what a screen reader
-/// should meet, and a second reading of the same setting would only be
-/// something to scrub past.
-///
-/// Holds no logic of its own: every coordinate comes from `grinder_dial.dart`,
-/// so this widget and its painter are only strokes. What is worth testing about
-/// the dial is tested there, without a canvas.
+/// An illustration, not a control, and kept out of the semantics tree for the
+/// same reason: the slider is what a screen reader should meet. It holds no
+/// logic — every coordinate comes from `grinder_dial.dart`, where what is
+/// worth testing about the dial is tested without a canvas.
 class GrinderDialView extends StatelessWidget {
   /// Creates a [GrinderDialView].
   const GrinderDialView({required this.value, super.key});
@@ -38,6 +34,7 @@ class GrinderDialView extends StatelessWidget {
               painter: _GrinderDialPainter(
                 value: value,
                 mood: mood,
+                unitLabel: context.strings.grinderClicksUnit,
                 clicksStyle: _clicksStyle(mood),
                 unitStyle: _unitStyle(mood),
               ),
@@ -72,6 +69,7 @@ class _GrinderDialPainter extends CustomPainter {
   const _GrinderDialPainter({
     required this.value,
     required this.mood,
+    required this.unitLabel,
     required this.clicksStyle,
     required this.unitStyle,
   });
@@ -87,6 +85,10 @@ class _GrinderDialPainter extends CustomPainter {
 
   final double value;
   final MoodColors mood;
+
+  /// The unit under the number. A painter has no context, so it is handed the
+  /// word rather than reading it.
+  final String unitLabel;
   final TextStyle clicksStyle;
   final TextStyle unitStyle;
 
@@ -152,7 +154,7 @@ class _GrinderDialPainter extends CustomPainter {
       clicksStyle,
       grinderClicksBaseline,
     );
-    _paintCentred(canvas, 'CLICKS', unitStyle, grinderUnitBaseline);
+    _paintCentred(canvas, unitLabel, unitStyle, grinderUnitBaseline);
   }
 
   /// Draws [text] centred on the face, sitting on a baseline [offsetY] below
@@ -187,5 +189,5 @@ class _GrinderDialPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GrinderDialPainter old) =>
-      old.value != value || old.mood != mood;
+      old.value != value || old.mood != mood || old.unitLabel != unitLabel;
 }

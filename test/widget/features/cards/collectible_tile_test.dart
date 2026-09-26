@@ -6,6 +6,7 @@ import 'package:brew_path/features/cards/presentation/card_tint.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/challenges/domain/card_challenge_state.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,6 +44,7 @@ Future<void> _pump(
         ),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: const CardsScreen(),
       ),

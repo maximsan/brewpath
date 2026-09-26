@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_stat_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ void main() {
         completedChallengesProvider.overrideWith((ref) async => done),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: const Scaffold(body: ChallengeStatRow()),
       ),

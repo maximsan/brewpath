@@ -4,6 +4,7 @@ import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/widgets/disclosure.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +91,7 @@ class _PracticeSubGroupState extends State<PracticeSubGroup> {
     return Disclosure(
       isOpen: _open,
       onToggle: _toggle,
-      semanticsLabel: _announcement,
+      semanticsLabel: _announcement(context),
       glyphSize: DisclosureMark.sectionCaretSize,
       headerPadding: PracticeSubGroup._headerPadding,
       headerMinHeight: PracticeSubGroup._headerMinHeight,
@@ -130,12 +131,13 @@ class _PracticeSubGroupState extends State<PracticeSubGroup> {
 
   /// The design's `aria-label`: the name, the count, and — for a locked
   /// sub-group — the locked-row register's words (ADR-0016).
-  String get _announcement {
-    final count = widget.count;
-    final items = count == 1 ? 'item' : 'items';
-    final lockedWords = widget.locked
-        ? ' ${LockedRowCopy.partOfFoundations}.'
-        : '';
-    return '${widget.label}. $count $items.$lockedWords';
+  String _announcement(BuildContext context) {
+    final spoken = context.strings.practiceSubGroupSpoken(
+      widget.label,
+      widget.count,
+    );
+    return widget.locked
+        ? '$spoken ${LockedRowCopy.partOfFoundations}.'
+        : spoken;
   }
 }

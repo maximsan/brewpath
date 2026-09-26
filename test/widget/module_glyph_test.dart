@@ -3,11 +3,13 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/module_glyph.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Widget _app(Widget child, {ThemeData? theme}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: theme ?? AppTheme.darkRoast,
   home: Scaffold(body: Center(child: child)),
 );

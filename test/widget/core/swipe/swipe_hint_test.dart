@@ -4,6 +4,7 @@ import 'package:brew_path/core/swipe/swipe_hint.dart';
 import 'package:brew_path/core/swipe/swipe_hint_caption.dart';
 import 'package:brew_path/core/swipe/swipe_hint_timing.dart';
 import 'package:brew_path/core/swipe/swipe_surface.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/settings_repository.dart';
 import 'package:brew_path/shared/storage/id_set.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ SwipeHintState? _handedOver;
 
 Widget _app({bool reduceMotion = false, bool enabled = true}) => ProviderScope(
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.darkRoast,
     home: MediaQuery(
       data: MediaQueryData(disableAnimations: reduceMotion),

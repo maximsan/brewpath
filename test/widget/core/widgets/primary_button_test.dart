@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/primary_button.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,6 +22,7 @@ void main() {
 
   Future<void> pump(WidgetTester tester, Widget button) => tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.cupping,
       home: Scaffold(body: Center(child: button)),
     ),

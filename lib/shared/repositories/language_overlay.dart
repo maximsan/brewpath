@@ -27,6 +27,14 @@ const String nativeReviewedField = 'nativeReviewed';
 /// *prose* being silently replaced, which these are not.
 const Set<String> searchKeyFields = {'aliases'};
 
+/// Fields a language owns outright, which never fall back to English.
+///
+/// The two ADR-0025 gives the language rather than the master: a respelling
+/// nobody is owed, and the inflected forms only it knows. Neither is prose,
+/// so ADR-0027's reason to keep English — that the reader keeps reading —
+/// does not reach them, and English would be an answer they never gave.
+const Set<String> fieldsThatNeverFallBack = {'pron', 'aliases'};
+
 /// The translation tool's bookkeeping, stripped before a model sees a record.
 ///
 /// It travels in the folder because the folder is both what the owner reviews
@@ -39,10 +47,9 @@ const Set<String> bookkeepingFields = {
 
 /// [master]'s records with [translated]'s text laid over them, by id.
 ///
-/// Per field at every depth: a translated field wins and anything omitted
-/// stays English. Only an omission falls back — a short list or an unknown
-/// field would replace text rather than fall back, so both are refused the
-/// way ADR-0018 refuses broken content.
+/// Per field at every depth: a translated field wins, anything omitted stays
+/// English bar the fields a language owns outright, and a short list or an
+/// unknown field is refused the way ADR-0018 refuses broken content.
 List<Map<String, dynamic>> overlayTranslations({
   required List<Map<String, dynamic>> master,
   required List<Map<String, dynamic>> translated,
@@ -85,13 +92,16 @@ Map<String, dynamic> _mergeRecord(
 /// [master]'s fields with [translation]'s written over them, bookkeeping gone.
 ///
 /// [where] names the entry and the field path under it, so a refusal says
-/// which piece of text to redraft rather than which file.
+/// which piece of text to redraft rather than which file. A field that never
+/// falls back is matched by bare name at every depth and drops the master's
+/// own value, so such a name must mean one thing in every bank.
 Map<String, dynamic> _mergeMap(
   Map<String, dynamic> master,
   Map<String, dynamic> translation,
   String where,
 ) {
-  final merged = <String, dynamic>{...master};
+  final merged = <String, dynamic>{...master}
+    ..removeWhere((field, _) => fieldsThatNeverFallBack.contains(field));
   for (final field in translation.entries) {
     if (bookkeepingFields.contains(field.key)) continue;
     if (!master.containsKey(field.key)) {
@@ -100,6 +110,9 @@ Map<String, dynamic> _mergeMap(
         '— check it against the English bank, because a misspelt key leaves '
         'the real one in English',
       );
+    }
+    if (field.value == null && fieldsThatNeverFallBack.contains(field.key)) {
+      continue;
     }
     merged[field.key] = _mergeValue(
       master[field.key],

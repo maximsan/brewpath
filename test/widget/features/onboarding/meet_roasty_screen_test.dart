@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/companion/domain/roasty_state.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,7 @@ Future<void> _pumpMeetRoasty(WidgetTester tester) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         routerConfig: introRouter(initialLocation: '/meet-roasty'),
       ),

@@ -7,6 +7,7 @@
 library;
 
 import 'package:brew_path/core/icons/app_icon.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 
 /// One kind of mini-game, how the shelf names it, and the mark it heads with.
@@ -14,15 +15,11 @@ class MiniGameKind {
   /// Creates a [MiniGameKind].
   const MiniGameKind({
     required this.kind,
-    required this.label,
     required this.mark,
   });
 
   /// The `kind` a catalog entry carries.
   final String kind;
-
-  /// What the group heading reads.
-  final String label;
 
   /// The design's glyph for this kind. Required rather than optional: a
   /// heading with a mark beside three without one reads as a rendering fault,
@@ -33,14 +30,28 @@ class MiniGameKind {
 
 /// Every kind the catalog groups by, in the order the shelf shows them.
 const List<MiniGameKind> miniGameKinds = [
-  MiniGameKind(kind: 'match', label: 'Match', mark: AppIcon.match),
-  MiniGameKind(kind: 'quiz', label: 'True or false', mark: AppIcon.quiz),
-  MiniGameKind(kind: 'flavor', label: 'Name the note', mark: AppIcon.flavour),
-  MiniGameKind(kind: 'bagpick', label: 'Blind bag', mark: AppIcon.bagpick),
-  MiniGameKind(kind: 'tastefix', label: 'Taste fix', mark: AppIcon.tastefix),
-  MiniGameKind(kind: 'slider', label: 'Calibrate', mark: AppIcon.slider),
-  MiniGameKind(kind: 'sequence', label: 'Sequence', mark: AppIcon.sequence),
+  MiniGameKind(kind: 'match', mark: AppIcon.match),
+  MiniGameKind(kind: 'quiz', mark: AppIcon.quiz),
+  MiniGameKind(kind: 'flavor', mark: AppIcon.flavour),
+  MiniGameKind(kind: 'bagpick', mark: AppIcon.bagpick),
+  MiniGameKind(kind: 'tastefix', mark: AppIcon.tastefix),
+  MiniGameKind(kind: 'slider', mark: AppIcon.slider),
+  MiniGameKind(kind: 'sequence', mark: AppIcon.sequence),
 ];
+
+/// What the group heading for [kind] reads, or the raw kind for one the
+/// catalog has grown since.
+String miniGameKindLabel(AppLocalizations strings, String kind) =>
+    switch (kind) {
+      'match' => strings.miniGameKindMatch,
+      'quiz' => strings.miniGameKindQuiz,
+      'flavor' => strings.miniGameKindFlavor,
+      'bagpick' => strings.miniGameKindBagpick,
+      'tastefix' => strings.miniGameKindTastefix,
+      'slider' => strings.miniGameKindSlider,
+      'sequence' => strings.miniGameKindSequence,
+      _ => kind,
+    };
 
 /// One group as the shelf renders it: a heading, and the games under it.
 class MiniGameGroup {
@@ -65,12 +76,13 @@ class MiniGameGroup {
 
 /// [formats] arranged into kind groups, in [miniGameKinds] order.
 ///
-/// Empty groups are dropped, so a kind with no games leaves no heading behind.
-/// A game whose kind is not in [miniGameKinds] is **not** discarded — it lands
-/// in a trailing group named by its own kind, because a catalog that silently
-/// loses a game is worse than one with an ugly heading. The unit test asserts
-/// no shipped game needs that fallback.
-List<MiniGameGroup> groupCatalogByKind(List<MiniGameFormat> formats) {
+/// Empty groups are dropped. A game of an unknown kind lands in a trailing
+/// group named by its own kind rather than being discarded, because a catalog
+/// that silently loses a game is worse than one with an ugly heading.
+List<MiniGameGroup> groupCatalogByKind(
+  AppLocalizations strings,
+  List<MiniGameFormat> formats,
+) {
   final known = {for (final kind in miniGameKinds) kind.kind};
   final groups = <MiniGameGroup>[];
 
@@ -81,7 +93,11 @@ List<MiniGameGroup> groupCatalogByKind(List<MiniGameFormat> formats) {
     ];
     if (games.isNotEmpty) {
       groups.add(
-        MiniGameGroup(label: kind.label, games: games, mark: kind.mark),
+        MiniGameGroup(
+          label: miniGameKindLabel(strings, kind.kind),
+          games: games,
+          mark: kind.mark,
+        ),
       );
     }
   }

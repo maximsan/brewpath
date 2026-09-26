@@ -9,13 +9,11 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_bank.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_fill_state.dart';
 import 'package:brew_path/features/lessons/presentation/cards/concept_meta_table.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
-
-/// The verdict when every blank was filled with its answer.
-const String _allCorrect = 'All correct';
 
 /// The teaching card: a fill-in-the-blank sentence, prose, and a meta table.
 ///
@@ -99,7 +97,9 @@ class _ConceptCardViewState extends State<ConceptCardView> {
         ),
         if (_checked) ...[
           AnswerFeedback(
-            verdict: _allRight ? _allCorrect : notQuiteVerdict,
+            verdict: _allRight
+                ? context.strings.cardAllCorrect
+                : context.strings.verdictNotQuite,
             outcome: _allRight ? Verdict.right : Verdict.wrong,
             // The design hands the block the card's *second* paragraph: a
             // reply to a checked answer rather than prose.

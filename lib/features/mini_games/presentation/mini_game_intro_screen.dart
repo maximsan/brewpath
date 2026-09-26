@@ -12,6 +12,7 @@ import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_providers.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_run.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -23,9 +24,6 @@ import 'package:go_router/go_router.dart';
 /// Where the design opens this page, measured from the top of the screen —
 /// `padding-top: 108`.
 const double _designScrollPad = 108;
-
-/// The line the design opens the body on, where the bar used to say it.
-const String _kicker = 'Mini-game';
 
 /// What the game is and how it is played, before any round runs.
 ///
@@ -57,28 +55,28 @@ class MiniGameIntroScreen extends ConsumerWidget {
               ? context.pop()
               : context.goNamed(AppRoutes.learn.name),
         ),
-        child: _intro(format),
+        child: _intro(context, format),
       ),
     );
   }
 
-  Widget _intro(AsyncValue<MiniGameFormat?> format) {
+  Widget _intro(BuildContext context, AsyncValue<MiniGameFormat?> format) {
     return format.when(
       loading: () => Semantics(
-        label: 'Loading the mini-game',
+        label: context.strings.miniGameLoading,
         child: const LoadingIndicator(),
       ),
       error: (error, _) => Semantics(
-        label: 'That mini-game could not be loaded.',
+        label: context.strings.miniGameLoadFailed,
         excludeSemantics: true,
         child: ErrorView(message: '$error'),
       ),
       data: (data) => data == null
           ? Semantics(
-              label: 'That mini-game is not in the catalog.',
+              label: context.strings.miniGameNotInCatalog,
               excludeSemantics: true,
-              child: const ErrorView(
-                message: 'That mini-game is not in the catalog.',
+              child: ErrorView(
+                message: context.strings.miniGameNotInCatalog,
               ),
             )
           : _Intro(format: data),
@@ -116,7 +114,7 @@ class _Intro extends StatelessWidget {
                   // and files the module the game drills on the catalog row
                   // that reached it. It stood in the bar until #525 took the
                   // bar's title away.
-                  const SmallcapsLabel(_kicker),
+                  SmallcapsLabel(context.strings.miniGameKicker),
                   const SizedBox(height: AppSpacing.xxs),
                   Semantics(
                     header: true,
@@ -136,7 +134,7 @@ class _Intro extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
-                    'HOW TO PLAY',
+                    context.strings.miniGameHowToPlay,
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: mood.inkMute,
                     ),
@@ -208,7 +206,9 @@ class _Intro extends StatelessWidget {
       AppSpacing.lg,
     ),
     child: PrimaryButton(
-      label: _isPlayable ? 'Play' : 'Not playable yet',
+      label: _isPlayable
+          ? context.strings.miniGamePlay
+          : context.strings.miniGameNotPlayable,
       onPressed: _isPlayable ? () => unawaited(_play(context)) : null,
     ),
   );

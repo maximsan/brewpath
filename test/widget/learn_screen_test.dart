@@ -4,6 +4,7 @@ import 'package:brew_path/core/widgets/module_glyph.dart';
 import 'package:brew_path/features/learn/domain/keep_sharp_providers.dart';
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/presentation/learn_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +44,11 @@ Future<void> _pumpLearn(WidgetTester tester, {LessonModel? today}) async {
         keepSharpRecommendationProvider.overrideWith((ref) async => null),
         keepSharpAcknowledgedTodayProvider.overrideWith((ref) async => false),
       ],
-      child: MaterialApp(theme: AppTheme.cupping, home: const LearnScreen()),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        home: const LearnScreen(),
+      ),
     ),
   );
   await tester.pumpAndSettle();

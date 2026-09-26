@@ -5,6 +5,7 @@ import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           routerConfig: router,
         ),

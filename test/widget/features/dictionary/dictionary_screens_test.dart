@@ -14,6 +14,7 @@ import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/monetization/domain/plus_gate_trigger.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch.dart';
 import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
@@ -106,7 +107,11 @@ Widget _wrap(Widget child, {DictionaryView? view}) => ProviderScope(
     ),
     plusPitchProvider.overrideWith((ref) async => _pitch),
   ],
-  child: MaterialApp(theme: AppTheme.cupping, home: child),
+  child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    theme: AppTheme.cupping,
+    home: child,
+  ),
 );
 
 void main() {

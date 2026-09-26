@@ -6,14 +6,14 @@
 /// widget pumped to check.
 library;
 
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+
 /// Whether [selected] is exactly the set of correct choices.
 ///
-/// All-or-nothing, which is the boundary's rule and not this card's invention:
-/// a fraction would have to mean something to mastery, and mastery counts
-/// whole cards. See `card_boundary.dart`.
-///
-/// A subset fails, a superset fails, and a wrong set of the right size fails —
-/// so neither picking cautiously nor picking everything is a strategy.
+/// All-or-nothing, the boundary's rule rather than this card's invention
+/// (`card_boundary.dart`). A subset fails, a superset fails, and a wrong set
+/// of the right size fails, so neither picking cautiously nor picking
+/// everything is a strategy.
 bool isMultiCorrect({
   required Set<int> selected,
   required List<bool> isCorrect,
@@ -28,21 +28,24 @@ bool isMultiCorrect({
 /// How one choice is drawn once the card has been submitted.
 enum MultiMark {
   /// Not picked, and not an answer — left alone.
-  none(null),
+  none,
 
   /// Picked, and an answer.
-  correct('correct'),
+  correct,
 
   /// Picked, and not an answer.
-  incorrect('incorrect'),
+  incorrect,
 
   /// Not picked, but was an answer.
-  missed('missed — this was an answer');
-
-  const MultiMark(this.semantics);
+  missed;
 
   /// Spoken suffix, because the mark is otherwise carried by colour alone.
-  final String? semantics;
+  String? semantics(AppLocalizations strings) => switch (this) {
+    MultiMark.none => null,
+    MultiMark.correct => strings.optionCorrect,
+    MultiMark.incorrect => strings.optionIncorrect,
+    MultiMark.missed => strings.optionMissedAnswer,
+  };
 }
 
 /// The mark for the choice at [index], once submitted.

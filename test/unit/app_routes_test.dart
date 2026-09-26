@@ -61,6 +61,7 @@ void main() {
     expect(locationOf(AppRoutes.cards.name), '/cards');
     expect(locationOf(AppRoutes.profile.name), '/profile');
     expect(locationOf(AppRoutes.profileSettings.name), '/profile/settings');
+    expect(locationOf(AppRoutes.paywall.name), '/paywall');
   });
 
   test('parametrized routes interpolate path parameters', () {
@@ -170,6 +171,8 @@ void main() {
     // nothing at all, because it has no way back.
     'onboardingPaywall': HeaderTier.immersive,
     'purchaseWelcome': HeaderTier.immersive,
+    // The same offer, reached from a lock instead of the intro (ADR-0032).
+    'paywall': HeaderTier.immersive,
   };
 
   test('every registered route has a decided chrome tier', () {

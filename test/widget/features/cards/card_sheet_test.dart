@@ -9,6 +9,7 @@ import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/tried_seal.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ Future<void> _pump(
         ),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         navigatorKey: _navigatorKey,
         home: const CardsScreen(),

@@ -5,6 +5,7 @@ import 'package:brew_path/features/challenges/presentation/active_challenge_card
 import 'package:brew_path/features/challenges/presentation/challenge_park_chevron.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_geometry.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_park_track.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ void main() {
     await pumpWithProviders(
       tester,
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Scaffold(
           body: ActiveChallengeCard(challenge: testChallenge(effort: effort)),
@@ -248,6 +250,7 @@ void main() {
       await pumpWithProviders(
         tester,
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.darkRoast,
           home: Scaffold(body: ActiveChallengeCard(challenge: testChallenge())),
         ),

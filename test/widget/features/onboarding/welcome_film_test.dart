@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/onboarding/presentation/meet_roasty/meet_roasty_screen.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/sound_toggle.dart';
 import 'package:brew_path/features/onboarding/presentation/welcome/welcome_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,6 +23,7 @@ Future<FakeVideoPlayerPlatform> _pumpWelcome(
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         routerConfig: introRouter(initialLocation: '/welcome'),
         builder: (context, child) => MediaQuery(

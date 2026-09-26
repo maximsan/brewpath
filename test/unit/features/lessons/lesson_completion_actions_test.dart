@@ -1,10 +1,12 @@
 import 'package:brew_path/features/lessons/domain/lesson_completion_actions.dart';
 import 'package:brew_path/features/lessons/domain/lesson_destination.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CompletionActions _actions({MasteryBand? band, String? nextLessonId}) =>
     completionActions(
+      strings: AppLocalizationsEn(),
       lessonId: 'm1l1',
       band: band,
       nextLessonId: nextLessonId,
@@ -15,14 +17,14 @@ void main() {
     test('offers the next lesson when one is playable', () {
       final actions = _actions(band: MasteryBand.perfect, nextLessonId: 'm1l2');
 
-      expect(actions.label, nextLessonLabel);
+      expect(actions.label, AppLocalizationsEn().completionNextLesson);
       expect(actions.destination, lessonRun('m1l2'));
     });
 
     test('returns to Path when the course has nothing queued', () {
       final actions = _actions(band: MasteryBand.perfect);
 
-      expect(actions.label, backToPathLabel);
+      expect(actions.label, AppLocalizationsEn().completionBackToPath);
       expect(actions.destination, pathTab);
     });
 
@@ -54,7 +56,10 @@ void main() {
         nextLessonId: 'm1l2',
       );
 
-      expect(actions.practice?.label, practiceAgainLabel);
+      expect(
+        actions.practice?.label,
+        AppLocalizationsEn().completionPracticeAgain,
+      );
       expect(actions.practice?.destination, lessonRun('m1l1'));
     });
 
@@ -76,7 +81,7 @@ void main() {
         nextLessonId: 'm1l2',
       );
 
-      expect(actions.label, nextLessonLabel);
+      expect(actions.label, AppLocalizationsEn().completionNextLesson);
       expect(actions.practice, isNull);
     });
   });

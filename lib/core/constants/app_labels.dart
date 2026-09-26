@@ -68,10 +68,6 @@ abstract class AppLabels {
   static const practiceLessonsGroup = 'Lessons';
   static const practiceGamesGroup = 'Games';
 
-  /// The eyebrow on both dictionary drills' rows: where the drill draws from,
-  /// which is the one thing the title does not say.
-  static const practiceDrillEyebrow = 'Dictionary';
-
   /// Announced for a finished module. The design signals completion by
   /// *removing* the trailing chevron and the lesson-count line, which leaves a
   /// screen reader nothing to read — so the state is carried here instead.

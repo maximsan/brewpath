@@ -6,6 +6,7 @@
 library;
 
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/module_model.dart';
 
 /// A lesson's place in its module: its 1-based number, and how many lessons
@@ -31,10 +32,15 @@ LessonPosition? lessonPositionIn(ModuleModel module, String lessonId) {
 }
 
 /// The line as the card letters it — dot-joined, in the design's words.
-String todayMetaLine(LessonPosition position, {required int minutes}) =>
-    'LESSON ${position.number}/${position.total} · ~$minutes MIN';
+String todayMetaLine(
+  AppLocalizations strings,
+  LessonPosition position, {
+  required int minutes,
+}) => strings.lessonPositionShort(position.number, position.total, minutes);
 
 /// The same line as a screen reader should hear it.
-String todayMetaSemantics(LessonPosition position, {required int minutes}) =>
-    'Lesson ${position.number} of ${position.total}, '
-    'about $minutes minutes';
+String todayMetaSemantics(
+  AppLocalizations strings,
+  LessonPosition position, {
+  required int minutes,
+}) => strings.lessonPositionSpoken(position.number, position.total, minutes);

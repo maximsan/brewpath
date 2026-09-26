@@ -1,6 +1,7 @@
 import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/saved_challenges_list.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ void main() {
             savedChallengesProvider.overrideWith((ref) async => queued),
           ],
           child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.darkRoast,
             home: const Scaffold(body: SavedChallengesList()),
           ),
@@ -84,6 +86,7 @@ void main() {
           completedChallengesProvider.overrideWith((ref) async => {'bc-m1'}),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.darkRoast,
           home: const Scaffold(body: SavedChallengesList()),
         ),

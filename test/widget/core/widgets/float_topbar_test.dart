@@ -2,11 +2,13 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/widgets/float_topbar.dart';
 import 'package:brew_path/core/widgets/header_chrome.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Widget _host(Widget child, {bool disableAnimations = false}) => MaterialApp(
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
   theme: AppTheme.darkRoast,
   home: Builder(
     builder: (context) => MediaQuery(
@@ -261,6 +263,7 @@ void main() {
       late EdgeInsets room;
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.darkRoast,
           home: MediaQuery(
             data: const MediaQueryData(

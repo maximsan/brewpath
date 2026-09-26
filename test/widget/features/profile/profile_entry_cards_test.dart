@@ -17,6 +17,7 @@ import 'package:brew_path/features/studio/presentation/roasty_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/roasty_studio_screen.dart';
 import 'package:brew_path/features/studio/presentation/studio_door_tile.dart';
 import 'package:brew_path/features/studio/presentation/studio_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/snapshot_values.dart';
 import 'package:flutter/material.dart';
@@ -173,6 +174,7 @@ void main() {
           ),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const Scaffold(body: SavedEntryCard()),
         ),

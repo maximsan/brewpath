@@ -7,26 +7,12 @@ import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_tints.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_order.dart';
 import 'package:brew_path/features/lessons/presentation/cards/sequence_step_number.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
-
-/// The commit affordance, before the run has been submitted.
-const String _submitLabel = 'Submit';
-
-/// Clears the run while it is still open.
-const String _resetLabel = 'Reset';
-
-/// Verdicts, which name the all-or-nothing rule rather than a count of steps.
-const String _inOrder = 'In order';
-
-const String _nailedIt = 'Nailed the sequence.';
-const String _wrongOrder = 'Not the right order this time.';
-
-/// Heading over the reveal.
-const String _correctOrder = 'CORRECT ORDER';
 
 /// How the reveal joins the steps.
 const String _arrow = '  →  ';
@@ -108,7 +94,7 @@ class _SequenceCardViewState extends State<SequenceCardView> {
       onContinue: widget.onContinue,
       cue: CardCue.sequence,
       commit: CardCommit(
-        label: _submitLabel,
+        label: context.strings.sequenceSubmit,
         onCommit: _allPlaced ? _submit : null,
       ),
       children: [
@@ -124,7 +110,10 @@ class _SequenceCardViewState extends State<SequenceCardView> {
           const SizedBox(height: AppSpacing.xs),
           Align(
             alignment: Alignment.centerRight,
-            child: LinkButton(label: _resetLabel, onPressed: _reset),
+            child: LinkButton(
+              label: context.strings.sequenceReset,
+              onPressed: _reset,
+            ),
           ),
         ],
         if (_submitted) ..._verdict(mood),
@@ -165,9 +154,10 @@ class _SequenceCardViewState extends State<SequenceCardView> {
       },
       semanticsLabel: [
         item.label,
-        if (mark.isPlaced) 'position ${position + 1}',
-        if (mark == SequenceStepMark.right) 'correct',
-        if (mark == SequenceStepMark.wrong) 'belongs at ${item.order}',
+        if (mark.isPlaced) context.strings.sequencePosition(position + 1),
+        if (mark == SequenceStepMark.right) context.strings.optionCorrectMark,
+        if (mark == SequenceStepMark.wrong)
+          context.strings.sequenceBelongsAt(item.order),
       ].join(', '),
       child: Row(
         spacing: AppSpacing.sm,
@@ -186,7 +176,7 @@ class _SequenceCardViewState extends State<SequenceCardView> {
           // red thing on it would read as a second fault.
           if (mark == SequenceStepMark.wrong)
             Text(
-              'GOES #${item.order}',
+              context.strings.sequenceGoesAt(item.order),
               style: AppText.micro(mood: mood, tracking: AppTracking.hint),
             ),
         ],
@@ -201,16 +191,20 @@ class _SequenceCardViewState extends State<SequenceCardView> {
   /// got it right still leaves the round with the order written out.
   List<Widget> _verdict(MoodColors mood) => [
     AnswerFeedback(
-      verdict: _wasCorrect ? _inOrder : notQuiteVerdict,
+      verdict: _wasCorrect
+          ? context.strings.sequenceInOrder
+          : context.strings.verdictNotQuite,
       outcome: _wasCorrect ? Verdict.right : Verdict.wrong,
-      explanation: _wasCorrect ? _nailedIt : _wrongOrder,
+      explanation: _wasCorrect
+          ? context.strings.sequenceNailedIt
+          : context.strings.sequenceWrongOrder,
       extra: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: AppSpacing.sm),
           Text(
-            _correctOrder,
+            context.strings.sequenceCorrectOrder,
             style: AppText.label(mood: mood, color: mood.sage),
           ),
           const SizedBox(height: AppSpacing.xxs),

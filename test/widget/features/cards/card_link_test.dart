@@ -7,6 +7,7 @@ import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/cards/presentation/card_sheet.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,11 @@ Future<GoRouter> _pumpAt(WidgetTester tester, String location) async {
         challengeBankProvider.overrideWith((ref) async => []),
         completedChallengesProvider.overrideWith((ref) async => <String>{}),
       ],
-      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+      child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        routerConfig: router,
+      ),
     ),
   );
   await tester.pumpAndSettle();

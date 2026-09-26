@@ -1,5 +1,6 @@
 import 'package:brew_path/features/learn/domain/learn_providers.dart';
 import 'package:brew_path/features/learn/domain/lesson_position.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/content_fixtures.dart';
@@ -22,12 +23,15 @@ void main() {
     const position = (number: 2, total: 7);
 
     test('is the design’s one mono line', () {
-      expect(todayMetaLine(position, minutes: 4), 'LESSON 2/7 · ~4 MIN');
+      expect(
+        todayMetaLine(AppLocalizationsEn(), position, minutes: 4),
+        'LESSON 2/7 · ~4 MIN',
+      );
     });
 
     test('is read as a sentence', () {
       expect(
-        todayMetaSemantics(position, minutes: 4),
+        todayMetaSemantics(AppLocalizationsEn(), position, minutes: 4),
         'Lesson 2 of 7, about 4 minutes',
       );
     });

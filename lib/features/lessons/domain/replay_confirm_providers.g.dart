@@ -28,13 +28,13 @@ final replayConfirmProvider = ReplayConfirmFamily._();
 final class ReplayConfirmProvider
     extends
         $FunctionalProvider<
-          AsyncValue<ReplayConfirmView?>,
-          ReplayConfirmView?,
-          FutureOr<ReplayConfirmView?>
+          AsyncValue<ReplayConfirmFacts?>,
+          ReplayConfirmFacts?,
+          FutureOr<ReplayConfirmFacts?>
         >
     with
-        $FutureModifier<ReplayConfirmView?>,
-        $FutureProvider<ReplayConfirmView?> {
+        $FutureModifier<ReplayConfirmFacts?>,
+        $FutureProvider<ReplayConfirmFacts?> {
   /// What to ask before replaying [lessonId], or null when nothing should be
   /// asked — the lesson is unfinished, or the course no longer carries it.
   ///
@@ -64,12 +64,12 @@ final class ReplayConfirmProvider
 
   @$internal
   @override
-  $FutureProviderElement<ReplayConfirmView?> $createElement(
+  $FutureProviderElement<ReplayConfirmFacts?> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<ReplayConfirmView?> create(Ref ref) {
+  FutureOr<ReplayConfirmFacts?> create(Ref ref) {
     final argument = this.argument as String;
     return replayConfirm(ref, argument);
   }
@@ -85,7 +85,7 @@ final class ReplayConfirmProvider
   }
 }
 
-String _$replayConfirmHash() => r'0f5c0dae95b8e7c35d0ab5bfc08e6a7573d69b9b';
+String _$replayConfirmHash() => r'a6e0453ced434083b0fd02667d144b836ff55fc1';
 
 /// What to ask before replaying [lessonId], or null when nothing should be
 /// asked — the lesson is unfinished, or the course no longer carries it.
@@ -95,7 +95,7 @@ String _$replayConfirmHash() => r'0f5c0dae95b8e7c35d0ab5bfc08e6a7573d69b9b';
 /// read once, at the tap; one left open over midnight keeps its lines.
 
 final class ReplayConfirmFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ReplayConfirmView?>, String> {
+    with $FunctionalFamilyOverride<FutureOr<ReplayConfirmFacts?>, String> {
   ReplayConfirmFamily._()
     : super(
         retry: null,

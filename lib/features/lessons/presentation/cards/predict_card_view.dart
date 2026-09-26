@@ -7,15 +7,13 @@ import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_boundary.dart';
 import 'package:brew_path/features/lessons/presentation/cards/card_shell.dart';
 import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
 import 'package:flutter/material.dart';
-
-/// The eyebrow the guess section opens on.
-const String _guessEyebrow = 'First guess';
 
 /// The opening card: a framing paragraph and one binary guess, ungraded on
 /// purpose — the guess is *held*, and the closing `recall` card resolves it
@@ -88,10 +86,10 @@ class _PredictCardViewState extends State<PredictCardView> {
         ),
         SizedBox(height: OffTokens.predictGuessGap.value),
         Semantics(
-          label: _guessEyebrow,
+          label: context.strings.predictFirstGuess,
           excludeSemantics: true,
           child: Text(
-            _guessEyebrow.toUpperCase(),
+            context.strings.predictFirstGuess.toUpperCase(),
             style: AppText.label(face: AppFace.mono, color: mood.inkMute),
           ),
         ),
@@ -110,7 +108,7 @@ class _PredictCardViewState extends State<PredictCardView> {
         ),
         if (_selectedIndex case final chosen?) ...[
           AnswerFeedback(
-            verdict: 'Your guess · ${widget.options[chosen]}',
+            verdict: context.strings.predictYourGuess(widget.options[chosen]),
             outcome: Verdict.held,
             explanation: card.hold,
             placement: VerdictPlacement.heldGuess,

@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/utils/module_icons.dart';
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/coffee_card_model.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
@@ -14,12 +15,9 @@ import 'package:flutter/material.dart';
 /// A collectible drawn the way the design draws it — the card *is* the guide.
 ///
 /// Badge, title and stamp; the summary; then the keepsake line under its own
-/// rule. **Deliberately no points total**: points are paid per lesson and
-/// reported by the completion rail, and a card that also carried a number would
-/// read as a second payout.
-///
+/// rule. Deliberately no points total, which would read as a second payout.
 /// Shared rather than built for one screen: the lesson ending previews one,
-/// and the module ending turns one over.
+/// the module ending turns one over.
 class RewardCard extends StatefulWidget {
   /// Creates a [RewardCard].
   const RewardCard({required this.card, super.key});
@@ -29,9 +27,6 @@ class RewardCard extends StatefulWidget {
 
   /// The widest the card is drawn, whatever room it is given.
   static const double maxWidth = 320;
-
-  /// The kicker over the keepsake line.
-  static const String memorableLabel = 'Memorable';
 
   @override
   State<RewardCard> createState() => _RewardCardState();
@@ -138,7 +133,7 @@ class _RewardCardState extends State<RewardCard>
       const SizedBox(height: AppSpacing.md),
       Divider(height: 1, thickness: 1, color: mood.rule),
       const SizedBox(height: AppSpacing.base),
-      const SmallcapsLabel(RewardCard.memorableLabel),
+      SmallcapsLabel(context.strings.collectibleMemorableLabel),
       const SizedBox(height: AppSpacing.xs),
       // The keepsake line, set in the display face: it is the thing a learner
       // is meant to carry away, and the app rendered it nowhere until now.

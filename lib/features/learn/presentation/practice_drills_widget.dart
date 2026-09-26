@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/features/dictionary/domain/flashcard_destination.dart';
 import 'package:brew_path/features/dictionary/domain/vocab_destination.dart';
 import 'package:brew_path/features/dictionary/presentation/flashcards_copy.dart';
@@ -9,6 +8,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +44,7 @@ class PracticeDrillsWidget extends StatelessWidget {
             accent: mood.accent,
           ),
           title: FlashcardsCopy.title,
-          sub: AppLabels.practiceDrillEyebrow,
+          sub: context.strings.practiceDrillEyebrow,
           starts: true,
           onTap: () => unawaited(context.pushActivity(flashcardReview)),
         ),
@@ -55,7 +55,7 @@ class PracticeDrillsWidget extends StatelessWidget {
             accent: mood.accent,
           ),
           title: VocabCopy.title,
-          sub: AppLabels.practiceDrillEyebrow,
+          sub: context.strings.practiceDrillEyebrow,
           starts: true,
           onTap: () => unawaited(context.pushActivity(vocabGame)),
         ),

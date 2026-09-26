@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/disclosure_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice/practice_sub_group.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_motion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,7 @@ Future<void> _pump(
   int count = 2,
 }) => tester.pumpWidget(
   MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.cupping,
     home: Scaffold(
       body: PracticeSubGroup(

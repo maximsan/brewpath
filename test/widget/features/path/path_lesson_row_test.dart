@@ -9,6 +9,7 @@ import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart'
 import 'package:brew_path/features/path/domain/path_module_view.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ Future<void> _pump(
     // A counted pitch, so tapping the lock does not wait on the banks.
     overrides: [plusPitchProvider.overrideWith((ref) async => _pitch)],
     child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(
         body: PathLessonRow(

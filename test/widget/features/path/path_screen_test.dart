@@ -10,6 +10,7 @@ import 'package:brew_path/features/path/domain/path_providers.dart';
 import 'package:brew_path/features/path/presentation/path_lesson_row.dart';
 import 'package:brew_path/features/path/presentation/path_screen.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,7 +90,11 @@ Future<void> _pumpPath(WidgetTester tester) async {
         completedChallengesProvider.overrideWith((ref) async => const {}),
         savedChallengesProvider.overrideWith((ref) async => const []),
       ],
-      child: MaterialApp(theme: AppTheme.cupping, home: const PathScreen()),
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        home: const PathScreen(),
+      ),
     ),
   );
   await tester.pumpAndSettle();

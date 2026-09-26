@@ -8,6 +8,7 @@ import 'package:brew_path/features/mini_games/domain/mini_game_kinds.dart';
 import 'package:brew_path/features/mini_games/domain/mini_game_tier.dart';
 import 'package:brew_path/features/mini_games/presentation/mini_game_gate_sheet.dart';
 import 'package:brew_path/features/monetization/presentation/activity_start.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/models/content/mini_game_format.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -43,7 +44,7 @@ class MiniGamesCatalogWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final group in groupCatalogByKind(formats))
+        for (final group in groupCatalogByKind(context.strings, formats))
           PracticeSubGroup(
             label: group.label,
             count: group.games.length,
@@ -81,8 +82,6 @@ class _FormatRow extends StatelessWidget {
   final MiniGameFormat format;
   final bool hasCourse;
 
-  static const String _lockedHint = 'Shows the module that teaches it';
-
   @override
   Widget build(BuildContext context) {
     final isOpen = isMiniGameOpen(format, hasCourse: hasCourse);
@@ -95,7 +94,7 @@ class _FormatRow extends StatelessWidget {
       // A lock a screen reader cannot act on is the dead end this catalog set
       // out to remove: sighted learners tap a lock speculatively, but being
       // told only that a row is locked gives no reason to try.
-      hint: isOpen ? null : _lockedHint,
+      hint: isOpen ? null : context.strings.miniGameLockedHint,
       onTap: isOpen
           ? () => unawaited(context.goToActivity(miniGameRun(format.id)))
           : () => showMiniGameGateSheet(context: context, format: format),
@@ -107,18 +106,19 @@ class _FormatRow extends StatelessWidget {
 class _EmptyCatalog extends StatelessWidget {
   const _EmptyCatalog();
 
-  static const String _copy = 'No mini-games available yet.';
-
   @override
   Widget build(BuildContext context) => Semantics(
-    label: _copy,
+    label: context.strings.miniGamesEmpty,
     excludeSemantics: true,
     child: Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.xs,
         vertical: AppSpacing.sm,
       ),
-      child: Text(_copy, style: AppText.support(mood: context.mood)),
+      child: Text(
+        context.strings.miniGamesEmpty,
+        style: AppText.support(mood: context.mood),
+      ),
     ),
   );
 }

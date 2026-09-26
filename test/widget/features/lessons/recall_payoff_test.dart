@@ -3,6 +3,8 @@ import 'package:brew_path/core/widgets/fill_slot.dart';
 import 'package:brew_path/features/companion/presentation/roasty.dart';
 import 'package:brew_path/features/lessons/domain/held_guess.dart';
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,6 +14,7 @@ const _missed = HeldGuess(pick: 'Skin', answer: 'Seed');
 void main() {
   Future<void> pump(WidgetTester tester, HeldGuess guess) => tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(body: RecallPayoff(guess: guess)),
     ),
@@ -25,7 +28,10 @@ void main() {
   ) async {
     for (final guess in [_right, _missed]) {
       await pump(tester, guess);
-      expect(find.text(openingGuessLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().payoffOpeningGuess.toUpperCase()),
+        findsOneWidget,
+      );
     }
   });
 

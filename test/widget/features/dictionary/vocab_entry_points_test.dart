@@ -1,12 +1,13 @@
 // The three ways into the drill, and what each promises before it is tapped.
 import 'package:brew_path/app/app_theme.dart';
-import 'package:brew_path/core/constants/app_labels.dart';
 import 'package:brew_path/core/constants/app_routes.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_quick_chips.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_copy.dart';
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice_drills_widget.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,7 +45,11 @@ Future<String?> _pumpEntry(WidgetTester tester, Widget child) async {
 
   await tester.pumpWidget(
     ProviderScope(
-      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+      child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        routerConfig: router,
+      ),
     ),
   );
   await tester.pumpAndSettle();
@@ -74,6 +79,7 @@ void main() {
         // resolves to nothing here, which is what a chip with no count draws.
         ProviderScope(
           child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             home: const Scaffold(body: DictionaryQuickChips()),
           ),
@@ -93,6 +99,7 @@ void main() {
         // resolves to nothing here, which is what a chip with no count draws.
         ProviderScope(
           child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             home: const Scaffold(body: DictionaryQuickChips()),
           ),
@@ -119,6 +126,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             home: const Scaffold(body: PracticeDrillsWidget()),
           ),
@@ -126,7 +134,7 @@ void main() {
       );
 
       expect(
-        find.text(AppLabels.practiceDrillEyebrow.toUpperCase()),
+        find.text(AppLocalizationsEn().practiceDrillEyebrow.toUpperCase()),
         findsNWidgets(2),
         reason: 'both drills draw from the dictionary',
       );

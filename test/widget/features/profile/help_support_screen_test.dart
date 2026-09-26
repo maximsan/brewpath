@@ -10,6 +10,7 @@ import 'package:brew_path/features/profile/presentation/settings/help_faq_row.da
 import 'package:brew_path/features/profile/presentation/settings/help_support_screen.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/tour/domain/app_guide_copy.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/services/links/link_opener.dart';
 import 'package:brew_path/services/links/link_provider.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,7 @@ void main() {
           linkOpenerProvider.overrideWithValue(opener),
         ],
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const HelpSupportScreen(),
         ),
@@ -87,6 +89,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const HelpSupportScreen(),
         ),

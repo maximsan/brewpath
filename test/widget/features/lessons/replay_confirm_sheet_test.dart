@@ -15,6 +15,8 @@ import 'package:brew_path/features/progress/domain/mastery.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/lesson_model.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
@@ -99,7 +101,11 @@ Future<ProviderContainer> _pump(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(theme: AppTheme.cupping, routerConfig: router),
+      child: MaterialApp.router(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        theme: AppTheme.cupping,
+        routerConfig: router,
+      ),
     ),
   );
   await settleLoaders(tester);
@@ -140,8 +146,11 @@ void main() {
     await _pump(tester);
     await _tapOpen(tester);
 
-    expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
-    expect(find.text(ReplayConfirmCopy.cancel), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmConfirm),
+      findsOneWidget,
+    );
+    expect(find.text(AppLocalizationsEn().replayConfirmCancel), findsOneWidget);
     expect(find.text(_running), findsNothing);
   });
 
@@ -153,7 +162,10 @@ void main() {
     expect(find.text('No change'), findsOneWidget);
     expect(find.text('Streak'), findsOneWidget);
     expect(find.text('Length'), findsOneWidget);
-    expect(find.text(ReplayConfirmCopy.lastCompleted), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmLastCompletedLabel),
+      findsOneWidget,
+    );
   });
 
   testWidgets('the streak line reads the day, not a fixed promise', (
@@ -162,18 +174,36 @@ void main() {
     // Seeded three days back, so nothing has been earned today yet.
     await _pump(tester);
     await _tapOpen(tester);
-    expect(find.text(ReplayConfirmCopy.streakCounts), findsOneWidget);
-    expect(find.text(ReplayConfirmCopy.streakEarned), findsNothing);
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmStreakCounts),
+      findsOneWidget,
+    );
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmStreakEarned),
+      findsNothing,
+    );
   });
 
   testWidgets('a day already earned says so instead', (tester) async {
     await _pump(tester, finishedAt: DateTime.now());
     await _tapOpen(tester);
 
-    expect(find.text(ReplayConfirmCopy.streakEarned), findsOneWidget);
-    expect(find.text(ReplayConfirmCopy.streakCounts), findsNothing);
     expect(
-      find.text(dayName(epochDay(DateTime.now()), today: DateTime.now())),
+      find.text(AppLocalizationsEn().replayConfirmStreakEarned),
+      findsOneWidget,
+    );
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmStreakCounts),
+      findsNothing,
+    );
+    expect(
+      find.text(
+        dayName(
+          AppLocalizationsEn(),
+          epochDay(DateTime.now()),
+          today: DateTime.now(),
+        ),
+      ),
       findsOneWidget,
     );
   });
@@ -182,7 +212,7 @@ void main() {
     await _pump(tester);
     await _tapOpen(tester);
 
-    await tester.tap(find.text(ReplayConfirmCopy.cancel));
+    await tester.tap(find.text(AppLocalizationsEn().replayConfirmCancel));
     await tester.pumpAndSettle();
 
     expect(find.text(_running), findsNothing);
@@ -193,7 +223,7 @@ void main() {
     await _pump(tester);
     await _tapOpen(tester);
 
-    await tester.tap(find.text(ReplayConfirmCopy.confirm));
+    await tester.tap(find.text(AppLocalizationsEn().replayConfirmConfirm));
     await tester.pumpAndSettle();
 
     expect(find.text(_running), findsOneWidget);
@@ -203,7 +233,7 @@ void main() {
     await _pump(tester, finished: false);
     await _tapOpen(tester);
 
-    expect(find.text(ReplayConfirmCopy.confirm), findsNothing);
+    expect(find.text(AppLocalizationsEn().replayConfirmConfirm), findsNothing);
     expect(find.text(_running), findsOneWidget);
   });
 
@@ -229,7 +259,7 @@ void main() {
       find.text(const DailyAllowanceSpent(cap: freeDailyActivities).header),
       findsOneWidget,
     );
-    expect(find.text(ReplayConfirmCopy.confirm), findsNothing);
+    expect(find.text(AppLocalizationsEn().replayConfirmConfirm), findsNothing);
     expect(find.text(_running), findsNothing);
   });
 
@@ -240,6 +270,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: Scaffold(
             body: PathLessonRow(
@@ -262,7 +293,10 @@ void main() {
     await tester.tap(find.byType(InkWell).first);
     await _drain(tester);
 
-    expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmConfirm),
+      findsOneWidget,
+    );
   });
 
   testWidgets("a term's lesson row asks before it replays", (tester) async {
@@ -276,6 +310,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: const TermDetailScreen(termId: _termId),
         ),
@@ -287,7 +322,10 @@ void main() {
     await tester.tap(find.text(lesson.title));
     await _drain(tester);
 
-    expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmConfirm),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Saved asks before it replays a bookmarked lesson', (
@@ -308,7 +346,11 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(theme: AppTheme.cupping, home: const SavedScreen()),
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          theme: AppTheme.cupping,
+          home: const SavedScreen(),
+        ),
       ),
     );
     await settleLoaders(tester);
@@ -316,6 +358,9 @@ void main() {
     await tester.tap(find.text(lesson.title));
     await _drain(tester);
 
-    expect(find.text(ReplayConfirmCopy.confirm), findsOneWidget);
+    expect(
+      find.text(AppLocalizationsEn().replayConfirmConfirm),
+      findsOneWidget,
+    );
   });
 }

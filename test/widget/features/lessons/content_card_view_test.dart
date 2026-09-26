@@ -15,6 +15,8 @@ import 'package:brew_path/features/lessons/presentation/cards/pick_tile_row.dart
 import 'package:brew_path/features/lessons/presentation/cards/recall_payoff.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_reaction.dart';
 import 'package:brew_path/features/lessons/presentation/cards/tastefix_symptoms.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/card_parts.dart';
 import 'package:brew_path/shared/models/content/content_card.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -185,15 +187,19 @@ Widget _host(
   ValueChanged<HeldGuess>? onGuess,
 }) => ProviderScope(
   child: MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
     theme: AppTheme.darkRoast,
     home: Scaffold(
       body: SingleChildScrollView(
         child: contentCardView(
           card,
+          strings: AppLocalizationsEn(),
           seed: cardSeed(nonce: nonce, cardIndex: 0),
-          onSolved: () => signals.solved++,
-          onContinue: () => signals.advanced++,
-          guess: GuessLoop(held: prediction, onGuess: onGuess),
+          host: (
+            onSolved: () => signals.solved++,
+            onContinue: () => signals.advanced++,
+            guess: GuessLoop(held: prediction, onGuess: onGuess),
+          ),
         ),
       ),
     ),
@@ -777,7 +783,10 @@ void main() {
       await _tapText(tester, 'Grind finer');
       await tester.pumpAndSettle();
 
-      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().tastefixBalanced.toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text('SOUR'), findsNothing);
       expect(find.text('FIXED'), findsOneWidget);
     });
@@ -792,7 +801,10 @@ void main() {
 
       // The second tap is refused, so the cup stays worsened rather than
       // settling to Balanced behind a latch that never moved.
-      expect(find.text(tastefixBalancedLabel.toUpperCase()), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().tastefixBalanced.toUpperCase()),
+        findsNothing,
+      );
       expect(find.text('SOUR'), findsOneWidget);
     });
   });
@@ -923,7 +935,10 @@ void main() {
       await _tapText(tester, 'The seed of a cherry');
 
       expect(find.byType(RecallPayoff), findsOneWidget);
-      expect(find.text(openingGuessLabel.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(AppLocalizationsEn().payoffOpeningGuess.toUpperCase()),
+        findsOneWidget,
+      );
     });
 
     testWidgets('recall says nothing about a guess that was never made', (
@@ -1118,7 +1133,10 @@ void main() {
       expect(find.text('Hold that thought.'), findsOneWidget);
       // Neither verdict word the graded cards use.
       expect(find.textContaining('CORRECT'), findsNothing);
-      expect(find.text(notQuiteVerdict.toUpperCase()), findsNothing);
+      expect(
+        find.text(AppLocalizationsEn().verdictNotQuite.toUpperCase()),
+        findsNothing,
+      );
     });
 
     testWidgets('predict re-labels the hold when the guess changes', (
@@ -1387,7 +1405,10 @@ void main() {
     testWidgets('asks for every answer, and offers them all', (tester) async {
       await tester.pumpWidget(_host(_multi, _Signals()));
 
-      expect(find.text(CardCue.multi.phrase.toUpperCase()), findsOneWidget);
+      expect(
+        find.text(CardCue.multi.phrase(AppLocalizationsEn()).toUpperCase()),
+        findsOneWidget,
+      );
       expect(find.text(_multi.prompt), findsOneWidget);
       for (final choice in _multi.choices) {
         expect(find.text(choice.text), findsOneWidget);
@@ -1741,9 +1762,13 @@ void main() {
         expect(
           () => contentCardView(
             entry.value,
+            strings: AppLocalizationsEn(),
             seed: cardSeed(nonce: 1, cardIndex: 0),
-            onSolved: () {},
-            onContinue: () {},
+            host: (
+              onSolved: () {},
+              onContinue: () {},
+              guess: GuessLoop.none,
+            ),
           ),
           returnsNormally,
         );

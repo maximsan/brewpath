@@ -1,11 +1,16 @@
 import 'package:brew_path/features/cards/domain/card_unlock.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('earnLine', () {
     test('names the lesson when the card comes from one', () {
       expect(
-        earnLine(lessonTitle: 'What coffee actually is', moduleTag: 'Beans'),
+        earnLine(
+          AppLocalizationsEn(),
+          lessonTitle: 'What coffee actually is',
+          moduleTag: 'Beans',
+        ),
         'Earn this by completing What coffee actually is',
       );
     });
@@ -14,14 +19,14 @@ void main() {
       // A module-awarded card has no lesson to name, and a card whose lesson
       // this build does not carry must still say something true.
       expect(
-        earnLine(lessonTitle: null, moduleTag: 'Beans'),
+        earnLine(AppLocalizationsEn(), lessonTitle: null, moduleTag: 'Beans'),
         'Earn this by finishing Beans',
       );
     });
 
     test('an empty lesson title is treated as no lesson', () {
       expect(
-        earnLine(lessonTitle: '', moduleTag: 'Beans'),
+        earnLine(AppLocalizationsEn(), lessonTitle: '', moduleTag: 'Beans'),
         'Earn this by finishing Beans',
       );
     });

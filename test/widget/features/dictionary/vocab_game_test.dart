@@ -17,6 +17,7 @@ import 'package:brew_path/features/dictionary/presentation/vocab/vocab_game_scre
 import 'package:brew_path/features/dictionary/presentation/vocab/vocab_teaching_view.dart';
 import 'package:brew_path/features/monetization/config/paywall_copy.dart';
 import 'package:brew_path/features/progress/domain/activity_recorder.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/storage/snapshot/daily_activity.dart';
@@ -146,6 +147,7 @@ Future<ProviderContainer> _pump(
     UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.cupping,
         home: const VocabGameScreen(),
       ),
@@ -250,6 +252,7 @@ void main() {
             vocabPoolsProvider.overrideWith((ref) async => _pools()),
           ],
           child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             theme: AppTheme.cupping,
             routerConfig: router,
           ),

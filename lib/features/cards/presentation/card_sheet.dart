@@ -7,6 +7,7 @@ import 'package:brew_path/features/cards/presentation/card_locked_face.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/card_stamp_section.dart';
 import 'package:brew_path/features/challenges/presentation/tried_seal.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -15,11 +16,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Opens [item] over the collection.
 ///
-/// A sheet, not a push: the design never takes the learner off the grid to read
-/// a card — its own `CardSheet` — so closing puts them back exactly where they
-/// were, on the tile they tapped. Returns what the learner asked for on the way
-/// out, when they asked for anything — the sheet cannot navigate for itself,
-/// because the route it sits on belongs to whoever opened it.
+/// A sheet, not a push: closing puts the learner back on the tile they tapped.
+/// Returns what they asked for on the way out, because the route it sits on
+/// belongs to whoever opened it.
 Future<CardSheetIntent?> showCardSheet(
   BuildContext context,
   CardWithCollection item,
@@ -32,16 +31,9 @@ Future<CardSheetIntent?> showCardSheet(
 /// One collectible, as the sheet reads it: what it is, what it says, and the
 /// line worth keeping.
 ///
-/// **The title is the sheet primitive's**, at the step every sheet shares.
-/// The design sets this one card a step larger than its sibling sheets —
-/// `--t-display` here against `--t-title` on the gate, the challenge and the
-/// duel — and the app keeps one sheet dressing rather than forking the
-/// primitive for a single caller. A deliberate divergence, recorded on #385.
-///
-/// **The artwork is the card's own.** The design fills the well with a
-/// per-kind drawing, and all thirty-seven are extracted from the design source
-/// rather than redrawn (#480). A kind the design has not drawn falls back to
-/// its module's mark, which is what every card showed before.
+/// The title is the sheet primitive's: the design sets this card
+/// `--t-display` against `--t-title` elsewhere, and the app keeps one sheet
+/// dressing (#385). Art is extracted rather than redrawn (#480).
 class CardSheetBody extends ConsumerWidget {
   /// Creates a [CardSheetBody].
   const CardSheetBody({required this.item, super.key});
@@ -101,7 +93,7 @@ class _Keepsake extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SmallcapsLabel('Fact', isHeader: true),
+        SmallcapsLabel(context.strings.collectibleFactLabel, isHeader: true),
         const SizedBox(height: AppSpacing.xs),
         Text(fact, style: AppText.heading(mood: context.mood)),
       ],

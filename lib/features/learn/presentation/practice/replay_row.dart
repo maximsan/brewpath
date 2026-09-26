@@ -2,6 +2,8 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/features/monetization/domain/locked_row_copy.dart';
+import 'package:brew_path/l10n/app_strings.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
@@ -72,10 +74,6 @@ class ReplayRow extends StatelessWidget {
   /// The design's `marginTop: 2` between the eyebrow and the name.
   static const double _titleGap = 2;
 
-  /// What the tap does, for a screen reader.
-  static const String _playsAnnouncement = 'Play';
-  static const String _replaysAnnouncement = 'Replay';
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
@@ -83,7 +81,7 @@ class ReplayRow extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: _announcement,
+      label: _announcement(context.strings),
       hint: hint,
       onTap: onTap,
       excludeSemantics: true,
@@ -158,9 +156,11 @@ class ReplayRow extends StatelessWidget {
 
   /// The design's `aria-label`: the lines as one sentence, then what the tap
   /// does.
-  String get _announcement {
+  String _announcement(AppLocalizations strings) {
     final lines = [title, ?sub].join('. ');
     if (locked) return '$lines. ${LockedRowCopy.partOfFoundations}.';
-    return '$lines. ${starts ? _playsAnnouncement : _replaysAnnouncement}.';
+    return starts
+        ? strings.practicePlaySpoken(lines)
+        : strings.practiceReplaySpoken(lines);
   }
 }

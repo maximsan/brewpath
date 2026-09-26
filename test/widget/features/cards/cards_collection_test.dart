@@ -3,6 +3,7 @@ import 'package:brew_path/features/cards/domain/cards_providers.dart';
 import 'package:brew_path/features/cards/presentation/card_grid_item_widget.dart';
 import 'package:brew_path/features/cards/presentation/cards_footer.dart';
 import 'package:brew_path/features/cards/presentation/cards_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +27,7 @@ Future<void> _pump(
         cardsWithCollectionProvider.overrideWith((ref) async => collection),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: const CardsScreen(),
       ),

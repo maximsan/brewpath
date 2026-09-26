@@ -2,6 +2,7 @@ import 'package:brew_path/app/app_theme.dart';
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/replay_mark.dart';
 import 'package:brew_path/features/learn/presentation/practice/replay_row.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -17,6 +18,7 @@ Future<int> _pump(
   var taps = 0;
   await tester.pumpWidget(
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(
         body: ReplayRow(

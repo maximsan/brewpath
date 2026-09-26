@@ -11,6 +11,7 @@ import 'package:brew_path/features/dictionary/presentation/term_row.dart';
 import 'package:brew_path/features/dictionary/presentation/term_save_track.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/dictionary_category.dart';
 import 'package:brew_path/shared/models/content/dictionary_term.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
@@ -68,6 +69,7 @@ void main() {
   }) => pumpWithProviders(
     tester,
     MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       theme: AppTheme.darkRoast,
       home: Scaffold(
         body: CustomScrollView(
@@ -221,6 +223,7 @@ void main() {
       await pumpWithProviders(
         tester,
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.darkRoast,
           home: Scaffold(
             body: CustomScrollView(
@@ -369,6 +372,7 @@ void main() {
       await pumpWithProviders(
         tester,
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.darkRoast,
           home: Scaffold(
             body: CustomScrollView(

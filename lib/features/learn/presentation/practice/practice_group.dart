@@ -1,4 +1,5 @@
 import 'package:brew_path/core/widgets/disclosure.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -56,7 +57,7 @@ class PracticeGroup extends StatelessWidget {
     return Disclosure(
       isOpen: isOpen,
       onToggle: onToggle,
-      semanticsLabel: '$label, $count',
+      semanticsLabel: context.strings.practiceGroupSpoken(label, count),
       divider: !isLast,
       headerPadding: _headerPadding,
       panelPadding: EdgeInsets.only(bottom: OffTokens.practiceGroupFoot.value),

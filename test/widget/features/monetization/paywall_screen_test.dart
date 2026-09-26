@@ -12,6 +12,7 @@ import 'package:brew_path/features/monetization/domain/plus_pitch_provider.dart'
 import 'package:brew_path/features/monetization/domain/plus_purchase_controller.dart';
 import 'package:brew_path/features/monetization/presentation/paywall_screen.dart';
 import 'package:brew_path/features/monetization/presentation/plan_picker.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/services/payments/store_product.dart';
 import 'package:brew_path/shared/models/monetization/plus_offering.dart';
 import 'package:flutter/material.dart';
@@ -86,6 +87,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: PaywallScreen(
             onPurchased: () => exits.add('purchased'),
@@ -369,6 +371,7 @@ void main() {
       UncontrolledProviderScope(
         container: container,
         child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           theme: AppTheme.cupping,
           home: PaywallScreen(
             onPurchased: () => exits.add('purchased'),

@@ -128,12 +128,14 @@ Header copy: `A FIELD GUIDE TO COFFEE`.
 > stubs.** They render as fully interactive rows with an external-link
 > affordance and do nothing, so each one needed a real destination before ship.
 > Where they stand in the app: **Acknowledgements and Open-source licenses are
-> not built** — the owner's ruling on #532 is that neither earns its
-> complexity yet, so neither row is drawn. The other six are written and each
-> waits on one constant: an App Store id for *Rate BrewPath*, the mailbox for
-> *Say hello* and Help's two (#531), the two hosted URLs for the legal pair
-> (#448). The app draws no row live and inert, so an unset constant means an
-> absent row.
+> cut.** The owner ruled on 24 September that neither page ships — not
+> deferred, not waiting on anything — so the design draws six rows here and
+> the app draws four. A ruling beats the prototype ([doc map](../README.md)),
+> and #532 is closed on it. The other six rows are written and each waits on
+> one constant: an App Store id for *Rate BrewPath*, the mailbox for *Say
+> hello* and Help's two (#531), the two hosted URLs for the legal pair (#448).
+> The app draws no row live and inert, so an unset constant means an absent
+> row.
 
 > **"Sync over cellular" and "This iPhone" are the UI for the offline promise.**
 > [§6](06-content.md)'s FAQ commits to keeping opened modules on device and syncing when

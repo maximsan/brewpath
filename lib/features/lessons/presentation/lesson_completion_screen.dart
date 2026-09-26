@@ -11,6 +11,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_completion_beat.d
 import 'package:brew_path/features/lessons/presentation/lesson_completion_body.dart';
 import 'package:brew_path/features/lessons/presentation/lesson_completion_reward.dart';
 import 'package:brew_path/features/progress/domain/mastery.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/repositories/content_repository.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:flutter/material.dart';
@@ -130,8 +131,11 @@ class _LessonCompletionScreenState
     if (!_beatDone) {
       return RoastyMoment(
         reaction: CompanionReaction.lessonComplete,
-        eyebrow: completionEyebrow(isReplay: reward.result.isReplay),
-        title: completionBeatTitle(widget.mastery.band),
+        eyebrow: completionEyebrow(
+          context.strings,
+          isReplay: reward.result.isReplay,
+        ),
+        title: completionBeatTitle(context.strings, widget.mastery.band),
         onDone: () {
           if (mounted) setState(() => _beatDone = true);
         },
@@ -179,6 +183,7 @@ class _LessonCompletionScreenState
     mastery: widget.mastery,
     reward: reward,
     actions: completionActions(
+      strings: context.strings,
       lessonId: widget.lessonId,
       band: widget.mastery.band,
       nextLessonId: reward.nextLessonId,

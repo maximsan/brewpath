@@ -3,6 +3,7 @@ import 'package:brew_path/app/current_day.dart';
 import 'package:brew_path/core/widgets/reward_row.dart';
 import 'package:brew_path/features/challenges/domain/challenge_providers.dart';
 import 'package:brew_path/features/challenges/presentation/challenge_suggestion.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:brew_path/shared/models/content/brew_challenge.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,7 @@ void main() {
     ProviderScope(
       overrides: [challengeBankProvider.overrideWith((ref) async => bank)],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         theme: AppTheme.darkRoast,
         home: Scaffold(body: ChallengeSuggestion(challenge: challenge)),
       ),
