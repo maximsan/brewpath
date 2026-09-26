@@ -136,6 +136,16 @@ You can always edit this file by hand instead — the helpers just save effort.
 
 ### Changed
 
+- **A lock hands off to the paywall only when there is a plan to choose.** On
+  an arm selling one plan the gate sheet still sells where it stands. On the
+  subscription and hybrid arms its action now closes the sheet and opens the
+  paywall, where the learner picks a plan and buys the one they picked; buying
+  there lands on the welcome and *Back to learning* returns to the screen the
+  lock was on, and declining returns there directly. The sheet drops its
+  purchase-facts line, Restore and the legal links on those arms, because it
+  no longer takes money ([#600](https://github.com/maximsan/brewpath/issues/600),
+  [ADR-0032](adr/0032-a-lock-hands-off-to-the-paywall-only-when-there-is-a-plan-to-choose.md)).
+
 - **Lessons still ahead on the Path are locked.** Each finished lesson unlocks
   the next, as the App Guide already promised: a lesson past the current one
   draws dimmed with a lock and does not open. With it, the Path takes the
