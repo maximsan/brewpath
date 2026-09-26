@@ -1,5 +1,6 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -14,17 +15,12 @@ class SavedEmptyView extends StatelessWidget {
   /// Creates a [SavedEmptyView].
   const SavedEmptyView({super.key});
 
-  /// The copy, named so a test can assert it without re-spelling it.
-  static const message =
-      'Nothing saved yet. Tap the bookmark on any lesson, term or visual '
-      'guide and it lands here for quick review.';
-
   @override
   Widget build(BuildContext context) {
     final mood = context.mood;
 
     return Semantics(
-      label: 'Your saved shelf is empty',
+      label: context.strings.savedEmptyTitle,
       // The shelf's own gutter is the screen's; only the design's opening
       // room belongs to the block.
       child: Padding(
@@ -46,7 +42,7 @@ class SavedEmptyView extends StatelessWidget {
                 maxWidth: OffTokens.savedEmptyLineWidth.value,
               ),
               child: Text(
-                message,
+                context.strings.savedEmptyBody,
                 textAlign: TextAlign.center,
                 style: AppText.body(
                   mood: mood,

@@ -11,6 +11,7 @@ import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/models/content/visual_guide.dart';
 import 'package:brew_path/shared/repositories/repository_providers.dart';
 import 'package:brew_path/shared/theme/off_token.dart';
@@ -124,7 +125,7 @@ void main() {
       await pumpWithProviders(tester, _wrap());
 
       expect(find.byType(SavedEmptyView), findsOneWidget);
-      expect(find.text(SavedEmptyView.message), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().savedEmptyBody), findsOneWidget);
 
       // The design stands the mark back rather than drawing it at full
       // strength: `opacity: 0.55` over a `size={44}` bookmark.
@@ -149,7 +150,7 @@ void main() {
         OffTokens.savedEmptyMark.value,
       );
       expect(
-        tester.getSize(find.text(SavedEmptyView.message)).width,
+        tester.getSize(find.text(AppLocalizationsEn().savedEmptyBody)).width,
         lessThanOrEqualTo(OffTokens.savedEmptyLineWidth.value),
       );
     },
@@ -361,7 +362,7 @@ void main() {
       await pumpWithProviders(tester, _wrap());
 
       expect(find.text('5 OF 5 SAVED'), findsOneWidget);
-      expect(find.text(SavedUpgradeRow.message), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().savedUpgradeLine), findsOneWidget);
     });
 
     testWidgets('below the cap there is no offer', (tester) async {

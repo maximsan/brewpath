@@ -1,6 +1,7 @@
 /// The free shelf's soft cap, and what a save attempt does about it.
 library;
 
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 
 /// How many things a free learner may keep.
@@ -98,12 +99,18 @@ SaveOutcome attemptSave({
 /// counts beside each group header; the free limit is stated nowhere else,
 /// and the upgrade prompt below it depends on that context. [count] is what
 /// [attemptSave] judges, so a learner is held to the number they are shown.
-String? savedCountLine({required int count, required bool isPlus}) {
+String? savedCountLine(
+  AppLocalizations strings, {
+  required int count,
+  required bool isPlus,
+}) {
   if (isPlus) return null;
   // A shelf filled on Plus and now read without it: the cap refuses new
   // saves, it never takes anything away.
-  if (count > savedFreeMax) return '$count saved · free limit $savedFreeMax';
-  return '$count of $savedFreeMax saved';
+  if (count > savedFreeMax) {
+    return strings.savedCountOverLimit(count, savedFreeMax);
+  }
+  return strings.savedCountOfLimit(count, savedFreeMax);
 }
 
 /// Whether a free learner's shelf is full, and the offer is worth showing.

@@ -6,7 +6,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/chrome_marks.dart';
 import 'package:brew_path/core/widgets/sub_header.dart';
 import 'package:brew_path/features/dictionary/presentation/dictionary_home_screen.dart';
-import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -20,7 +20,7 @@ import '../support/widget_harness.dart';
 Finder _sharedHeader() => find.byType(AppHeader);
 Finder _headerTitled(String title) => find.widgetWithText(AppHeader, title);
 Finder _dictionaryButton() => find.byType(OpenBookMark);
-Finder _savedButton() => find.byTooltip(SavedScreen.title);
+Finder _savedButton() => find.byTooltip(AppLocalizationsEn().savedScreenTitle);
 Finder _settingsButton() => findMark(AppIcon.gear);
 
 void main() {
@@ -111,7 +111,7 @@ void main() {
 
       // Titled by the page, under the design's own bar — the shelf's name is
       // its large title now, and the bar stays wordless until it scrolls.
-      expect(find.text(SavedScreen.title), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().savedScreenTitle), findsOneWidget);
       expect(find.byType(SubHeader), findsOneWidget);
       expect(
         _sharedHeader(),
@@ -129,7 +129,7 @@ void main() {
       await settleLoaders(tester);
       await tester.tap(_savedButton());
       await settleLoaders(tester);
-      expect(find.text(SavedScreen.title), findsOneWidget);
+      expect(find.text(AppLocalizationsEn().savedScreenTitle), findsOneWidget);
 
       await tester.tap(find.byTooltip('Back'));
       await settleLoaders(tester);

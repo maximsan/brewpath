@@ -1052,4 +1052,93 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get vocabWorthAnotherPass =>
       'Worth another pass. The definitions stick faster the second time.';
+
+  @override
+  String savedCountOverLimit(int count, int limit) {
+    return '$count saved · free limit $limit';
+  }
+
+  @override
+  String savedCountOfLimit(int count, int limit) {
+    return '$count of $limit saved';
+  }
+
+  @override
+  String get savedGroupTerms => 'Dictionary terms';
+
+  @override
+  String get savedGroupLessons => 'Lessons';
+
+  @override
+  String get savedGroupGuides => 'Visual guides';
+
+  @override
+  String savedItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '$count item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get savedTermSubtitle => 'Term';
+
+  @override
+  String savedLessonSubtitle(int number, String label) {
+    return 'Module $number · $label';
+  }
+
+  @override
+  String savedGuideSubtitle(String label) {
+    return 'Visual guide · $label';
+  }
+
+  @override
+  String savedBookmarkAdd(String label) {
+    return 'Save $label';
+  }
+
+  @override
+  String savedBookmarkRemove(String label) {
+    return 'Remove $label from Saved';
+  }
+
+  @override
+  String get savedEmptyTitle => 'Your saved shelf is empty';
+
+  @override
+  String get savedEmptyBody =>
+      'Nothing saved yet. Tap the bookmark on any lesson, term or visual guide and it lands here for quick review.';
+
+  @override
+  String get savedEntryTitle => 'Saved';
+
+  @override
+  String get savedEntrySubtitle => 'Your favorites';
+
+  @override
+  String savedEntryCount(int count) {
+    return '$count saved to revisit';
+  }
+
+  @override
+  String savedGroupHeading(String label, int count) {
+    return '$label · $count';
+  }
+
+  @override
+  String get savedScreenTitle => 'Favorites';
+
+  @override
+  String get savedLoading => 'Loading your saved items';
+
+  @override
+  String get savedLoadFailed => 'Your saved items could not be loaded';
+
+  @override
+  String get savedUpgradeLine =>
+      'Your shelf is full. Unlock Plus to save without a limit.';
 }

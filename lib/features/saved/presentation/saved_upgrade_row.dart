@@ -1,6 +1,7 @@
 import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/saved/presentation/saved_gate.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -14,11 +15,6 @@ import 'package:flutter/material.dart';
 class SavedUpgradeRow extends StatelessWidget {
   /// Creates a [SavedUpgradeRow].
   const SavedUpgradeRow({super.key});
-
-  /// The copy, named so a test can assert it without re-spelling it.
-  static const message =
-      'Your shelf is full. Unlock Plus to save without a '
-      'limit.';
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +38,7 @@ class SavedUpgradeRow extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  message,
+                  context.strings.savedUpgradeLine,
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: mood.inkMute),

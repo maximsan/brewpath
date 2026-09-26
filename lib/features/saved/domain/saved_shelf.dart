@@ -2,6 +2,7 @@
 library;
 
 import 'package:brew_path/features/saved/domain/saved_key.dart';
+import 'package:brew_path/l10n/generated/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 
 /// One saveable thing, already resolved out of its content bank.
@@ -13,6 +14,7 @@ typedef SavedCandidate = ({
   String id,
   String title,
   String subtitle,
+  int? moduleNumber,
   String? glyph,
 });
 
@@ -26,6 +28,7 @@ class SavedItem {
     required this.id,
     required this.title,
     required this.subtitle,
+    this.moduleNumber,
     this.glyph,
   });
 
@@ -41,8 +44,12 @@ class SavedItem {
   /// The row's name — the term, the lesson, the guide.
   final String title;
 
-  /// The line above it: a category, a module, or the guide label.
+  /// The content half of the line above it — a category, a module's or a
+  /// guide's name. The framing around it is [savedRowSubtitle]'s.
   final String subtitle;
+
+  /// Which module a saved lesson sits in, and null for every other kind.
+  final int? moduleNumber;
 
   /// The category glyph a term row draws; null for a lesson or a guide.
   final String? glyph;
@@ -52,17 +59,10 @@ class SavedItem {
 @immutable
 class SavedGroup {
   /// Creates a [SavedGroup].
-  const SavedGroup({
-    required this.kind,
-    required this.label,
-    required this.items,
-  });
+  const SavedGroup({required this.kind, required this.items});
 
   /// The kind every row in this group shares.
   final SavedKind kind;
-
-  /// The heading — "Dictionary terms", "Lessons", "Visual guides".
-  final String label;
 
   /// The rows, in content order. Never empty: an empty group is not built.
   final List<SavedItem> items;
@@ -75,12 +75,14 @@ const List<SavedKind> _shelfOrder = [
   SavedKind.guide,
 ];
 
-/// Each group's heading.
-const Map<SavedKind, String> _labels = {
-  SavedKind.term: 'Dictionary terms',
-  SavedKind.lesson: 'Lessons',
-  SavedKind.guide: 'Visual guides',
-};
+/// Each group's heading, which the shelf carries as a kind rather than a
+/// word — the provider that builds it has no `BuildContext`.
+String savedGroupLabel(AppLocalizations strings, SavedKind kind) =>
+    switch (kind) {
+      SavedKind.term => strings.savedGroupTerms,
+      SavedKind.lesson => strings.savedGroupLessons,
+      SavedKind.guide => strings.savedGroupGuides,
+    };
 
 /// The shelf: [keys] resolved against the content, grouped and ordered.
 ///
@@ -113,12 +115,13 @@ List<SavedGroup> deriveSavedShelf({
           id: candidate.id,
           title: candidate.title,
           subtitle: candidate.subtitle,
+          moduleNumber: candidate.moduleNumber,
           glyph: candidate.glyph,
         ),
       );
     }
     if (items.isNotEmpty) {
-      groups.add(SavedGroup(kind: kind, label: _labels[kind]!, items: items));
+      groups.add(SavedGroup(kind: kind, items: items));
     }
   }
   return groups;
@@ -133,4 +136,17 @@ int savedShelfCount(List<SavedGroup> groups) =>
 /// Shared by the shelf's count line and the header button's label, which is
 /// the only reason it is here rather than inline: the two must not disagree
 /// about how one saved thing is spelled.
-String savedItemCount(int count) => '$count ${count == 1 ? 'item' : 'items'}';
+String savedItemCount(AppLocalizations strings, int count) =>
+    strings.savedItemCount(count);
+
+/// The line above a saved row: the content's own name, framed by its kind.
+String savedRowSubtitle(AppLocalizations strings, SavedItem item) =>
+    switch (item.kind) {
+      SavedKind.term =>
+        item.subtitle.isEmpty ? strings.savedTermSubtitle : item.subtitle,
+      SavedKind.lesson => strings.savedLessonSubtitle(
+        item.moduleNumber ?? 0,
+        item.subtitle,
+      ),
+      SavedKind.guide => strings.savedGuideSubtitle(item.subtitle),
+    };

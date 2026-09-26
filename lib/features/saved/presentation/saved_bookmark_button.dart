@@ -2,6 +2,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/core/icons/icon_mark.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_toggle.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_radii.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -103,7 +104,9 @@ class SavedBookmarkButton extends ConsumerWidget {
       constraints: ringed
           ? const BoxConstraints.tightFor(width: _ringSize, height: _ringSize)
           : null,
-      tooltip: isSaved ? 'Remove $label from Saved' : 'Save $label',
+      tooltip: isSaved
+          ? context.strings.savedBookmarkRemove(label)
+          : context.strings.savedBookmarkAdd(label),
       onPressed: () => _toggle(context, ref),
     );
   }
@@ -134,7 +137,9 @@ class _Captioned extends StatelessWidget {
     return Semantics(
       button: true,
       toggled: isSaved,
-      label: isSaved ? 'Remove $label from Saved' : 'Save $label',
+      label: isSaved
+          ? context.strings.savedBookmarkRemove(label)
+          : context.strings.savedBookmarkAdd(label),
       onTap: onPressed,
       excludeSemantics: true,
       child: TextButton.icon(

@@ -1820,5 +1820,167 @@
   "vocabWorthAnotherPass": "Worth another pass. The definitions stick faster the second time.",
   "@vocabWorthAnotherPass": {
     "description": "Line under a weak score."
+  },
+
+  "savedCountOverLimit": "{count} saved · free limit {limit}",
+  "@savedCountOverLimit": {
+    "description": "Line under the shelf when a free learner holds more than the cap allows — saved on Plus, and the cap refuses new saves rather than taking any away.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+
+  "savedCountOfLimit": "{count} of {limit} saved",
+  "@savedCountOfLimit": {
+    "description": "Line under the shelf, counting a free learner's saves against the cap.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+
+  "savedGroupTerms": "Dictionary terms",
+  "@savedGroupTerms": {
+    "description": "Heading over the saved dictionary terms."
+  },
+
+  "savedGroupLessons": "Lessons",
+  "@savedGroupLessons": {
+    "description": "Heading over the saved lessons."
+  },
+
+  "savedGroupGuides": "Visual guides",
+  "@savedGroupGuides": {
+    "description": "Heading over the saved visual guides."
+  },
+
+  "savedItemCount": "{count, plural, =1{{count} item} other{{count} items}}",
+  "@savedItemCount": {
+    "description": "How many rows the shelf holds, said in words.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "savedTermSubtitle": "Term",
+  "@savedTermSubtitle": {
+    "description": "Subtitle on a saved term whose category the bank no longer carries."
+  },
+
+  "savedLessonSubtitle": "Module {number} · {label}",
+  "@savedLessonSubtitle": {
+    "description": "Subtitle on a saved lesson, naming the module it sits in.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "savedGuideSubtitle": "Visual guide · {label}",
+  "@savedGuideSubtitle": {
+    "description": "Subtitle on a saved visual guide.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "savedBookmarkAdd": "Save {label}",
+  "@savedBookmarkAdd": {
+    "description": "What a screen reader is told the bookmark control would save.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "savedBookmarkRemove": "Remove {label} from Saved",
+  "@savedBookmarkRemove": {
+    "description": "What a screen reader is told the bookmark control would unsave.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+
+  "savedEmptyTitle": "Your saved shelf is empty",
+  "@savedEmptyTitle": {
+    "description": "Heading on the empty saved shelf."
+  },
+
+  "savedEmptyBody": "Nothing saved yet. Tap the bookmark on any lesson, term or visual guide and it lands here for quick review.",
+  "@savedEmptyBody": {
+    "description": "Body on the empty saved shelf, saying how things get here."
+  },
+
+  "savedEntryTitle": "Saved",
+  "@savedEntryTitle": {
+    "description": "Title of the Saved entry card."
+  },
+
+  "savedEntrySubtitle": "Your favorites",
+  "@savedEntrySubtitle": {
+    "description": "Subtitle of the Saved entry card."
+  },
+
+  "savedEntryCount": "{count} saved to revisit",
+  "@savedEntryCount": {
+    "description": "What the Saved entry card says it holds.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "savedGroupHeading": "{label} · {count}",
+  "@savedGroupHeading": {
+    "description": "A saved group's heading and how many rows are under it.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "savedScreenTitle": "Favorites",
+  "@savedScreenTitle": {
+    "description": "Title of the Saved screen."
+  },
+
+  "savedLoading": "Loading your saved items",
+  "@savedLoading": {
+    "description": "Announced while the saved shelf resolves."
+  },
+
+  "savedLoadFailed": "Your saved items could not be loaded",
+  "@savedLoadFailed": {
+    "description": "Shown when the saved shelf cannot be read."
+  },
+
+  "savedUpgradeLine": "Your shelf is full. Unlock Plus to save without a limit.",
+  "@savedUpgradeLine": {
+    "description": "Offer under a full free shelf."
   }
 }

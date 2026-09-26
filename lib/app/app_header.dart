@@ -11,9 +11,9 @@ import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
-import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/features/tour/domain/tour_step.dart';
 import 'package:brew_path/features/tour/presentation/tour_anchor.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
 import 'package:flutter/material.dart';
@@ -208,9 +208,11 @@ class _SavedButton extends ConsumerWidget {
     final count = savedShelfCount(
       ref.watch(savedShelfProvider).value ?? const [],
     );
+    final strings = context.strings;
     final label = count == 0
-        ? SavedScreen.title
-        : '${SavedScreen.title}, ${savedItemCount(count)}';
+        ? strings.savedScreenTitle
+        : '${strings.savedScreenTitle}, '
+              '${savedItemCount(strings, count)}';
 
     final mood = context.mood;
 

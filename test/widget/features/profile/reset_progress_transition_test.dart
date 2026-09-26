@@ -3,7 +3,7 @@ import 'package:brew_path/core/icons/app_icon.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_confirmations.dart';
 import 'package:brew_path/features/profile/presentation/settings/settings_copy.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
-import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,7 +37,7 @@ void main() {
 
     await pumpWithProviders(tester, const BrewPathApp());
     expect(
-      find.byTooltip('${SavedScreen.title}, 1 item'),
+      find.byTooltip('${AppLocalizationsEn().savedScreenTitle}, 1 item'),
       findsOneWidget,
       reason: 'the badge is the standing consumer this turns on',
     );
@@ -58,7 +58,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byTooltip(SavedScreen.title),
+      find.byTooltip(AppLocalizationsEn().savedScreenTitle),
       findsOneWidget,
       reason: 'the badge is a bare label again, with nothing saved',
     );

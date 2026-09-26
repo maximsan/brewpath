@@ -101,7 +101,8 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
         (
           id: term.id,
           title: term.term,
-          subtitle: categories[term.categoryId]?.label ?? 'Term',
+          subtitle: categories[term.categoryId]?.label ?? '',
+          moduleNumber: null,
           glyph: categories[term.categoryId]?.glyph,
         ),
     ],
@@ -113,7 +114,8 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
           (
             id: lesson.id,
             title: lesson.title,
-            subtitle: 'Module ${module.n} · ${module.label}',
+            subtitle: module.label,
+            moduleNumber: module.n,
             glyph: null,
           ),
     ],
@@ -122,7 +124,8 @@ Future<List<SavedGroup>> savedShelf(Ref ref) async {
         (
           id: guide.subject,
           title: guide.title,
-          subtitle: 'Visual guide · ${guide.label}',
+          subtitle: guide.label,
+          moduleNumber: null,
           glyph: null,
         ),
     ],

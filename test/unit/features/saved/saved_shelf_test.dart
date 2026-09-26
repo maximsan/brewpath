@@ -1,30 +1,63 @@
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Candidates arrive in content order; the derivation must preserve it.
 const _terms = <SavedCandidate>[
-  (id: 'arabica', title: 'Arabica', subtitle: 'BEANS AND BOTANY', glyph: null),
-  (id: 'bloom', title: 'Bloom', subtitle: 'BREWING', glyph: null),
-  (id: 'crema', title: 'Crema', subtitle: 'BREWING', glyph: null),
+  (
+    id: 'arabica',
+    title: 'Arabica',
+    subtitle: 'BEANS AND BOTANY',
+    moduleNumber: null,
+    glyph: null,
+  ),
+  (
+    id: 'bloom',
+    title: 'Bloom',
+    subtitle: 'BREWING',
+    moduleNumber: null,
+    glyph: null,
+  ),
+  (
+    id: 'crema',
+    title: 'Crema',
+    subtitle: 'BREWING',
+    moduleNumber: null,
+    glyph: null,
+  ),
 ];
 const _lessons = <SavedCandidate>[
   (
     id: 'm1l1',
     title: 'What coffee actually is',
     subtitle: 'MODULE 1 · BEANS',
+    moduleNumber: null,
     glyph: null,
   ),
   (
     id: 'm2l1',
     title: 'Washed and natural',
     subtitle: 'MODULE 2 · PROCESSING',
+    moduleNumber: null,
     glyph: null,
   ),
 ];
 const _guides = <SavedCandidate>[
-  (id: 'roast', title: 'Roast Levels', subtitle: 'VISUAL GUIDE', glyph: null),
-  (id: 'grind', title: 'Grind Size', subtitle: 'VISUAL GUIDE', glyph: null),
+  (
+    id: 'roast',
+    title: 'Roast Levels',
+    subtitle: 'VISUAL GUIDE',
+    moduleNumber: null,
+    glyph: null,
+  ),
+  (
+    id: 'grind',
+    title: 'Grind Size',
+    subtitle: 'VISUAL GUIDE',
+    moduleNumber: null,
+    glyph: null,
+  ),
 ];
 
 List<SavedGroup> shelf(Set<String> keys) => deriveSavedShelf(
@@ -96,7 +129,10 @@ void main() {
     final groups = shelf(const {'t:arabica', 'l:m1l1', 'g:roast'});
 
     expect(
-      [for (final group in groups) group.label],
+      [
+        for (final group in groups)
+          savedGroupLabel(AppLocalizationsEn(), group.kind),
+      ],
       [
         'Dictionary terms',
         'Lessons',

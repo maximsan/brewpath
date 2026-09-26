@@ -1779,6 +1779,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Worth another pass. The definitions stick faster the second time.'**
   String get vocabWorthAnotherPass;
+
+  /// Line under the shelf when a free learner holds more than the cap allows — saved on Plus, and the cap refuses new saves rather than taking any away.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} saved · free limit {limit}'**
+  String savedCountOverLimit(int count, int limit);
+
+  /// Line under the shelf, counting a free learner's saves against the cap.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {limit} saved'**
+  String savedCountOfLimit(int count, int limit);
+
+  /// Heading over the saved dictionary terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary terms'**
+  String get savedGroupTerms;
+
+  /// Heading over the saved lessons.
+  ///
+  /// In en, this message translates to:
+  /// **'Lessons'**
+  String get savedGroupLessons;
+
+  /// Heading over the saved visual guides.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual guides'**
+  String get savedGroupGuides;
+
+  /// How many rows the shelf holds, said in words.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} item} other{{count} items}}'**
+  String savedItemCount(int count);
+
+  /// Subtitle on a saved term whose category the bank no longer carries.
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get savedTermSubtitle;
+
+  /// Subtitle on a saved lesson, naming the module it sits in.
+  ///
+  /// In en, this message translates to:
+  /// **'Module {number} · {label}'**
+  String savedLessonSubtitle(int number, String label);
+
+  /// Subtitle on a saved visual guide.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual guide · {label}'**
+  String savedGuideSubtitle(String label);
+
+  /// What a screen reader is told the bookmark control would save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save {label}'**
+  String savedBookmarkAdd(String label);
+
+  /// What a screen reader is told the bookmark control would unsave.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {label} from Saved'**
+  String savedBookmarkRemove(String label);
+
+  /// Heading on the empty saved shelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved shelf is empty'**
+  String get savedEmptyTitle;
+
+  /// Body on the empty saved shelf, saying how things get here.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing saved yet. Tap the bookmark on any lesson, term or visual guide and it lands here for quick review.'**
+  String get savedEmptyBody;
+
+  /// Title of the Saved entry card.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedEntryTitle;
+
+  /// Subtitle of the Saved entry card.
+  ///
+  /// In en, this message translates to:
+  /// **'Your favorites'**
+  String get savedEntrySubtitle;
+
+  /// What the Saved entry card says it holds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} saved to revisit'**
+  String savedEntryCount(int count);
+
+  /// A saved group's heading and how many rows are under it.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {count}'**
+  String savedGroupHeading(String label, int count);
+
+  /// Title of the Saved screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get savedScreenTitle;
+
+  /// Announced while the saved shelf resolves.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your saved items'**
+  String get savedLoading;
+
+  /// Shown when the saved shelf cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved items could not be loaded'**
+  String get savedLoadFailed;
+
+  /// Offer under a full free shelf.
+  ///
+  /// In en, this message translates to:
+  /// **'Your shelf is full. Unlock Plus to save without a limit.'**
+  String get savedUpgradeLine;
 }
 
 class _AppLocalizationsDelegate

@@ -5,6 +5,7 @@ import 'package:brew_path/core/widgets/bean_gauge.dart';
 import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_bookmark_button.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -98,10 +99,10 @@ class _Words extends StatelessWidget {
       children: [
         // Uppercase is the type rule, not the name: announced as written.
         Semantics(
-          label: item.subtitle,
+          label: savedRowSubtitle(context.strings, item),
           excludeSemantics: true,
           child: Text(
-            item.subtitle.toUpperCase(),
+            savedRowSubtitle(context.strings, item).toUpperCase(),
             style: AppText.micro(mood: mood, tracking: AppTracking.smallcaps),
           ),
         ),

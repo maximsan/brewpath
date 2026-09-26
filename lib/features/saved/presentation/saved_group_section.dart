@@ -1,6 +1,7 @@
 import 'package:brew_path/core/widgets/smallcaps_label.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_row.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,10 @@ class SavedGroupSection extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 child: SmallcapsLabel(
-                  '${group.label} · ${group.items.length}',
+                  context.strings.savedGroupHeading(
+                    savedGroupLabel(context.strings, group.kind),
+                    group.items.length,
+                  ),
                   isHeader: true,
                 ),
               ),

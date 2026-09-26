@@ -1,4 +1,5 @@
 import 'package:brew_path/features/saved/domain/saved_cap.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Five keys — a full free shelf.
@@ -146,7 +147,10 @@ void main() {
     const stored = {'t:a', 't:b', 't:c', 'g:roast', 'g:grind'};
     const visible = 3;
 
-    expect(savedCountLine(count: visible, isPlus: false), '3 of 5 saved');
+    expect(
+      savedCountLine(AppLocalizationsEn(), count: visible, isPlus: false),
+      '3 of 5 saved',
+    );
     expect(
       attemptSave(key: 't:d', keys: stored, visible: visible, isPlus: false),
       isA<SaveSaved>(),
@@ -166,21 +170,39 @@ void main() {
 
   group('savedCountLine', () {
     test('a free learner reads their shelf against the cap', () {
-      expect(savedCountLine(count: 3, isPlus: false), '3 of 5 saved');
-      expect(savedCountLine(count: 0, isPlus: false), '0 of 5 saved');
-      expect(savedCountLine(count: 5, isPlus: false), '5 of 5 saved');
+      expect(
+        savedCountLine(AppLocalizationsEn(), count: 3, isPlus: false),
+        '3 of 5 saved',
+      );
+      expect(
+        savedCountLine(AppLocalizationsEn(), count: 0, isPlus: false),
+        '0 of 5 saved',
+      );
+      expect(
+        savedCountLine(AppLocalizationsEn(), count: 5, isPlus: false),
+        '5 of 5 saved',
+      );
     });
 
     test('an owner gets no line, because the page already states it', () {
-      expect(savedCountLine(count: 3, isPlus: true), isNull);
-      expect(savedCountLine(count: 1, isPlus: true), isNull);
-      expect(savedCountLine(count: 0, isPlus: true), isNull);
+      expect(
+        savedCountLine(AppLocalizationsEn(), count: 3, isPlus: true),
+        isNull,
+      );
+      expect(
+        savedCountLine(AppLocalizationsEn(), count: 1, isPlus: true),
+        isNull,
+      );
+      expect(
+        savedCountLine(AppLocalizationsEn(), count: 0, isPlus: true),
+        isNull,
+      );
     });
 
     test('a shelf filled on Plus still reads honestly without it', () {
       // The cap refuses new saves; it never takes anything away.
       expect(
-        savedCountLine(count: 9, isPlus: false),
+        savedCountLine(AppLocalizationsEn(), count: 9, isPlus: false),
         '9 saved · free limit 5',
       );
     });

@@ -17,6 +17,7 @@ import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
 import 'package:brew_path/features/saved/presentation/saved_group_section.dart';
 import 'package:brew_path/features/saved/presentation/saved_study_row.dart';
 import 'package:brew_path/features/saved/presentation/saved_upgrade_row.dart';
+import 'package:brew_path/l10n/app_strings.dart';
 import 'package:brew_path/shared/theme/app_spacing.dart';
 import 'package:brew_path/shared/theme/app_text.dart';
 import 'package:brew_path/shared/theme/mood_colors.dart';
@@ -47,7 +48,6 @@ class SavedScreen extends ConsumerWidget {
   const SavedScreen({super.key});
 
   /// The page's title, and what the header button that opens it announces.
-  static const title = 'Favorites';
 
   Future<void> _open(
     BuildContext context,
@@ -75,19 +75,19 @@ class SavedScreen extends ConsumerWidget {
     final shelf = ref.watch(savedShelfProvider);
 
     return SubScreenScaffold(
-      title: title,
+      title: context.strings.savedScreenTitle,
       // The one screen the design gives its own threshold: the shelf waits
       // until 72 where every other page's bar arrives at 40.
       threshold: _shelfScrollThreshold,
       body: (context, scrollPadding) => shelf.when(
         loading: () => Semantics(
-          label: 'Loading your saved items',
+          label: context.strings.savedLoading,
           child: const LoadingIndicator(),
         ),
         // The shelf surfaces its failure rather than rendering as empty: here
         // an empty-looking screen would be a lie about the learner's data.
         error: (error, _) => Semantics(
-          label: 'Your saved items could not be loaded',
+          label: context.strings.savedLoadFailed,
           child: ErrorView(message: '$error'),
         ),
         // The shelf is titled whether or not it holds anything: the page's
@@ -120,9 +120,9 @@ class _Empty extends StatelessWidget {
       padding:
           const EdgeInsets.symmetric(horizontal: AppSpacing.gutter) +
           scrollPadding,
-      children: const [
-        PageLargeTitle(SavedScreen.title),
-        SavedEmptyView(),
+      children: [
+        PageLargeTitle(context.strings.savedScreenTitle),
+        const SavedEmptyView(),
       ],
     );
   }
@@ -146,7 +146,11 @@ class _Shelf extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = savedShelfCount(groups);
-    final countLine = savedCountLine(count: count, isPlus: isPlus);
+    final countLine = savedCountLine(
+      context.strings,
+      count: count,
+      isPlus: isPlus,
+    );
 
     final mood = context.mood;
 
@@ -158,7 +162,7 @@ class _Shelf extends StatelessWidget {
           scrollPadding +
           const EdgeInsets.only(bottom: _designBottomPad),
       children: [
-        const PageLargeTitle(SavedScreen.title),
+        PageLargeTitle(context.strings.savedScreenTitle),
         if (countLine != null) ...[
           const SizedBox(height: AppSpacing.xs),
           // Mono at the design's `letterSpacing: 0.08em`, uppercase by rule

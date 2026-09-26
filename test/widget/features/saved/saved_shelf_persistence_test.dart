@@ -7,7 +7,7 @@ import 'package:brew_path/features/lessons/presentation/lesson_screen.dart';
 import 'package:brew_path/features/profile/domain/settings_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/presentation/saved_empty_view.dart';
-import 'package:brew_path/features/saved/presentation/saved_screen.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:brew_path/shared/repositories/snapshot_repository.dart';
 import 'package:brew_path/shared/storage/app_database.dart';
 import 'package:drift/native.dart';
@@ -65,7 +65,8 @@ void main() {
   Finder savedEntry() => find.byWidgetPredicate(
     (widget) =>
         widget is IconButton &&
-        (widget.tooltip?.startsWith(SavedScreen.title) ?? false),
+        (widget.tooltip?.startsWith(AppLocalizationsEn().savedScreenTitle) ??
+            false),
   );
 
   Future<void> openShelf(WidgetTester tester) async {
@@ -89,7 +90,10 @@ void main() {
 
     await pumpWithProviders(tester, const BrewPathApp());
 
-    expect(find.byTooltip('${SavedScreen.title}, 1 item'), findsOneWidget);
+    expect(
+      find.byTooltip('${AppLocalizationsEn().savedScreenTitle}, 1 item'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('a term row opens the full entry', (tester) async {
@@ -119,7 +123,10 @@ void main() {
   ) async {
     await saveThenClose('t:arabica');
     await pumpWithProviders(tester, const BrewPathApp());
-    expect(find.byTooltip('${SavedScreen.title}, 1 item'), findsOneWidget);
+    expect(
+      find.byTooltip('${AppLocalizationsEn().savedScreenTitle}, 1 item'),
+      findsOneWidget,
+    );
 
     // The app's own reset path, the function the Settings button calls, rather
     // than a hand-rolled invalidation — which would assert the test's work and
@@ -131,7 +138,7 @@ void main() {
     await settleLoaders(tester);
 
     expect(
-      find.byTooltip('${SavedScreen.title}, 1 item'),
+      find.byTooltip('${AppLocalizationsEn().savedScreenTitle}, 1 item'),
       findsNothing,
       reason: 'the shelf goes with the progress it recorded',
     );

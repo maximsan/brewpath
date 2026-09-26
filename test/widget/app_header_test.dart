@@ -7,8 +7,8 @@ import 'package:brew_path/features/saved/domain/saved_key.dart';
 import 'package:brew_path/features/saved/domain/saved_providers.dart';
 import 'package:brew_path/features/saved/domain/saved_shelf.dart';
 import 'package:brew_path/features/saved/presentation/saved_badge_dot.dart';
-import 'package:brew_path/features/saved/presentation/saved_screen.dart';
 import 'package:brew_path/l10n/generated/app_localizations.dart';
+import 'package:brew_path/l10n/generated/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,7 +19,6 @@ List<SavedGroup> _shelfOf(int count) => count == 0
     : [
         SavedGroup(
           kind: SavedKind.term,
-          label: 'Dictionary terms',
           items: [
             for (var i = 0; i < count; i++)
               SavedItem(
@@ -97,7 +96,7 @@ void main() {
     );
     expect(find.text('Fri, May 8'), findsNothing);
     expect(
-      find.byTooltip(SavedScreen.title),
+      find.byTooltip(AppLocalizationsEn().savedScreenTitle),
       findsOneWidget,
       reason: 'the entries are the one part of the bar always on show',
     );
@@ -204,7 +203,7 @@ void main() {
       ]) {
         await pump(tester, location: tab);
         expect(
-          find.byTooltip(SavedScreen.title),
+          find.byTooltip(AppLocalizationsEn().savedScreenTitle),
           findsOneWidget,
           reason: '$tab offers the shelf',
         );
@@ -214,7 +213,10 @@ void main() {
     testWidgets('Profile offers the gear instead of the pair', (tester) async {
       await pump(tester, location: AppRoutes.profile.path);
 
-      expect(find.byTooltip(SavedScreen.title), findsNothing);
+      expect(
+        find.byTooltip(AppLocalizationsEn().savedScreenTitle),
+        findsNothing,
+      );
       expect(find.byTooltip('Settings'), findsOneWidget);
     });
 
@@ -222,19 +224,28 @@ void main() {
       // An empty shelf still opens, and its empty state teaches the bookmark.
       await pump(tester, location: AppRoutes.learn.path);
 
-      expect(find.byTooltip(SavedScreen.title), findsOneWidget);
+      expect(
+        find.byTooltip(AppLocalizationsEn().savedScreenTitle),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the count reaches the label, not just a dot', (tester) async {
       await pump(tester, location: AppRoutes.learn.path, savedCount: 3);
 
-      expect(find.byTooltip('${SavedScreen.title}, 3 items'), findsOneWidget);
+      expect(
+        find.byTooltip('${AppLocalizationsEn().savedScreenTitle}, 3 items'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('one saved item reads in the singular', (tester) async {
       await pump(tester, location: AppRoutes.learn.path, savedCount: 1);
 
-      expect(find.byTooltip('${SavedScreen.title}, 1 item'), findsOneWidget);
+      expect(
+        find.byTooltip('${AppLocalizationsEn().savedScreenTitle}, 1 item'),
+        findsOneWidget,
+      );
     });
 
     // Two tests rather than one with two pumps: re-pumping the same tree with
@@ -255,7 +266,9 @@ void main() {
     testWidgets('Saved sits before the dictionary', (tester) async {
       await pump(tester, location: AppRoutes.learn.path);
 
-      final saved = tester.getTopLeft(find.byTooltip(SavedScreen.title)).dx;
+      final saved = tester
+          .getTopLeft(find.byTooltip(AppLocalizationsEn().savedScreenTitle))
+          .dx;
       final dictionary = tester.getTopLeft(find.byType(OpenBookMark)).dx;
       expect(saved, lessThan(dictionary));
     });
